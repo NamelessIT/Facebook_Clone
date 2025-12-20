@@ -1,0 +1,23 @@
+using Microsoft.EntityFrameworkCore;
+using FacebookClone.Domain.Entities;
+
+namespace FacebookClone.Infrastructure;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options) { }
+
+    // 🔥 DbSet
+    public DbSet<User> Users => Set<User>();
+    public DbSet<Post> Posts => Set<Post>();
+
+    // (sau này seed thêm thì thêm tiếp)
+    // public DbSet<Friendship> Friendships => Set<Friendship>();
+    // public DbSet<Reaction> Reactions => Set<Reaction>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+    }
+}

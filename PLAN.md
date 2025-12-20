@@ -1,27 +1,11 @@
-Ok, tui sẽ viết cho bạn **một bản mô tả dự án Facebook_Clone ở mức “proposal + technical design + roadmap”**, đủ chi tiết để:
-
-* Làm **đồ án cá nhân nghiêm túc**
-* Có thể **mở rộng thật**
-* Dùng để **show CV / GitHub**
-* Có định hướng **deploy + Docker**
-
-Tui sẽ chia rõ ràng, đọc tới đâu hiểu tới đó 👇
-
----
-
 # 📘 DỰ ÁN: FACEBOOK_CLONE (FULLSTACK – CÁ NHÂN)
 
 ## 1. Mục tiêu dự án
 
 Xây dựng một website mô phỏng Facebook với **đầy đủ các chức năng cốt lõi**, kiến trúc rõ ràng, code sạch, dễ mở rộng, có thể chạy thật trên môi trường production (Docker + Cloud).
 
-* Người phát triển: **1 người (bạn)**
+* Người phát triển: **1 người**
 * Định hướng: **Fullstack – Production-ready**
-* Mục tiêu cuối:
-
-  * Có demo online
-  * Code đủ tốt để nhà tuyển dụng đọc
-  * Có thể mở rộng thành mạng xã hội thật
 
 ---
 
@@ -50,45 +34,6 @@ facebook_clone/
 └── README.md
 ```
 
-### ❌ Không nên chia 2 git riêng (vì):
-
-* Làm **1 mình**
-* Khó đồng bộ version
-* Khó quản lý deploy
-
-👉 **1 repo – rõ ràng – chuyên nghiệp**
-Sau này nếu team lớn → tách repo sau.
-
----
-
-## 3. Chọn Backend: .NET Microservice hay Spring Boot?
-
-### 🔥 So sánh nhanh
-
-| Tiêu chí         | .NET (C#)  | Spring Boot (Java) |
-| ---------------- | ---------- | ------------------ |
-| Hiệu năng        | ⭐⭐⭐⭐☆      | ⭐⭐⭐⭐               |
-| Microservice     | Rất mạnh   | Rất mạnh           |
-| Docker           | Tốt        | Tốt                |
-| Code gọn         | Rất gọn    | Hơi verbose        |
-| Learning curve   | Trung bình | Cao hơn            |
-| Phù hợp solo dev | ✅ Rất hợp  | ⚠️ Nặng            |
-| Cơ hội việc làm  | Cao        | Rất cao            |
-
-### ✅ Kết luận cho **dự án này**
-
-👉 **CHỌN: .NET (ASP.NET Core) + Microservice (vừa phải)**
-
-Lý do:
-
-* Bạn làm **một mình**
-* Microservice full Java sẽ **quá tải**
-* .NET viết nhanh, clean, dễ Docker
-
-> Spring Boot chỉ nên dùng nếu bạn **đang ôn Java backend chuyên sâu** cho học phần / công việc Java.
-
----
-
 ## 4. Kiến trúc tổng thể
 
 ### 4.1 Kiến trúc backend (Microservice nhẹ)
@@ -104,6 +49,76 @@ Lý do:
 -------------------------------------------------
       |
    [Database]
+```
+
+### Tạo các project (CÓ LỆNH HẾT):
+```
+🔹 API (Web API – startup project)
+dotnet new webapi -n FacebookClone.API
+
+🔹 Domain (Entity)
+dotnet new classlib -n FacebookClone.Domain
+
+🔹 Infrastructure (EF Core)
+dotnet new classlib -n FacebookClone.Infrastructure
+
+🔹 Application (Service – để sau)
+dotnet new classlib -n FacebookClone.Application
+```
+
+### Thêm project vào solution
+```
+Quay về thư mục backend:
+
+cd ..
+dotnet sln add src/FacebookClone.API
+dotnet sln add src/FacebookClone.Domain
+dotnet sln add src/FacebookClone.Infrastructure
+dotnet sln add src/FacebookClone.Application
+```
+
+### Thiết lập reference giữa các project
+```
+dotnet add src/FacebookClone.API reference src/FacebookClone.Application
+dotnet add src/FacebookClone.Application reference src/FacebookClone.Domain
+dotnet add src/FacebookClone.Infrastructure reference src/FacebookClone.Domain
+dotnet add src/FacebookClone.API reference src/FacebookClone.Infrastructure
+```
+
+### Cài package EF Core (Infrastructure)
+```
+cd src/FacebookClone.Infrastructure
+
+dotnet add package Microsoft.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+```
+
+### Cài DotNetEnv (API)
+```
+cd ../FacebookClone.API
+dotnet add package DotNetEnv
+```
+
+### Cài EF CLI(1 lần)
+```
+dotnet tool install --global dotnet-ef
+```
+
+### Tạo migration
+```
+👉 Chạy ở thư mục backend
+
+dotnet ef migrations add InitialCreate \
+  --project src/FacebookClone.Infrastructure \
+  --startup-project src/FacebookClone.API
+```
+
+### Apply migration
+```
+dotnet ef database update \
+  --project src/FacebookClone.Infrastructure \
+  --startup-project src/FacebookClone.API
 ```
 
 ### 4.2 Các service chính
@@ -330,23 +345,6 @@ export const theme = {
 
 
 ## 9. Chi tiết kế hoạch (QUAN TRỌNG):
-Rất tốt 👍
-Bây giờ tui sẽ làm **bản phân chia công việc ở mức “thiết kế kỹ thuật + nghiệp vụ”**, để khi bạn code:
-
-* ❌ **không bị mơ hồ**
-* ❌ **không đặt tên API lung tung**
-* ✅ **code tới đâu khớp kiến trúc tới đó**
-* ✅ **dễ mở rộng, không phá logic cũ**
-
-Tui sẽ viết theo **chuẩn backend thực tế**, kèm:
-
-* Luồng hoạt động (flow)
-* Tên service
-* Tên API (REST)
-* Gợi ý DB
-* Lưu ý quan trọng
-
----
 
 # 📅 KẾ HOẠCH CHI TIẾT 3 THÁNG – FACEBOOK_CLONE
 
@@ -513,35 +511,418 @@ DELETE /api/v1/posts/{postId}
 ---
 
 ## 5️⃣ Database design (v1)
-
+```
 ### Core tables
 
-```text
+📐 ERD – THIẾT KẾ CHI TIẾT (DẠNG BẢNG)
+1️⃣ users (BẢNG GỐC)
 users
+-----
+id (uuid, PK)
+email (varchar, unique)
+password_hash (varchar)
+full_name (varchar)
+avatar_url (text)
+cover_url (text)
+bio (text)
+status (varchar)
+is_online (boolean)
+created_at (timestamp)
+updated_at (timestamp)
+is_deleted (boolean)   // soft delete
+
+🔹 Trung tâm của toàn bộ hệ thống
+🔹 1 user → nhiều post, comment, message
+
+2️⃣ posts
 posts
+-----
+id (uuid, PK)
+user_id (uuid, FK → users.id)
+content (text)
+privacy (enum: PUBLIC, FRIENDS, PRIVATE)
+post_type (enum: NORMAL, SHARE, GROUP)
+group_id (uuid, nullable)
+shared_post_id (uuid, nullable, FK → posts.id)
+created_at
+updated_at
+is_deleted (boolean)
+
+
+🔹 Một post có thể share post khác
+🔹 shared_post_id tạo self-referencing relationship
+
+3️⃣ comments
 comments
-likes
+--------
+id (uuid, PK)
+post_id (uuid, FK → posts.id)
+user_id (uuid, FK → users.id)
+parent_comment_id (uuid, nullable, FK → comments.id)
+content (text)
+created_at
+is_deleted (boolean)
+
+
+🔹 Comment lồng nhau (reply)
+🔹 parent_comment_id là weak relationship
+
+4️⃣ reactions (LIKE / LOVE / HAHA …)
+
+👉 BẢNG TRUNG GIAN QUAN TRỌNG
+
+reactions
+---------
+id (uuid, PK)
+user_id (uuid, FK → users.id)
+post_id (uuid, FK → posts.id)
+reaction_type (enum: LIKE, LOVE, HAHA, WOW, SAD, ANGRY)
+created_at
+
+UNIQUE (user_id, post_id)
+
+
+🔹 1 user chỉ reaction 1 lần / post
+🔹 Thay reaction = update record
+
+5️⃣ friendships (BẢNG QUAN HỆ N-N)
 friendships
+-----------
+id (uuid, PK)
+requester_id (uuid, FK → users.id)
+receiver_id (uuid, FK → users.id)
+status (enum: PENDING, ACCEPTED, REJECTED, BLOCKED)
+created_at
+updated_at
+
+UNIQUE (requester_id, receiver_id)
+CHECK (requester_id != receiver_id)
+
+
+🔹 Đây là bảng yếu (junction table)
+🔹 Đại diện cho mối quan hệ phức tạp user ↔ user
+
+6️⃣ conversations (CHAT)
+conversations
+-------------
+id (uuid, PK)
+type (enum: PRIVATE, GROUP)
+created_at
+created_by (uuid, FK → users.id)
+
+7️⃣ conversation_members (BẢNG TRUNG GIAN CHAT)
+conversation_members
+--------------------
+conversation_id (uuid, FK → conversations.id)
+user_id (uuid, FK → users.id)
+joined_at
+
+PRIMARY KEY (conversation_id, user_id)
+
+
+🔹 Cho phép:
+
+1–1 chat
+
+Group chat
+
+8️⃣ messages
+messages
+--------
+id (uuid, PK)
+conversation_id (uuid, FK → conversations.id)
+sender_id (uuid, FK → users.id)
+content (text)
+message_type (enum: TEXT, IMAGE, VIDEO, FILE)
+created_at
+is_deleted (boolean)
+
+📌 Cho phép:
+“Delete for me”
+“Delete for everyone”
+
+9️⃣ notifications
+notifications
+-------------
+id (uuid, PK)
+user_id (uuid, FK → users.id)
+type (enum: LIKE, COMMENT, FRIEND_REQUEST, MESSAGE)
+reference_id (uuid)
+is_read (boolean)
+created_at
+actor_id (uuid, FK → users.id)  // ai gây ra notification
+
+
+🔹 reference_id trỏ tới post/comment/message tùy loại
+📌 Ví dụ:
+A like post của B → notification của B
+→ actor_id = A
+
+🔟 reels (VIDEO NGẮN)
+reels
+-----
+id (uuid, PK)
+user_id (uuid, FK → users.id)
+video_url (text)
+caption (text)
+created_at
+is_deleted (boolean)
+
+
+1️⃣1️⃣ reel_likes (BẢNG YẾU)
+reel_likes
+----------
+reel_id (uuid, FK → reels.id)
+user_id (uuid, FK → users.id)
+created_at
+
+PRIMARY KEY (reel_id, user_id)
+
+1️⃣2️⃣ groups
+groups
+------
+id (uuid, PK)
+name (varchar)
+description (text)
+owner_id (uuid, FK → users.id)
+created_at
+privacy (PUBLIC, PRIVATE)
+
+
+1️⃣3️⃣ group_members (BẢNG TRUNG GIAN)
+group_members
+-------------
+group_id (uuid, FK → groups.id)
+user_id (uuid, FK → users.id)
+role (enum: ADMIN, MEMBER)
+joined_at
+
+PRIMARY KEY (group_id, user_id)
+
 ```
 
-#### users
+### Entities
+```
+public class Comment
+{
+    public Guid Id { get; set; }
 
-* id
-* email
-* password_hash
-* name
-* avatar
-* status
+    public Guid PostId { get; set; }
+    public Post Post { get; set; } = null!;
 
-#### posts
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
 
-* id
-* user_id
-* content
-* privacy
-* created_at
+    public Guid? ParentCommentId { get; set; }
+    public Comment? ParentComment { get; set; }
 
----
+    public string Content { get; set; } = null!;
+
+    public DateTime CreatedAt { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    /* Navigation */
+    public ICollection<Comment> Replies { get; set; } = new List<Comment>();
+}
+public class Conversation
+{
+    public Guid Id { get; set; }
+
+    public ConversationType Type { get; set; }
+
+    public Guid CreatedBy { get; set; }
+    public User Creator { get; set; } = null!;
+
+    public DateTime CreatedAt { get; set; }
+
+    /* Navigation */
+    public ICollection<ConversationMember> Members { get; set; } = new List<ConversationMember>();
+    public ICollection<Message> Messages { get; set; } = new List<Message>();
+}
+public class ConversationMember
+{
+    public Guid ConversationId { get; set; }
+    public Conversation Conversation { get; set; } = null!;
+
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+
+    public DateTime JoinedAt { get; set; }
+}
+public class Friendship
+{
+    public Guid Id { get; set; }
+
+    public Guid RequesterId { get; set; }
+    public User Requester { get; set; } = null!;
+
+    public Guid ReceiverId { get; set; }
+    public User Receiver { get; set; } = null!;
+
+    public FriendshipStatus Status { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+public class Group
+{
+    public Guid Id { get; set; }
+
+    public string Name { get; set; } = null!;
+    public string? Description { get; set; }
+
+    public Guid OwnerId { get; set; }
+    public User Owner { get; set; } = null!;
+
+    public GroupPrivacy Privacy { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    /* Navigation */
+    public ICollection<GroupMember> Members { get; set; } = new List<GroupMember>();
+}
+public class GroupMember
+{
+    public Guid GroupId { get; set; }
+    public Group Group { get; set; } = null!;
+
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+
+    public GroupRole Role { get; set; }
+
+    public DateTime JoinedAt { get; set; }
+}
+public class Message
+{
+    public Guid Id { get; set; }
+
+    public Guid ConversationId { get; set; }
+    public Conversation Conversation { get; set; } = null!;
+
+    public Guid SenderId { get; set; }
+    public User Sender { get; set; } = null!;
+
+    public string Content { get; set; } = null!;
+
+    public MessageType MessageType { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public bool IsDeleted { get; set; }
+}
+public class Notification
+{
+    public Guid Id { get; set; }
+
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+
+    public NotificationType Type { get; set; }
+
+    public Guid ReferenceId { get; set; }
+
+    public bool IsRead { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public Guid ActorId { get; set; }
+    public User Actor { get; set; } = null!;
+}
+public class Post
+{
+    public Guid Id { get; set; }
+
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+
+    public string Content { get; set; } = null!;
+
+    public PostPrivacy Privacy { get; set; }
+    public PostType PostType { get; set; }
+
+    public Guid? GroupId { get; set; }
+
+    public Guid? SharedPostId { get; set; }
+    public Post? SharedPost { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    /* Navigation */
+    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
+}
+public class Reaction
+{
+    public Guid Id { get; set; }
+
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+
+    public Guid PostId { get; set; }
+    public Post Post { get; set; } = null!;
+
+    public ReactionType ReactionType { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+}
+public class Reel
+{
+    public Guid Id { get; set; }
+
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+
+    public string VideoUrl { get; set; } = null!;
+    public string? Caption { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    /* Navigation */
+    public ICollection<ReelLike> Likes { get; set; } = new List<ReelLike>();
+}
+public class ReelLike
+{
+    public Guid ReelId { get; set; }
+    public Reel Reel { get; set; } = null!;
+
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+
+    public DateTime CreatedAt { get; set; }
+}
+public class User
+{
+    public Guid Id { get; set; }
+
+    public string Email { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
+    public string FullName { get; set; } = null!;
+
+    public string? AvatarUrl { get; set; }
+    public string? CoverUrl { get; set; }
+    public string? Bio { get; set; }
+    public string? Status { get; set; }
+
+    public bool IsOnline { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+
+    public bool IsDeleted { get; set; }
+
+    /* Navigation */
+    public ICollection<Post> Posts { get; set; } = new List<Post>();
+    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    public ICollection<Message> Messages { get; set; } = new List<Message>();
+}
+```
 
 # 🟡 THÁNG 2 – CORE FEATURES
 
@@ -700,6 +1081,13 @@ GET /api/v1/search?q=keyword&type=post,user,group
 
 ## 1️⃣4️⃣ Deploy & Optimize
 
+API Gateway :
+Routing request đến đúng microservice
+Authentication/Authorization
+Rate limiting
+Logging
+Aggregation (kết hợp dữ liệu từ nhiều service)
+
 * Domain
 * HTTPS
 * Rate limit
@@ -708,16 +1096,6 @@ GET /api/v1/search?q=keyword&type=post,user,group
 
 ---
 
-# 🎯 TỔNG KẾT
-
-Sau 3 tháng bạn sẽ có:
-
-* Một **Facebook Clone thật sự**
-* Kiến trúc rõ ràng
-* API chuẩn
-* Có thể deploy
-
----
 
 
 
