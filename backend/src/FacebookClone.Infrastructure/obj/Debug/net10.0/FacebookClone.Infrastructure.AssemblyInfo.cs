@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FacebookClone.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c8b8f637a2888b63f1816029e76ec947e46aede8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8ca9a503ef86e9fe4180da7ccd550ad5b410dd4b")]
 [assembly: System.Reflection.AssemblyProductAttribute("FacebookClone.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FacebookClone.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

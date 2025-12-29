@@ -1,9 +1,3 @@
-C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.csproj.AssemblyReference.cache
-C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
-C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.AssemblyInfoInputs.cache
-C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.AssemblyInfo.cs
-C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.csproj.CoreCompileInputs.cache
-C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.sourcelink.json
 C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\bin\Debug\net10.0\BuildHost-net472\Microsoft.Build.Locator.dll
 C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\bin\Debug\net10.0\BuildHost-net472\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe
 C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\bin\Debug\net10.0\BuildHost-net472\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe.config
@@ -56,6 +50,12 @@ C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\bin\D
 C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\bin\Debug\net10.0\FacebookClone.Infrastructure.pdb
 C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\bin\Debug\net10.0\FacebookClone.Domain.dll
 C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\bin\Debug\net10.0\FacebookClone.Domain.pdb
+C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.csproj.AssemblyReference.cache
+C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.AssemblyInfoInputs.cache
+C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.AssemblyInfo.cs
+C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.sourcelink.json
 C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\Facebook.95A9CB46.Up2Date
 C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\FacebookClone.Infrastructure.dll
 C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\obj\Debug\net10.0\refint\FacebookClone.Infrastructure.dll

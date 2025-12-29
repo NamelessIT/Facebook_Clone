@@ -12,6 +12,8 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Post> Posts => Set<Post>();
 
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
     // (sau này seed thêm thì thêm tiếp)
     // public DbSet<Friendship> Friendships => Set<Friendship>();
     // public DbSet<Reaction> Reactions => Set<Reaction>();

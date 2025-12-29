@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "sNFpKub45YU=",
+  "dgSpecHash": "635zN+CIxQM=",
   "success": true,
   "projectFilePath": "C:\\Code\\Repository\\Facebook_Clone\\backend\\src\\FacebookClone.Infrastructure\\FacebookClone.Infrastructure.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\dotnetenv\\3.1.1\\dotnetenv.3.1.1.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.build\\17.7.2\\microsoft.build.17.7.2.nupkg.sha512",

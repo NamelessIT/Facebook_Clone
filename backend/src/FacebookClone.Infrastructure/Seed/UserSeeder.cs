@@ -1,7 +1,7 @@
 using FacebookClone.Domain.Entities;
 using FacebookClone.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
-
+using BCrypt.Net;
 namespace FacebookClone.Infrastructure.Seed;
 
 public class UserSeeder : ISeeder
@@ -21,7 +21,7 @@ public class UserSeeder : ISeeder
             {
                 Id = Guid.NewGuid(),
                 Email = "alice@fbclone.com",
-                PasswordHash = "hashed_password",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
                 FullName = "Alice Nguyen",
                 AvatarUrl = "https://i.pravatar.cc/150?img=1",
                 CoverUrl = "https://picsum.photos/800/300?1",
@@ -35,7 +35,7 @@ public class UserSeeder : ISeeder
             {
                 Id = Guid.NewGuid(),
                 Email = "bob@fbclone.com",
-                PasswordHash = "hashed_password",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
                 FullName = "Bob Tran",
                 AvatarUrl = "https://i.pravatar.cc/150?img=2",
                 CoverUrl = "https://picsum.photos/800/300?2",
@@ -49,7 +49,7 @@ public class UserSeeder : ISeeder
             {
                 Id = Guid.NewGuid(),
                 Email = "carol@fbclone.com",
-                PasswordHash = "hashed_password",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
                 FullName = "Carol Pham",
                 AvatarUrl = "https://i.pravatar.cc/150?img=3",
                 CoverUrl = "https://picsum.photos/800/300?3",
@@ -62,5 +62,7 @@ public class UserSeeder : ISeeder
         };
 
         await context.Users.AddRangeAsync(users);
+        await context.SaveChangesAsync();
+
     }
 }

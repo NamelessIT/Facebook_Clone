@@ -380,6 +380,41 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.ToTable("ReelLikes", (string)null);
                 });
 
+            modelBuilder.Entity("FacebookClone.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("FacebookClone.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -646,6 +681,17 @@ namespace FacebookClone.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Reel");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FacebookClone.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("FacebookClone.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

@@ -128,6 +128,26 @@ dotnet ef database update \
    * Login / Register
    * JWT + Refresh Token
    * OAuth (Google – optional)
+   🔐 JWT Design 적용
+
+# Áp dụng cho:
+- AuthService (generate token)
+- API Gateway (verify token)
+- UserService / PostService / ChatService (read claim)
+
+# Claims sử dụng:
+- sub → userId
+- email
+- name
+- exp, iat
+
+# KHÔNG lưu JWT trong database.
+
+# File liên quan:
+- Application/Auth/Jwt/IJwtTokenGenerator.cs
+- Application/Auth/Jwt/JwtTokenGenerator.cs
+- API/Program.cs (JWT middleware)
+
 
 2. **User Service**
 
@@ -162,6 +182,26 @@ dotnet ef database update \
    * Realtime + lưu DB
 
 ---
+
+## 📄 Swagger (OpenAPI)
+
+Áp dụng cho:
+- TẤT CẢ backend services
+
+Mục đích:
+- API contract giữa Backend ↔ Frontend
+- Test API nhanh
+- Tránh mismatch request/response
+
+Triển khai tại:
+- FacebookClone.API
+- File: Program.cs
+
+Quy ước:
+- Mọi API phải xuất hiện trong Swagger
+- Prefix: /api/v1
+- Authentication: Bearer JWT
+
 
 ## 5. Công nghệ sử dụng
 
@@ -274,6 +314,12 @@ export const theme = {
 * Chat nhóm
 * Seen / typing
 * Online status
+
+📌 WebSocket / SignalR KHÔNG áp dụng cho AuthService
+Chỉ dùng cho:
+- ChatService
+- NotificationService
+
 
 ### 👥 Bạn bè
 
@@ -699,6 +745,54 @@ joined_at
 
 PRIMARY KEY (group_id, user_id)
 
+
+refresh_tokens
+--------------
+id (uuid, PK)
+user_id (uuid, FK → users.id)
+token (varchar, unique)
+expires_at (timestamp)
+is_revoked (boolean)
+created_at (timestamp)
+revoked_at (timestamp, nullable)
+
+📌 Refresh Token Strategy
+
+Sử dụng cho:
+- AuthService
+
+Flow sử dụng:
+- Login → tạo refresh token
+- Refresh-token → revoke token cũ, tạo token mới
+- Logout → revoke token
+
+File liên quan:
+- Domain/Entities/RefreshToken.cs
+- Infrastructure/Configurations/RefreshTokenConfiguration.cs
+- Infrastructure/AppDbContext.cs
+- Application/Auth (AuthService logic)
+
+Đảm bảo:
+- Idempotent
+- Transaction
+
+### 🔁 Transaction & Idempotent Design
+
+Áp dụng cho các API:
+- POST /auth/login
+- POST /auth/refresh-token
+- POST /auth/logout
+- POST /posts/{postId}/like
+- POST /friends/request/{userId}
+
+Nguyên tắc:
+- Một request gọi nhiều lần → kết quả không thay đổi
+- Dùng database transaction cho các bước quan trọng
+
+Áp dụng tại:
+- Application layer (Service)
+- Infrastructure layer (DbContext transaction)
+
 ```
 
 ### Entities
@@ -922,6 +1016,25 @@ public class User
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     public ICollection<Message> Messages { get; set; } = new List<Message>();
 }
+
+public class RefreshToken
+{
+    public Guid Id { get; set; }
+
+    public Guid UserId { get; set; }
+    public User User { get; set; } = null!;
+
+    public string Token { get; set; } = null!;
+
+    public DateTime ExpiresAt { get; set; }
+
+    public bool IsRevoked { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime? RevokedAt { get; set; }
+}
+
 ```
 
 # 🟡 THÁNG 2 – CORE FEATURES
@@ -1047,6 +1160,42 @@ POST /api/v1/reels/{id}/like
 
 ---
 
+---
+
+### 🎥 Media (Video)
+
+**API**
+
+```http
+POST /api/v1/media/upload/init
+POST /api/v1/media/upload/chunk
+POST /api/v1/media/upload/complete
+```
+
+🎥 Chunking Strategy (Media / Video)
+
+Áp dụng cho:
+- MediaService
+- Reels
+- Video Post
+
+Frontend:
+- Chia video thành chunk (5–10MB)
+- Upload tuần tự hoặc song song
+
+Backend:
+- Lưu chunk tạm
+- Kiểm tra thứ tự chunk
+- Merge khi upload hoàn tất
+
+Mục tiêu:
+- Tránh timeout
+- Resume upload
+- UX tốt với file lớn
+
+
+---
+
 ## 1️⃣1️⃣ Group
 
 ### API
@@ -1096,6 +1245,17 @@ Aggregation (kết hợp dữ liệu từ nhiều service)
 
 ---
 
+## 🧩 Design – Service Mapping
+
+| Design | Auth | User | Post | Chat | Media |
+|------|------|------|------|------|------|
+| JWT | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Refresh Token | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Transaction | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Idempotent | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Swagger | ✅ | ✅ | ✅ | ✅ | ✅ |
+| WebSocket | ❌ | ❌ | ❌ | ✅ | ❌ |
+| Chunking | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 
 

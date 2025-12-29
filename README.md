@@ -225,6 +225,20 @@ POST /api/v1/reels/{id}/like
 
 ---
 
+---
+
+### 🎥 Media (Video)
+
+**API**
+
+```http
+POST /api/v1/media/upload/init
+POST /api/v1/media/upload/chunk
+POST /api/v1/media/upload/complete
+```
+
+---
+
 ### 👨‍👩‍👧‍👦 Group
 
 ```http
@@ -273,6 +287,34 @@ Truy cập:
 
 ---
 
+🔹 Swagger 
+## 📄 API Documentation (Swagger)
+
+Backend sử dụng **Swagger ** để tự động sinh tài liệu API.
+
+### Mục đích
+- Frontend dễ dàng tích hợp API
+- Test API trực tiếp trên trình duyệt
+- Chuẩn hoá request / response
+
+### Truy cập Swagger
+```
+http://localhost:5000/swagger
+```
+Chuẩn API
+
+Prefix: /api/v1
+
+Authentication: Bearer JWT
+
+Response format thống nhất:
+```
+{
+  "success": true,
+  "data": {},
+  "message": ""
+}
+```
 ## 2. Cấu trúc backend
 
 ```text
@@ -370,3 +412,126 @@ Bao gồm:
 * Backup database
 
 ---
+
+
+# Facebook Clone – System Design Decisions
+
+## 1. Authentication & Authorization
+
+- Architecture: JWT-based authentication
+- Stateless access token
+- Stateful refresh token (stored in database)
+
+### Token Strategy
+- Access Token: JWT
+  - Lifetime: 15 minutes
+  - Stored on client (memory / HttpOnly cookie)
+  - NOT stored in database
+- Refresh Token:
+  - Lifetime: 7 days
+  - Stored in database
+  - Used to issue new access tokens
+  - Revoked on logout
+
+### JWT Claims
+| Claim | Description |
+|------|------------|
+| sub  | User ID |
+| email | User email |
+| name | User full name |
+| exp | Expiration |
+| iat | Issued at |
+
+> No roles / permissions embedded in JWT at this stage.
+
+---
+
+## 2. Backend Architecture
+
+- Clean Architecture
+- Logical microservices (Auth, User, Post, Chat)
+- Monorepo, single deployment initially
+- Designed for future microservice split
+
+---
+
+## 3. Database
+
+- PostgreSQL
+- UUID primary keys
+- Soft delete for main entities
+- Indexes on:
+  - users.email
+  - refresh_tokens.token
+
+---
+
+## 4. Security Practices
+
+- Password hashing: BCrypt
+- Rate limiting planned at API Gateway
+- JWT secret stored in environment config
+- Refresh token revocation supported
+
+---
+
+## 5. Transactions & Idempotency
+
+- Critical operations wrapped in DB transactions
+- Refresh token flow is idempotent
+- Safe retry for login / refresh / logout
+
+---
+
+## 6. Logging
+
+- Structured logging
+- Audit logs planned for:
+  - Login
+  - Logout
+  - Token refresh
+
+---
+
+## 7. Real-time Features (Planned)
+
+- WebSocket
+- Chat
+- Notifications
+- Live updates
+
+---
+
+## 8. Frontend Architecture
+
+- SPA (React + Vite)
+- Token handling:
+  - Access token in memory
+  - Refresh token via HttpOnly cookie
+- Pagination for feeds
+- Debounce for search inputs
+
+---
+
+## 9. CDN & Deployment
+
+- CDN planned for static assets & media
+- Dockerized services
+- Future API Gateway support
+
+### 🎥 Media Upload & Chunking Strategy
+
+Hệ thống hỗ trợ **upload video theo dạng chunk** để tối ưu trải nghiệm người dùng.
+
+### Lý do dùng Chunking
+- Upload file lớn (video)
+- Tránh timeout
+- Resume khi mất mạng
+- Upload song song
+
+### Flow upload video
+1. Frontend chia video thành nhiều chunk (5–10MB)
+2. Gửi từng chunk lên server
+3. Server lưu tạm từng phần
+4. Khi đủ chunk → merge thành file hoàn chỉnh
+5. Trả về URL video
