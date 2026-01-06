@@ -6,6 +6,7 @@ using FacebookClone.Application.Auth.DTOs;
 using FacebookClone.Application.Auth.Services;
 using Microsoft.EntityFrameworkCore;
 using FacebookClone.Domain.Entities;
+using FacebookClone.Application.Common.Exceptions;
 using BCrypt.Net;
 public class AuthService : IAuthService
 {
@@ -23,11 +24,12 @@ public class AuthService : IAuthService
         var user = await _context.Users
             .SingleOrDefaultAsync(x => x.Email == request.Email && !x.IsDeleted);
 
-        if (user == null)
-            throw new Exception("Invalid credentials");
-
-        if (!BCrypt.Verify(request.Password, user.PasswordHash))
-            throw new Exception("Invalid credentials");
+        if (user == null || !BCrypt.Verify(request.Password, user.PasswordHash))
+            throw new AppException(
+                "Invalid credentials",
+                errorCode: "AUTH_INVALID_CREDENTIALS",
+                statusCode: 401
+            );
 
 
         using var tx = await _context.Database.BeginTransactionAsync();
@@ -117,7 +119,39 @@ public class AuthService : IAuthService
 
     public async Task LogoutAsync(string refreshToken)
     {
-        throw new NotImplementedException();
+        var token = await _context.RefreshTokens
+            .SingleOrDefaultAsync(x => x.Token == refreshToken);
+
+        if (token == null)
+            return; // idempotent
+
+        if (token.IsRevoked)
+            return;
+
+        token.IsRevoked = true;
+        token.RevokedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
     }
+
+    public async Task LogoutAllAsync(Guid userId)
+    {
+        var tokens = await _context.RefreshTokens
+            .Where(x => x.UserId == userId && !x.IsRevoked)
+            .ToListAsync();
+
+        if (!tokens.Any())
+            return;
+
+        foreach (var token in tokens)
+        {
+            token.IsRevoked = true;
+            token.RevokedAt = DateTime.UtcNow;
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+
 
 }

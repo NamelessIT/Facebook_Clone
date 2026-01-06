@@ -1,3 +1,4 @@
+namespace FacebookClone.Application.Common.Responses;
 public class ApiResponse<T>
 {
     public bool Success { get; set; }

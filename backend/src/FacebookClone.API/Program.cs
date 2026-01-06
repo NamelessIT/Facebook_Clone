@@ -26,7 +26,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
             ValidIssuer = jwtConfig["Issuer"],
             ValidAudience = jwtConfig["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(key)
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+
+            ClockSkew = TimeSpan.Zero
         };
     });
 // 🔥 Local connection string (seed + dev)
@@ -66,6 +68,8 @@ if (args.Contains("--seed"))
     return;
 }
 
+
+app.UseGlobalMiddlewares();
 
 app.UseAuthentication();
 app.UseAuthorization();

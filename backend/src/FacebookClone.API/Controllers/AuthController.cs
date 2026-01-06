@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using FacebookClone.API.Services;
 using FacebookClone.Application.Auth.DTOs;  
 using FacebookClone.Application.Auth.Services;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 namespace FacebookClone.API.Controllers
 {
 [ApiController]
@@ -17,6 +19,13 @@ public class AuthController : ControllerBase
     {
         _auth = auth;
     }
+
+    private Guid GetUserId()
+    {
+        return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
+    }
+
 
     [HttpPost("login")]
     public async Task<ApiResponse<AuthResponse>> Login([FromBody] LoginRequest request)
@@ -40,18 +49,23 @@ public class AuthController : ControllerBase
         return ApiResponse<AuthResponse>.Ok(result);
     }
 
-    // TODO: implement after JWT middleware
+    [Authorize]
     [HttpPost("logout")]
-    public IActionResult Logout()
+    public async Task<ApiResponse<bool>> Logout([FromBody] RefreshTokenRequest request)
     {
-        return Ok("TODO");
+        await _auth.LogoutAsync(request.RefreshToken);
+        return ApiResponse<bool>.Ok(true, "Logged out");
     }
 
+    [Authorize]
     [HttpPost("logout-all")]
-    public IActionResult LogoutAll()
+    public async Task<ApiResponse<bool>> LogoutAll()
     {
-        return Ok("TODO");
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        await _auth.LogoutAllAsync(userId);
+        return ApiResponse<bool>.Ok(true, "Logged out from all devices");
     }
+
 
 }
 
