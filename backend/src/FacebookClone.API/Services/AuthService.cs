@@ -7,6 +7,7 @@ using FacebookClone.Application.Auth.Services;
 using Microsoft.EntityFrameworkCore;
 using FacebookClone.Domain.Entities;
 using FacebookClone.Application.Common.Exceptions;
+using FacebookClone.Domain.Exceptions; 
 using BCrypt.Net;
 public class AuthService : IAuthService
 {

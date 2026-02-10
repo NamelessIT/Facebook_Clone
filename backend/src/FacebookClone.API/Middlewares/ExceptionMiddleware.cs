@@ -1,7 +1,7 @@
 namespace FacebookClone.API.Middlewares;
 using System.Text.Json;
 using FacebookClone.Application.Common.Exceptions;
-
+using FacebookClone.Domain.Exceptions; 
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;

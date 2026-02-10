@@ -4,6 +4,7 @@ using System;
 using Microsoft.AspNetCore.Authorization;
 using FacebookClone.API.Services;
 using FacebookClone.Application.Auth.DTOs;  
+using FacebookClone.Application.Common.Responses;
 using FacebookClone.Application.Auth.Services;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;

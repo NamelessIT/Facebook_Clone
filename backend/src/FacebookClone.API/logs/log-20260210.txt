@@ -1,0 +1,8 @@
+2026-02-10 22:55:55.795 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-10 22:55:55.843 +07:00 [INF] Creating key {1d9382ae-719b-422d-bbc0-00af0b7b49d3} with creation date 2026-02-10 15:55:55Z, activation date 2026-02-10 15:55:55Z, and expiration date 2026-05-11 15:55:55Z.
+2026-02-10 22:55:55.850 +07:00 [INF] Writing data to file 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys\key-1d9382ae-719b-422d-bbc0-00af0b7b49d3.xml'.
+2026-02-10 22:55:55.906 +07:00 [INF] Now listening on: http://localhost:5286
+2026-02-10 22:55:55.907 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-02-10 22:55:55.907 +07:00 [INF] Hosting environment: Development
+2026-02-10 22:55:55.908 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-02-10 22:56:21.040 +07:00 [INF] Application is shutting down...

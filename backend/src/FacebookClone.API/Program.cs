@@ -3,76 +3,172 @@ using FacebookClone.Infrastructure.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using FacebookClone.Application.Auth.Services;
 using FacebookClone.API.Services;
+using FacebookClone.API.Extensions;
+using FacebookClone.Domain.Interfaces;
+using FacebookClone.Application.Auth.Services;
 using FacebookClone.Application.Auth.Jwt;
+using FacebookClone.Application.Services.Interfaces;
+using FacebookClone.Application.Services.Implementations;
+using FacebookClone.Application.Mappings; // Namespace chứa UserProfile
 using FacebookClone.Infrastructure;
+using FacebookClone.Infrastructure.Repositories;
+using Serilog;
+using Microsoft.OpenApi.Models; // Dùng cho Swagger
 
+// ---------------------------------------------------------
+// 1. CẤU HÌNH SERILOG (Ghi log ngay từ khi khởi động)
+// ---------------------------------------------------------
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log-.txt",
+        rollingInterval: RollingInterval.Day, // Mỗi ngày tạo 1 file log mới
+        retainedFileCountLimit: 14)           // 🔥 Chỉ giữ lại log trong 14 ngày (2 tuần)
+    .CreateLogger();
 
-var builder = WebApplication.CreateBuilder(args);
+try 
+{
+    var builder = WebApplication.CreateBuilder(args);
 
-var jwtConfig = builder.Configuration.GetSection("Jwt");
-var key = Encoding.UTF8.GetBytes(jwtConfig["Secret"]!);
+    // Kích hoạt Serilog thay thế logger mặc định của .NET
+    builder.Host.UseSerilog();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
+    // ---------------------------------------------------------
+    // 2. CONFIGURATION & DATABASE
+    // ---------------------------------------------------------
+    var jwtConfig = builder.Configuration.GetSection("Jwt");
+    var key = Encoding.UTF8.GetBytes(jwtConfig["Secret"]!);
+    var connectionString = builder.Configuration.GetConnectionString("Default");
+
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseNpgsql(connectionString));
+
+    // ---------------------------------------------------------
+    // 3. AUTHENTICATION (JWT)
+    // ---------------------------------------------------------
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtConfig["Issuer"],
+                ValidAudience = jwtConfig["Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ClockSkew = TimeSpan.Zero
+            };
+        });
 
-            ValidIssuer = jwtConfig["Issuer"],
-            ValidAudience = jwtConfig["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(key),
+    // ---------------------------------------------------------
+    // 4. DEPENDENCY INJECTION (Services, Repositories)
+    // ---------------------------------------------------------
+    builder.Services.AddControllers();
 
-            ClockSkew = TimeSpan.Zero
-        };
+    // ✅ FIX LỖI AUTOMAPPER: Dùng cú pháp Config Action để tránh lỗi CS1503
+    builder.Services.AddAutoMapper(cfg => {
+        cfg.AddProfile<UserProfile>();
     });
-// 🔥 Local connection string (seed + dev)
-var connectionString = builder.Configuration.GetConnectionString("Default");
 
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+    builder.Services.AddScoped<IAuthService, AuthService>();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    // ---------------------------------------------------------
+    // 5. SWAGGER (Swashbuckle) & CORS
+    // ---------------------------------------------------------
+    builder.Services.AddEndpointsApiExplorer();
+    
+    // Cấu hình Swagger UI có nút Authorize (Ổ khóa)
+    builder.Services.AddSwaggerGen(option =>
+    {
+        option.SwaggerDoc("v1", new OpenApiInfo { Title = "Facebook Clone API", Version = "v1" });
+        
+        // Cấu hình nút Authorize nhập JWT
+        option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please enter a valid token",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = "Bearer"
+        });
+        option.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type=ReferenceType.SecurityScheme,
+                        Id="Bearer"
+                    }
+                },
+                new string[]{}
+            }
+        });
+    });
 
-builder.Services.AddControllers();
+    // Cấu hình CORS (Cho phép React gọi API)
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowReactApp",
+            policy =>
+            {
+                policy.WithOrigins("http://localhost:5173") // URL của Vite React
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
+            });
+    });
 
-builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+    // =========================================================
+    // BUILD APPLICATION
+    // =========================================================
+    var app = builder.Build();
 
+    // ---------------------------------------------------------
+    // 6. MIDDLEWARES PIPELINE
+    // ---------------------------------------------------------
+    
+    // Global Error Handling & Custom Middleware (Log, Audit...)
+    app.UseGlobalMiddlewares(); 
 
-/* 🔥 OpenAPI native */
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApi();
+    if (app.Environment.IsDevelopment())
+    {
+        // Kích hoạt Swagger UI
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
-var app = builder.Build();
+    // Seed Data Command
+    if (args.Contains("--seed"))
+    {
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await SeedRunner.RunAsync(dbContext);
+        return; 
+    }
 
+    // Kích hoạt CORS (Đặt trước Auth)
+    app.UseCors("AllowReactApp");
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.Run();
 }
-
-
-
-// 🔥 Seed command
-if (args.Contains("--seed"))
+catch (Exception ex)
 {
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-    await SeedRunner.RunAsync(dbContext);
-    return;
+    Log.Fatal(ex, "Application terminated unexpectedly");
 }
-
-
-app.UseGlobalMiddlewares();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-app.Run();
+finally
+{
+    Log.CloseAndFlush();
+}

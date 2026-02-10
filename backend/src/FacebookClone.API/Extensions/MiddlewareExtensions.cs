@@ -1,4 +1,4 @@
-namespace FacebookClone.API.Exception;
+namespace FacebookClone.API.Extensions;
 using FacebookClone.API.Middlewares;
 public static class MiddlewareExtensions
 {
