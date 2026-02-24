@@ -70,12 +70,17 @@ try
     // ✅ FIX LỖI AUTOMAPPER: Dùng cú pháp Config Action để tránh lỗi CS1503
     builder.Services.AddAutoMapper(cfg => {
         cfg.AddProfile<UserProfile>();
+        cfg.AddProfile<PostProfile>(); 
     });
 
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
     builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<IPostRepository, PostRepository>();
+    builder.Services.AddScoped<IPostService, PostService>();
+    builder.Services.AddScoped<IInteractionRepository, InteractionRepository>();
+    builder.Services.AddScoped<IInteractionService, InteractionService>();
 
     // ---------------------------------------------------------
     // 5. SWAGGER (Swashbuckle) & CORS

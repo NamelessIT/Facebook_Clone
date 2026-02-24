@@ -1,0 +1,363 @@
+2026-02-12 19:53:04.054 +07:00 [FTL] Application terminated unexpectedly
+System.InvalidOperationException: No backing field could be found for property 'User.FullName' and the property does not have a setter.
+   at Microsoft.EntityFrameworkCore.Infrastructure.ModelValidator.<ValidateFieldMapping>g__Validate|24_0(ITypeBase typeBase)
+   at Microsoft.EntityFrameworkCore.Infrastructure.ModelValidator.ValidateFieldMapping(IModel model, IDiagnosticsLogger`1 logger)
+   at Microsoft.EntityFrameworkCore.Infrastructure.ModelValidator.Validate(IModel model, IDiagnosticsLogger`1 logger)
+   at Microsoft.EntityFrameworkCore.Infrastructure.RelationalModelValidator.Validate(IModel model, IDiagnosticsLogger`1 logger)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.Internal.NpgsqlModelValidator.Validate(IModel model, IDiagnosticsLogger`1 logger)
+   at Microsoft.EntityFrameworkCore.Infrastructure.ModelRuntimeInitializer.Initialize(IModel model, Boolean designTime, IDiagnosticsLogger`1 validationLogger)
+   at Microsoft.EntityFrameworkCore.Infrastructure.ModelSource.GetModel(DbContext context, ModelCreationDependencies modelCreationDependencies, Boolean designTime)
+   at Microsoft.EntityFrameworkCore.Internal.DbContextServices.CreateModel(Boolean designTime)
+   at Microsoft.EntityFrameworkCore.Internal.DbContextServices.get_Model()
+   at Microsoft.EntityFrameworkCore.Infrastructure.EntityFrameworkServicesBuilder.<>c.<TryAddCoreServices>b__8_4(IServiceProvider p)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass2_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at Microsoft.EntityFrameworkCore.DbContext.get_DbContextDependencies()
+   at Microsoft.EntityFrameworkCore.DbContext.get_ContextServices()
+   at Microsoft.EntityFrameworkCore.DbContext.get_InternalServiceProvider()
+   at Microsoft.EntityFrameworkCore.DbContext.Microsoft.EntityFrameworkCore.Infrastructure.IInfrastructure<System.IServiceProvider>.get_Instance()
+   at Microsoft.EntityFrameworkCore.Infrastructure.Internal.InfrastructureExtensions.GetService(IInfrastructure`1 accessor, Type serviceType)
+   at Microsoft.EntityFrameworkCore.Infrastructure.Internal.InfrastructureExtensions.GetService[TService](IInfrastructure`1 accessor)
+   at Microsoft.EntityFrameworkCore.Infrastructure.AccessorExtensions.GetService[TService](IInfrastructure`1 accessor)
+   at Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade.get_Dependencies()
+   at Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade.BeginTransactionAsync(CancellationToken cancellationToken)
+   at FacebookClone.Infrastructure.Seed.SeedRunner.RunAsync(AppDbContext context) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.Infrastructure\Seed\SeedRunner.cs:line 9
+   at Program.<Main>$(String[] args) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Program.cs:line 153
+2026-02-12 19:57:24.424 +07:00 [INF] Executed DbCommand (14ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Users" AS u)
+2026-02-12 19:57:24.469 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Posts" AS p)
+2026-02-12 20:00:07.951 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-12 20:00:08.077 +07:00 [INF] Now listening on: http://localhost:5286
+2026-02-12 20:00:08.078 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-02-12 20:00:08.078 +07:00 [INF] Hosting environment: Development
+2026-02-12 20:00:08.079 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-02-12 20:00:16.224 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/ - null null
+2026-02-12 20:00:16.241 +07:00 [INF] [GET] /
+2026-02-12 20:00:16.313 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/ - 404 0 null 91.1644ms
+2026-02-12 20:00:16.325 +07:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5286/, Response status code: 404
+2026-02-12 20:00:45.435 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/ - null null
+2026-02-12 20:00:45.436 +07:00 [INF] [GET] /
+2026-02-12 20:00:45.438 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/ - 404 0 null 2.9001ms
+2026-02-12 20:00:45.439 +07:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5286/, Response status code: 404
+2026-02-12 20:00:48.831 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/ - null null
+2026-02-12 20:00:48.833 +07:00 [INF] [GET] /
+2026-02-12 20:00:48.836 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/ - 404 0 null 5.5622ms
+2026-02-12 20:00:48.839 +07:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5286/, Response status code: 404
+2026-02-12 21:58:54.331 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger - null null
+2026-02-12 21:58:54.334 +07:00 [INF] [GET] /swagger
+2026-02-12 21:58:54.335 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger - 301 0 null 3.7518ms
+2026-02-12 21:58:54.338 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-02-12 21:58:54.340 +07:00 [INF] [GET] /swagger/index.html
+2026-02-12 21:58:54.392 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 53.999ms
+2026-02-12 21:58:54.398 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui.css - null null
+2026-02-12 21:58:54.402 +07:00 [INF] [GET] /swagger/swagger-ui.css
+2026-02-12 21:58:54.400 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui-bundle.js - null null
+2026-02-12 21:58:54.399 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui-standalone-preset.js - null null
+2026-02-12 21:58:54.406 +07:00 [INF] [GET] /swagger/swagger-ui-bundle.js
+2026-02-12 21:58:54.407 +07:00 [INF] [GET] /swagger/swagger-ui-standalone-preset.js
+2026-02-12 21:58:54.422 +07:00 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2026-02-12 21:58:54.422 +07:00 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2026-02-12 21:58:54.424 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui-standalone-preset.js - 200 230280 text/javascript 25.1692ms
+2026-02-12 21:58:54.425 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui.css - 200 152034 text/css 26.059ms
+2026-02-12 21:58:54.433 +07:00 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2026-02-12 21:58:54.434 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui-bundle.js - 200 1456926 text/javascript 34.408ms
+2026-02-12 21:58:54.502 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-02-12 21:58:54.504 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-02-12 21:58:54.512 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/favicon-32x32.png - null null
+2026-02-12 21:58:54.515 +07:00 [INF] [GET] /swagger/favicon-32x32.png
+2026-02-12 21:58:54.516 +07:00 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2026-02-12 21:58:54.517 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/favicon-32x32.png - 200 628 image/png 5.4153ms
+2026-02-12 21:58:54.572 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 69.7638ms
+2026-02-12 21:59:20.064 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 58
+2026-02-12 21:59:20.069 +07:00 [INF] [POST] /api/v1/auth/login
+2026-02-12 21:59:20.072 +07:00 [INF] CORS policy execution failed.
+2026-02-12 21:59:20.073 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-02-12 21:59:20.075 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-02-12 21:59:20.092 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-02-12 21:59:21.134 +07:00 [ERR] Failed executing DbCommand (42ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-02-12 21:59:21.167 +07:00 [ERR] An exception occurred while iterating over the results of a query for context type 'FacebookClone.Infrastructure.AppDbContext'.
+Npgsql.PostgresException (0x80004005): 42703: column u.FirstName does not exist
+
+POSITION: 80
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column u.FirstName does not exist
+    Position: 80
+    File: parse_relation.c
+    Line: 3722
+    Routine: errorMissingColumn
+Npgsql.PostgresException (0x80004005): 42703: column u.FirstName does not exist
+
+POSITION: 80
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column u.FirstName does not exist
+    Position: 80
+    File: parse_relation.c
+    Line: 3722
+    Routine: errorMissingColumn
+2026-02-12 21:59:21.174 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 1079.1039ms
+2026-02-12 21:59:21.190 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-02-12 21:59:21.191 +07:00 [ERR] Unhandled exception
+Npgsql.PostgresException (0x80004005): 42703: column u.FirstName does not exist
+
+POSITION: 80
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at FacebookClone.API.Services.AuthService.LoginAsync(LoginRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Services\AuthService.cs:line 25
+   at FacebookClone.API.Controllers.AuthController.Login(LoginRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Controllers\AuthController.cs:line 34
+   at lambda_method6(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at FacebookClone.API.Middlewares.ExceptionMiddleware.Invoke(HttpContext context) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Middlewares\ExceptionMiddleware.cs:line 20
+  Exception data:
+    Severity: ERROR
+    SqlState: 42703
+    MessageText: column u.FirstName does not exist
+    Position: 80
+    File: parse_relation.c
+    Line: 3722
+    Routine: errorMissingColumn
+2026-02-12 21:59:21.222 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 500 null application/json 1157.2541ms
+2026-02-12 22:05:32.445 +07:00 [INF] Application is shutting down...
+2026-02-12 22:45:54.708 +07:00 [FTL] Application terminated unexpectedly
+Microsoft.Extensions.Hosting.HostAbortedException: The host was aborted.
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.ThrowHostAborted()
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.OnNext(KeyValuePair`2 value)
+   at System.Diagnostics.DiagnosticListener.Write(String name, Object value)
+   at Microsoft.Extensions.Hosting.HostBuilder.ResolveHost(IServiceProvider serviceProvider, DiagnosticListener diagnosticListener)
+   at Microsoft.Extensions.Hosting.HostApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build()
+   at Program.<Main>$(String[] args) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Program.cs:line 132
+2026-02-12 22:47:09.125 +07:00 [FTL] Application terminated unexpectedly
+Microsoft.Extensions.Hosting.HostAbortedException: The host was aborted.
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.ThrowHostAborted()
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.OnNext(KeyValuePair`2 value)
+   at System.Diagnostics.DiagnosticListener.Write(String name, Object value)
+   at Microsoft.Extensions.Hosting.HostBuilder.ResolveHost(IServiceProvider serviceProvider, DiagnosticListener diagnosticListener)
+   at Microsoft.Extensions.Hosting.HostApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build()
+   at Program.<Main>$(String[] args) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Program.cs:line 132
+2026-02-12 22:47:26.827 +07:00 [FTL] Application terminated unexpectedly
+Microsoft.Extensions.Hosting.HostAbortedException: The host was aborted.
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.ThrowHostAborted()
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.OnNext(KeyValuePair`2 value)
+   at System.Diagnostics.DiagnosticListener.Write(String name, Object value)
+   at Microsoft.Extensions.Hosting.HostBuilder.ResolveHost(IServiceProvider serviceProvider, DiagnosticListener diagnosticListener)
+   at Microsoft.Extensions.Hosting.HostApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build()
+   at Program.<Main>$(String[] args) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Program.cs:line 132
+2026-02-12 22:49:00.977 +07:00 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Users" AS u)
+2026-02-12 22:49:01.445 +07:00 [INF] Executed DbCommand (7ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?', @p3='?', @p4='?' (DbType = DateTime), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?', @p9='?', @p10='?', @p11='?', @p12='?' (DbType = DateTime), @p13='?' (DbType = Guid), @p14='?', @p15='?', @p16='?', @p17='?' (DbType = DateTime), @p18='?', @p19='?', @p20='?' (DbType = Boolean), @p21='?', @p22='?', @p23='?', @p24='?', @p25='?' (DbType = DateTime), @p26='?' (DbType = Guid), @p27='?', @p28='?', @p29='?', @p30='?' (DbType = DateTime), @p31='?', @p32='?', @p33='?', @p34='?', @p35='?', @p36='?', @p37='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Users" ("Id", "AvatarUrl", "Bio", "CoverUrl", "CreatedAt", "Email", "FirstName", "IsOnline", "LastName", "Location", "PasswordHash", "Status", "UpdatedAt")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12)
+RETURNING "IsDeleted";
+INSERT INTO "Users" ("Id", "AvatarUrl", "Bio", "CoverUrl", "CreatedAt", "Email", "FirstName", "IsOnline", "LastName", "Location", "PasswordHash", "Status", "UpdatedAt")
+VALUES (@p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25)
+RETURNING "IsDeleted";
+INSERT INTO "Users" ("Id", "AvatarUrl", "Bio", "CoverUrl", "CreatedAt", "Email", "FirstName", "LastName", "Location", "PasswordHash", "Status", "UpdatedAt")
+VALUES (@p26, @p27, @p28, @p29, @p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37)
+RETURNING "IsDeleted", "IsOnline";
+2026-02-12 22:49:01.458 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Posts" AS p)
+2026-02-12 22:49:01.477 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+2026-02-12 22:49:01.509 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?' (DbType = DateTime), @p3='?' (DbType = Guid), @p4='?' (DbType = Int32), @p5='?' (DbType = Int32), @p6='?' (DbType = Guid), @p7='?' (DbType = DateTime), @p8='?' (DbType = Guid), @p9='?' (DbType = Guid), @p10='?', @p11='?' (DbType = DateTime), @p12='?' (DbType = Guid), @p13='?' (DbType = Int32), @p14='?' (DbType = Int32), @p15='?' (DbType = Guid), @p16='?' (DbType = DateTime), @p17='?' (DbType = Guid), @p18='?' (DbType = Guid), @p19='?', @p20='?' (DbType = DateTime), @p21='?' (DbType = Guid), @p22='?' (DbType = Int32), @p23='?' (DbType = Int32), @p24='?' (DbType = Guid), @p25='?' (DbType = DateTime), @p26='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Posts" ("Id", "Content", "CreatedAt", "GroupId", "PostType", "Privacy", "SharedPostId", "UpdatedAt", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)
+RETURNING "IsDeleted";
+INSERT INTO "Posts" ("Id", "Content", "CreatedAt", "GroupId", "PostType", "Privacy", "SharedPostId", "UpdatedAt", "UserId")
+VALUES (@p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17)
+RETURNING "IsDeleted";
+INSERT INTO "Posts" ("Id", "Content", "CreatedAt", "GroupId", "PostType", "Privacy", "SharedPostId", "UpdatedAt", "UserId")
+VALUES (@p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26)
+RETURNING "IsDeleted";
+2026-02-12 22:49:06.557 +07:00 [INF] Executed DbCommand (9ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Users" AS u)
+2026-02-12 22:49:06.598 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Posts" AS p)
+2026-02-12 22:49:22.901 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-12 22:49:22.952 +07:00 [INF] Now listening on: http://localhost:5286
+2026-02-12 22:49:22.953 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-02-12 22:49:22.954 +07:00 [INF] Hosting environment: Development
+2026-02-12 22:49:22.954 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-02-12 22:49:27.064 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-02-12 22:49:27.081 +07:00 [INF] [GET] /swagger/index.html
+2026-02-12 22:49:27.137 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 74.46ms
+2026-02-12 22:49:27.228 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-02-12 22:49:27.230 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-02-12 22:49:27.302 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 74.1115ms
+2026-02-12 22:49:48.143 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 46
+2026-02-12 22:49:48.148 +07:00 [INF] [POST] /api/v1/auth/login
+2026-02-12 22:49:48.151 +07:00 [INF] CORS policy execution failed.
+2026-02-12 22:49:48.152 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-02-12 22:49:48.199 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-02-12 22:49:48.213 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-02-12 22:49:49.264 +07:00 [INF] Executed DbCommand (38ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-02-12 22:49:49.284 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 1067.2545ms
+2026-02-12 22:49:49.285 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-02-12 22:49:49.287 +07:00 [WRN] Invalid credentials
+FacebookClone.Application.Common.Exceptions.AppException: Invalid credentials
+   at FacebookClone.API.Services.AuthService.LoginAsync(LoginRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Services\AuthService.cs:line 29
+   at FacebookClone.API.Controllers.AuthController.Login(LoginRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Controllers\AuthController.cs:line 34
+   at lambda_method6(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at FacebookClone.API.Middlewares.ExceptionMiddleware.Invoke(HttpContext context) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Middlewares\ExceptionMiddleware.cs:line 20
+2026-02-12 22:49:49.315 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 401 null application/json 1172.7687ms
+2026-02-12 22:50:48.663 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 58
+2026-02-12 22:50:48.667 +07:00 [INF] [POST] /api/v1/auth/login
+2026-02-12 22:50:48.668 +07:00 [INF] CORS policy execution failed.
+2026-02-12 22:50:48.669 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-02-12 22:50:48.670 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-02-12 22:50:48.671 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-02-12 22:50:48.724 +07:00 [INF] Executed DbCommand (4ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-02-12 22:50:49.194 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-02-12 22:50:49.219 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-02-12 22:50:49.225 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 551.5776ms
+2026-02-12 22:50:49.226 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-02-12 22:50:49.227 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 563.5148ms
+2026-02-12 22:51:13.713 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/users/me - null null
+2026-02-12 22:51:13.716 +07:00 [INF] [GET] /api/v1/users/me
+2026-02-12 22:51:13.752 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API)'
+2026-02-12 22:51:13.757 +07:00 [INF] Route matched with {action = "GetMyProfile", controller = "Users"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller FacebookClone.API.Controllers.UsersController (FacebookClone.API).
+2026-02-12 22:51:13.850 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Id" = @__p_0
+LIMIT 1
+2026-02-12 22:51:13.857 +07:00 [INF] Executing OkObjectResult, writing value of type 'FacebookClone.Application.DTOs.User.UserProfileDto'.
+2026-02-12 22:51:13.870 +07:00 [INF] Executed action FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API) in 111.3101ms
+2026-02-12 22:51:13.871 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API)'
+2026-02-12 22:51:13.872 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/users/me - 200 null application/json; charset=utf-8 158.1399ms
+2026-02-12 22:51:33.804 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/users/me - null null
+2026-02-12 22:51:33.808 +07:00 [INF] [GET] /api/v1/users/me
+2026-02-12 22:51:33.810 +07:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-02-12 22:51:33.814 +07:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-02-12 22:51:33.814 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/users/me - 401 0 null 9.9268ms
+2026-02-12 22:53:12.108 +07:00 [INF] Application is shutting down...

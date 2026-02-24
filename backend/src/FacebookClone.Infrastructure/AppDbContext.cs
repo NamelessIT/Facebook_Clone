@@ -11,6 +11,8 @@ public class AppDbContext : DbContext
     // 🔥 DbSet
     public DbSet<User> Users => Set<User>();
     public DbSet<Post> Posts => Set<Post>();
+    public DbSet<Reaction> Reactions { get; set; }
+    public DbSet<Comment> Comments { get; set; }
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 

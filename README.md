@@ -102,6 +102,9 @@ POST /api/v1/auth/logout
 4. Lưu token trong memory
 5. Tự refresh khi token hết hạn
 
+test user:
+alice@fbclone.com
+123456
 ---
 
 ### 👤 User Profile

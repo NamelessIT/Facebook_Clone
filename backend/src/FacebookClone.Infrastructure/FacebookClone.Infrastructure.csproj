@@ -8,6 +8,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    
     <ProjectReference Include="..\FacebookClone.Application\FacebookClone.Application.csproj" />
   </ItemGroup>
 </Project>

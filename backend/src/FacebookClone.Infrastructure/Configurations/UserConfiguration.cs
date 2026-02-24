@@ -16,7 +16,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(x => x.Email).IsRequired().HasMaxLength(255);
         builder.Property(x => x.PasswordHash).IsRequired();
-        builder.Property(x => x.FullName).IsRequired().HasMaxLength(255);
+        // Cấu hình FirstName, LastName mới (nếu muốn kỹ hơn)
+        builder.Property(x => x.FirstName).HasMaxLength(50);
+        builder.Property(x => x.LastName).HasMaxLength(50);
+        builder.Property(x => x.Location).HasMaxLength(100);
+
+        builder.Ignore(x => x.FullName);
 
         builder.Property(x => x.IsDeleted).HasDefaultValue(false);
         builder.Property(x => x.IsOnline).HasDefaultValue(false);
