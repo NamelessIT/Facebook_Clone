@@ -147,3 +147,4 @@ C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\obj\Debug\net9.0
 C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\obj\Debug\net9.0\FacebookClone.API.pdb
 C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\obj\Debug\net9.0\FacebookClone.API.genruntimeconfig.cache
 C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\obj\Debug\net9.0\ref\FacebookClone.API.dll
+C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\bin\Debug\net9.0\FacebookClone.API.staticwebassets.runtime.json

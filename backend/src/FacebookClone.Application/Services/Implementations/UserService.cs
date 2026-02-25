@@ -43,4 +43,17 @@ public class UserService : IUserService
 
         return _mapper.Map<UserProfileDto>(user);
     }
+    public async Task<string> UpdateAvatarAsync(Guid userId, string avatarUrl)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) 
+            throw new Exception("Không tìm thấy người dùng.");
+
+        user.AvatarUrl = avatarUrl;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _userRepository.UpdateAsync(user);
+
+        return user.AvatarUrl;
+    }
 }

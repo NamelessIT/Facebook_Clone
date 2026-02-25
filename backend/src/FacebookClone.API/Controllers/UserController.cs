@@ -49,4 +49,26 @@ public class UsersController : ControllerBase
          var profile = await _userService.GetProfileAsync(id);
          return Ok(profile);
     }
+
+    [HttpPut("me/avatar")]
+    public async Task<IActionResult> UpdateAvatar([FromBody] UpdateAvatarRequest request)
+    {
+        try
+        {
+            // 👇 GỌI TRỰC TIẾP HÀM HELPER, KHÔNG CÓ CHỮ "User." Ở TRƯỚC
+            var userId = GetCurrentUserId(); 
+            
+            var newAvatarUrl = await _userService.UpdateAvatarAsync(userId, request.AvatarUrl);
+            return Ok(new { success = true, data = newAvatarUrl, message = "Cập nhật ảnh đại diện thành công!" });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // Bắt lỗi nếu GetCurrentUserId() quăng ra Invalid Token
+            return Unauthorized(new { success = false, message = "Token không hợp lệ" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
+    }
 }

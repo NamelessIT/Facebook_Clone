@@ -403,7 +403,10 @@
         },
         "runtime": {
           "bin/placeholder/FacebookClone.Application.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       },
       "FacebookClone.Domain/1.0.0": {
         "type": "project",

@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<Post> Posts => Set<Post>();
     public DbSet<Reaction> Reactions { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<Friendship> Friendships { get; set; }
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 

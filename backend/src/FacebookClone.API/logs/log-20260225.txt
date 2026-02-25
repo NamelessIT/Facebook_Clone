@@ -1,0 +1,188 @@
+2026-02-25 17:04:35.974 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-25 17:04:36.069 +07:00 [WRN] The WebRootPath was not found: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\wwwroot. Static files may be unavailable.
+2026-02-25 17:04:36.090 +07:00 [INF] Now listening on: http://localhost:5286
+2026-02-25 17:04:36.091 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-02-25 17:04:36.092 +07:00 [INF] Hosting environment: Development
+2026-02-25 17:04:36.093 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-02-25 17:04:42.488 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-02-25 17:04:42.507 +07:00 [INF] [GET] /swagger/index.html
+2026-02-25 17:04:42.568 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 82.0347ms
+2026-02-25 17:04:42.664 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-02-25 17:04:42.666 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-02-25 17:04:42.746 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 82.1602ms
+2026-02-25 17:05:11.072 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 58
+2026-02-25 17:05:11.079 +07:00 [INF] [POST] /api/v1/auth/login
+2026-02-25 17:05:11.083 +07:00 [INF] CORS policy execution failed.
+2026-02-25 17:05:11.084 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-02-25 17:05:11.115 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-02-25 17:05:11.146 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-02-25 17:05:12.571 +07:00 [INF] Executed DbCommand (26ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-02-25 17:05:12.996 +07:00 [INF] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-02-25 17:05:13.010 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-02-25 17:05:13.016 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 1865.7063ms
+2026-02-25 17:05:13.017 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-02-25 17:05:13.023 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 1951.0759ms
+2026-02-25 17:05:50.140 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-image - multipart/form-data; boundary=----WebKitFormBoundaryxgKPd4jgvelBlE3v 76764
+2026-02-25 17:05:50.143 +07:00 [INF] [POST] /api/v1/Media/upload-image
+2026-02-25 17:05:50.144 +07:00 [INF] CORS policy execution failed.
+2026-02-25 17:05:50.145 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-02-25 17:05:50.209 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.UploadImage (FacebookClone.API)'
+2026-02-25 17:05:50.216 +07:00 [INF] Route matched with {action = "UploadImage", controller = "Media"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UploadImage(Microsoft.AspNetCore.Http.IFormFile) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-02-25 17:05:50.254 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`3[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-02-25 17:05:50.260 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.UploadImage (FacebookClone.API) in 31.8007ms
+2026-02-25 17:05:50.263 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.UploadImage (FacebookClone.API)'
+2026-02-25 17:05:50.265 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-image - 200 null application/json; charset=utf-8 125.6839ms
+2026-02-25 17:17:51.822 +07:00 [INF] Application is shutting down...
+2026-02-25 17:17:58.016 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-25 17:17:58.065 +07:00 [INF] Now listening on: http://localhost:5286
+2026-02-25 17:17:58.066 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-02-25 17:17:58.066 +07:00 [INF] Hosting environment: Development
+2026-02-25 17:17:58.067 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-02-25 17:18:01.916 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-02-25 17:18:01.945 +07:00 [INF] [GET] /swagger/index.html
+2026-02-25 17:18:02.017 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 101.6802ms
+2026-02-25 17:18:02.111 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-02-25 17:18:02.113 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-02-25 17:18:02.192 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 80.9893ms
+2026-02-25 17:32:33.947 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-02-25 17:32:33.950 +07:00 [INF] [GET] /swagger/index.html
+2026-02-25 17:32:33.952 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 4.434ms
+2026-02-25 17:32:33.995 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-02-25 17:32:33.997 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-02-25 17:32:34.008 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 13.483ms
+2026-02-25 17:32:51.583 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 58
+2026-02-25 17:32:51.589 +07:00 [INF] [POST] /api/v1/auth/login
+2026-02-25 17:32:51.592 +07:00 [INF] CORS policy execution failed.
+2026-02-25 17:32:51.593 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-02-25 17:32:51.613 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-02-25 17:32:51.628 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-02-25 17:32:52.546 +07:00 [INF] Executed DbCommand (45ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-02-25 17:32:53.039 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-02-25 17:32:53.063 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-02-25 17:32:53.069 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 1437.9682ms
+2026-02-25 17:32:53.076 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-02-25 17:32:53.085 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 1501.4326ms
+2026-02-25 17:33:20.316 +07:00 [INF] Request starting HTTP/1.1 PUT http://localhost:5286/api/v1/users/me/avatar - application/json 78
+2026-02-25 17:33:20.321 +07:00 [INF] [PUT] /api/v1/users/me/avatar
+2026-02-25 17:33:20.322 +07:00 [INF] CORS policy execution failed.
+2026-02-25 17:33:20.323 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-02-25 17:33:20.354 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.UsersController.UpdateAvatar (FacebookClone.API)'
+2026-02-25 17:33:20.358 +07:00 [INF] Route matched with {action = "UpdateAvatar", controller = "Users"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UpdateAvatar(FacebookClone.Application.DTOs.User.UpdateAvatarRequest) on controller FacebookClone.API.Controllers.UsersController (FacebookClone.API).
+2026-02-25 17:33:20.486 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Id" = @__p_0
+LIMIT 1
+2026-02-25 17:33:20.501 +07:00 [INF] Executed DbCommand (4ms) [Parameters=[@p13='?' (DbType = Guid), @p0='?', @p1='?', @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?', @p6='?' (DbType = Boolean), @p7='?' (DbType = Boolean), @p8='?', @p9='?', @p10='?', @p11='?', @p12='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Users" SET "AvatarUrl" = @p0, "Bio" = @p1, "CoverUrl" = @p2, "CreatedAt" = @p3, "Email" = @p4, "FirstName" = @p5, "IsDeleted" = @p6, "IsOnline" = @p7, "LastName" = @p8, "Location" = @p9, "PasswordHash" = @p10, "Status" = @p11, "UpdatedAt" = @p12
+WHERE "Id" = @p13;
+2026-02-25 17:33:20.518 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType3`3[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-02-25 17:33:20.536 +07:00 [INF] Executed action FacebookClone.API.Controllers.UsersController.UpdateAvatar (FacebookClone.API) in 175.5984ms
+2026-02-25 17:33:20.538 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.UsersController.UpdateAvatar (FacebookClone.API)'
+2026-02-25 17:33:20.542 +07:00 [INF] Request finished HTTP/1.1 PUT http://localhost:5286/api/v1/users/me/avatar - 200 null application/json; charset=utf-8 226.0687ms
+2026-02-25 17:33:28.668 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/users/me - null null
+2026-02-25 17:33:28.670 +07:00 [INF] [GET] /api/v1/users/me
+2026-02-25 17:33:28.674 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API)'
+2026-02-25 17:33:28.677 +07:00 [INF] Route matched with {action = "GetMyProfile", controller = "Users"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller FacebookClone.API.Controllers.UsersController (FacebookClone.API).
+2026-02-25 17:33:28.693 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Id" = @__p_0
+LIMIT 1
+2026-02-25 17:33:28.699 +07:00 [INF] Executing OkObjectResult, writing value of type 'FacebookClone.Application.DTOs.User.UserProfileDto'.
+2026-02-25 17:33:28.706 +07:00 [INF] Executed action FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API) in 26.9135ms
+2026-02-25 17:33:28.706 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API)'
+2026-02-25 17:33:28.707 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/users/me - 200 null application/json; charset=utf-8 38.7531ms
+2026-02-25 19:47:57.722 +07:00 [INF] Application is shutting down...
+2026-02-25 19:55:46.680 +07:00 [FTL] Application terminated unexpectedly
+Microsoft.Extensions.Hosting.HostAbortedException: The host was aborted.
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.ThrowHostAborted()
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.OnNext(KeyValuePair`2 value)
+   at System.Diagnostics.DiagnosticListener.Write(String name, Object value)
+   at Microsoft.Extensions.Hosting.HostBuilder.ResolveHost(IServiceProvider serviceProvider, DiagnosticListener diagnosticListener)
+   at Microsoft.Extensions.Hosting.HostApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build()
+   at Program.<Main>$(String[] args) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Program.cs:line 140
+2026-02-25 19:56:00.996 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-02-25 19:56:01.045 +07:00 [INF] Now listening on: http://localhost:5286
+2026-02-25 19:56:01.047 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-02-25 19:56:01.047 +07:00 [INF] Hosting environment: Development
+2026-02-25 19:56:01.048 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-02-25 19:56:15.969 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-02-25 19:56:15.980 +07:00 [INF] [GET] /swagger/index.html
+2026-02-25 19:56:16.008 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 38.9041ms
+2026-02-25 19:56:16.102 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-02-25 19:56:16.104 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-02-25 19:56:16.202 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 100.0616ms
+2026-02-25 19:57:56.395 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 58
+2026-02-25 19:57:56.399 +07:00 [INF] [POST] /api/v1/auth/login
+2026-02-25 19:57:56.408 +07:00 [INF] CORS policy execution failed.
+2026-02-25 19:57:56.410 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-02-25 19:57:56.429 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-02-25 19:57:56.444 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-02-25 19:57:57.355 +07:00 [INF] Executed DbCommand (34ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-02-25 19:57:57.863 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-02-25 19:57:57.899 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-02-25 19:57:57.911 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 1460.8912ms
+2026-02-25 19:57:57.916 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-02-25 19:57:57.930 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 1535.5053ms
+2026-02-25 19:58:19.133 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-image - multipart/form-data; boundary=----WebKitFormBoundary8WleD6xViVdBssDv 284235
+2026-02-25 19:58:19.138 +07:00 [INF] [POST] /api/v1/Media/upload-image
+2026-02-25 19:58:19.139 +07:00 [INF] CORS policy execution failed.
+2026-02-25 19:58:19.141 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-02-25 19:58:19.172 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.UploadImage (FacebookClone.API)'
+2026-02-25 19:58:19.176 +07:00 [INF] Route matched with {action = "UploadImage", controller = "Media"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UploadImage(Microsoft.AspNetCore.Http.IFormFile) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-02-25 19:58:19.201 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType2`3[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-02-25 19:58:19.207 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.UploadImage (FacebookClone.API) in 28.5758ms
+2026-02-25 19:58:19.208 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.UploadImage (FacebookClone.API)'
+2026-02-25 19:58:19.210 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-image - 200 null application/json; charset=utf-8 76.5141ms
+2026-02-25 19:58:39.389 +07:00 [INF] Request starting HTTP/1.1 PUT http://localhost:5286/api/v1/users/me/avatar - application/json 61
+2026-02-25 19:58:39.391 +07:00 [INF] [PUT] /api/v1/users/me/avatar
+2026-02-25 19:58:39.391 +07:00 [INF] CORS policy execution failed.
+2026-02-25 19:58:39.392 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-02-25 19:58:39.394 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.UsersController.UpdateAvatar (FacebookClone.API)'
+2026-02-25 19:58:39.396 +07:00 [INF] Route matched with {action = "UpdateAvatar", controller = "Users"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UpdateAvatar(FacebookClone.Application.DTOs.User.UpdateAvatarRequest) on controller FacebookClone.API.Controllers.UsersController (FacebookClone.API).
+2026-02-25 19:58:39.514 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Id" = @__p_0
+LIMIT 1
+2026-02-25 19:58:39.522 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[@p13='?' (DbType = Guid), @p0='?', @p1='?', @p2='?', @p3='?' (DbType = DateTime), @p4='?', @p5='?', @p6='?' (DbType = Boolean), @p7='?' (DbType = Boolean), @p8='?', @p9='?', @p10='?', @p11='?', @p12='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+UPDATE "Users" SET "AvatarUrl" = @p0, "Bio" = @p1, "CoverUrl" = @p2, "CreatedAt" = @p3, "Email" = @p4, "FirstName" = @p5, "IsDeleted" = @p6, "IsOnline" = @p7, "LastName" = @p8, "Location" = @p9, "PasswordHash" = @p10, "Status" = @p11, "UpdatedAt" = @p12
+WHERE "Id" = @p13;
+2026-02-25 19:58:39.525 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType3`3[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-02-25 19:58:39.528 +07:00 [INF] Executed action FacebookClone.API.Controllers.UsersController.UpdateAvatar (FacebookClone.API) in 129.468ms
+2026-02-25 19:58:39.529 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.UsersController.UpdateAvatar (FacebookClone.API)'
+2026-02-25 19:58:39.530 +07:00 [INF] Request finished HTTP/1.1 PUT http://localhost:5286/api/v1/users/me/avatar - 200 null application/json; charset=utf-8 140.2072ms
+2026-02-25 19:58:53.533 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/users/me - null null
+2026-02-25 19:58:53.537 +07:00 [INF] [GET] /api/v1/users/me
+2026-02-25 19:58:53.540 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API)'
+2026-02-25 19:58:53.543 +07:00 [INF] Route matched with {action = "GetMyProfile", controller = "Users"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller FacebookClone.API.Controllers.UsersController (FacebookClone.API).
+2026-02-25 19:58:53.558 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Id" = @__p_0
+LIMIT 1
+2026-02-25 19:58:53.562 +07:00 [INF] Executing OkObjectResult, writing value of type 'FacebookClone.Application.DTOs.User.UserProfileDto'.
+2026-02-25 19:58:53.565 +07:00 [INF] Executed action FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API) in 20.4565ms
+2026-02-25 19:58:53.567 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API)'
+2026-02-25 19:58:53.568 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/users/me - 200 null application/json; charset=utf-8 34.4268ms
+2026-02-25 20:06:19.909 +07:00 [INF] Application is shutting down...

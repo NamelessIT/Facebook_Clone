@@ -81,6 +81,9 @@ try
     builder.Services.AddScoped<IPostService, PostService>();
     builder.Services.AddScoped<IInteractionRepository, InteractionRepository>();
     builder.Services.AddScoped<IInteractionService, InteractionService>();
+    builder.Services.AddScoped<IFileService, FileService>();
+    builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
+    builder.Services.AddScoped<IFriendshipService, FriendshipService>();
 
     // ---------------------------------------------------------
     // 5. SWAGGER (Swashbuckle) & CORS
@@ -158,6 +161,11 @@ try
         await SeedRunner.RunAsync(dbContext);
         return; 
     }
+
+    // app.UseHttpsRedirection(); //khi deploy lên production sẽ bật lại, còn dev thì tạm thời để yên (đỡ phải cấu hình SSL cho localhost)
+
+// load image,file tĩnh từ wwwroot (nếu có) - Cấu hình này phải đặt trước UseAuthentication nếu có liên quan đến file tĩnh
+    app.UseStaticFiles();
 
     // Kích hoạt CORS (Đặt trước Auth)
     app.UseCors("AllowReactApp");
