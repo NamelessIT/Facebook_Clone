@@ -1,0 +1,620 @@
+2026-03-02 20:06:01.168 +07:00 [FTL] Application terminated unexpectedly
+Microsoft.Extensions.Hosting.HostAbortedException: The host was aborted.
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.ThrowHostAborted()
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.OnNext(KeyValuePair`2 value)
+   at System.Diagnostics.DiagnosticListener.Write(String name, Object value)
+   at Microsoft.Extensions.Hosting.HostBuilder.ResolveHost(IServiceProvider serviceProvider, DiagnosticListener diagnosticListener)
+   at Microsoft.Extensions.Hosting.HostApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build()
+   at Program.<Main>$(String[] args) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Program.cs:line 142
+2026-03-02 20:31:12.647 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-02 20:31:12.733 +07:00 [INF] Now listening on: http://localhost:5286
+2026-03-02 20:31:12.735 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-02 20:31:12.735 +07:00 [INF] Hosting environment: Development
+2026-03-02 20:31:12.735 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-03-02 20:31:18.192 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-02 20:31:18.210 +07:00 [INF] [GET] /swagger/index.html
+2026-03-02 20:31:18.264 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 73.9588ms
+2026-03-02 20:31:18.270 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui-standalone-preset.js - null null
+2026-03-02 20:31:18.270 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui-bundle.js - null null
+2026-03-02 20:31:18.280 +07:00 [INF] [GET] /swagger/swagger-ui-standalone-preset.js
+2026-03-02 20:31:18.280 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui.css - null null
+2026-03-02 20:31:18.286 +07:00 [INF] [GET] /swagger/swagger-ui.css
+2026-03-02 20:31:18.282 +07:00 [INF] [GET] /swagger/swagger-ui-bundle.js
+2026-03-02 20:31:18.303 +07:00 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2026-03-02 20:31:18.303 +07:00 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2026-03-02 20:31:18.305 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui-standalone-preset.js - 200 230280 text/javascript 34.8825ms
+2026-03-02 20:31:18.305 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui.css - 200 152034 text/css 25.4336ms
+2026-03-02 20:31:18.316 +07:00 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2026-03-02 20:31:18.317 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui-bundle.js - 200 1456926 text/javascript 46.8392ms
+2026-03-02 20:31:18.387 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-02 20:31:18.389 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-02 20:31:18.477 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 90.0109ms
+2026-03-02 20:31:40.234 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 57
+2026-03-02 20:31:40.240 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-02 20:31:40.242 +07:00 [INF] CORS policy execution failed.
+2026-03-02 20:31:40.244 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 20:31:40.279 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-02 20:31:40.293 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 20:31:41.291 +07:00 [INF] Executed DbCommand (44ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-02 20:31:41.626 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 1329.0191ms
+2026-03-02 20:31:41.628 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-02 20:31:41.630 +07:00 [WRN] Invalid credentials
+FacebookClone.Application.Common.Exceptions.AppException: Invalid credentials
+   at FacebookClone.API.Services.AuthService.LoginAsync(LoginRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Services\AuthService.cs:line 29
+   at FacebookClone.API.Controllers.AuthController.Login(LoginRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Controllers\AuthController.cs:line 34
+   at lambda_method6(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at FacebookClone.API.Middlewares.ExceptionMiddleware.Invoke(HttpContext context) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Middlewares\ExceptionMiddleware.cs:line 20
+2026-03-02 20:31:41.667 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 401 null application/json 1433.4906ms
+2026-03-02 20:31:48.460 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 58
+2026-03-02 20:31:48.465 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-02 20:31:48.466 +07:00 [INF] CORS policy execution failed.
+2026-03-02 20:31:48.466 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 20:31:48.468 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-02 20:31:48.469 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 20:31:48.525 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-02 20:31:48.790 +07:00 [INF] Executed DbCommand (6ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-02 20:31:48.812 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-02 20:31:48.817 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 346.646ms
+2026-03-02 20:31:48.822 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-02 20:31:48.824 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 363.8051ms
+2026-03-02 20:32:21.434 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Posts?pageNumber=1&pageSize=10 - null null
+2026-03-02 20:32:21.437 +07:00 [INF] [GET] /api/v1/Posts
+2026-03-02 20:32:21.468 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API)'
+2026-03-02 20:32:21.473 +07:00 [INF] Route matched with {action = "GetNewsFeed", controller = "Posts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetNewsFeed(Int32, Int32) on controller FacebookClone.API.Controllers.PostsController (FacebookClone.API).
+2026-03-02 20:32:21.624 +07:00 [WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+2026-03-02 20:32:21.643 +07:00 [INF] Executed DbCommand (7ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT p0."Id", p0."Content", p0."CreatedAt", p0."GroupId", p0."IsDeleted", p0."PostType", p0."Privacy", p0."SharedPostId", p0."UpdatedAt", p0."UserId", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt", r."Id", r."CreatedAt", r."PostId", r."ReactionType", r."UserId", c."Id", c."Content", c."CreatedAt", c."IsDeleted", c."ParentCommentId", c."PostId", c."UserId"
+FROM (
+    SELECT p."Id", p."Content", p."CreatedAt", p."GroupId", p."IsDeleted", p."PostType", p."Privacy", p."SharedPostId", p."UpdatedAt", p."UserId"
+    FROM "Posts" AS p
+    WHERE NOT (p."IsDeleted")
+    ORDER BY p."CreatedAt" DESC
+    LIMIT @__p_1 OFFSET @__p_0
+) AS p0
+INNER JOIN "Users" AS u ON p0."UserId" = u."Id"
+LEFT JOIN "Reactions" AS r ON p0."Id" = r."PostId"
+LEFT JOIN "Comments" AS c ON p0."Id" = c."PostId"
+ORDER BY p0."CreatedAt" DESC, p0."Id", u."Id", r."Id"
+2026-03-02 20:32:21.669 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Post.PostResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 20:32:21.684 +07:00 [INF] Executed action FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API) in 209.8468ms
+2026-03-02 20:32:21.685 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API)'
+2026-03-02 20:32:21.686 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Posts?pageNumber=1&pageSize=10 - 200 null application/json; charset=utf-8 251.81ms
+2026-03-02 20:32:53.891 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Posts/0a996ef3-57ae-4f21-b4d5-c67b1544c5ba/reactions - application/json 23
+2026-03-02 20:32:53.893 +07:00 [INF] [POST] /api/v1/Posts/0a996ef3-57ae-4f21-b4d5-c67b1544c5ba/reactions
+2026-03-02 20:32:53.894 +07:00 [INF] CORS policy execution failed.
+2026-03-02 20:32:53.895 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 20:32:53.897 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.PostsController.ToggleReaction (FacebookClone.API)'
+2026-03-02 20:32:53.900 +07:00 [INF] Route matched with {action = "ToggleReaction", controller = "Posts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ToggleReaction(System.Guid, FacebookClone.Application.DTOs.Interaction.ReactionRequest) on controller FacebookClone.API.Controllers.PostsController (FacebookClone.API).
+2026-03-02 20:32:53.909 +07:00 [WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+2026-03-02 20:32:53.934 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__id_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Id", s."Content", s."CreatedAt", s."GroupId", s."IsDeleted", s."PostType", s."Privacy", s."SharedPostId", s."UpdatedAt", s."UserId", s."Id0", s."AvatarUrl", s."Bio", s."CoverUrl", s."CreatedAt0", s."Email", s."FirstName", s."IsDeleted0", s."IsOnline", s."LastName", s."Location", s."PasswordHash", s."Status", s."UpdatedAt0", r."Id", r."CreatedAt", r."PostId", r."ReactionType", r."UserId", c."Id", c."Content", c."CreatedAt", c."IsDeleted", c."ParentCommentId", c."PostId", c."UserId"
+FROM (
+    SELECT p."Id", p."Content", p."CreatedAt", p."GroupId", p."IsDeleted", p."PostType", p."Privacy", p."SharedPostId", p."UpdatedAt", p."UserId", u."Id" AS "Id0", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt" AS "CreatedAt0", u."Email", u."FirstName", u."IsDeleted" AS "IsDeleted0", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt" AS "UpdatedAt0"
+    FROM "Posts" AS p
+    INNER JOIN "Users" AS u ON p."UserId" = u."Id"
+    WHERE p."Id" = @__id_0 AND NOT (p."IsDeleted")
+    LIMIT 1
+) AS s
+LEFT JOIN "Reactions" AS r ON s."Id" = r."PostId"
+LEFT JOIN "Comments" AS c ON s."Id" = c."PostId"
+ORDER BY s."Id", s."Id0", r."Id"
+2026-03-02 20:32:53.954 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__userId_0='?' (DbType = Guid), @__postId_1='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."CreatedAt", r."PostId", r."ReactionType", r."UserId"
+FROM "Reactions" AS r
+WHERE r."UserId" = @__userId_0 AND r."PostId" = @__postId_1
+LIMIT 1
+2026-03-02 20:32:53.983 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = Guid), @p3='?' (DbType = Int32), @p4='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Reactions" ("Id", "CreatedAt", "PostId", "ReactionType", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4);
+2026-03-02 20:32:53.985 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 20:32:53.987 +07:00 [INF] Executed action FacebookClone.API.Controllers.PostsController.ToggleReaction (FacebookClone.API) in 85.4772ms
+2026-03-02 20:32:53.987 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.PostsController.ToggleReaction (FacebookClone.API)'
+2026-03-02 20:32:53.988 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Posts/0a996ef3-57ae-4f21-b4d5-c67b1544c5ba/reactions - 200 null application/json; charset=utf-8 97.2116ms
+2026-03-02 20:33:06.499 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Notifications?pageNumber=1&pageSize=10 - null null
+2026-03-02 20:33:06.504 +07:00 [INF] [GET] /api/v1/Notifications
+2026-03-02 20:33:06.506 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.NotificationsController.GetMyNotifications (FacebookClone.API)'
+2026-03-02 20:33:06.510 +07:00 [INF] Route matched with {action = "GetMyNotifications", controller = "Notifications"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyNotifications(Int32, Int32) on controller FacebookClone.API.Controllers.NotificationsController (FacebookClone.API).
+2026-03-02 20:33:06.523 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@__userId_0='?' (DbType = Guid), @__p_2='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT n0."Id", n0."ActorId", n0."CreatedAt", n0."IsRead", n0."ReferenceId", n0."Type", n0."UserId", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM (
+    SELECT n."Id", n."ActorId", n."CreatedAt", n."IsRead", n."ReferenceId", n."Type", n."UserId"
+    FROM "Notifications" AS n
+    WHERE n."UserId" = @__userId_0
+    ORDER BY n."CreatedAt" DESC
+    LIMIT @__p_2 OFFSET @__p_1
+) AS n0
+INNER JOIN "Users" AS u ON n0."ActorId" = u."Id"
+ORDER BY n0."CreatedAt" DESC
+2026-03-02 20:33:06.526 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Notification.NotificationResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 20:33:06.531 +07:00 [INF] Executed action FacebookClone.API.Controllers.NotificationsController.GetMyNotifications (FacebookClone.API) in 19.6631ms
+2026-03-02 20:33:06.532 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.NotificationsController.GetMyNotifications (FacebookClone.API)'
+2026-03-02 20:33:06.533 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Notifications?pageNumber=1&pageSize=10 - 200 null application/json; charset=utf-8 33.7024ms
+2026-03-02 20:33:51.007 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Posts?pageNumber=1&pageSize=10 - null null
+2026-03-02 20:33:51.011 +07:00 [INF] [GET] /api/v1/Posts
+2026-03-02 20:33:51.013 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API)'
+2026-03-02 20:33:51.014 +07:00 [INF] Route matched with {action = "GetNewsFeed", controller = "Posts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetNewsFeed(Int32, Int32) on controller FacebookClone.API.Controllers.PostsController (FacebookClone.API).
+2026-03-02 20:33:51.021 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT p0."Id", p0."Content", p0."CreatedAt", p0."GroupId", p0."IsDeleted", p0."PostType", p0."Privacy", p0."SharedPostId", p0."UpdatedAt", p0."UserId", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt", r."Id", r."CreatedAt", r."PostId", r."ReactionType", r."UserId", c."Id", c."Content", c."CreatedAt", c."IsDeleted", c."ParentCommentId", c."PostId", c."UserId"
+FROM (
+    SELECT p."Id", p."Content", p."CreatedAt", p."GroupId", p."IsDeleted", p."PostType", p."Privacy", p."SharedPostId", p."UpdatedAt", p."UserId"
+    FROM "Posts" AS p
+    WHERE NOT (p."IsDeleted")
+    ORDER BY p."CreatedAt" DESC
+    LIMIT @__p_1 OFFSET @__p_0
+) AS p0
+INNER JOIN "Users" AS u ON p0."UserId" = u."Id"
+LEFT JOIN "Reactions" AS r ON p0."Id" = r."PostId"
+LEFT JOIN "Comments" AS c ON p0."Id" = c."PostId"
+ORDER BY p0."CreatedAt" DESC, p0."Id", u."Id", r."Id"
+2026-03-02 20:33:51.024 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Post.PostResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 20:33:51.025 +07:00 [INF] Executed action FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API) in 9.1437ms
+2026-03-02 20:33:51.026 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API)'
+2026-03-02 20:33:51.027 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Posts?pageNumber=1&pageSize=10 - 200 null application/json; charset=utf-8 20.139ms
+2026-03-02 20:37:26.012 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/register - application/json 84
+2026-03-02 20:37:26.014 +07:00 [INF] [POST] /api/v1/auth/register
+2026-03-02 20:37:26.015 +07:00 [INF] CORS policy execution failed.
+2026-03-02 20:37:26.016 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 20:37:26.017 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API)'
+2026-03-02 20:37:26.021 +07:00 [INF] Route matched with {action = "Register", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Register(FacebookClone.Application.Auth.DTOs.RegisterRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 20:37:26.026 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API) in 3.508ms
+2026-03-02 20:37:26.027 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API)'
+2026-03-02 20:37:26.028 +07:00 [ERR] Unhandled exception
+System.NotImplementedException: The method or operation is not implemented.
+   at FacebookClone.API.Services.AuthService.RegisterAsync(RegisterRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Services\AuthService.cs:line 64
+   at FacebookClone.API.Controllers.AuthController.Register(RegisterRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Controllers\AuthController.cs:line 49
+   at lambda_method590(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at FacebookClone.API.Middlewares.ExceptionMiddleware.Invoke(HttpContext context) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Middlewares\ExceptionMiddleware.cs:line 20
+2026-03-02 20:37:26.044 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/register - 500 null application/json 32.5099ms
+2026-03-02 20:37:49.533 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Friendships/friends - null null
+2026-03-02 20:37:49.535 +07:00 [INF] [GET] /api/v1/Friendships/friends
+2026-03-02 20:37:49.538 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.FriendshipsController.GetMyFriends (FacebookClone.API)'
+2026-03-02 20:37:49.541 +07:00 [INF] Route matched with {action = "GetMyFriends", controller = "Friendships"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyFriends() on controller FacebookClone.API.Controllers.FriendshipsController (FacebookClone.API).
+2026-03-02 20:37:49.566 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[@__userId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT f."Id", f."CreatedAt", f."ReceiverId", f."RequesterId", f."Status", f."UpdatedAt", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt", u0."Id", u0."AvatarUrl", u0."Bio", u0."CoverUrl", u0."CreatedAt", u0."Email", u0."FirstName", u0."IsDeleted", u0."IsOnline", u0."LastName", u0."Location", u0."PasswordHash", u0."Status", u0."UpdatedAt"
+FROM "Friendships" AS f
+INNER JOIN "Users" AS u ON f."RequesterId" = u."Id"
+INNER JOIN "Users" AS u0 ON f."ReceiverId" = u0."Id"
+WHERE (f."RequesterId" = @__userId_0 OR f."ReceiverId" = @__userId_0) AND f."Status" = 2
+2026-03-02 20:37:49.569 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Friendship.FriendResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 20:37:49.574 +07:00 [INF] Executed action FacebookClone.API.Controllers.FriendshipsController.GetMyFriends (FacebookClone.API) in 31.4471ms
+2026-03-02 20:37:49.575 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.FriendshipsController.GetMyFriends (FacebookClone.API)'
+2026-03-02 20:37:49.576 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Friendships/friends - 200 null application/json; charset=utf-8 43.2122ms
+2026-03-02 20:38:04.908 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-02 20:38:04.911 +07:00 [INF] [GET] /swagger/index.html
+2026-03-02 20:38:04.912 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 3.8639ms
+2026-03-02 20:38:04.997 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-02 20:38:04.999 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-02 20:38:04.997 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/favicon-32x32.png - null null
+2026-03-02 20:38:05.002 +07:00 [INF] [GET] /swagger/favicon-32x32.png
+2026-03-02 20:38:05.003 +07:00 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2026-03-02 20:38:05.004 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/favicon-32x32.png - 200 628 image/png 7.1886ms
+2026-03-02 20:38:05.008 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 11.865ms
+2026-03-02 20:38:35.195 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/register - application/json 84
+2026-03-02 20:38:35.198 +07:00 [INF] [POST] /api/v1/auth/register
+2026-03-02 20:38:35.199 +07:00 [INF] CORS policy execution failed.
+2026-03-02 20:38:35.200 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 20:38:35.200 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API)'
+2026-03-02 20:38:35.202 +07:00 [INF] Route matched with {action = "Register", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Register(FacebookClone.Application.Auth.DTOs.RegisterRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 20:38:35.205 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API) in 0.6317ms
+2026-03-02 20:38:35.206 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API)'
+2026-03-02 20:38:35.207 +07:00 [ERR] Unhandled exception
+System.NotImplementedException: The method or operation is not implemented.
+   at FacebookClone.API.Services.AuthService.RegisterAsync(RegisterRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Services\AuthService.cs:line 64
+   at FacebookClone.API.Controllers.AuthController.Register(RegisterRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Controllers\AuthController.cs:line 49
+   at lambda_method590(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at FacebookClone.API.Middlewares.ExceptionMiddleware.Invoke(HttpContext context) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Middlewares\ExceptionMiddleware.cs:line 20
+2026-03-02 20:38:35.212 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/register - 500 null application/json 17.1287ms
+2026-03-02 20:58:09.997 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/register - application/json 102
+2026-03-02 20:58:09.999 +07:00 [INF] [POST] /api/v1/auth/register
+2026-03-02 20:58:10.001 +07:00 [INF] CORS policy execution failed.
+2026-03-02 20:58:10.002 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 20:58:10.004 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API)'
+2026-03-02 20:58:10.004 +07:00 [INF] Route matched with {action = "Register", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Register(FacebookClone.Application.Auth.DTOs.RegisterRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 20:58:10.007 +07:00 [INF] Executing BadRequestObjectResult, writing value of type 'Microsoft.AspNetCore.Mvc.ValidationProblemDetails'.
+2026-03-02 20:58:10.019 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API) in 12.7057ms
+2026-03-02 20:58:10.020 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API)'
+2026-03-02 20:58:10.021 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/register - 400 null application/problem+json; charset=utf-8 23.9183ms
+2026-03-02 20:59:05.858 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/auth/register - null null
+2026-03-02 20:59:05.860 +07:00 [INF] [GET] /api/v1/auth/register
+2026-03-02 20:59:05.860 +07:00 [INF] Executing endpoint '405 HTTP Method Not Supported'
+2026-03-02 20:59:05.861 +07:00 [INF] Executed endpoint '405 HTTP Method Not Supported'
+2026-03-02 20:59:05.861 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/auth/register - 405 0 null 3.0192ms
+2026-03-02 21:01:08.391 +07:00 [INF] Application is shutting down...
+2026-03-02 21:01:14.135 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-02 21:01:14.182 +07:00 [INF] Now listening on: http://localhost:5286
+2026-03-02 21:01:14.184 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-02 21:01:14.185 +07:00 [INF] Hosting environment: Development
+2026-03-02 21:01:14.185 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-03-02 21:01:17.570 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-02 21:01:17.590 +07:00 [INF] [GET] /swagger/index.html
+2026-03-02 21:01:17.622 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 52.574ms
+2026-03-02 21:01:17.713 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-02 21:01:17.716 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-02 21:01:17.854 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 141.2889ms
+2026-03-02 21:01:29.053 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/register - application/json 102
+2026-03-02 21:01:29.057 +07:00 [INF] [POST] /api/v1/auth/register
+2026-03-02 21:01:29.060 +07:00 [INF] CORS policy execution failed.
+2026-03-02 21:01:29.061 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 21:01:29.080 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API)'
+2026-03-02 21:01:29.093 +07:00 [INF] Route matched with {action = "Register", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Register(FacebookClone.Application.Auth.DTOs.RegisterRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 21:01:29.198 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API) in 101.3777ms
+2026-03-02 21:01:29.202 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API)'
+2026-03-02 21:01:29.203 +07:00 [ERR] Unhandled exception
+System.NotImplementedException: The method or operation is not implemented.
+   at FacebookClone.API.Services.AuthService.RegisterAsync(RegisterRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Services\AuthService.cs:line 64
+   at FacebookClone.API.Controllers.AuthController.Register(RegisterRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Controllers\AuthController.cs:line 49
+   at lambda_method6(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at FacebookClone.API.Middlewares.ExceptionMiddleware.Invoke(HttpContext context) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Middlewares\ExceptionMiddleware.cs:line 20
+2026-03-02 21:01:29.233 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/register - 500 null application/json 180.3376ms
+2026-03-02 21:13:49.207 +07:00 [INF] Application is shutting down...
+2026-03-02 21:20:48.613 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-02 21:20:48.661 +07:00 [INF] Now listening on: http://localhost:5286
+2026-03-02 21:20:48.662 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-02 21:20:48.663 +07:00 [INF] Hosting environment: Development
+2026-03-02 21:20:48.663 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-03-02 21:20:50.751 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-02 21:20:50.762 +07:00 [INF] [GET] /swagger/index.html
+2026-03-02 21:20:50.787 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 36.8066ms
+2026-03-02 21:20:50.877 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-02 21:20:50.891 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-02 21:20:50.946 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 69.1898ms
+2026-03-02 21:21:10.722 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 58
+2026-03-02 21:21:10.725 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-02 21:21:10.731 +07:00 [INF] CORS policy execution failed.
+2026-03-02 21:21:10.735 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 21:21:10.756 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-02 21:21:10.767 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 21:21:11.844 +07:00 [INF] Executed DbCommand (41ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-02 21:21:12.371 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-02 21:21:12.406 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-02 21:21:12.412 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 1642.2558ms
+2026-03-02 21:21:12.416 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-02 21:21:12.436 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 1714.8996ms
+2026-03-02 21:21:30.232 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Posts?pageNumber=1&pageSize=10 - null null
+2026-03-02 21:21:30.236 +07:00 [INF] [GET] /api/v1/Posts
+2026-03-02 21:21:30.267 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API)'
+2026-03-02 21:21:30.273 +07:00 [INF] Route matched with {action = "GetNewsFeed", controller = "Posts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetNewsFeed(Int32, Int32) on controller FacebookClone.API.Controllers.PostsController (FacebookClone.API).
+2026-03-02 21:21:30.472 +07:00 [WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+2026-03-02 21:21:30.488 +07:00 [INF] Executed DbCommand (4ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT p0."Id", p0."Content", p0."CreatedAt", p0."GroupId", p0."IsDeleted", p0."PostType", p0."Privacy", p0."SharedPostId", p0."UpdatedAt", p0."UserId", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt", r."Id", r."CreatedAt", r."PostId", r."ReactionType", r."UserId", c."Id", c."Content", c."CreatedAt", c."IsDeleted", c."ParentCommentId", c."PostId", c."UserId"
+FROM (
+    SELECT p."Id", p."Content", p."CreatedAt", p."GroupId", p."IsDeleted", p."PostType", p."Privacy", p."SharedPostId", p."UpdatedAt", p."UserId"
+    FROM "Posts" AS p
+    WHERE NOT (p."IsDeleted")
+    ORDER BY p."CreatedAt" DESC
+    LIMIT @__p_1 OFFSET @__p_0
+) AS p0
+INNER JOIN "Users" AS u ON p0."UserId" = u."Id"
+LEFT JOIN "Reactions" AS r ON p0."Id" = r."PostId"
+LEFT JOIN "Comments" AS c ON p0."Id" = c."PostId"
+ORDER BY p0."CreatedAt" DESC, p0."Id", u."Id", r."Id"
+2026-03-02 21:21:30.527 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Post.PostResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 21:21:30.548 +07:00 [INF] Executed action FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API) in 270.2051ms
+2026-03-02 21:21:30.550 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API)'
+2026-03-02 21:21:30.551 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Posts?pageNumber=1&pageSize=10 - 200 null application/json; charset=utf-8 318.984ms
+2026-03-02 21:21:45.818 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Posts/0a996ef3-57ae-4f21-b4d5-c67b1544c5ba/reactions - application/json 23
+2026-03-02 21:21:45.823 +07:00 [INF] [POST] /api/v1/Posts/0a996ef3-57ae-4f21-b4d5-c67b1544c5ba/reactions
+2026-03-02 21:21:45.825 +07:00 [INF] CORS policy execution failed.
+2026-03-02 21:21:45.826 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 21:21:45.830 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.PostsController.ToggleReaction (FacebookClone.API)'
+2026-03-02 21:21:45.833 +07:00 [INF] Route matched with {action = "ToggleReaction", controller = "Posts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ToggleReaction(System.Guid, FacebookClone.Application.DTOs.Interaction.ReactionRequest) on controller FacebookClone.API.Controllers.PostsController (FacebookClone.API).
+2026-03-02 21:21:45.853 +07:00 [WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+2026-03-02 21:21:45.861 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[@__id_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Id", s."Content", s."CreatedAt", s."GroupId", s."IsDeleted", s."PostType", s."Privacy", s."SharedPostId", s."UpdatedAt", s."UserId", s."Id0", s."AvatarUrl", s."Bio", s."CoverUrl", s."CreatedAt0", s."Email", s."FirstName", s."IsDeleted0", s."IsOnline", s."LastName", s."Location", s."PasswordHash", s."Status", s."UpdatedAt0", r."Id", r."CreatedAt", r."PostId", r."ReactionType", r."UserId", c."Id", c."Content", c."CreatedAt", c."IsDeleted", c."ParentCommentId", c."PostId", c."UserId"
+FROM (
+    SELECT p."Id", p."Content", p."CreatedAt", p."GroupId", p."IsDeleted", p."PostType", p."Privacy", p."SharedPostId", p."UpdatedAt", p."UserId", u."Id" AS "Id0", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt" AS "CreatedAt0", u."Email", u."FirstName", u."IsDeleted" AS "IsDeleted0", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt" AS "UpdatedAt0"
+    FROM "Posts" AS p
+    INNER JOIN "Users" AS u ON p."UserId" = u."Id"
+    WHERE p."Id" = @__id_0 AND NOT (p."IsDeleted")
+    LIMIT 1
+) AS s
+LEFT JOIN "Reactions" AS r ON s."Id" = r."PostId"
+LEFT JOIN "Comments" AS c ON s."Id" = c."PostId"
+ORDER BY s."Id", s."Id0", r."Id"
+2026-03-02 21:21:45.923 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@__userId_0='?' (DbType = Guid), @__postId_1='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."CreatedAt", r."PostId", r."ReactionType", r."UserId"
+FROM "Reactions" AS r
+WHERE r."UserId" = @__userId_0 AND r."PostId" = @__postId_1
+LIMIT 1
+2026-03-02 21:21:45.951 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM "Reactions"
+WHERE "Id" = @p0;
+2026-03-02 21:21:45.954 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 21:21:45.956 +07:00 [INF] Executed action FacebookClone.API.Controllers.PostsController.ToggleReaction (FacebookClone.API) in 121.2839ms
+2026-03-02 21:21:45.956 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.PostsController.ToggleReaction (FacebookClone.API)'
+2026-03-02 21:21:45.957 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Posts/0a996ef3-57ae-4f21-b4d5-c67b1544c5ba/reactions - 200 null application/json; charset=utf-8 138.9311ms
+2026-03-02 21:21:51.235 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Posts?pageNumber=1&pageSize=10 - null null
+2026-03-02 21:21:51.238 +07:00 [INF] [GET] /api/v1/Posts
+2026-03-02 21:21:51.240 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API)'
+2026-03-02 21:21:51.241 +07:00 [INF] Route matched with {action = "GetNewsFeed", controller = "Posts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetNewsFeed(Int32, Int32) on controller FacebookClone.API.Controllers.PostsController (FacebookClone.API).
+2026-03-02 21:21:51.249 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT p0."Id", p0."Content", p0."CreatedAt", p0."GroupId", p0."IsDeleted", p0."PostType", p0."Privacy", p0."SharedPostId", p0."UpdatedAt", p0."UserId", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt", r."Id", r."CreatedAt", r."PostId", r."ReactionType", r."UserId", c."Id", c."Content", c."CreatedAt", c."IsDeleted", c."ParentCommentId", c."PostId", c."UserId"
+FROM (
+    SELECT p."Id", p."Content", p."CreatedAt", p."GroupId", p."IsDeleted", p."PostType", p."Privacy", p."SharedPostId", p."UpdatedAt", p."UserId"
+    FROM "Posts" AS p
+    WHERE NOT (p."IsDeleted")
+    ORDER BY p."CreatedAt" DESC
+    LIMIT @__p_1 OFFSET @__p_0
+) AS p0
+INNER JOIN "Users" AS u ON p0."UserId" = u."Id"
+LEFT JOIN "Reactions" AS r ON p0."Id" = r."PostId"
+LEFT JOIN "Comments" AS c ON p0."Id" = c."PostId"
+ORDER BY p0."CreatedAt" DESC, p0."Id", u."Id", r."Id"
+2026-03-02 21:21:51.253 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Post.PostResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 21:21:51.254 +07:00 [INF] Executed action FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API) in 11.2243ms
+2026-03-02 21:21:51.255 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API)'
+2026-03-02 21:21:51.256 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Posts?pageNumber=1&pageSize=10 - 200 null application/json; charset=utf-8 21.8265ms
+2026-03-02 21:22:24.146 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/logout - application/json 112
+2026-03-02 21:22:24.151 +07:00 [INF] [POST] /api/v1/auth/logout
+2026-03-02 21:22:24.153 +07:00 [INF] CORS policy execution failed.
+2026-03-02 21:22:24.154 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 21:22:24.156 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Logout (FacebookClone.API)'
+2026-03-02 21:22:24.160 +07:00 [INF] Route matched with {action = "Logout", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[System.Boolean]] Logout(FacebookClone.Application.Auth.DTOs.RefreshTokenRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 21:22:24.169 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__refreshToken_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."CreatedAt", r."ExpiresAt", r."IsRevoked", r."RevokedAt", r."Token", r."UserId"
+FROM "RefreshTokens" AS r
+WHERE r."Token" = @__refreshToken_0
+LIMIT 2
+2026-03-02 21:22:24.177 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[@p2='?' (DbType = Guid), @p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+UPDATE "RefreshTokens" SET "IsRevoked" = @p0, "RevokedAt" = @p1
+WHERE "Id" = @p2;
+2026-03-02 21:22:24.180 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 21:22:24.182 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Logout (FacebookClone.API) in 20.8318ms
+2026-03-02 21:22:24.183 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Logout (FacebookClone.API)'
+2026-03-02 21:22:24.184 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/logout - 200 null application/json; charset=utf-8 38.0478ms
+2026-03-02 21:22:48.212 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/register - application/json 104
+2026-03-02 21:22:48.215 +07:00 [INF] [POST] /api/v1/auth/register
+2026-03-02 21:22:48.216 +07:00 [INF] CORS policy execution failed.
+2026-03-02 21:22:48.216 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 21:22:48.218 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API)'
+2026-03-02 21:22:48.221 +07:00 [INF] Route matched with {action = "Register", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Register(FacebookClone.Application.Auth.DTOs.RegisterRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 21:22:48.232 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__email_0
+LIMIT 1
+2026-03-02 21:22:48.500 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?', @p3='?', @p4='?' (DbType = DateTime), @p5='?', @p6='?', @p7='?', @p8='?', @p9='?', @p10='?', @p11='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Users" ("Id", "AvatarUrl", "Bio", "CoverUrl", "CreatedAt", "Email", "FirstName", "LastName", "Location", "PasswordHash", "Status", "UpdatedAt")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11)
+RETURNING "IsDeleted", "IsOnline";
+2026-03-02 21:22:48.513 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-02 21:22:48.517 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API) in 294.0796ms
+2026-03-02 21:22:48.518 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API)'
+2026-03-02 21:22:48.519 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/register - 200 null application/json; charset=utf-8 307.1008ms
+2026-03-02 21:23:08.087 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 54
+2026-03-02 21:23:08.090 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-02 21:23:08.091 +07:00 [INF] CORS policy execution failed.
+2026-03-02 21:23:08.092 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 21:23:08.093 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-02 21:23:08.094 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 21:23:08.097 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-02 21:23:08.241 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-02 21:23:08.255 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-02 21:23:08.257 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 161.5381ms
+2026-03-02 21:23:08.258 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-02 21:23:08.259 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 171.2975ms
+2026-03-02 21:23:14.094 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/register - application/json 104
+2026-03-02 21:23:14.097 +07:00 [INF] [POST] /api/v1/auth/register
+2026-03-02 21:23:14.099 +07:00 [INF] CORS policy execution failed.
+2026-03-02 21:23:14.100 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 21:23:14.102 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API)'
+2026-03-02 21:23:14.104 +07:00 [INF] Route matched with {action = "Register", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Register(FacebookClone.Application.Auth.DTOs.RegisterRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 21:23:14.108 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__email_0
+LIMIT 1
+2026-03-02 21:23:14.110 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API) in 4.7994ms
+2026-03-02 21:23:14.112 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Register (FacebookClone.API)'
+2026-03-02 21:23:14.113 +07:00 [ERR] Unhandled exception
+System.Exception: Email này đã được sử dụng. Vui lòng chọn email khác.
+   at FacebookClone.API.Services.AuthService.RegisterAsync(RegisterRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Services\AuthService.cs:line 71
+   at FacebookClone.API.Controllers.AuthController.Register(RegisterRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Controllers\AuthController.cs:line 49
+   at lambda_method590(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at FacebookClone.API.Middlewares.ExceptionMiddleware.Invoke(HttpContext context) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Middlewares\ExceptionMiddleware.cs:line 20
+2026-03-02 21:23:14.134 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/register - 500 null application/json 39.6937ms
+2026-03-02 21:25:26.192 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Posts?pageNumber=1&pageSize=10 - null null
+2026-03-02 21:25:26.194 +07:00 [INF] [GET] /api/v1/Posts
+2026-03-02 21:25:26.196 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API)'
+2026-03-02 21:25:26.197 +07:00 [INF] Route matched with {action = "GetNewsFeed", controller = "Posts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetNewsFeed(Int32, Int32) on controller FacebookClone.API.Controllers.PostsController (FacebookClone.API).
+2026-03-02 21:25:26.203 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT p0."Id", p0."Content", p0."CreatedAt", p0."GroupId", p0."IsDeleted", p0."PostType", p0."Privacy", p0."SharedPostId", p0."UpdatedAt", p0."UserId", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt", r."Id", r."CreatedAt", r."PostId", r."ReactionType", r."UserId", c."Id", c."Content", c."CreatedAt", c."IsDeleted", c."ParentCommentId", c."PostId", c."UserId"
+FROM (
+    SELECT p."Id", p."Content", p."CreatedAt", p."GroupId", p."IsDeleted", p."PostType", p."Privacy", p."SharedPostId", p."UpdatedAt", p."UserId"
+    FROM "Posts" AS p
+    WHERE NOT (p."IsDeleted")
+    ORDER BY p."CreatedAt" DESC
+    LIMIT @__p_1 OFFSET @__p_0
+) AS p0
+INNER JOIN "Users" AS u ON p0."UserId" = u."Id"
+LEFT JOIN "Reactions" AS r ON p0."Id" = r."PostId"
+LEFT JOIN "Comments" AS c ON p0."Id" = c."PostId"
+ORDER BY p0."CreatedAt" DESC, p0."Id", u."Id", r."Id"
+2026-03-02 21:25:26.208 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Post.PostResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 21:25:26.209 +07:00 [INF] Executed action FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API) in 8.5777ms
+2026-03-02 21:25:26.210 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.PostsController.GetNewsFeed (FacebookClone.API)'
+2026-03-02 21:25:26.212 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Posts?pageNumber=1&pageSize=10 - 200 null application/json; charset=utf-8 19.8053ms
+2026-03-02 21:25:49.966 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Posts/0a996ef3-57ae-4f21-b4d5-c67b1544c5ba/reactions - application/json 23
+2026-03-02 21:25:49.968 +07:00 [INF] [POST] /api/v1/Posts/0a996ef3-57ae-4f21-b4d5-c67b1544c5ba/reactions
+2026-03-02 21:25:49.969 +07:00 [INF] CORS policy execution failed.
+2026-03-02 21:25:49.972 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 21:25:49.974 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.PostsController.ToggleReaction (FacebookClone.API)'
+2026-03-02 21:25:49.975 +07:00 [INF] Route matched with {action = "ToggleReaction", controller = "Posts"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] ToggleReaction(System.Guid, FacebookClone.Application.DTOs.Interaction.ReactionRequest) on controller FacebookClone.API.Controllers.PostsController (FacebookClone.API).
+2026-03-02 21:25:49.983 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[@__id_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Id", s."Content", s."CreatedAt", s."GroupId", s."IsDeleted", s."PostType", s."Privacy", s."SharedPostId", s."UpdatedAt", s."UserId", s."Id0", s."AvatarUrl", s."Bio", s."CoverUrl", s."CreatedAt0", s."Email", s."FirstName", s."IsDeleted0", s."IsOnline", s."LastName", s."Location", s."PasswordHash", s."Status", s."UpdatedAt0", r."Id", r."CreatedAt", r."PostId", r."ReactionType", r."UserId", c."Id", c."Content", c."CreatedAt", c."IsDeleted", c."ParentCommentId", c."PostId", c."UserId"
+FROM (
+    SELECT p."Id", p."Content", p."CreatedAt", p."GroupId", p."IsDeleted", p."PostType", p."Privacy", p."SharedPostId", p."UpdatedAt", p."UserId", u."Id" AS "Id0", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt" AS "CreatedAt0", u."Email", u."FirstName", u."IsDeleted" AS "IsDeleted0", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt" AS "UpdatedAt0"
+    FROM "Posts" AS p
+    INNER JOIN "Users" AS u ON p."UserId" = u."Id"
+    WHERE p."Id" = @__id_0 AND NOT (p."IsDeleted")
+    LIMIT 1
+) AS s
+LEFT JOIN "Reactions" AS r ON s."Id" = r."PostId"
+LEFT JOIN "Comments" AS c ON s."Id" = c."PostId"
+ORDER BY s."Id", s."Id0", r."Id"
+2026-03-02 21:25:49.989 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__userId_0='?' (DbType = Guid), @__postId_1='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."CreatedAt", r."PostId", r."ReactionType", r."UserId"
+FROM "Reactions" AS r
+WHERE r."UserId" = @__userId_0 AND r."PostId" = @__postId_1
+LIMIT 1
+2026-03-02 21:25:49.997 +07:00 [INF] Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = Guid), @p3='?' (DbType = Int32), @p4='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Reactions" ("Id", "CreatedAt", "PostId", "ReactionType", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4);
+2026-03-02 21:25:50.023 +07:00 [INF] Executed DbCommand (6ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Guid), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = Guid), @p5='?' (DbType = Int32), @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Notifications" ("Id", "ActorId", "CreatedAt", "IsRead", "ReferenceId", "Type", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-02 21:25:50.026 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 21:25:50.028 +07:00 [INF] Executed action FacebookClone.API.Controllers.PostsController.ToggleReaction (FacebookClone.API) in 51.4551ms
+2026-03-02 21:25:50.029 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.PostsController.ToggleReaction (FacebookClone.API)'
+2026-03-02 21:25:50.030 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Posts/0a996ef3-57ae-4f21-b4d5-c67b1544c5ba/reactions - 200 null application/json; charset=utf-8 64.1004ms
+2026-03-02 21:26:12.772 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/logout - application/json 112
+2026-03-02 21:26:12.775 +07:00 [INF] [POST] /api/v1/auth/logout
+2026-03-02 21:26:12.777 +07:00 [INF] CORS policy execution failed.
+2026-03-02 21:26:12.778 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 21:26:12.779 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Logout (FacebookClone.API)'
+2026-03-02 21:26:12.780 +07:00 [INF] Route matched with {action = "Logout", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[System.Boolean]] Logout(FacebookClone.Application.Auth.DTOs.RefreshTokenRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 21:26:12.790 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__refreshToken_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT r."Id", r."CreatedAt", r."ExpiresAt", r."IsRevoked", r."RevokedAt", r."Token", r."UserId"
+FROM "RefreshTokens" AS r
+WHERE r."Token" = @__refreshToken_0
+LIMIT 2
+2026-03-02 21:26:12.798 +07:00 [INF] Executed DbCommand (6ms) [Parameters=[@p2='?' (DbType = Guid), @p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+UPDATE "RefreshTokens" SET "IsRevoked" = @p0, "RevokedAt" = @p1
+WHERE "Id" = @p2;
+2026-03-02 21:26:12.800 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 21:26:12.802 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Logout (FacebookClone.API) in 19.6621ms
+2026-03-02 21:26:12.803 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Logout (FacebookClone.API)'
+2026-03-02 21:26:12.803 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/logout - 200 null application/json; charset=utf-8 31.121ms
+2026-03-02 21:26:38.651 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 58
+2026-03-02 21:26:38.653 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-02 21:26:38.654 +07:00 [INF] CORS policy execution failed.
+2026-03-02 21:26:38.655 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-02 21:26:38.656 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-02 21:26:38.656 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-02 21:26:38.661 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-02 21:26:38.767 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-02 21:26:38.773 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-02 21:26:38.775 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 117.5229ms
+2026-03-02 21:26:38.778 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-02 21:26:38.779 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 128.2225ms
+2026-03-02 21:26:56.710 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Notifications?pageNumber=1&pageSize=10 - null null
+2026-03-02 21:26:56.713 +07:00 [INF] [GET] /api/v1/Notifications
+2026-03-02 21:26:56.715 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.NotificationsController.GetMyNotifications (FacebookClone.API)'
+2026-03-02 21:26:56.721 +07:00 [INF] Route matched with {action = "GetMyNotifications", controller = "Notifications"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyNotifications(Int32, Int32) on controller FacebookClone.API.Controllers.NotificationsController (FacebookClone.API).
+2026-03-02 21:26:56.733 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__userId_0='?' (DbType = Guid), @__p_2='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT n0."Id", n0."ActorId", n0."CreatedAt", n0."IsRead", n0."ReferenceId", n0."Type", n0."UserId", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM (
+    SELECT n."Id", n."ActorId", n."CreatedAt", n."IsRead", n."ReferenceId", n."Type", n."UserId"
+    FROM "Notifications" AS n
+    WHERE n."UserId" = @__userId_0
+    ORDER BY n."CreatedAt" DESC
+    LIMIT @__p_2 OFFSET @__p_1
+) AS n0
+INNER JOIN "Users" AS u ON n0."ActorId" = u."Id"
+ORDER BY n0."CreatedAt" DESC
+2026-03-02 21:26:56.736 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Notification.NotificationResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-02 21:26:56.740 +07:00 [INF] Executed action FacebookClone.API.Controllers.NotificationsController.GetMyNotifications (FacebookClone.API) in 16.4963ms
+2026-03-02 21:26:56.741 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.NotificationsController.GetMyNotifications (FacebookClone.API)'
+2026-03-02 21:26:56.741 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Notifications?pageNumber=1&pageSize=10 - 200 null application/json; charset=utf-8 31.0851ms

@@ -14,8 +14,11 @@ public class AppDbContext : DbContext
     public DbSet<Reaction> Reactions { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Friendship> Friendships { get; set; }
-
+    public DbSet<Notification> Notifications { get; set; }
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Conversation> Conversations { get; set; }
+    public DbSet<ConversationMember> ConversationMembers { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
     // (sau này seed thêm thì thêm tiếp)
     // public DbSet<Friendship> Friendships => Set<Friendship>();

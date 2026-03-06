@@ -13,12 +13,14 @@ public class FriendshipService : IFriendshipService
     private readonly IFriendshipRepository _friendshipRepo;
     private readonly IUserRepository _userRepo;
     private readonly IMapper _mapper;
+    private readonly INotificationService _notiService;
 
-    public FriendshipService(IFriendshipRepository friendshipRepo, IUserRepository userRepo, IMapper mapper)
+    public FriendshipService(IFriendshipRepository friendshipRepo, IUserRepository userRepo, IMapper mapper, INotificationService notiService)
     {
         _friendshipRepo = friendshipRepo;
         _userRepo = userRepo;
         _mapper = mapper;
+        _notiService = notiService;
     }
 
     public async Task<string> SendFriendRequestAsync(Guid currentUserId, Guid receiverId)
@@ -48,6 +50,8 @@ public class FriendshipService : IFriendshipService
         };
 
         await _friendshipRepo.AddFriendshipAsync(friendship);
+        // 👇 THÊM DÒNG NÀY: Báo cho người nhận biết có lời mời
+        await _notiService.CreateNotificationAsync(receiverId, currentUserId, NotificationType.FriendRequest, currentUserId);
         return "Đã gửi lời mời kết bạn.";
     }
 

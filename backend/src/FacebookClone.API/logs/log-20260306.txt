@@ -1,0 +1,550 @@
+2026-03-06 16:07:01.923 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-06 16:07:02.043 +07:00 [INF] Now listening on: http://localhost:5286
+2026-03-06 16:07:02.045 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-06 16:07:02.045 +07:00 [INF] Hosting environment: Development
+2026-03-06 16:07:02.045 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-03-06 16:07:05.505 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-06 16:07:05.541 +07:00 [INF] [GET] /swagger/index.html
+2026-03-06 16:07:05.602 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 98.2748ms
+2026-03-06 16:07:05.610 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui-standalone-preset.js - null null
+2026-03-06 16:07:05.613 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui-bundle.js - null null
+2026-03-06 16:07:05.621 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui.css - null null
+2026-03-06 16:07:05.621 +07:00 [INF] [GET] /swagger/swagger-ui-standalone-preset.js
+2026-03-06 16:07:05.622 +07:00 [INF] [GET] /swagger/swagger-ui-bundle.js
+2026-03-06 16:07:05.624 +07:00 [INF] [GET] /swagger/swagger-ui.css
+2026-03-06 16:07:05.643 +07:00 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2026-03-06 16:07:05.643 +07:00 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2026-03-06 16:07:05.646 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui.css - 200 152034 text/css 25.4665ms
+2026-03-06 16:07:05.647 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui-standalone-preset.js - 200 230280 text/javascript 36.5583ms
+2026-03-06 16:07:05.658 +07:00 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2026-03-06 16:07:05.659 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/swagger-ui-bundle.js - 200 1456926 text/javascript 46.1572ms
+2026-03-06 16:07:05.725 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-06 16:07:05.728 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-06 16:07:05.840 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 114.8417ms
+2026-03-06 16:07:08.830 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-06 16:07:08.833 +07:00 [INF] [GET] /swagger/index.html
+2026-03-06 16:07:08.834 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 3.9173ms
+2026-03-06 16:07:08.921 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-06 16:07:08.923 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-06 16:07:08.934 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 13.1029ms
+2026-03-06 16:07:37.582 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 58
+2026-03-06 16:07:37.585 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-06 16:07:37.588 +07:00 [INF] CORS policy execution failed.
+2026-03-06 16:07:37.589 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 16:07:37.702 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 16:07:37.720 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-06 16:07:38.971 +07:00 [INF] Executed DbCommand (43ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-06 16:07:39.493 +07:00 [INF] Executed DbCommand (6ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-06 16:07:39.518 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-06 16:07:39.525 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 1799.771ms
+2026-03-06 16:07:39.526 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 16:07:39.532 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 1950.3831ms
+2026-03-06 16:08:02.842 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 54
+2026-03-06 16:08:02.847 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-06 16:08:02.848 +07:00 [INF] CORS policy execution failed.
+2026-03-06 16:08:02.849 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 16:08:02.850 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 16:08:02.851 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-06 16:08:02.907 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-06 16:08:03.154 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-06 16:08:03.160 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-06 16:08:03.161 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 307.725ms
+2026-03-06 16:08:03.163 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 16:08:03.163 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 321.2795ms
+2026-03-06 16:08:45.348 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/users/me - null null
+2026-03-06 16:08:45.350 +07:00 [INF] [GET] /api/v1/users/me
+2026-03-06 16:08:45.383 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API)'
+2026-03-06 16:08:45.398 +07:00 [INF] Route matched with {action = "GetMyProfile", controller = "Users"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller FacebookClone.API.Controllers.UsersController (FacebookClone.API).
+2026-03-06 16:08:45.496 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Id" = @__p_0
+LIMIT 1
+2026-03-06 16:08:45.503 +07:00 [INF] Executing OkObjectResult, writing value of type 'FacebookClone.Application.DTOs.User.UserProfileDto'.
+2026-03-06 16:08:45.518 +07:00 [INF] Executed action FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API) in 119.4434ms
+2026-03-06 16:08:45.523 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API)'
+2026-03-06 16:08:45.526 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/users/me - 200 null application/json; charset=utf-8 178.149ms
+2026-03-06 16:08:54.516 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/users/me - null null
+2026-03-06 16:08:54.518 +07:00 [INF] [GET] /api/v1/users/me
+2026-03-06 16:08:54.521 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API)'
+2026-03-06 16:08:54.522 +07:00 [INF] Route matched with {action = "GetMyProfile", controller = "Users"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller FacebookClone.API.Controllers.UsersController (FacebookClone.API).
+2026-03-06 16:08:54.526 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Id" = @__p_0
+LIMIT 1
+2026-03-06 16:08:54.528 +07:00 [INF] Executing OkObjectResult, writing value of type 'FacebookClone.Application.DTOs.User.UserProfileDto'.
+2026-03-06 16:08:54.530 +07:00 [INF] Executed action FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API) in 6.3902ms
+2026-03-06 16:08:54.531 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API)'
+2026-03-06 16:08:54.532 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/users/me - 200 null application/json; charset=utf-8 15.877ms
+2026-03-06 16:11:56.647 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Chat/messages - application/json 127
+2026-03-06 16:11:56.650 +07:00 [INF] [POST] /api/v1/Chat/messages
+2026-03-06 16:11:56.651 +07:00 [INF] CORS policy execution failed.
+2026-03-06 16:11:56.652 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 16:11:56.654 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.ChatController.SendMessage (FacebookClone.API)'
+2026-03-06 16:11:56.658 +07:00 [INF] Route matched with {action = "SendMessage", controller = "Chat"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SendMessage(FacebookClone.Application.DTOs.Chat.SendMessageRequest) on controller FacebookClone.API.Controllers.ChatController (FacebookClone.API).
+2026-03-06 16:11:56.727 +07:00 [INF] Executed DbCommand (4ms) [Parameters=[@__userId1_0='?' (DbType = Guid), @__userId2_1='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT c3."Id", c3."CreatedAt", c3."CreatedBy", c3."Type", c2."ConversationId", c2."UserId", c2."JoinedAt"
+FROM (
+    SELECT c."Id", c."CreatedAt", c."CreatedBy", c."Type"
+    FROM "Conversations" AS c
+    WHERE c."Type" = 1 AND EXISTS (
+        SELECT 1
+        FROM "ConversationMembers" AS c0
+        WHERE c."Id" = c0."ConversationId" AND c0."UserId" = @__userId1_0) AND EXISTS (
+        SELECT 1
+        FROM "ConversationMembers" AS c1
+        WHERE c."Id" = c1."ConversationId" AND c1."UserId" = @__userId2_1)
+    LIMIT 1
+) AS c3
+LEFT JOIN "ConversationMembers" AS c2 ON c3."Id" = c2."ConversationId"
+ORDER BY c3."Id", c2."ConversationId"
+2026-03-06 16:11:56.753 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = Guid), @p3='?' (DbType = Int32), @p4='?' (DbType = Guid), @p5='?' (DbType = Guid), @p6='?' (DbType = DateTime), @p7='?' (DbType = Guid), @p8='?' (DbType = Guid), @p9='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Conversations" ("Id", "CreatedAt", "CreatedBy", "Type")
+VALUES (@p0, @p1, @p2, @p3);
+INSERT INTO "ConversationMembers" ("ConversationId", "UserId", "JoinedAt")
+VALUES (@p4, @p5, @p6);
+INSERT INTO "ConversationMembers" ("ConversationId", "UserId", "JoinedAt")
+VALUES (@p7, @p8, @p9);
+2026-03-06 16:11:56.773 +07:00 [INF] Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?' (DbType = Guid), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32), @p5='?' (DbType = Guid), @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Messages" ("Id", "Content", "ConversationId", "CreatedAt", "MessageType", "SenderId", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)
+RETURNING "IsDeleted";
+2026-03-06 16:11:56.802 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Id" = @__p_0
+LIMIT 1
+2026-03-06 16:11:56.815 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[FacebookClone.Application.DTOs.Chat.MessageResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-06 16:11:56.839 +07:00 [INF] Executed action FacebookClone.API.Controllers.ChatController.SendMessage (FacebookClone.API) in 179.8996ms
+2026-03-06 16:11:56.842 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.ChatController.SendMessage (FacebookClone.API)'
+2026-03-06 16:11:56.843 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Chat/messages - 200 null application/json; charset=utf-8 196.2283ms
+2026-03-06 16:12:12.991 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Chat/conversations/62bb472c-b7ac-4c5e-a6f9-a468ac70566f/messages?pageNumber=1&pageSize=20 - null null
+2026-03-06 16:12:12.994 +07:00 [INF] [GET] /api/v1/Chat/conversations/62bb472c-b7ac-4c5e-a6f9-a468ac70566f/messages
+2026-03-06 16:12:12.995 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.ChatController.GetMessages (FacebookClone.API)'
+2026-03-06 16:12:13.002 +07:00 [INF] Route matched with {action = "GetMessages", controller = "Chat"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMessages(System.Guid, Int32, Int32) on controller FacebookClone.API.Controllers.ChatController (FacebookClone.API).
+2026-03-06 16:12:13.026 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__conversationId_0='?' (DbType = Guid), @__p_2='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT m0."Id", m0."Content", m0."ConversationId", m0."CreatedAt", m0."IsDeleted", m0."MessageType", m0."SenderId", m0."UserId", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM (
+    SELECT m."Id", m."Content", m."ConversationId", m."CreatedAt", m."IsDeleted", m."MessageType", m."SenderId", m."UserId"
+    FROM "Messages" AS m
+    WHERE m."ConversationId" = @__conversationId_0 AND NOT (m."IsDeleted")
+    ORDER BY m."CreatedAt" DESC
+    LIMIT @__p_2 OFFSET @__p_1
+) AS m0
+INNER JOIN "Users" AS u ON m0."SenderId" = u."Id"
+ORDER BY m0."CreatedAt" DESC
+2026-03-06 16:12:13.029 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Chat.MessageResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-06 16:12:13.055 +07:00 [INF] Executed action FacebookClone.API.Controllers.ChatController.GetMessages (FacebookClone.API) in 51.621ms
+2026-03-06 16:12:13.057 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.ChatController.GetMessages (FacebookClone.API)'
+2026-03-06 16:12:13.057 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Chat/conversations/62bb472c-b7ac-4c5e-a6f9-a468ac70566f/messages?pageNumber=1&pageSize=20 - 200 null application/json; charset=utf-8 65.9846ms
+2026-03-06 16:12:45.211 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Chat/messages - application/json 140
+2026-03-06 16:12:45.214 +07:00 [INF] [POST] /api/v1/Chat/messages
+2026-03-06 16:12:45.215 +07:00 [INF] CORS policy execution failed.
+2026-03-06 16:12:45.216 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 16:12:45.217 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.ChatController.SendMessage (FacebookClone.API)'
+2026-03-06 16:12:45.218 +07:00 [INF] Route matched with {action = "SendMessage", controller = "Chat"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SendMessage(FacebookClone.Application.DTOs.Chat.SendMessageRequest) on controller FacebookClone.API.Controllers.ChatController (FacebookClone.API).
+2026-03-06 16:12:45.237 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__conversationId_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT c1."Id", c1."CreatedAt", c1."CreatedBy", c1."Type", c0."ConversationId", c0."UserId", c0."JoinedAt"
+FROM (
+    SELECT c."Id", c."CreatedAt", c."CreatedBy", c."Type"
+    FROM "Conversations" AS c
+    WHERE c."Id" = @__conversationId_0
+    LIMIT 1
+) AS c1
+LEFT JOIN "ConversationMembers" AS c0 ON c1."Id" = c0."ConversationId"
+ORDER BY c1."Id", c0."ConversationId"
+2026-03-06 16:12:45.267 +07:00 [INF] Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?' (DbType = Guid), @p3='?' (DbType = DateTime), @p4='?' (DbType = Int32), @p5='?' (DbType = Guid), @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Messages" ("Id", "Content", "ConversationId", "CreatedAt", "MessageType", "SenderId", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)
+RETURNING "IsDeleted";
+2026-03-06 16:12:45.293 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Id" = @__p_0
+LIMIT 1
+2026-03-06 16:12:45.295 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[FacebookClone.Application.DTOs.Chat.MessageResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-06 16:12:45.296 +07:00 [INF] Executed action FacebookClone.API.Controllers.ChatController.SendMessage (FacebookClone.API) in 76.2257ms
+2026-03-06 16:12:45.297 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.ChatController.SendMessage (FacebookClone.API)'
+2026-03-06 16:12:45.297 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Chat/messages - 200 null application/json; charset=utf-8 86.7308ms
+2026-03-06 16:12:58.163 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Chat/conversations/62bb472c-b7ac-4c5e-a6f9-a468ac70566f/messages?pageNumber=1&pageSize=20 - null null
+2026-03-06 16:12:58.165 +07:00 [INF] [GET] /api/v1/Chat/conversations/62bb472c-b7ac-4c5e-a6f9-a468ac70566f/messages
+2026-03-06 16:12:58.167 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.ChatController.GetMessages (FacebookClone.API)'
+2026-03-06 16:12:58.167 +07:00 [INF] Route matched with {action = "GetMessages", controller = "Chat"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMessages(System.Guid, Int32, Int32) on controller FacebookClone.API.Controllers.ChatController (FacebookClone.API).
+2026-03-06 16:12:58.171 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__conversationId_0='?' (DbType = Guid), @__p_2='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT m0."Id", m0."Content", m0."ConversationId", m0."CreatedAt", m0."IsDeleted", m0."MessageType", m0."SenderId", m0."UserId", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM (
+    SELECT m."Id", m."Content", m."ConversationId", m."CreatedAt", m."IsDeleted", m."MessageType", m."SenderId", m."UserId"
+    FROM "Messages" AS m
+    WHERE m."ConversationId" = @__conversationId_0 AND NOT (m."IsDeleted")
+    ORDER BY m."CreatedAt" DESC
+    LIMIT @__p_2 OFFSET @__p_1
+) AS m0
+INNER JOIN "Users" AS u ON m0."SenderId" = u."Id"
+ORDER BY m0."CreatedAt" DESC
+2026-03-06 16:12:58.175 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Chat.MessageResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-06 16:12:58.176 +07:00 [INF] Executed action FacebookClone.API.Controllers.ChatController.GetMessages (FacebookClone.API) in 7.007ms
+2026-03-06 16:12:58.177 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.ChatController.GetMessages (FacebookClone.API)'
+2026-03-06 16:12:58.178 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Chat/conversations/62bb472c-b7ac-4c5e-a6f9-a468ac70566f/messages?pageNumber=1&pageSize=20 - 200 null application/json; charset=utf-8 15.438ms
+2026-03-06 16:15:15.326 +07:00 [INF] Application is shutting down...
+2026-03-06 20:39:10.123 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-06 20:39:10.191 +07:00 [INF] Now listening on: http://localhost:5286
+2026-03-06 20:39:10.193 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-06 20:39:10.193 +07:00 [INF] Hosting environment: Development
+2026-03-06 20:39:10.193 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-03-06 20:39:19.412 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-06 20:39:19.431 +07:00 [INF] [GET] /swagger/index.html
+2026-03-06 20:39:19.486 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 75.1279ms
+2026-03-06 20:39:19.575 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-06 20:39:19.577 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-06 20:39:19.676 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 100.4724ms
+2026-03-06 20:39:40.701 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - multipart/form-data; boundary=----WebKitFormBoundarynjuUQttki8rigWSg 402537705
+2026-03-06 20:39:40.707 +07:00 [INF] [POST] /api/v1/Media/upload-video
+2026-03-06 20:39:40.711 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:39:40.713 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:39:40.733 +07:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-06 20:39:40.736 +07:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-06 20:39:40.737 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - 401 0 null 36.8468ms
+2026-03-06 20:39:40.743 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - multipart/form-data; boundary=----WebKitFormBoundarynjuUQttki8rigWSg 402537705
+2026-03-06 20:39:40.747 +07:00 [INF] [POST] /api/v1/Media/upload-video
+2026-03-06 20:39:40.748 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:39:40.749 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:39:40.752 +07:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-06 20:39:40.753 +07:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-06 20:39:40.754 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - 401 0 null 10.3211ms
+2026-03-06 20:39:40.765 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - multipart/form-data; boundary=----WebKitFormBoundarynjuUQttki8rigWSg 402537705
+2026-03-06 20:39:40.766 +07:00 [INF] [POST] /api/v1/Media/upload-video
+2026-03-06 20:39:40.770 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:39:40.776 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:39:40.785 +07:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-06 20:39:40.788 +07:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-06 20:39:40.789 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - 401 0 null 24.2855ms
+2026-03-06 20:40:47.231 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 54
+2026-03-06 20:40:47.235 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-06 20:40:47.236 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:40:47.237 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:40:47.238 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 20:40:47.253 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-06 20:40:48.620 +07:00 [INF] Executed DbCommand (33ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-06 20:40:49.081 +07:00 [INF] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-06 20:40:49.103 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-06 20:40:49.110 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 1843.1883ms
+2026-03-06 20:40:49.112 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 20:40:49.115 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 1883.9031ms
+2026-03-06 20:41:03.062 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - multipart/form-data; boundary=----WebKitFormBoundaryidCgbtXv2fa9hMQg 402537705
+2026-03-06 20:41:03.065 +07:00 [INF] [POST] /api/v1/Media/upload-video
+2026-03-06 20:41:03.066 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:41:03.067 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:41:03.115 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API)'
+2026-03-06 20:41:03.120 +07:00 [INF] Route matched with {action = "UploadVideo", controller = "Media"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UploadVideo(Microsoft.AspNetCore.Http.IFormFile) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:41:03.152 +07:00 [INF] Executing BadRequestObjectResult, writing value of type 'Microsoft.AspNetCore.Mvc.ValidationProblemDetails'.
+2026-03-06 20:41:03.174 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API) in 46.9801ms
+2026-03-06 20:41:03.175 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API)'
+2026-03-06 20:41:03.176 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - 400 null application/problem+json; charset=utf-8 113.1984ms
+2026-03-06 20:41:03.180 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - multipart/form-data; boundary=----WebKitFormBoundaryidCgbtXv2fa9hMQg 402537705
+2026-03-06 20:41:03.183 +07:00 [INF] [POST] /api/v1/Media/upload-video
+2026-03-06 20:41:03.186 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:41:03.187 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:41:03.188 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API)'
+2026-03-06 20:41:03.188 +07:00 [INF] Route matched with {action = "UploadVideo", controller = "Media"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UploadVideo(Microsoft.AspNetCore.Http.IFormFile) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:41:03.193 +07:00 [INF] Executing BadRequestObjectResult, writing value of type 'Microsoft.AspNetCore.Mvc.ValidationProblemDetails'.
+2026-03-06 20:41:03.194 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API) in 1.9151ms
+2026-03-06 20:41:03.195 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API)'
+2026-03-06 20:41:03.204 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - 400 null application/problem+json; charset=utf-8 23.1903ms
+2026-03-06 20:41:12.058 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - multipart/form-data; boundary=----WebKitFormBoundaryKf3yB3Rl3NB2WLKA 141
+2026-03-06 20:41:12.061 +07:00 [INF] [POST] /api/v1/Media/upload-video
+2026-03-06 20:41:12.062 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:41:12.062 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:41:12.064 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API)'
+2026-03-06 20:41:12.065 +07:00 [INF] Route matched with {action = "UploadVideo", controller = "Media"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UploadVideo(Microsoft.AspNetCore.Http.IFormFile) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:41:12.072 +07:00 [INF] Executing BadRequestObjectResult, writing value of type 'Microsoft.AspNetCore.Mvc.ValidationProblemDetails'.
+2026-03-06 20:41:12.073 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API) in 6.568ms
+2026-03-06 20:41:12.074 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API)'
+2026-03-06 20:41:12.075 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - 400 null application/problem+json; charset=utf-8 16.8434ms
+2026-03-06 20:41:26.069 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - multipart/form-data; boundary=----WebKitFormBoundarymnAtdXWJkKFlecuP 402537705
+2026-03-06 20:41:26.072 +07:00 [INF] [POST] /api/v1/Media/upload-video
+2026-03-06 20:41:26.073 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:41:26.073 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:41:26.075 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API)'
+2026-03-06 20:41:26.075 +07:00 [INF] Route matched with {action = "UploadVideo", controller = "Media"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UploadVideo(Microsoft.AspNetCore.Http.IFormFile) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:41:26.076 +07:00 [INF] Executing BadRequestObjectResult, writing value of type 'Microsoft.AspNetCore.Mvc.ValidationProblemDetails'.
+2026-03-06 20:41:26.077 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API) in 0.8583ms
+2026-03-06 20:41:26.077 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API)'
+2026-03-06 20:41:26.081 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - 400 null application/problem+json; charset=utf-8 11.8846ms
+2026-03-06 20:41:26.084 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - multipart/form-data; boundary=----WebKitFormBoundarymnAtdXWJkKFlecuP 402537705
+2026-03-06 20:41:26.085 +07:00 [INF] [POST] /api/v1/Media/upload-video
+2026-03-06 20:41:26.086 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:41:26.087 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:41:26.089 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API)'
+2026-03-06 20:41:26.089 +07:00 [INF] Route matched with {action = "UploadVideo", controller = "Media"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UploadVideo(Microsoft.AspNetCore.Http.IFormFile) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:41:26.091 +07:00 [INF] Executing BadRequestObjectResult, writing value of type 'Microsoft.AspNetCore.Mvc.ValidationProblemDetails'.
+2026-03-06 20:41:26.091 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API) in 1.089ms
+2026-03-06 20:41:26.095 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API)'
+2026-03-06 20:41:26.096 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - 400 null application/problem+json; charset=utf-8 11.7075ms
+2026-03-06 20:44:19.016 +07:00 [INF] Application is shutting down...
+2026-03-06 20:45:06.833 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-06 20:45:06.884 +07:00 [INF] Now listening on: http://localhost:5286
+2026-03-06 20:45:06.885 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-06 20:45:06.885 +07:00 [INF] Hosting environment: Development
+2026-03-06 20:45:06.886 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-03-06 20:45:08.972 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-06 20:45:08.983 +07:00 [INF] [GET] /swagger/index.html
+2026-03-06 20:45:09.009 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 37.6951ms
+2026-03-06 20:45:09.100 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-06 20:45:09.102 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-06 20:45:09.104 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/favicon-32x32.png - null null
+2026-03-06 20:45:09.106 +07:00 [INF] [GET] /swagger/favicon-32x32.png
+2026-03-06 20:45:09.111 +07:00 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2026-03-06 20:45:09.116 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/favicon-32x32.png - 200 628 image/png 11.3346ms
+2026-03-06 20:45:09.163 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 62.4682ms
+2026-03-06 20:45:20.421 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 54
+2026-03-06 20:45:20.425 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-06 20:45:20.428 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:45:20.429 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:45:20.448 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 20:45:20.471 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-06 20:45:21.564 +07:00 [INF] Executed DbCommand (38ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-06 20:45:22.091 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-06 20:45:22.113 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-06 20:45:22.117 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 1642.4718ms
+2026-03-06 20:45:22.118 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 20:45:22.121 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 1700.706ms
+2026-03-06 20:45:45.129 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - multipart/form-data; boundary=----WebKitFormBoundary8asEK49Ir2QAzzmj 402537705
+2026-03-06 20:45:45.133 +07:00 [INF] [POST] /api/v1/Media/upload-video
+2026-03-06 20:45:45.134 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:45:45.135 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:45:45.161 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API)'
+2026-03-06 20:45:45.163 +07:00 [INF] Route matched with {action = "UploadVideo", controller = "Media"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UploadVideo(Microsoft.AspNetCore.Http.IFormFile) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:45:48.205 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType2`3[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-06 20:45:48.210 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API) in 3045.9373ms
+2026-03-06 20:45:48.213 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.UploadVideo (FacebookClone.API)'
+2026-03-06 20:45:48.275 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Media/upload-video - 200 null application/json; charset=utf-8 3145.5486ms
+2026-03-06 20:46:19.601 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda - null null
+2026-03-06 20:46:19.604 +07:00 [INF] [GET] /api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda
+2026-03-06 20:46:19.608 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:46:19.610 +07:00 [INF] Route matched with {action = "StreamVideo", controller = "Media"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult StreamVideo(System.String) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:46:19.612 +07:00 [INF] Executing NotFoundObjectResult, writing value of type 'System.String'.
+2026-03-06 20:46:19.614 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API) in 2.243ms
+2026-03-06 20:46:19.615 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:46:19.616 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda - 404 null text/plain; charset=utf-8 15.4163ms
+2026-03-06 20:46:33.797 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - null null
+2026-03-06 20:46:33.801 +07:00 [INF] [GET] /api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4
+2026-03-06 20:46:33.804 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:46:33.806 +07:00 [INF] Route matched with {action = "StreamVideo", controller = "Media"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult StreamVideo(System.String) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:46:33.810 +07:00 [INF] Executing PhysicalFileResult, sending file 'C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\wwwroot\uploads\videos\cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4' with download name '' ...
+2026-03-06 20:46:34.844 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API) in 1036.5029ms
+2026-03-06 20:46:34.845 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:46:34.846 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - 200 402537477 video/mp4 1049.2126ms
+2026-03-06 20:47:22.219 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-06 20:47:22.221 +07:00 [INF] [GET] /swagger/index.html
+2026-03-06 20:47:22.222 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 3.7378ms
+2026-03-06 20:47:50.010 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-06 20:47:50.012 +07:00 [INF] [GET] /swagger/index.html
+2026-03-06 20:47:50.013 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 3.4218ms
+2026-03-06 20:47:50.388 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-06 20:47:50.391 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-06 20:47:50.402 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 13.5977ms
+2026-03-06 20:48:11.844 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 54
+2026-03-06 20:48:11.848 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-06 20:48:11.849 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:48:11.850 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:48:11.851 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 20:48:11.852 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-06 20:48:11.906 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-06 20:48:12.130 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-06 20:48:12.133 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-06 20:48:12.134 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 280.5059ms
+2026-03-06 20:48:12.135 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 20:48:12.135 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 291.3267ms
+2026-03-06 20:48:37.099 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - null null
+2026-03-06 20:48:37.102 +07:00 [INF] [GET] /api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4
+2026-03-06 20:48:37.104 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:48:37.105 +07:00 [INF] Route matched with {action = "StreamVideo", controller = "Media"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult StreamVideo(System.String) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:48:37.107 +07:00 [INF] Executing PhysicalFileResult, sending file 'C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\wwwroot\uploads\videos\cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4' with download name '' ...
+2026-03-06 20:48:38.099 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API) in 991.9936ms
+2026-03-06 20:48:38.103 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:48:38.110 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - 200 402537477 video/mp4 1010.53ms
+2026-03-06 20:51:09.453 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-06 20:51:09.455 +07:00 [INF] [GET] /swagger/index.html
+2026-03-06 20:51:09.456 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 3.3375ms
+2026-03-06 20:51:09.502 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-06 20:51:09.505 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-06 20:51:09.513 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 11.2818ms
+2026-03-06 20:51:22.506 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 53
+2026-03-06 20:51:22.517 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-06 20:51:22.523 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:51:22.524 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:51:22.525 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 20:51:22.525 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-06 20:51:22.551 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-06 20:51:22.675 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 148.0087ms
+2026-03-06 20:51:22.676 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 20:51:22.677 +07:00 [WRN] Invalid credentials
+FacebookClone.Application.Common.Exceptions.AppException: Invalid credentials
+   at FacebookClone.API.Services.AuthService.LoginAsync(LoginRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Services\AuthService.cs:line 32
+   at FacebookClone.API.Controllers.AuthController.Login(LoginRequest request) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Controllers\AuthController.cs:line 34
+   at lambda_method6(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at FacebookClone.API.Middlewares.ExceptionMiddleware.Invoke(HttpContext context) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Middlewares\ExceptionMiddleware.cs:line 20
+2026-03-06 20:51:22.725 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 401 null application/json 219.0724ms
+2026-03-06 20:51:26.264 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 54
+2026-03-06 20:51:26.268 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-06 20:51:26.272 +07:00 [INF] CORS policy execution failed.
+2026-03-06 20:51:26.273 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-06 20:51:26.274 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 20:51:26.275 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-06 20:51:26.278 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-06 20:51:26.389 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-06 20:51:26.395 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-06 20:51:26.395 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 119.3613ms
+2026-03-06 20:51:26.396 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-06 20:51:26.397 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 132.6093ms
+2026-03-06 20:51:45.832 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/sd - null null
+2026-03-06 20:51:45.835 +07:00 [INF] [GET] /api/v1/Media/stream/sd
+2026-03-06 20:51:45.837 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:51:45.838 +07:00 [INF] Route matched with {action = "StreamVideo", controller = "Media"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult StreamVideo(System.String) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:51:45.840 +07:00 [INF] Executing NotFoundObjectResult, writing value of type 'System.String'.
+2026-03-06 20:51:45.841 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API) in 1.3293ms
+2026-03-06 20:51:45.843 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:51:45.844 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/sd - 404 null text/plain; charset=utf-8 11.846ms
+2026-03-06 20:51:58.561 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - null null
+2026-03-06 20:51:58.566 +07:00 [INF] [GET] /api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4
+2026-03-06 20:51:58.569 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:51:58.571 +07:00 [INF] Route matched with {action = "StreamVideo", controller = "Media"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult StreamVideo(System.String) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:51:58.573 +07:00 [INF] Executing PhysicalFileResult, sending file 'C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\wwwroot\uploads\videos\cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4' with download name '' ...
+2026-03-06 20:51:59.504 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API) in 931.9173ms
+2026-03-06 20:51:59.505 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:51:59.505 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - 200 402537477 video/mp4 944.4439ms
+2026-03-06 20:54:08.357 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - null null
+2026-03-06 20:54:08.360 +07:00 [INF] [GET] /api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4
+2026-03-06 20:54:08.361 +07:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-06 20:54:08.364 +07:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-06 20:54:08.365 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - 401 0 null 7.6641ms
+2026-03-06 20:54:58.836 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/ - null null
+2026-03-06 20:54:58.838 +07:00 [INF] [GET] /api/v1/
+2026-03-06 20:54:58.840 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/ - 404 0 null 3.3455ms
+2026-03-06 20:54:58.842 +07:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5286/api/v1/, Response status code: 404
+2026-03-06 20:55:07.120 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-06 20:55:07.122 +07:00 [INF] [GET] /swagger/index.html
+2026-03-06 20:55:07.123 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 3.6042ms
+2026-03-06 20:55:07.168 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-06 20:55:07.170 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-06 20:55:07.175 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 7.6478ms
+2026-03-06 20:55:13.720 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/ - null null
+2026-03-06 20:55:13.722 +07:00 [INF] [GET] /
+2026-03-06 20:55:13.723 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/ - 404 0 null 3.1788ms
+2026-03-06 20:55:13.725 +07:00 [INF] Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:5286/, Response status code: 404
+2026-03-06 20:55:53.859 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - null null
+2026-03-06 20:55:53.861 +07:00 [INF] [GET] /api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4
+2026-03-06 20:55:53.862 +07:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-06 20:55:53.863 +07:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-06 20:55:53.864 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - 401 0 null 4.6769ms
+2026-03-06 20:56:07.572 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - null null
+2026-03-06 20:56:07.574 +07:00 [INF] [GET] /api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4
+2026-03-06 20:56:07.575 +07:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-06 20:56:07.576 +07:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-06 20:56:07.577 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - 401 0 null 4.75ms
+2026-03-06 20:56:08.774 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - null null
+2026-03-06 20:56:08.776 +07:00 [INF] [GET] /api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4
+2026-03-06 20:56:08.777 +07:00 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+2026-03-06 20:56:08.778 +07:00 [INF] AuthenticationScheme: Bearer was challenged.
+2026-03-06 20:56:08.779 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - 401 0 null 5.14ms
+2026-03-06 20:58:33.928 +07:00 [INF] Application is shutting down...
+2026-03-06 20:58:43.863 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-06 20:58:43.913 +07:00 [INF] Now listening on: http://localhost:5286
+2026-03-06 20:58:43.915 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-06 20:58:43.915 +07:00 [INF] Hosting environment: Development
+2026-03-06 20:58:43.915 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-03-06 20:58:46.048 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - null null
+2026-03-06 20:58:46.060 +07:00 [INF] [GET] /api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4
+2026-03-06 20:58:46.075 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:58:46.082 +07:00 [INF] Route matched with {action = "StreamVideo", controller = "Media"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult StreamVideo(System.String) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:58:46.089 +07:00 [INF] Executing PhysicalFileResult, sending file 'C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\wwwroot\uploads\videos\cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4' with download name '' ...
+2026-03-06 20:58:46.117 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API) in 32.195ms
+2026-03-06 20:58:46.121 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - null null
+2026-03-06 20:58:46.138 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:58:46.140 +07:00 [INF] [GET] /api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4
+2026-03-06 20:58:46.141 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - 200 402537477 video/mp4 92.981ms
+2026-03-06 20:58:46.142 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:58:46.145 +07:00 [INF] Route matched with {action = "StreamVideo", controller = "Media"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult StreamVideo(System.String) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:58:46.154 +07:00 [INF] Executing PhysicalFileResult, sending file 'C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\wwwroot\uploads\videos\cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4' with download name '' ...
+2026-03-06 20:58:46.161 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API) in 7.5984ms
+2026-03-06 20:58:46.162 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:58:46.162 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - null null
+2026-03-06 20:58:46.163 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - 206 402537477 video/mp4 41.5236ms
+2026-03-06 20:58:46.164 +07:00 [INF] [GET] /api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4
+2026-03-06 20:58:46.169 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:58:46.170 +07:00 [INF] Route matched with {action = "StreamVideo", controller = "Media"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult StreamVideo(System.String) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:58:46.171 +07:00 [INF] Executing PhysicalFileResult, sending file 'C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\wwwroot\uploads\videos\cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4' with download name '' ...
+2026-03-06 20:58:46.185 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API) in 14.7417ms
+2026-03-06 20:58:46.186 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:58:46.187 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - null null
+2026-03-06 20:58:46.187 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - 206 1195013 video/mp4 25.0943ms
+2026-03-06 20:58:46.189 +07:00 [INF] [GET] /api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4
+2026-03-06 20:58:46.194 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:58:46.194 +07:00 [INF] Route matched with {action = "StreamVideo", controller = "Media"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult StreamVideo(System.String) on controller FacebookClone.API.Controllers.MediaController (FacebookClone.API).
+2026-03-06 20:58:46.196 +07:00 [INF] Executing PhysicalFileResult, sending file 'C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\wwwroot\uploads\videos\cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4' with download name '' ...
+2026-03-06 20:58:55.728 +07:00 [INF] Executed action FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API) in 9532.8229ms
+2026-03-06 20:58:55.730 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.MediaController.StreamVideo (FacebookClone.API)'
+2026-03-06 20:58:55.731 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Media/stream/cf3f6694-1a30-4fe0-a156-7c6088097cda.mp4 - 206 400290098 video/mp4 9544.4874ms
+2026-03-06 21:01:01.761 +07:00 [INF] Application is shutting down...

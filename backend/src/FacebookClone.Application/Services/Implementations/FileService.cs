@@ -42,4 +42,36 @@ public class FileService : IFileService
         // Trả về đường dẫn tương đối (để lưu vào Database)
         return $"/uploads/{folderName}/{uniqueFileName}";
     }
+
+    public async Task<string> UploadVideoAsync(IFormFile file, string folderName = "videos")
+    {
+        if (file == null || file.Length == 0)
+            throw new ArgumentException("File không hợp lệ.");
+
+        // Giới hạn dung lượng (Ví dụ: tối đa 500MB)
+        long maxFileSize = 500 * 1024 * 1024;
+        if (file.Length > maxFileSize)
+            throw new ArgumentException("Dung lượng video vượt quá 500MB.");
+
+        // Kiểm tra định dạng (Chỉ cho MP4, WEBM)
+        var allowedExtensions = new[] { ".mp4", ".webm", ".avi" };
+        var extension = Path.GetExtension(file.FileName).ToLower();
+        if (!allowedExtensions.Contains(extension))
+            throw new ArgumentException("Chỉ cho phép upload video định dạng .mp4, .webm, .avi");
+
+        // Đảm bảo thư mục tồn tại
+        string uploadsFolder = Path.Combine(_env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads", folderName);
+        if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+        // Đổi tên file
+        string uniqueFileName = Guid.NewGuid().ToString() + extension;
+        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(fileStream);
+        }
+
+        return $"/uploads/{folderName}/{uniqueFileName}";
+    }
 }

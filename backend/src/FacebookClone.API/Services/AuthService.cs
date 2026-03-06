@@ -6,6 +6,7 @@ using FacebookClone.Application.Auth.DTOs;
 using FacebookClone.Application.Auth.Services;
 using Microsoft.EntityFrameworkCore;
 using FacebookClone.Domain.Entities;
+using FacebookClone.Domain.Interfaces;
 using FacebookClone.Application.Common.Exceptions;
 using FacebookClone.Domain.Exceptions; 
 using BCrypt.Net;
@@ -13,11 +14,13 @@ public class AuthService : IAuthService
 {
     private readonly AppDbContext _context;
     private readonly IJwtTokenGenerator _jwt;
+    private readonly IUserRepository _userRepository;
 
-    public AuthService(AppDbContext context, IJwtTokenGenerator jwt)
+    public AuthService(AppDbContext context, IJwtTokenGenerator jwt, IUserRepository userRepository)
     {
         _context = context;
         _jwt = jwt;
+        _userRepository = userRepository;
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request)
@@ -61,7 +64,40 @@ public class AuthService : IAuthService
     // Register / Refresh / Logout sẽ làm tiếp
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
     {
-        throw new NotImplementedException();
+        // 1. Kiểm tra xem Email đã có ai đăng ký chưa
+        var existingUser = await _userRepository.GetByEmailAsync(request.Email);
+        if (existingUser != null)
+        {
+            throw new Exception("Email này đã được sử dụng. Vui lòng chọn email khác.");
+        }
+
+        // 2. Mã hóa mật khẩu
+        var passwordHash = BCrypt.HashPassword(request.Password);
+
+        // 3. Tạo người dùng mới
+        var newUser = new User
+        {
+            Id = Guid.NewGuid(),
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            PasswordHash = passwordHash,
+            IsDeleted = false,
+            IsOnline = false,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        // 4. Lưu vào Database
+        await _userRepository.AddAsync(newUser);
+
+        // 5. Trả về kết quả (Để trống Token, yêu cầu người dùng qua Login để lấy Token chuẩn)
+        return new AuthResponse
+        {
+            AccessToken = string.Empty,
+            RefreshToken = string.Empty,
+            ExpiresIn = 0
+        };
     }
 
     public async Task<AuthResponse> RefreshTokenAsync(string refreshToken)

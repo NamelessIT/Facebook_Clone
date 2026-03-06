@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FacebookClone.API.Services;
 using FacebookClone.API.Extensions;
+using FacebookClone.API.Hubs;
 using FacebookClone.Domain.Interfaces;
 using FacebookClone.Application.Auth.Services;
 using FacebookClone.Application.Auth.Jwt;
@@ -67,11 +68,15 @@ try
     // ---------------------------------------------------------
     builder.Services.AddControllers();
 
+    builder.Services.AddSignalR(); // 👈 Kích hoạt dịch vụ SignalR
+
     // ✅ FIX LỖI AUTOMAPPER: Dùng cú pháp Config Action để tránh lỗi CS1503
     builder.Services.AddAutoMapper(cfg => {
         cfg.AddProfile<UserProfile>();
         cfg.AddProfile<PostProfile>(); 
     });
+
+    builder.Services.AddScoped<INotificationHubService, NotificationHubService>();
 
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IUserService, UserService>();
@@ -84,6 +89,11 @@ try
     builder.Services.AddScoped<IFileService, FileService>();
     builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
     builder.Services.AddScoped<IFriendshipService, FriendshipService>();
+    builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+    builder.Services.AddScoped<INotificationService, NotificationService>();
+    builder.Services.AddScoped<IChatRepository, ChatRepository>();
+    builder.Services.AddScoped<IChatHubService, ChatHubService>();
+    builder.Services.AddScoped<IChatService, ChatService>();
 
     // ---------------------------------------------------------
     // 5. SWAGGER (Swashbuckle) & CORS
@@ -174,7 +184,8 @@ try
     app.UseAuthorization();
 
     app.MapControllers();
-
+    app.MapHub<NotificationHub>("/hubs/notification"); // 👈 Mở cổng cho Frontend kết nối WebSockets
+    app.MapHub<ChatHub>("/hubs/chat"); // 👈 Mở cổng Realtime cho Chat
     app.Run();
 }
 catch (Exception ex)

@@ -3,6 +3,7 @@ using FacebookClone.Application.DTOs.Interaction;
 using FacebookClone.Application.Services.Interfaces;
 using FacebookClone.Domain.Entities;
 using FacebookClone.Domain.Interfaces;
+using FacebookClone.Domain.Enums; 
 
 namespace FacebookClone.Application.Services.Implementations;
 
@@ -12,13 +13,15 @@ public class InteractionService : IInteractionService
     private readonly IPostRepository _postRepo;
     private readonly IUserRepository _userRepo;
     private readonly IMapper _mapper;
+    private readonly INotificationService _notiService;
 
-    public InteractionService(IInteractionRepository interactionRepo, IPostRepository postRepo, IUserRepository userRepo, IMapper mapper)
+    public InteractionService(IInteractionRepository interactionRepo, IPostRepository postRepo, IUserRepository userRepo, IMapper mapper,INotificationService notiService)
     {
         _interactionRepo = interactionRepo;
         _postRepo = postRepo;
         _userRepo = userRepo;
         _mapper = mapper;
+        _notiService = notiService;
     }
 
     public async Task<string> ToggleReactionAsync(Guid userId, Guid postId, ReactionRequest request)
@@ -39,6 +42,8 @@ public class InteractionService : IInteractionService
                 ReactionType = request.ReactionType,
                 CreatedAt = DateTime.UtcNow
             });
+            // 👇 THÊM DÒNG NÀY: Thông báo cho chủ bài viết là có người Thả cảm xúc            
+            await _notiService.CreateNotificationAsync(post.UserId, userId, NotificationType.Like, postId);
             return "Đã bày tỏ cảm xúc.";
         }
         else if (existingReaction.ReactionType == request.ReactionType)
@@ -78,6 +83,8 @@ public class InteractionService : IInteractionService
         var user = await _userRepo.GetByIdAsync(userId);
         comment.User = user!;
 
+        // 👇 THÊM DÒNG NÀY: Thông báo cho chủ bài viết là có người Bình luận
+        await _notiService.CreateNotificationAsync(post.UserId, userId, NotificationType.Comment, postId);
         return _mapper.Map<CommentResponseDto>(comment);
     }
 
