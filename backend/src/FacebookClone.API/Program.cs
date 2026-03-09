@@ -94,6 +94,10 @@ try
     builder.Services.AddScoped<IChatRepository, ChatRepository>();
     builder.Services.AddScoped<IChatHubService, ChatHubService>();
     builder.Services.AddScoped<IChatService, ChatService>();
+    builder.Services.AddScoped<IReelRepository, ReelRepository>();
+    builder.Services.AddScoped<IReelService, ReelService>();
+    builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+    builder.Services.AddScoped<IGroupService, GroupService>();
 
     // ---------------------------------------------------------
     // 5. SWAGGER (Swashbuckle) & CORS

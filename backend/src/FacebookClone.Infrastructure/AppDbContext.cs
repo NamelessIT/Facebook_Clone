@@ -19,13 +19,18 @@ public class AppDbContext : DbContext
     public DbSet<Conversation> Conversations { get; set; }
     public DbSet<ConversationMember> ConversationMembers { get; set; }
     public DbSet<Message> Messages { get; set; }
-
+    public DbSet<Reel> Reels { get; set; }
+    public DbSet<ReelLike> ReelLikes { get; set; } 
+    public DbSet<Group> Groups { get; set; }
+    public DbSet<GroupMember> GroupMembers { get; set; }
     // (sau này seed thêm thì thêm tiếp)
     // public DbSet<Friendship> Friendships => Set<Friendship>();
     // public DbSet<Reaction> Reactions => Set<Reaction>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<ReelLike>().HasKey(rl => new { rl.ReelId, rl.UserId });
+        modelBuilder.Entity<GroupMember>().HasKey(gm => new { gm.GroupId, gm.UserId });
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 }

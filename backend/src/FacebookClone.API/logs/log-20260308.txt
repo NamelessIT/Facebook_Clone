@@ -1,0 +1,252 @@
+2026-03-08 16:30:49.555 +07:00 [FTL] Application terminated unexpectedly
+Microsoft.Extensions.Hosting.HostAbortedException: The host was aborted.
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.ThrowHostAborted()
+   at Microsoft.Extensions.Hosting.HostFactoryResolver.HostingListener.OnNext(KeyValuePair`2 value)
+   at System.Diagnostics.DiagnosticListener.Write(String name, Object value)
+   at Microsoft.Extensions.Hosting.HostBuilder.ResolveHost(IServiceProvider serviceProvider, DiagnosticListener diagnosticListener)
+   at Microsoft.Extensions.Hosting.HostApplicationBuilder.Build()
+   at Microsoft.AspNetCore.Builder.WebApplicationBuilder.Build()
+   at Program.<Main>$(String[] args) in C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\Program.cs:line 154
+2026-03-08 17:34:47.943 +07:00 [INF] User profile is available. Using 'C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-03-08 17:34:48.020 +07:00 [INF] Now listening on: http://localhost:5286
+2026-03-08 17:34:48.021 +07:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-03-08 17:34:48.021 +07:00 [INF] Hosting environment: Development
+2026-03-08 17:34:48.022 +07:00 [INF] Content root path: C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API
+2026-03-08 17:34:52.242 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/index.html - null null
+2026-03-08 17:34:52.265 +07:00 [INF] [GET] /swagger/index.html
+2026-03-08 17:34:52.332 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/index.html - 200 null text/html;charset=utf-8 90.9648ms
+2026-03-08 17:34:52.435 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-08 17:34:52.438 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-08 17:34:52.546 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 111.3614ms
+2026-03-08 17:35:04.390 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 54
+2026-03-08 17:35:04.406 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-08 17:35:04.410 +07:00 [INF] CORS policy execution failed.
+2026-03-08 17:35:04.410 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-08 17:35:04.444 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-08 17:35:04.459 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-08 17:35:05.667 +07:00 [INF] Executed DbCommand (41ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-08 17:35:06.152 +07:00 [INF] Executed DbCommand (8ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-08 17:35:06.177 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-08 17:35:06.192 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 1728.2026ms
+2026-03-08 17:35:06.194 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-08 17:35:06.200 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 1809.9861ms
+2026-03-08 17:35:38.109 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Groups - application/json 67
+2026-03-08 17:35:38.122 +07:00 [INF] [POST] /api/v1/Groups
+2026-03-08 17:35:38.125 +07:00 [INF] CORS policy execution failed.
+2026-03-08 17:35:38.127 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-08 17:35:38.165 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.GroupsController.CreateGroup (FacebookClone.API)'
+2026-03-08 17:35:38.169 +07:00 [INF] Route matched with {action = "CreateGroup", controller = "Groups"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] CreateGroup(FacebookClone.Application.DTOs.Group.CreateGroupRequest) on controller FacebookClone.API.Controllers.GroupsController (FacebookClone.API).
+2026-03-08 17:35:38.324 +07:00 [INF] Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?', @p3='?', @p4='?' (DbType = Guid), @p5='?' (DbType = Int32), @p6='?' (DbType = Guid), @p7='?' (DbType = Guid), @p8='?' (DbType = DateTime), @p9='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Groups" ("Id", "CreatedAt", "Description", "Name", "OwnerId", "Privacy")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5);
+INSERT INTO "GroupMembers" ("GroupId", "UserId", "JoinedAt", "Role")
+VALUES (@p6, @p7, @p8, @p9);
+2026-03-08 17:35:38.418 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@__id_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Id", s."CreatedAt", s."Description", s."Name", s."OwnerId", s."Privacy", s."Id0", s."AvatarUrl", s."Bio", s."CoverUrl", s."CreatedAt0", s."Email", s."FirstName", s."IsDeleted", s."IsOnline", s."LastName", s."Location", s."PasswordHash", s."Status", s."UpdatedAt", g0."GroupId", g0."UserId", g0."JoinedAt", g0."Role"
+FROM (
+    SELECT g."Id", g."CreatedAt", g."Description", g."Name", g."OwnerId", g."Privacy", u."Id" AS "Id0", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt" AS "CreatedAt0", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+    FROM "Groups" AS g
+    INNER JOIN "Users" AS u ON g."OwnerId" = u."Id"
+    WHERE g."Id" = @__id_0
+    LIMIT 1
+) AS s
+LEFT JOIN "GroupMembers" AS g0 ON s."Id" = g0."GroupId"
+ORDER BY s."Id", s."Id0", g0."GroupId"
+2026-03-08 17:35:38.433 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[FacebookClone.Application.DTOs.Group.GroupResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-08 17:35:38.446 +07:00 [INF] Executed action FacebookClone.API.Controllers.GroupsController.CreateGroup (FacebookClone.API) in 275.6763ms
+2026-03-08 17:35:38.447 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.GroupsController.CreateGroup (FacebookClone.API)'
+2026-03-08 17:35:38.448 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Groups - 200 null application/json; charset=utf-8 339.3506ms
+2026-03-08 17:35:54.388 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Groups?pageNumber=1&pageSize=10 - null null
+2026-03-08 17:35:54.392 +07:00 [INF] [GET] /api/v1/Groups
+2026-03-08 17:35:54.396 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.GroupsController.GetAllGroups (FacebookClone.API)'
+2026-03-08 17:35:54.402 +07:00 [INF] Route matched with {action = "GetAllGroups", controller = "Groups"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllGroups(Int32, Int32) on controller FacebookClone.API.Controllers.GroupsController (FacebookClone.API).
+2026-03-08 17:35:54.434 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT g0."Id", g0."CreatedAt", g0."Description", g0."Name", g0."OwnerId", g0."Privacy", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt", g1."GroupId", g1."UserId", g1."JoinedAt", g1."Role"
+FROM (
+    SELECT g."Id", g."CreatedAt", g."Description", g."Name", g."OwnerId", g."Privacy"
+    FROM "Groups" AS g
+    ORDER BY g."CreatedAt" DESC
+    LIMIT @__p_1 OFFSET @__p_0
+) AS g0
+INNER JOIN "Users" AS u ON g0."OwnerId" = u."Id"
+LEFT JOIN "GroupMembers" AS g1 ON g0."Id" = g1."GroupId"
+ORDER BY g0."CreatedAt" DESC, g0."Id", u."Id", g1."GroupId"
+2026-03-08 17:35:54.443 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Group.GroupResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-08 17:35:54.451 +07:00 [INF] Executed action FacebookClone.API.Controllers.GroupsController.GetAllGroups (FacebookClone.API) in 47.2545ms
+2026-03-08 17:35:54.453 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.GroupsController.GetAllGroups (FacebookClone.API)'
+2026-03-08 17:35:54.454 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Groups?pageNumber=1&pageSize=10 - 200 null application/json; charset=utf-8 66.2004ms
+2026-03-08 17:36:07.319 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - null null
+2026-03-08 17:36:07.321 +07:00 [INF] [GET] /swagger/v1/swagger.json
+2026-03-08 17:36:07.332 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 12.6494ms
+2026-03-08 17:36:30.942 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - application/json 58
+2026-03-08 17:36:30.949 +07:00 [INF] [POST] /api/v1/auth/login
+2026-03-08 17:36:30.952 +07:00 [INF] CORS policy execution failed.
+2026-03-08 17:36:30.956 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-08 17:36:30.960 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-08 17:36:30.963 +07:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[FacebookClone.Application.Common.Responses.ApiResponse`1[FacebookClone.Application.Auth.DTOs.AuthResponse]] Login(FacebookClone.Application.Auth.DTOs.LoginRequest) on controller FacebookClone.API.Controllers.AuthController (FacebookClone.API).
+2026-03-08 17:36:30.973 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__request_Email_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Email" = @__request_Email_0 AND NOT (u."IsDeleted")
+LIMIT 2
+2026-03-08 17:36:31.217 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = DateTime), @p2='?' (DbType = DateTime), @p3='?' (DbType = Boolean), @p4='?' (DbType = DateTime), @p5='?', @p6='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "RefreshTokens" ("Id", "CreatedAt", "ExpiresAt", "IsRevoked", "RevokedAt", "Token", "UserId")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-03-08 17:36:31.233 +07:00 [INF] Executing ObjectResult, writing value of type 'FacebookClone.Application.Common.Responses.ApiResponse`1[[FacebookClone.Application.Auth.DTOs.AuthResponse, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-08 17:36:31.236 +07:00 [INF] Executed action FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API) in 269.6239ms
+2026-03-08 17:36:31.238 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.AuthController.Login (FacebookClone.API)'
+2026-03-08 17:36:31.239 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/auth/login - 200 null application/json; charset=utf-8 296.6577ms
+2026-03-08 17:36:53.723 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Groups/0c1abfa0-c077-4ac4-af95-dc250d85c998/join - null 0
+2026-03-08 17:36:53.728 +07:00 [INF] [POST] /api/v1/Groups/0c1abfa0-c077-4ac4-af95-dc250d85c998/join
+2026-03-08 17:36:53.729 +07:00 [INF] CORS policy execution failed.
+2026-03-08 17:36:53.730 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-08 17:36:53.733 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.GroupsController.JoinGroup (FacebookClone.API)'
+2026-03-08 17:36:53.736 +07:00 [INF] Route matched with {action = "JoinGroup", controller = "Groups"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] JoinGroup(System.Guid) on controller FacebookClone.API.Controllers.GroupsController (FacebookClone.API).
+2026-03-08 17:36:53.744 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__id_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Id", s."CreatedAt", s."Description", s."Name", s."OwnerId", s."Privacy", s."Id0", s."AvatarUrl", s."Bio", s."CoverUrl", s."CreatedAt0", s."Email", s."FirstName", s."IsDeleted", s."IsOnline", s."LastName", s."Location", s."PasswordHash", s."Status", s."UpdatedAt", g0."GroupId", g0."UserId", g0."JoinedAt", g0."Role"
+FROM (
+    SELECT g."Id", g."CreatedAt", g."Description", g."Name", g."OwnerId", g."Privacy", u."Id" AS "Id0", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt" AS "CreatedAt0", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+    FROM "Groups" AS g
+    INNER JOIN "Users" AS u ON g."OwnerId" = u."Id"
+    WHERE g."Id" = @__id_0
+    LIMIT 1
+) AS s
+LEFT JOIN "GroupMembers" AS g0 ON s."Id" = g0."GroupId"
+ORDER BY s."Id", s."Id0", g0."GroupId"
+2026-03-08 17:36:53.753 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__groupId_0='?' (DbType = Guid), @__userId_1='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT g."GroupId", g."UserId", g."JoinedAt", g."Role"
+FROM "GroupMembers" AS g
+WHERE g."GroupId" = @__groupId_0 AND g."UserId" = @__userId_1
+LIMIT 1
+2026-03-08 17:36:53.760 +07:00 [INF] Executed DbCommand (3ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Guid), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "GroupMembers" ("GroupId", "UserId", "JoinedAt", "Role")
+VALUES (@p0, @p1, @p2, @p3);
+2026-03-08 17:36:53.762 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-08 17:36:53.764 +07:00 [INF] Executed action FacebookClone.API.Controllers.GroupsController.JoinGroup (FacebookClone.API) in 25.3512ms
+2026-03-08 17:36:53.765 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.GroupsController.JoinGroup (FacebookClone.API)'
+2026-03-08 17:36:53.766 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Groups/0c1abfa0-c077-4ac4-af95-dc250d85c998/join - 200 null application/json; charset=utf-8 43.4437ms
+2026-03-08 17:37:00.341 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Groups?pageNumber=1&pageSize=10 - null null
+2026-03-08 17:37:00.348 +07:00 [INF] [GET] /api/v1/Groups
+2026-03-08 17:37:00.350 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.GroupsController.GetAllGroups (FacebookClone.API)'
+2026-03-08 17:37:00.355 +07:00 [INF] Route matched with {action = "GetAllGroups", controller = "Groups"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllGroups(Int32, Int32) on controller FacebookClone.API.Controllers.GroupsController (FacebookClone.API).
+2026-03-08 17:37:00.361 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT g0."Id", g0."CreatedAt", g0."Description", g0."Name", g0."OwnerId", g0."Privacy", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt", g1."GroupId", g1."UserId", g1."JoinedAt", g1."Role"
+FROM (
+    SELECT g."Id", g."CreatedAt", g."Description", g."Name", g."OwnerId", g."Privacy"
+    FROM "Groups" AS g
+    ORDER BY g."CreatedAt" DESC
+    LIMIT @__p_1 OFFSET @__p_0
+) AS g0
+INNER JOIN "Users" AS u ON g0."OwnerId" = u."Id"
+LEFT JOIN "GroupMembers" AS g1 ON g0."Id" = g1."GroupId"
+ORDER BY g0."CreatedAt" DESC, g0."Id", u."Id", g1."GroupId"
+2026-03-08 17:37:00.366 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Group.GroupResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-08 17:37:00.370 +07:00 [INF] Executed action FacebookClone.API.Controllers.GroupsController.GetAllGroups (FacebookClone.API) in 12.0994ms
+2026-03-08 17:37:00.373 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.GroupsController.GetAllGroups (FacebookClone.API)'
+2026-03-08 17:37:00.374 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Groups?pageNumber=1&pageSize=10 - 200 null application/json; charset=utf-8 33.336ms
+2026-03-08 17:37:10.374 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Groups/0c1abfa0-c077-4ac4-af95-dc250d85c998 - null null
+2026-03-08 17:37:10.386 +07:00 [INF] [GET] /api/v1/Groups/0c1abfa0-c077-4ac4-af95-dc250d85c998
+2026-03-08 17:37:10.393 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.GroupsController.GetGroupDetails (FacebookClone.API)'
+2026-03-08 17:37:10.399 +07:00 [INF] Route matched with {action = "GetGroupDetails", controller = "Groups"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetGroupDetails(System.Guid) on controller FacebookClone.API.Controllers.GroupsController (FacebookClone.API).
+2026-03-08 17:37:10.406 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@__id_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Id", s."CreatedAt", s."Description", s."Name", s."OwnerId", s."Privacy", s."Id0", s."AvatarUrl", s."Bio", s."CoverUrl", s."CreatedAt0", s."Email", s."FirstName", s."IsDeleted", s."IsOnline", s."LastName", s."Location", s."PasswordHash", s."Status", s."UpdatedAt", g0."GroupId", g0."UserId", g0."JoinedAt", g0."Role"
+FROM (
+    SELECT g."Id", g."CreatedAt", g."Description", g."Name", g."OwnerId", g."Privacy", u."Id" AS "Id0", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt" AS "CreatedAt0", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+    FROM "Groups" AS g
+    INNER JOIN "Users" AS u ON g."OwnerId" = u."Id"
+    WHERE g."Id" = @__id_0
+    LIMIT 1
+) AS s
+LEFT JOIN "GroupMembers" AS g0 ON s."Id" = g0."GroupId"
+ORDER BY s."Id", s."Id0", g0."GroupId"
+2026-03-08 17:37:10.411 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[FacebookClone.Application.DTOs.Group.GroupResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-03-08 17:37:10.412 +07:00 [INF] Executed action FacebookClone.API.Controllers.GroupsController.GetGroupDetails (FacebookClone.API) in 11.0018ms
+2026-03-08 17:37:10.413 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.GroupsController.GetGroupDetails (FacebookClone.API)'
+2026-03-08 17:37:10.415 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Groups/0c1abfa0-c077-4ac4-af95-dc250d85c998 - 200 null application/json; charset=utf-8 41.1764ms
+2026-03-08 17:37:19.687 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Groups?pageNumber=1&pageSize=10 - null null
+2026-03-08 17:37:19.691 +07:00 [INF] [GET] /api/v1/Groups
+2026-03-08 17:37:19.693 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.GroupsController.GetAllGroups (FacebookClone.API)'
+2026-03-08 17:37:19.694 +07:00 [INF] Route matched with {action = "GetAllGroups", controller = "Groups"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllGroups(Int32, Int32) on controller FacebookClone.API.Controllers.GroupsController (FacebookClone.API).
+2026-03-08 17:37:19.699 +07:00 [INF] Executed DbCommand (2ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT g0."Id", g0."CreatedAt", g0."Description", g0."Name", g0."OwnerId", g0."Privacy", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt", g1."GroupId", g1."UserId", g1."JoinedAt", g1."Role"
+FROM (
+    SELECT g."Id", g."CreatedAt", g."Description", g."Name", g."OwnerId", g."Privacy"
+    FROM "Groups" AS g
+    ORDER BY g."CreatedAt" DESC
+    LIMIT @__p_1 OFFSET @__p_0
+) AS g0
+INNER JOIN "Users" AS u ON g0."OwnerId" = u."Id"
+LEFT JOIN "GroupMembers" AS g1 ON g0."Id" = g1."GroupId"
+ORDER BY g0."CreatedAt" DESC, g0."Id", u."Id", g1."GroupId"
+2026-03-08 17:37:19.702 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Group.GroupResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-08 17:37:19.703 +07:00 [INF] Executed action FacebookClone.API.Controllers.GroupsController.GetAllGroups (FacebookClone.API) in 7.9003ms
+2026-03-08 17:37:19.705 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.GroupsController.GetAllGroups (FacebookClone.API)'
+2026-03-08 17:37:19.705 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Groups?pageNumber=1&pageSize=10 - 200 null application/json; charset=utf-8 18.0801ms
+2026-03-08 17:37:57.625 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/users/me - null null
+2026-03-08 17:37:57.628 +07:00 [INF] [GET] /api/v1/users/me
+2026-03-08 17:37:57.630 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API)'
+2026-03-08 17:37:57.633 +07:00 [INF] Route matched with {action = "GetMyProfile", controller = "Users"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller FacebookClone.API.Controllers.UsersController (FacebookClone.API).
+2026-03-08 17:37:57.646 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+FROM "Users" AS u
+WHERE u."Id" = @__p_0
+LIMIT 1
+2026-03-08 17:37:57.648 +07:00 [INF] Executing OkObjectResult, writing value of type 'FacebookClone.Application.DTOs.User.UserProfileDto'.
+2026-03-08 17:37:57.649 +07:00 [INF] Executed action FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API) in 14.508ms
+2026-03-08 17:37:57.650 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.UsersController.GetMyProfile (FacebookClone.API)'
+2026-03-08 17:37:57.651 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/users/me - 200 null application/json; charset=utf-8 26.516ms
+2026-03-08 17:38:04.318 +07:00 [INF] Request starting HTTP/1.1 POST http://localhost:5286/api/v1/Groups/0c1abfa0-c077-4ac4-af95-dc250d85c998/leave - null 0
+2026-03-08 17:38:04.324 +07:00 [INF] [POST] /api/v1/Groups/0c1abfa0-c077-4ac4-af95-dc250d85c998/leave
+2026-03-08 17:38:04.330 +07:00 [INF] CORS policy execution failed.
+2026-03-08 17:38:04.331 +07:00 [INF] Request origin http://localhost:5286 does not have permission to access the resource.
+2026-03-08 17:38:04.333 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.GroupsController.LeaveGroup (FacebookClone.API)'
+2026-03-08 17:38:04.336 +07:00 [INF] Route matched with {action = "LeaveGroup", controller = "Groups"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] LeaveGroup(System.Guid) on controller FacebookClone.API.Controllers.GroupsController (FacebookClone.API).
+2026-03-08 17:38:04.342 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__id_0='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT s."Id", s."CreatedAt", s."Description", s."Name", s."OwnerId", s."Privacy", s."Id0", s."AvatarUrl", s."Bio", s."CoverUrl", s."CreatedAt0", s."Email", s."FirstName", s."IsDeleted", s."IsOnline", s."LastName", s."Location", s."PasswordHash", s."Status", s."UpdatedAt", g0."GroupId", g0."UserId", g0."JoinedAt", g0."Role"
+FROM (
+    SELECT g."Id", g."CreatedAt", g."Description", g."Name", g."OwnerId", g."Privacy", u."Id" AS "Id0", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt" AS "CreatedAt0", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt"
+    FROM "Groups" AS g
+    INNER JOIN "Users" AS u ON g."OwnerId" = u."Id"
+    WHERE g."Id" = @__id_0
+    LIMIT 1
+) AS s
+LEFT JOIN "GroupMembers" AS g0 ON s."Id" = g0."GroupId"
+ORDER BY s."Id", s."Id0", g0."GroupId"
+2026-03-08 17:38:04.345 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__groupId_0='?' (DbType = Guid), @__userId_1='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+SELECT g."GroupId", g."UserId", g."JoinedAt", g."Role"
+FROM "GroupMembers" AS g
+WHERE g."GroupId" = @__groupId_0 AND g."UserId" = @__userId_1
+LIMIT 1
+2026-03-08 17:38:04.358 +07:00 [INF] Executed DbCommand (4ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Guid)], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM "GroupMembers"
+WHERE "GroupId" = @p0 AND "UserId" = @p1;
+2026-03-08 17:38:04.362 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-08 17:38:04.363 +07:00 [INF] Executed action FacebookClone.API.Controllers.GroupsController.LeaveGroup (FacebookClone.API) in 24.91ms
+2026-03-08 17:38:04.365 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.GroupsController.LeaveGroup (FacebookClone.API)'
+2026-03-08 17:38:04.365 +07:00 [INF] Request finished HTTP/1.1 POST http://localhost:5286/api/v1/Groups/0c1abfa0-c077-4ac4-af95-dc250d85c998/leave - 200 null application/json; charset=utf-8 47.784ms
+2026-03-08 17:38:10.085 +07:00 [INF] Request starting HTTP/1.1 GET http://localhost:5286/api/v1/Groups?pageNumber=1&pageSize=10 - null null
+2026-03-08 17:38:10.094 +07:00 [INF] [GET] /api/v1/Groups
+2026-03-08 17:38:10.097 +07:00 [INF] Executing endpoint 'FacebookClone.API.Controllers.GroupsController.GetAllGroups (FacebookClone.API)'
+2026-03-08 17:38:10.099 +07:00 [INF] Route matched with {action = "GetAllGroups", controller = "Groups"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllGroups(Int32, Int32) on controller FacebookClone.API.Controllers.GroupsController (FacebookClone.API).
+2026-03-08 17:38:10.104 +07:00 [INF] Executed DbCommand (1ms) [Parameters=[@__p_1='?' (DbType = Int32), @__p_0='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT g0."Id", g0."CreatedAt", g0."Description", g0."Name", g0."OwnerId", g0."Privacy", u."Id", u."AvatarUrl", u."Bio", u."CoverUrl", u."CreatedAt", u."Email", u."FirstName", u."IsDeleted", u."IsOnline", u."LastName", u."Location", u."PasswordHash", u."Status", u."UpdatedAt", g1."GroupId", g1."UserId", g1."JoinedAt", g1."Role"
+FROM (
+    SELECT g."Id", g."CreatedAt", g."Description", g."Name", g."OwnerId", g."Privacy"
+    FROM "Groups" AS g
+    ORDER BY g."CreatedAt" DESC
+    LIMIT @__p_1 OFFSET @__p_0
+) AS g0
+INNER JOIN "Users" AS u ON g0."OwnerId" = u."Id"
+LEFT JOIN "GroupMembers" AS g1 ON g0."Id" = g1."GroupId"
+ORDER BY g0."CreatedAt" DESC, g0."Id", u."Id", g1."GroupId"
+2026-03-08 17:38:10.113 +07:00 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Collections.Generic.IEnumerable`1[[FacebookClone.Application.DTOs.Group.GroupResponseDto, FacebookClone.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-03-08 17:38:10.119 +07:00 [INF] Executed action FacebookClone.API.Controllers.GroupsController.GetAllGroups (FacebookClone.API) in 17.6059ms
+2026-03-08 17:38:10.128 +07:00 [INF] Executed endpoint 'FacebookClone.API.Controllers.GroupsController.GetAllGroups (FacebookClone.API)'
+2026-03-08 17:38:10.132 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/Groups?pageNumber=1&pageSize=10 - 200 null application/json; charset=utf-8 47.5867ms
+2026-03-08 17:38:38.927 +07:00 [INF] Application is shutting down...
