@@ -82,6 +82,21 @@ body {
   margin: 0 auto;
 }
 
+.search-container { 
+  position: relative;
+  display: flex; 
+  align-items: center; 
+}
+
+.search-icon { 
+  position: absolute; 
+  left: 10px; 
+}
+  
+.nav-search { 
+  padding-left: 35px; 
+}
+
 /* Tùy chỉnh danh sách menu */
 .menu-item {
   display: flex;
