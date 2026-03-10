@@ -29,7 +29,7 @@ public class UserSeeder : ISeeder
                 LastName = "Nguyen",
                 Location = "Ho Chi Minh City, VN", // Thêm Location
                 
-                AvatarUrl = "https://i.pravatar.cc/150?img=1",
+                AvatarUrl = "f30955c0-791e-4e87-bd36-30b46e2eaa4d.png",
                 CoverUrl = "https://picsum.photos/800/300?1",
                 Bio = "Frontend developer",
                 Status = "Working 💻",
@@ -70,6 +70,23 @@ public class UserSeeder : ISeeder
                 Bio = "UI/UX Designer",
                 Status = "Designing 🎨",
                 IsOnline = true,
+                CreatedAt = now,
+                UpdatedAt = now
+            },
+            new User
+            {
+                Id = Guid.NewGuid(),
+                Email = "huy@gmail.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
+                // SỬA Ở ĐÂY
+                FirstName = "Huy",
+                LastName = "Le",
+                Location = "HCM, VN",
+                AvatarUrl = "103b6f49-4523-4a65-a188-b3cab9d7f626.png",
+                CoverUrl = "https://picsum.photos/800/300?4",
+                Bio = "Full Stack Developer",
+                Status = "Coding 💻",
+                IsOnline = false,
                 CreatedAt = now,
                 UpdatedAt = now
             }

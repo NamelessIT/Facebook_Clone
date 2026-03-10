@@ -19,6 +19,12 @@ public class PostsController : ControllerBase
         _postService = postService;
     }
 
+    private Guid GetCurrentUserId()
+    {
+        var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return Guid.Parse(idClaim!);
+    }
+
     // 1. LẤY BẢNG TIN (GET /api/v1/posts)
     [HttpGet]
     public async Task<IActionResult> GetNewsFeed([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
@@ -29,17 +35,14 @@ public class PostsController : ControllerBase
 
     // 2. ĐĂNG BÀI VIẾT (POST /api/v1/posts)
     [HttpPost]
-    public async Task<IActionResult> CreatePost([FromBody] CreatePostRequest request)
+    [DisableRequestSizeLimit] // 👈 Cho phép gửi video nặng
+    [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
+    public async Task<IActionResult> CreatePost([FromForm] CreatePostRequest request) // 👈 Đổi [FromBody] thành [FromForm]
     {
-        // Lấy ID của User đang đăng nhập từ JWT Token
-        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!Guid.TryParse(userIdString, out Guid userId))
-        {
-            return Unauthorized(new { success = false, message = "Token không hợp lệ" });
-        }
-
-        var newPost = await _postService.CreatePostAsync(userId, request);
-        return Ok(new { success = true, data = newPost, message = "Đăng bài thành công!" });
+        try {
+            var post = await _postService.CreatePostAsync(GetCurrentUserId(), request);
+            return Ok(new { success = true, data = post });
+        } catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
     }
 
     // 3. SỬA BÀI VIẾT (PUT /api/v1/posts/{id})
@@ -124,4 +127,20 @@ public class PostsController : ControllerBase
         var comments = await interactionService.GetCommentsAsync(postId, pageNumber, pageSize);
         return Ok(new { success = true, data = comments });
     }
+
+    // 5. THẢ TIM BÌNH LUẬN (POST /api/v1/posts/comments/{commentId}/reactions)
+    [HttpPost("comments/{commentId}/reactions")]
+    public async Task<IActionResult> ToggleCommentReaction(Guid commentId, [FromBody] ReactionRequest request)
+    {
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(userIdString, out Guid userId)) return Unauthorized();
+
+        var interactionService = HttpContext.RequestServices.GetRequiredService<IInteractionService>();
+        
+        try {
+            var message = await interactionService.ToggleCommentReactionAsync(userId, commentId, request);
+            return Ok(new { success = true, message = message });
+        } catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
+    }
+    
 }

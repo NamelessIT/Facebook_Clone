@@ -7,4 +7,5 @@ public interface IInteractionService
     Task<string> ToggleReactionAsync(Guid userId, Guid postId, ReactionRequest request);
     Task<CommentResponseDto> AddCommentAsync(Guid userId, Guid postId, CreateCommentRequest request);
     Task<IEnumerable<CommentResponseDto>> GetCommentsAsync(Guid postId, int pageNumber, int pageSize);
+    Task<string> ToggleCommentReactionAsync(Guid userId, Guid commentId, ReactionRequest request);
 }

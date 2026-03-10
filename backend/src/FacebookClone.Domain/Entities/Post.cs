@@ -27,4 +27,7 @@ public class Post
     /* Navigation */
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
+    
+    // 👇 THÊM DÒNG NÀY ĐỂ POST CÓ THỂ CHỨA NHIỀU MEDIA
+    public ICollection<MediaAttachment> Medias { get; set; } = new List<MediaAttachment>();
 }

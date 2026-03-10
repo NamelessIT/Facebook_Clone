@@ -21,4 +21,10 @@ public class Comment
 
     /* Navigation */
     public ICollection<Comment> Replies { get; set; } = new List<Comment>();
+
+    // 👇 THÊM DÒNG NÀY ĐỂ COMMENT CŨNG CÓ THỂ CHỨA NHIỀU MEDIA
+    public ICollection<MediaAttachment> Medias { get; set; } = new List<MediaAttachment>();
+
+    // 👇 THÊM DÒNG NÀY: Để đếm và lấy danh sách reaction của Comment
+    public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
 }

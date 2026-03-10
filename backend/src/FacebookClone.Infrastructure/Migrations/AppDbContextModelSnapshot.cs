@@ -184,6 +184,37 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.ToTable("GroupMembers", (string)null);
                 });
 
+            modelBuilder.Entity("FacebookClone.Domain.Entities.MediaAttachment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CommentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("MediaType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("PostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommentId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("MediaAttachments");
+                });
+
             modelBuilder.Entity("FacebookClone.Domain.Entities.Message", b =>
                 {
                     b.Property<Guid>("Id")
@@ -309,10 +340,13 @@ namespace FacebookClone.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("CommentId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("PostId")
+                    b.Property<Guid?>("PostId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("ReactionType")
@@ -322,6 +356,8 @@ namespace FacebookClone.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CommentId");
 
                     b.HasIndex("PostId");
 
@@ -585,6 +621,21 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FacebookClone.Domain.Entities.MediaAttachment", b =>
+                {
+                    b.HasOne("FacebookClone.Domain.Entities.Comment", "Comment")
+                        .WithMany("Medias")
+                        .HasForeignKey("CommentId");
+
+                    b.HasOne("FacebookClone.Domain.Entities.Post", "Post")
+                        .WithMany("Medias")
+                        .HasForeignKey("PostId");
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("Post");
+                });
+
             modelBuilder.Entity("FacebookClone.Domain.Entities.Message", b =>
                 {
                     b.HasOne("FacebookClone.Domain.Entities.Conversation", "Conversation")
@@ -647,17 +698,21 @@ namespace FacebookClone.Infrastructure.Migrations
 
             modelBuilder.Entity("FacebookClone.Domain.Entities.Reaction", b =>
                 {
+                    b.HasOne("FacebookClone.Domain.Entities.Comment", "Comment")
+                        .WithMany("Reactions")
+                        .HasForeignKey("CommentId");
+
                     b.HasOne("FacebookClone.Domain.Entities.Post", "Post")
                         .WithMany("Reactions")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PostId");
 
                     b.HasOne("FacebookClone.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Comment");
 
                     b.Navigation("Post");
 
@@ -707,6 +762,10 @@ namespace FacebookClone.Infrastructure.Migrations
 
             modelBuilder.Entity("FacebookClone.Domain.Entities.Comment", b =>
                 {
+                    b.Navigation("Medias");
+
+                    b.Navigation("Reactions");
+
                     b.Navigation("Replies");
                 });
 
@@ -725,6 +784,8 @@ namespace FacebookClone.Infrastructure.Migrations
             modelBuilder.Entity("FacebookClone.Domain.Entities.Post", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Medias");
 
                     b.Navigation("Reactions");
                 });

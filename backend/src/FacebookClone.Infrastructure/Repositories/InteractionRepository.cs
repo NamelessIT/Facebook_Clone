@@ -42,4 +42,14 @@ public class InteractionRepository : IInteractionRepository
             .AsNoTracking()
             .ToListAsync();
     }
+    public async Task<Comment?> GetCommentByIdAsync(Guid commentId)
+    {
+        return await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId && !c.IsDeleted);
+    }
+
+    public async Task<Reaction?> GetCommentReactionAsync(Guid userId, Guid commentId)
+    {
+        return await _context.Reactions
+            .FirstOrDefaultAsync(r => r.UserId == userId && r.CommentId == commentId);
+    }
 }

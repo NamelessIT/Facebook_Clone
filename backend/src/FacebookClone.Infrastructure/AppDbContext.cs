@@ -23,6 +23,7 @@ public class AppDbContext : DbContext
     public DbSet<ReelLike> ReelLikes { get; set; } 
     public DbSet<Group> Groups { get; set; }
     public DbSet<GroupMember> GroupMembers { get; set; }
+    public DbSet<MediaAttachment> MediaAttachments { get; set; }
     // (sau này seed thêm thì thêm tiếp)
     // public DbSet<Friendship> Friendships => Set<Friendship>();
     // public DbSet<Reaction> Reactions => Set<Reaction>();

@@ -13,4 +13,6 @@ public interface IInteractionRepository
     // Comment
     Task AddCommentAsync(Comment comment);
     Task<IEnumerable<Comment>> GetCommentsByPostIdAsync(Guid postId, int pageNumber, int pageSize);
+    Task<Comment?> GetCommentByIdAsync(Guid commentId);
+    Task<Reaction?> GetCommentReactionAsync(Guid userId, Guid commentId);
 }

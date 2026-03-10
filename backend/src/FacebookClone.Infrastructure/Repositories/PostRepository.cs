@@ -25,6 +25,7 @@ public class PostRepository : IPostRepository
     {
         return await _context.Posts
             .Include(p => p.User) // Bắt buộc phải Include để lấy tên, avatar người đăng
+            .Include(p => p.Medias) // 👈 THÊM DÒNG NÀY VÀO CHUỖI INCLUDE
             .Include(p => p.Reactions)
             .Include(p => p.Comments)
             .Where(p => !p.IsDeleted)
@@ -39,6 +40,7 @@ public class PostRepository : IPostRepository
     {
         return await _context.Posts
             .Include(p => p.User) // Kéo theo User để không bị lỗi Author = null
+            .Include(p => p.Medias) // 👈 THÊM DÒNG NÀY VÀO CHUỖI INCLUDE
             .Include(p => p.Reactions)
             .Include(p => p.Comments)
             .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);

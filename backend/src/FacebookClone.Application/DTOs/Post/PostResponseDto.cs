@@ -11,10 +11,11 @@ public class PostResponseDto
     public PostType PostType { get; set; }
     public DateTime CreatedAt { get; set; }
     
-    // Trả về thông tin người đăng (Tận dụng lại UserProfileDto hoặc tạo một AuthorDto nhỏ gọn)
     public UserProfileDto Author { get; set; } = null!;
     
-    // Thống kê tương tác (Làm nền tảng cho Frontend hiển thị số like/comment)
     public int ReactionsCount { get; set; }
     public int CommentsCount { get; set; }
+
+    // 👇 THÊM DÒNG NÀY ĐỂ TRẢ VỀ DANH SÁCH FILE ĐÍNH KÈM
+    public List<MediaDto> Medias { get; set; } = new List<MediaDto>();
 }

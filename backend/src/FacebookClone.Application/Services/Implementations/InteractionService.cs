@@ -93,4 +93,46 @@ public class InteractionService : IInteractionService
         var comments = await _interactionRepo.GetCommentsByPostIdAsync(postId, pageNumber, pageSize);
         return _mapper.Map<IEnumerable<CommentResponseDto>>(comments);
     }
+
+    // 👇 THÊM HÀM NÀY ĐỂ XỬ LÝ THẢ TIM COMMENT
+    public async Task<string> ToggleCommentReactionAsync(Guid userId, Guid commentId, ReactionRequest request)
+    {
+        // 1. Kiểm tra comment có tồn tại không (Phải lấy thêm thông tin để bắn Noti)
+        var comment = await _interactionRepo.GetCommentByIdAsync(commentId);
+        if (comment == null) throw new Exception("Bình luận không tồn tại.");
+
+        // 2. Kiểm tra xem user đã thả tim comment này chưa
+        var existingReaction = await _interactionRepo.GetCommentReactionAsync(userId, commentId);
+
+        if (existingReaction == null)
+        {
+            // 3. Chưa thả -> Thêm mới
+            await _interactionRepo.AddReactionAsync(new Reaction
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                PostId = null, // 👈 ĐỂ TRỐNG POST ID
+                CommentId = commentId, // 👈 GẮN COMMENT ID VÀO
+                ReactionType = request.ReactionType,
+                CreatedAt = DateTime.UtcNow
+            });
+            
+            // Thông báo cho chủ bình luận là có người thả tim vào bình luận của họ
+            await _notiService.CreateNotificationAsync(comment.UserId, userId, NotificationType.Like, comment.PostId);
+            return "Đã bày tỏ cảm xúc với bình luận.";
+        }
+        else if (existingReaction.ReactionType == request.ReactionType)
+        {
+            // 4. Thả y hệt -> Hủy cảm xúc (Unlike)
+            await _interactionRepo.DeleteReactionAsync(existingReaction);
+            return "Đã gỡ cảm xúc bình luận.";
+        }
+        else
+        {
+            // 5. Đổi cảm xúc (Từ Like sang Haha)
+            existingReaction.ReactionType = request.ReactionType;
+            await _interactionRepo.UpdateReactionAsync(existingReaction);
+            return "Đã thay đổi cảm xúc bình luận.";
+        }
+    }
 }

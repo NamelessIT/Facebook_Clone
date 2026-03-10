@@ -2,6 +2,7 @@ using AutoMapper;
 using FacebookClone.Application.DTOs.Post;
 using FacebookClone.Application.Services.Interfaces;
 using FacebookClone.Domain.Entities;
+using FacebookClone.Domain.Enums; // 👈 1. Đã thêm using Enums
 using FacebookClone.Domain.Interfaces;
 
 namespace FacebookClone.Application.Services.Implementations;
@@ -11,12 +12,15 @@ public class PostService : IPostService
     private readonly IUserRepository _userRepository;
     private readonly IPostRepository _postRepository;
     private readonly IMapper _mapper;
+    private readonly IFileService _fileService; // 👈 2. Đã thêm IFileService
 
-    public PostService(IPostRepository postRepository, IMapper mapper,IUserRepository userRepository)
+    // 👇 3. Đã inject IFileService vào Constructor
+    public PostService(IPostRepository postRepository, IMapper mapper, IUserRepository userRepository, IFileService fileService)
     {
         _postRepository = postRepository;
         _mapper = mapper;
         _userRepository = userRepository;
+        _fileService = fileService; 
     }
 
     public async Task<PostResponseDto> CreatePostAsync(Guid userId, CreatePostRequest request)
@@ -29,14 +33,46 @@ public class PostService : IPostService
             Privacy = request.Privacy,
             PostType = request.PostType,
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
             IsDeleted = false
         };
 
-        var createdPost = await _postRepository.CreateAsync(post);
+        // 1. Xử lý lưu danh sách ẢNH
+        if (request.Images != null && request.Images.Any())
+        {
+            foreach (var img in request.Images)
+            {
+                var imgUrl = await _fileService.UploadImageAsync(img, "posts");
+                post.Medias.Add(new MediaAttachment 
+                { 
+                    Id = Guid.NewGuid(),
+                    Url = imgUrl, 
+                    MediaType = MediaType.Image, 
+                    CreatedAt = DateTime.UtcNow 
+                });
+            }
+        }
 
-        var user = await _userRepository.GetByIdAsync(userId);
-        createdPost.User = user!;
+        // 2. Xử lý lưu danh sách VIDEO
+        if (request.Videos != null && request.Videos.Any())
+        {
+            foreach (var vid in request.Videos)
+            {
+                // Gọi hàm UploadVideoAsync mà chúng ta đã làm ở phần Reels
+                var vidUrl = await _fileService.UploadVideoAsync(vid, "posts"); 
+                post.Medias.Add(new MediaAttachment 
+                { 
+                    Id = Guid.NewGuid(),
+                    Url = vidUrl, 
+                    MediaType = MediaType.Video, 
+                    CreatedAt = DateTime.UtcNow 
+                });
+            }
+        }
+
+        // 👇 4. Đã sửa _postRepo thành _postRepository
+        await _postRepository.CreateAsync(post);
+        var createdPost = await _postRepository.GetByIdAsync(post.Id);
+
         return _mapper.Map<PostResponseDto>(createdPost);
     }
 
