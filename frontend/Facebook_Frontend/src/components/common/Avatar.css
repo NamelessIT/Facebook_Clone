@@ -1,0 +1,17 @@
+.avatar-img {
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #ced0d4;
+  background-color: #f0f2f5;
+  cursor: pointer;
+  flex-shrink: 0; /* 👈 QUAN TRỌNG: Ngăn không cho ảnh phình to trong thẻ Flex */
+  max-width: 40px; /* 👈 Bổ sung cái này */
+  max-height: 40px; /* 👈 Bổ sung cái này */
+}
+
+.avatar-default {
+  width: 40px;
+  height: 40px;
+  max-width: 40px; /* 👈 Bổ sung cái này */
+  max-height: 40px; /* 👈 Bổ sung cái này */
+}

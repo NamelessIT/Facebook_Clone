@@ -1,0 +1,33 @@
+.post-media-container {
+  width: 100%;
+  background-color: #000; /* Nền đen chuẩn Facebook cho ảnh/video */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid #ced0d4;
+  border-bottom: 1px solid #ced0d4;
+  overflow: hidden;
+}
+
+.post-media-error {
+  height: 350px;
+  background-color: #f0f2f5; /* Nền xám khi có lỗi */
+  flex-direction: column;
+}
+
+.post-media-content {
+  max-height: 600px;
+  width: 100%;
+  object-fit: contain; /* Đảm bảo không bị cắt xén hình/video */
+}
+
+.btn-refresh {
+  background-color: rgba(0, 0, 0, 0.6);
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.btn-refresh:hover { background-color: rgba(0, 0, 0, 0.8); }
+.error-text { color: #65676b; font-size: 15px; font-weight: 500; }

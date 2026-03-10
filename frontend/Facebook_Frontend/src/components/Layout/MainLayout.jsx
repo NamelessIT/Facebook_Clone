@@ -1,11 +1,17 @@
 import { Outlet, Link } from "react-router-dom";
+import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { getImageUrl } from "../../utils/formatUrl";
 import { Home, Tv, Store, Users, Search, Bell, MessageCircle, Grid } from "lucide-react"; // BỘ ICON XỊN SÒ
 import "./MainLayout.css";
+import Avatar from '../common/Avatar';
 
 const MainLayout = () => {
   const { user, logout } = useAuth();
+  // Tạm thời mock data. Sau này bạn fetch từ API Chat/Friends gán vào đây
+  const [contacts, setContacts] = useState([
+    { id: 1, fullName: "Bob Nguyễn", avatarUrl: null },
+    { id: 2, fullName: "Alice Trần", avatarUrl: "f30955c0-791e-4e87-bd36-30b46e2eaa4d.png" },]);
 
   return (
     <div className="main-layout">
@@ -35,10 +41,9 @@ const MainLayout = () => {
           <div className="icon-btn"><Grid size={20} /></div>
           <div className="icon-btn"><MessageCircle size={20} /></div>
           <div className="icon-btn"><Bell size={20} /></div>
-          <img 
-            src={getImageUrl(user?.avatarUrl, user?.firstName)} 
+          <Avatar 
+            src={user?.avatarUrl} 
             className="user-avatar" 
-            alt="User" 
             onClick={logout}
             title="Đăng xuất"
           />
@@ -51,7 +56,7 @@ const MainLayout = () => {
         {/* Cột Trái: Menu */}
         <aside className="sidebar">
           <div className="menu-item mt-4">
-            <img src={getImageUrl(user?.avatarUrl, user?.firstName)} className="w-9 h-9 rounded-full object-cover border border-gray-200" alt="Avatar"/>
+            <Avatar src={user?.avatarUrl} className="w-9 h-9" />
             <span className="font-semibold">{user?.fullName}</span>
           </div>
           <div className="menu-item"><Users size={28} className="text-blue-500 mr-2" /> Bạn bè</div>
@@ -66,11 +71,18 @@ const MainLayout = () => {
 
         {/* Cột Phải: Liên hệ */}
         <aside className="sidebar">
-          <h4 className="text-gray-500 font-semibold text-[15px] px-2 mt-4 mb-2">Người liên hệ</h4>
-          <div className="menu-item">
-            <img src={getImageUrl(null, "Bob")} className="w-8 h-8 rounded-full object-cover"/>
-            <span className="font-semibold text-[15px]">Bob Nguyễn</span>
-          </div>
+          {contacts.length > 0 && (
+            <>
+              <h4 className="text-gray-500 font-semibold text-[15px] px-2 mt-4 mb-2">Người liên hệ</h4>
+              {contacts.map(contact => (
+                <div key={contact.id} className="menu-item">
+                  {/* 👇 DÙNG COMPONENT AVATAR Ở ĐÂY */}
+                  <Avatar src={contact.avatarUrl} className="w-8 h-8" />
+                  <span className="font-semibold text-[15px]">{contact.fullName}</span>
+                </div>
+              ))}
+            </>
+          )}
         </aside>
 
       </div>

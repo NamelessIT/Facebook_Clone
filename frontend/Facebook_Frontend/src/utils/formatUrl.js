@@ -1,14 +1,18 @@
-// Hàm này giúp ghép URL của Backend vào đường dẫn ảnh
-export const getImageUrl = (path, fallbackName = "User") => {
-  // Nếu dùng mạng bị chặn placeholder, đổi sang dùng ui-avatars (Tạo ảnh có chữ cái đầu của tên)
-  if (!path) return `https://ui-avatars.com/api/?name=${fallbackName}&background=e4e6eb&color=050505`;
+export const getImageUrl = (path, type = 'avatars') => {
+  // Trả về Avatar xám mặc định nếu không có đường dẫn
+  if (!path) return "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
   
-  // Nếu path đã là một URL hoàn chỉnh (có http) thì giữ nguyên
+  // Nếu đã là link đầy đủ (Google, Facebook...) thì giữ nguyên
   if (path.startsWith('http')) return path;
 
-  // Nếu trong Database của bạn path thiếu chữ /uploads/... (chỉ có tên file), bạn cần điều chỉnh ở đây.
-  // Nhưng theo code Backend lúc trước, nó đã trả về dạng "/uploads/avatars/..." rồi.
-  const formattedPath = path.startsWith('/') ? path : `/${path}`;
-  
-  return `http://localhost:5286${formattedPath}`;
+  // LƯU Ý Ở ĐÂY: Nếu DB chỉ lưu tên file (VD: "abc.png") 
+  // thì ta phải tự động ghép thêm thư mục /uploads/... vào
+  let finalPath = path;
+  if (!path.includes('/')) {
+    finalPath = `/uploads/${type}/${path}`;
+  } else if (!path.startsWith('/')) {
+    finalPath = `/${path}`;
+  }
+
+  return `http://localhost:5286${finalPath}`;
 };
