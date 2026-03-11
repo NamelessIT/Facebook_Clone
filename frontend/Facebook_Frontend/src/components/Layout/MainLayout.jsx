@@ -20,7 +20,7 @@ const MainLayout = () => {
         {/* Góc Trái */}
         <div className="nav-left">
           <Link to="/">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/2021_Facebook_icon.svg/1024px-2021_Facebook_icon.svg.png" className="nav-logo" alt="logo" />
+            <img src="../../assets/images/Facebook-Logo.png" className="nav-logo" alt="logo" />
           </Link>
           <div className="search-container">
             <Search size={18} className="search-icon text-gray-500" />

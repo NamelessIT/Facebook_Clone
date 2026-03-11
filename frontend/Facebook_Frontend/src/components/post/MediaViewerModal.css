@@ -1,0 +1,76 @@
+/* Lớp phủ toàn màn hình */
+.media-viewer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  background-color: #000;
+}
+
+/* Nút tắt góc trái trên */
+.close-viewer-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 110;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.close-viewer-btn:hover { background-color: rgba(0, 0, 0, 0.6); }
+
+/* Khu vực hiển thị Ảnh/Video */
+.media-viewer-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.media-content-full {
+  max-width: 100%;
+  max-height: 100vh;
+  object-fit: contain; /* Giữ nguyên tỷ lệ, không bị cắt xén */
+}
+
+/* Các nút điều hướng Trái/Phải */
+.nav-btn {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  transition: 0.2s;
+}
+.nav-btn:hover { background-color: rgba(255, 255, 255, 0.4); }
+.nav-btn.left { left: 16px; }
+.nav-btn.right { right: 16px; }
+
+/* Cột bình luận bên phải (ẩn trên mobile, hiện trên PC) */
+.media-viewer-right {
+  width: 360px;
+  background-color: #fff;
+  display: none; 
+}
+@media (min-width: 768px) {
+  .media-viewer-right { display: block; }
+}

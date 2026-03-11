@@ -6,8 +6,7 @@ namespace FacebookClone.Application.DTOs.Post;
 
 public class CreatePostRequest
 {
-    [Required(ErrorMessage = "Nội dung bài viết không được để trống")]
-    public string Content { get; set; } = string.Empty;
+    public string? Content { get; set; }
 
     public PostPrivacy Privacy { get; set; } = PostPrivacy.Public;
     

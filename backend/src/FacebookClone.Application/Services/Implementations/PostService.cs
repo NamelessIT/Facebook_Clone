@@ -25,11 +25,20 @@ public class PostService : IPostService
 
     public async Task<PostResponseDto> CreatePostAsync(Guid userId, CreatePostRequest request)
     {
+        // 👇 THÊM ĐOẠN NÀY ĐỂ CHẶN BÀI RỖNG
+        bool hasContent = !string.IsNullOrWhiteSpace(request.Content);
+        bool hasImages = request.Images != null && request.Images.Any();
+        bool hasVideos = request.Videos != null && request.Videos.Any();
+
+        if (!hasContent && !hasImages && !hasVideos)
+        {
+            throw new Exception("Bài viết phải có ít nhất nội dung chữ hoặc hình ảnh/video.");
+        }
         var post = new Post
         {
             Id = Guid.NewGuid(),
             UserId = userId,
-            Content = request.Content,
+            Content = request.Content ?? "",
             Privacy = request.Privacy,
             PostType = request.PostType,
             CreatedAt = DateTime.UtcNow,
