@@ -3653,3 +3653,4 @@ ORDER BY p0."CreatedAt" DESC, p0."Id", u."Id", m."Id", r."Id"
 2026-03-11 16:25:27.375 +07:00 [INF] Sending ["bytes 3145728-401342463/402537477"] of file C:\Code\Repository\Facebook_Clone\backend\src\FacebookClone.API\wwwroot\uploads\posts\b4aae8d6-aa8b-415e-a514-b73c7c24474e.mp4
 2026-03-11 16:25:27.376 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/api/v1/posts?pageNumber=1&pageSize=10 - 200 null application/json; charset=utf-8 38.5673ms
 2026-03-11 16:25:27.411 +07:00 [INF] Request finished HTTP/1.1 GET http://localhost:5286/uploads/posts/b4aae8d6-aa8b-415e-a514-b73c7c24474e.mp4 - 206 398196736 video/mp4 43.3544ms
+2026-03-11 19:55:49.528 +07:00 [INF] Application is shutting down...

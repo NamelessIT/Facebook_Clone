@@ -30,23 +30,26 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }) => {
     setLoading(true);
     const formData = new FormData();
     if (content.trim()) formData.append("Content", content);
-    formData.append("Privacy", "0"); 
-    formData.append("PostType", "0"); 
+    formData.append("Privacy", "1"); 
+    formData.append("PostType", "1"); 
 
     files.forEach((f) => {
       if (f.isVideo) formData.append("Videos", f.file);
       else formData.append("Images", f.file);
     });
 
-    try {
+  try {
       await postService.createPost(formData);
       setContent("");
       setFiles([]);
       onSuccess(); 
       onClose();   
     } catch (error) {
-      console.error("Lỗi đăng bài:", error);
-      alert("Đăng bài thất bại!");
+      // 👇 IN RA CHI TIẾT LỖI TỪ BACKEND ĐỂ DỄ BẮT BỆNH
+      console.error("Lỗi đăng bài:", error.response?.data || error);
+      
+      const errorMsg = error.response?.data?.message || "Đăng bài thất bại, vui lòng kiểm tra Console!";
+      alert(errorMsg);
     } finally {
       setLoading(false);
     }

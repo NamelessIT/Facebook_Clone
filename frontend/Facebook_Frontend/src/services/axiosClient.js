@@ -30,6 +30,19 @@ axiosClient.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // 👇 BÍ QUYẾT ĐỂ TRỊ TẬN GỐC LỖI FORM DATA CHÍNH LÀ ĐÂY:
+  // Nếu dữ liệu gửi đi là FormData (chứa file/ảnh), ta phải XÓA ép kiểu JSON đi!
+  // Khi không có Content-Type, Trình duyệt sẽ tự động nội suy ra "multipart/form-data" 
+  // và tự động gắn cái vách ngăn (boundary) chuẩn xác 100%.
+  if (config.data instanceof FormData) {
+    if (config.headers && config.headers.delete) {
+      config.headers.delete('Content-Type'); // Cho Axios đời mới
+    } else {
+      delete config.headers['Content-Type']; // Cho Axios đời cũ
+    }
+  }
+
   return config;
 });
 

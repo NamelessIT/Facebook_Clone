@@ -1,18 +1,139 @@
+/* =========================================
+   1. HEADER (TÊN & THỜI GIAN)
+========================================= */
+.post-header {
+  display: flex;
+  align-items: flex-start; /* 👈 Nút 3 chấm nằm lên đỉnh */
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+
+.post-header-left {
+  display: flex; 
+  align-items: flex-start; /* 👈 Đưa Info lên ngang ĐỈNH Avatar */
+  gap: 10px; 
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* 👈 Ép chữ dồn lên trên */
+  margin-top: -10%; /* 👈 Tinh chỉnh một xíu để nó ngang hàng với đỉnh ảnh tròn */
+}
+
+.author-name {
+  font-size: 15px; 
+  font-weight: 700; 
+  color: #050505; 
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+.post-time {
+  font-size: 13px; 
+  font-weight: 400; 
+  color: #65676b; 
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Nút 3 chấm góc phải */
+.post-header-more-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent; /* Nền trong suốt */
+  border: none !important; /* 👈 ÉP BỎ VIỀN BẰNG !IMPORTANT */
+  outline: none !important; /* 👈 ÉP BỎ VIỀN XANH KHI CLICK */
+  color: #65676b;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.post-header-more-btn:hover {
+  background-color: #f0f2f5;
+}
+
+/* =========================================
+   2. NỘI DUNG CHỮ & NÚT XEM THÊM
+========================================= */
 .post-text-content {
-  padding: 4px 16px 8px 16px;
+  padding: 4px 16px 12px 16px; /* Margin/Padding xung quanh content */
   font-size: 15px;
   color: #050505;
   white-space: pre-wrap;
+  line-height: 1.5;
+  word-break: break-word; 
+  overflow-wrap: break-word;
 }
 
-.see-more-text {
-  font-weight: 600;
+.see-more-btn {
+  font-weight: 700; /* Bold */
+  color: #050505; /* Màu đen */
   cursor: pointer;
+  margin-left: 4px;
 }
-.see-more-text:hover { text-decoration: underline; }
+.see-more-btn:hover {
+  text-decoration: underline;
+}
 
 /* =========================================
-   VŨ KHÍ TỐI THƯỢNG ĐỂ ÉP KHUNG ẢNH/VIDEO
+   3. THỐNG KÊ (LIKES, COMMENTS, SHARES)
+========================================= */
+.post-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  margin: 0 16px; /* Thụt lề 2 bên */
+  border-bottom: 1px solid #ced0d4; /* Gạch dưới */
+  color: #65676b;
+  font-size: 15px;
+  margin-top: 8px; /* Cách Div ảnh/video ở trên một chút */
+}
+
+.stats-right {
+  display: flex;
+  gap: 5px; /* 👈 CÁCH NHAU ĐÚNG 5PX NHƯ YÊU CẦU */
+}
+
+/* =========================================
+   4. NÚT CHỨC NĂNG (LIKE, COMMENT, SHARE)
+========================================= */
+.post-actions {
+  display: flex;
+  padding: 4px 16px;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Canh giữa Icon và Chữ */
+  gap: 8px;
+  padding: 6px 0;
+  border-radius: 4px;
+  color: #65676b;
+  font-weight: 600;
+  font-size: 15px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.action-btn:hover {
+  background-color: #f0f2f5;
+}
+
+/* =========================================
+   VŨ KHÍ TỐI THƯỢNG ĐỂ ÉP KHUNG ẢNH/VIDEO (GIỮ NGUYÊN)
 ========================================= */
 .media-thumb {
   position: relative;
@@ -25,74 +146,20 @@
   align-items: center;
   justify-content: center;
 }
-
-.media-thumb img, 
-.media-thumb video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Ép ảnh tự cắt cho vừa khung vuông */
-  display: block;
+.media-thumb img, .media-thumb video {
+  width: 100%; height: 100%; object-fit: cover; display: block;
 }
-
-/* Ép cứng chiều rộng Lưới, KHÔNG CHO TRÀN! */
-.media-grid-1, 
-.media-grid-2, 
-.media-grid-3, 
-.media-grid-4 {
-  width: 100%;
-  max-width: 100%;
-  margin-top: 8px;
+.media-grid-1, .media-grid-2, .media-grid-3, .media-grid-4 {
+  width: 100%; max-width: 100%; margin-top: 8px;
 }
-
-/* Trường hợp 1 ảnh: Cao tối đa 620px */
 .media-grid-1 { max-height: 620px; }
-.media-grid-1 .media-thumb img,
-.media-grid-1 .media-thumb video {
-  max-height: 620px;
-  object-fit: cover;
-}
-
-/* Trường hợp 2 ảnh: Chia đôi Flexbox */
-.media-grid-2 {
-  display: flex;
-  height: 400px;
-  gap: 2px;
-}
-.media-grid-2 > div { 
-  flex: 1; 
-  min-width: 0; /* 👈 CHỐNG TRÀN FLEXBOX */
-}
-
-/* Trường hợp 3, 4 ảnh: Dùng Grid */
-.media-grid-3, .media-grid-4 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 2px;
-  height: 500px;
-}
-
-/* 👇 CHÌA KHÓA CHỐNG TRÀN CỦA CSS GRID NẰM Ở ĐÂY 👇 */
-.media-item-main, .media-item-sub {
-  min-width: 0;   /* Ngăn Grid tự phình to theo chiều ngang */
-  min-height: 0;  /* Ngăn Grid tự phình to theo chiều dọc */
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
+.media-grid-1 .media-thumb img, .media-grid-1 .media-thumb video { max-height: 620px; object-fit: cover; }
+.media-grid-2 { display: flex; height: 400px; gap: 2px; }
+.media-grid-2 > div { flex: 1; min-width: 0; }
+.media-grid-3, .media-grid-4 { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; height: 500px; }
+.media-item-main, .media-item-sub { min-width: 0; min-height: 0; width: 100%; height: 100%; position: relative; }
 .media-item-main { grid-row: span 2; }
 .media-item-sub { grid-row: span 1; }
-
-/* Lớp phủ đen đếm số ảnh còn lại */
-.media-overlay-more {
-  position: absolute;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
+.media-overlay-more { position: absolute; inset: 0; background-color: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color 0.2s; }
 .media-overlay-more:hover { background-color: rgba(0, 0, 0, 0.5); }
 .more-count { color: white; font-size: 2rem; font-weight: bold; }
