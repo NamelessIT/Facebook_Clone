@@ -1,4 +1,4 @@
-/* Lớp nền mờ màu trắng chuẩn Facebook */
+/* Lớp nền mờ */
 .create-post-overlay {
   position: fixed;
   inset: 0;
@@ -54,7 +54,7 @@
   color: #050505;
 }
 
-/* Nút ĐĂNG - Điểm nhấn quan trọng nhất */
+/* Nút ĐĂNG */
 .submit-post-btn {
   width: 100%;
   padding: 8px 0;
@@ -64,15 +64,11 @@
   border: none;
   transition: background-color 0.2s;
 }
-
-/* 👈 TRẠNG THÁI XÁM XỊT KHI RỖNG THEO YÊU CẦU */
 .submit-post-btn:disabled {
   background-color: #e4e6eb;
   color: #bcc0c4;
   cursor: not-allowed;
 }
-
-/* 👈 TRẠNG THÁI XANH DƯƠNG KHI CÓ DATA */
 .submit-post-btn:not(:disabled) {
   background-color: #0866ff;
   color: #fff;
@@ -81,3 +77,213 @@
 .submit-post-btn:not(:disabled):hover {
   background-color: #1877f2;
 }
+
+/* =========================================
+   LƯỚI PREVIEW ẢNH (Bản thu nhỏ 460px)
+========================================= */
+.preview-gallery {
+  width: 100%;
+  max-width: 460px; /* 👈 Giới hạn kích thước theo yêu cầu */
+  margin: 10px auto;
+  border-radius: 8px;
+  border: 1px solid #ced0d4;
+  padding: 8px;
+  position: relative;
+}
+
+.preview-grid-1 { max-height: 400px; overflow: hidden; border-radius: 6px;}
+.preview-grid-2 { display: flex; height: 250px; gap: 2px; border-radius: 6px; overflow: hidden;}
+.preview-grid-2 > div { flex: 1; min-width: 0; }
+.preview-grid-3 { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; height: 300px; border-radius: 6px; overflow: hidden;}
+
+.preview-item {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  min-width: 0;
+  min-height: 0;
+}
+.preview-item img, .preview-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.preview-item-main { grid-row: span 2; }
+.preview-item-sub { grid-row: span 1; }
+
+.preview-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* =========================================
+   EMOJI PICKER NHỎ GỌN
+========================================= */
+.emoji-picker-container {
+  position: absolute;
+  right: 16px;
+  bottom: 10px;
+  background: white;
+  border: 1px solid #ced0d4;
+  border-radius: 8px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+.emoji-btn {
+  font-size: 20px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px;
+  border-radius: 4px;
+}
+.emoji-btn:hover { background-color: #f0f2f5; }
+
+/* =========================================
+   NÚT XÓA TỪNG ẢNH TRONG LƯỚI
+========================================= */
+.delete-single-img-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  color: #606266;
+  transition: 0.2s;
+}
+.delete-single-img-btn:hover { background-color: white; }
+
+/* =========================================
+   CHỌN MÀU NỀN CHO TEXTAREA
+========================================= */
+.bg-selector-container {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none; /* Ẩn thanh cuộn Firefox */
+}
+.bg-selector-container::-webkit-scrollbar { display: none; } /* Ẩn thanh cuộn Chrome */
+
+.bg-color-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.1s;
+}
+.bg-color-btn:hover { transform: scale(1.1); }
+.bg-color-btn.active { border-color: #0866ff; transform: scale(1.1); }
+
+/* Textarea khi có màu nền */
+.textarea-with-bg {
+  min-height: 250px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white !important;
+  font-weight: bold;
+  text-align: center;
+  padding: 20px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+.textarea-with-bg::placeholder { color: rgba(255, 255, 255, 0.8); }
+
+/* =========================================
+   MODAL TAG BẠN BÈ (CHỒNG LÊN TRÊN)
+========================================= */
+.tag-friends-modal {
+  position: absolute; /* Phủ lên toàn bộ CreatePostModal */
+  inset: 0;
+  background: white;
+  border-radius: 8px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+}
+.tag-friends-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ced0d4;
+}
+.tag-search-box {
+  background: #f0f2f5;
+  border-radius: 20px;
+  padding: 8px 16px;
+  margin: 12px 16px;
+  display: flex;
+  align-items: center;
+}
+.friend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.friend-item:hover { background-color: #f0f2f5; }
+.friend-item.selected { background-color: #e7f3ff; } /* Màu xanh nhạt khi được chọn */
+
+/* Sửa lại class này (Xóa pointer-events) */
+.icon-btn-disabled {
+  opacity: 0.4;
+  cursor: not-allowed !important;
+}
+
+/* =========================================
+   SỬA LẠI CSS BACKGROUND ĐỂ CHỤP ẢNH
+========================================= */
+/* Div bọc ngoài làm nền */
+.bg-capture-wrapper {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+  transition: background 0.3s;
+}
+
+/* Textarea bên trong trong suốt */
+.textarea-with-bg {
+  background: transparent !important;
+  color: white !important;
+  font-weight: bold;
+  text-align: center; /* Canh giữa chiều ngang */
+  width: 100%;
+  height: auto; /* 👈 Để chiều cao tự động co giãn */
+  padding: 20px 20px 0 20px;
+  overflow: hidden; /* Giấu thanh cuộn đi cho đẹp */
+  border: none;
+  resize: none;
+}
+.textarea-with-bg::placeholder { color: rgba(255, 255, 255, 0.8); }

@@ -1,157 +1,318 @@
-import { useState, useRef } from "react";
-import { X, Image as ImageIcon, Video, Smile, UserPlus, MapPin, MoreHorizontal } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { X, Image as ImageIcon, Smile, UserPlus, MapPin, MoreHorizontal, ArrowLeft, Search, Check } from "lucide-react";
 import Avatar from "../common/Avatar";
 import { useAuth } from "../../contexts/AuthContext";
 import postService from "../../services/postService";
-import "./CreatePostModal.css"; // 👈 IMPORT CSS
+import friendshipService from "../../services/friendshipService";
+import html2canvas from "html2canvas"; // 👈 IMPORT THƯ VIỆN CHỤP ẢNH
+import "./CreatePostModal.css";
+
+// Danh sách các emoji cơ bản
+const EMOJIS = ['😀', '😂', '😍', '🥰', '😎', '😭', '😡', '👍', '❤️', '🔥'];
+
+// Danh sách các màu nền (Gồm Trắng (ko nền) và các màu Gradient)
+const BG_COLORS = [
+  { id: 'none', style: { background: 'white' } },
+  { id: 'bg1', style: { background: 'linear-gradient(45deg, #ff007f, #ff7f00)' } },
+  { id: 'bg2', style: { background: 'linear-gradient(45deg, #00c6ff, #0072ff)' } },
+  { id: 'bg3', style: { background: 'linear-gradient(45deg, #11998e, #38ef7d)' } },
+  { id: 'bg4', style: { background: 'linear-gradient(45deg, #8E2DE2, #4A00E0)' } },
+];
 
 const CreatePostModal = ({ isOpen, onClose, onSuccess }) => {
   const { user } = useAuth();
+  
+  // State cơ bản
   const [content, setContent] = useState("");
   const [files, setFiles] = useState([]);
+  const [privacy, setPrivacy] = useState("1");
   const [loading, setLoading] = useState(false);
+  
+  // Refs
   const fileInputRef = useRef(null);
+  const bgCaptureRef = useRef(null); // 👈 REF ĐỂ XÁC ĐỊNH KHU VỰC CHỤP ẢNH
+  
+  // State UI
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [showBgSelector, setShowBgSelector] = useState(false);
+  const [selectedBg, setSelectedBg] = useState(BG_COLORS[0]);
+
+  // State Tag Bạn Bè
+  const [showTagModal, setShowTagModal] = useState(false);
+  const [friendsList, setFriendsList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [taggedFriends, setTaggedFriends] = useState([]); 
+
+  // Reset mọi thứ khi mở/đóng Modal
+  useEffect(() => {
+    if (!isOpen) {
+      setContent(""); setFiles([]); setPrivacy("1"); setSelectedBg(BG_COLORS[0]);
+      setShowBgSelector(false); setShowTagModal(false); setTaggedFriends([]);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
+  // --- LOGIC XỬ LÝ FILE ---
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
     const newFiles = selectedFiles.map(file => ({
-      file,
-      preview: URL.createObjectURL(file),
-      isVideo: file.type.startsWith("video/")
+      file, preview: URL.createObjectURL(file), isVideo: file.type.startsWith("video/")
     }));
     setFiles(prev => [...prev, ...newFiles]);
+    // Nếu up file thì phải tắt Background Color đi
+    setSelectedBg(BG_COLORS[0]); 
   };
 
-  const handleSubmit = async () => {
-    if (!content.trim() && files.length === 0) return;
+  const removeSingleFile = (indexToRemove, e) => {
+    e.stopPropagation();
+    setFiles(prev => prev.filter((_, idx) => idx !== indexToRemove));
+  };
 
+  // --- LOGIC GẮN THẺ BẠN BÈ ---
+  const handleOpenTagModal = async () => {
+    setShowTagModal(true);
+    try {
+      const res = await friendshipService.getFriends();
+      if (res.data?.data) setFriendsList(res.data.data);
+    } catch (err) { console.error("Lỗi lấy bạn bè:", err); }
+  };
+
+  const toggleTagFriend = (friend) => {
+    setTaggedFriends(prev => {
+      const isTagged = prev.find(f => f.id === friend.id);
+      if (isTagged) return prev.filter(f => f.id !== friend.id);
+      return [...prev, friend];
+    });
+  };
+
+  const handleFinishTagging = () => {
+    setShowTagModal(false);
+    if (taggedFriends.length > 0) {
+      const tagString = taggedFriends.map(f => `@${f.fullName}`).join(" ");
+      setContent(prev => `${prev} ${tagString} `);
+    }
+  };
+
+  const handleAddEmoji = (emoji) => {
+    setContent(prev => prev + emoji);
+    setShowEmoji(false);
+  };
+
+  // --- LOGIC ĐĂNG BÀI (CÓ HTML2CANVAS) ---
+  const handleSubmit = async () => {
+    if (!content.trim() && files.length === 0 && selectedBg.id === 'none') return;
+    
     setLoading(true);
     const formData = new FormData();
-    if (content.trim()) formData.append("Content", content);
-    formData.append("Privacy", "1"); 
+    formData.append("Privacy", privacy); 
     formData.append("PostType", "1"); 
 
-    files.forEach((f) => {
-      if (f.isVideo) formData.append("Videos", f.file);
-      else formData.append("Images", f.file);
-    });
+    const hasBg = selectedBg.id !== 'none';
 
-  try {
+    try {
+      if (hasBg && bgCaptureRef.current) {
+        // 1. Chụp màn hình khu vực có Ref
+        const canvas = await html2canvas(bgCaptureRef.current, { scale: 2 });
+        // 2. Chuyển Canvas thành file Ảnh
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        // 3. Đưa vào FormData như một ảnh bình thường
+        formData.append("Images", blob, "background-post.png");
+        // Bỏ qua không gửi content text nữa vì nó đã nằm trong ảnh
+      } else {
+        // Chế độ bình thường (Không dùng màu nền)
+        if (content.trim()) formData.append("Content", content);
+        files.forEach((f) => {
+          if (f.isVideo) formData.append("Videos", f.file);
+          else formData.append("Images", f.file);
+        });
+      }
+
       await postService.createPost(formData);
-      setContent("");
-      setFiles([]);
       onSuccess(); 
       onClose();   
     } catch (error) {
-      // 👇 IN RA CHI TIẾT LỖI TỪ BACKEND ĐỂ DỄ BẮT BỆNH
       console.error("Lỗi đăng bài:", error.response?.data || error);
-      
-      const errorMsg = error.response?.data?.message || "Đăng bài thất bại, vui lòng kiểm tra Console!";
-      alert(errorMsg);
+      alert(error.response?.data?.message || "Đăng bài thất bại!");
     } finally {
       setLoading(false);
     }
   };
 
-  // Điều kiện kích hoạt nút: CÓ CHỮ HOẶC CÓ FILE
-  const isPostEmpty = !content.trim() && files.length === 0;
+  const hasBg = selectedBg.id !== 'none';
+  // Chống đăng rỗng: Nếu có nền -> bắt buộc phải có chữ. Nếu không nền -> có chữ hoặc có file
+  const isPostEmpty = hasBg ? !content.trim() : (!content.trim() && files.length === 0);
+  const mediaCount = files.length;
 
   return (
-    <div className="create-post-overlay">
-      <div className="create-post-modal" onClick={e => e.stopPropagation()}>
+    <div className="create-post-overlay" onMouseDown={onClose}>
+      
+      <div className="create-post-modal relative overflow-hidden" onMouseDown={e => e.stopPropagation()}>
         
-        {/* Header */}
-        <div className="relative flex items-center justify-center p-4 border-b border-gray-200">
-          <h2 className="text-[20px] font-bold text-[#050505] m-0">Tạo bài viết</h2>
-          <button onClick={onClose} className="close-btn absolute right-4">
-            <X size={20} />
-          </button>
-        </div>
-
-        {/* Info User */}
-        <div className="p-4 flex items-center gap-2">
-          <Avatar src={user?.avatarUrl} className="w-10 h-10" />
-          <div>
-            <div className="font-semibold text-[15px]">{user?.fullName}</div>
-            <div className="bg-[#e4e6eb] text-[#050505] text-[13px] font-semibold px-2 py-1 rounded-md mt-0.5 inline-flex items-center gap-1 cursor-pointer">
-              🔒 Chỉ mình tôi <span className="text-[10px]">▼</span>
+        {/* MODAL GẮN THẺ BẠN BÈ */}
+        {showTagModal && (
+          <div className="tag-friends-modal">
+            <div className="tag-friends-header">
+              <button onClick={() => setShowTagModal(false)} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-200 transition">
+                <ArrowLeft size={20} className="text-gray-600" />
+              </button>
+              <h3 className="font-bold text-[18px]">Gắn thẻ người khác</h3>
+              <button onClick={handleFinishTagging} className="text-[#0866ff] font-semibold hover:bg-blue-50 px-2 py-1 rounded">Xong</button>
             </div>
+            
+            <div className="tag-search-box">
+              <Search size={18} className="text-gray-500 mr-2" />
+              <input 
+                type="text" placeholder="Tìm kiếm" className="bg-transparent outline-none flex-1 text-[15px]"
+                value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+              />
+            </div>
+
+            <div className="px-4 text-[13px] font-semibold text-gray-500 mb-2">GỢI Ý</div>
+            
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
+              {friendsList.filter(f => f.fullName.toLowerCase().includes(searchQuery.toLowerCase())).map(friend => {
+                const isSelected = taggedFriends.some(t => t.id === friend.id);
+                return (
+                  <div key={friend.id} onClick={() => toggleTagFriend(friend)} className={`friend-item ${isSelected ? 'selected' : ''}`}>
+                    <Avatar src={friend.avatarUrl} className="w-10 h-10" />
+                    <div className="flex-1">
+                      <div className="font-semibold text-[15px]">{friend.fullName}</div>
+                    </div>
+                    {isSelected && <Check size={20} className="text-[#0866ff]" />}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* HEADER CHÍNH */}
+        <div className="relative flex items-center justify-center p-4">
+          <h2 className="text-[20px] font-bold text-[#050505] m-0">Tạo bài viết</h2>
+          <button onClick={onClose} className="close-btn absolute right-4"><X size={20} /></button>
+        </div>
+        <hr className="m-0 border-t border-[#ced0d4]" />
+
+        {/* THÔNG TIN USER */}
+        <div className="p-4 flex items-center gap-3">
+          <Avatar src={user?.avatarUrl} className="w-10 h-10" />
+          <div className="flex flex-col">
+            <span className="font-semibold text-[15px] text-[#050505]">{user?.fullName}</span>
+            <select value={privacy} onChange={(e) => setPrivacy(e.target.value)} className="bg-[#e4e6eb] text-[#050505] text-[13px] font-semibold px-2 py-1 rounded-md mt-1 outline-none border-none cursor-pointer">
+              <option value="1">🌎 Công khai</option>
+              <option value="2">👥 Bạn bè</option>
+              <option value="3">🔒 Chỉ mình tôi</option>
+            </select>
           </div>
         </div>
 
-        {/* Nhập Text */}
-        <div className="px-4 overflow-y-auto flex-1 custom-scrollbar min-h-[150px]">
-          <textarea
-            className="w-full text-[24px] outline-none resize-none placeholder-gray-500"
-            placeholder={`${user?.firstName} ơi, bạn đang nghĩ gì thế?`}
-            rows={files.length > 0 ? 2 : 4}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
+        {/* KHU VỰC NHẬP TEXT */}
+        <div className="px-4 overflow-y-auto flex-1 custom-scrollbar relative min-h-[150px]">
+          
+          {/* 👇 GẮN REF VÀO ĐÂY ĐỂ CHỤP ẢNH MÀU NỀN 👇 */}
+          <div 
+            ref={bgCaptureRef} 
+            className={hasBg ? "bg-capture-wrapper" : ""}
+            style={hasBg ? selectedBg.style : {}}
+          >
+            <textarea
+              className={`w-full text-[24px] outline-none resize-none placeholder-gray-500 ${hasBg ? 'textarea-with-bg' : ''}`}
+              placeholder={`${user?.firstName} ơi, bạn đang nghĩ gì thế?`}
+              rows={mediaCount > 0 || hasBg ? 2 : 4}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+          </div>
 
-          {/* Dòng biểu tượng Aa giống Facebook */}
-          {files.length === 0 && (
-             <div className="flex justify-between items-center mt-2 mb-2">
-               <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-sm cursor-pointer shadow-sm" style={{background: 'linear-gradient(45deg, #ff007f, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3)'}}>Aa</div>
-               <Smile size={24} className="text-gray-300 cursor-pointer" />
+          {/* CHỌN MÀU NỀN */}
+          {mediaCount === 0 && (
+             <div className="flex justify-between items-center mt-2 mb-2 relative">
+               {!showBgSelector ? (
+                 <div onClick={() => setShowBgSelector(true)} className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-sm cursor-pointer shadow-sm" style={{background: 'linear-gradient(45deg, #ff007f, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3)'}}>Aa</div>
+               ) : (
+                 <div className="bg-selector-container">
+                   <button onClick={() => setShowBgSelector(false)} className="bg-gray-200 p-1.5 rounded-lg mr-2"><ArrowLeft size={16}/></button>
+                   {BG_COLORS.map(bg => (
+                     <div 
+                       key={bg.id} 
+                       onClick={() => setSelectedBg(bg)} 
+                       className={`bg-color-btn ${selectedBg.id === bg.id ? 'active' : ''}`} 
+                       style={bg.style}
+                     ></div>
+                   ))}
+                 </div>
+               )}
+               
+               <Smile onClick={() => setShowEmoji(!showEmoji)} size={24} className="text-gray-400 hover:text-gray-600 cursor-pointer transition ml-auto" />
+               {showEmoji && (
+                 <div className="emoji-picker-container">
+                   {EMOJIS.map(em => <button key={em} onClick={() => handleAddEmoji(em)} className="emoji-btn">{em}</button>)}
+                 </div>
+               )}
              </div>
           )}
 
-          {/* Preview Ảnh/Video */}
-          {files.length > 0 && (
-            <div className="border border-gray-300 rounded-lg p-2 mt-2 grid grid-cols-2 gap-2 relative">
-              <button onClick={() => setFiles([])} className="absolute top-4 right-4 bg-white border shadow rounded-full p-1.5 z-10 hover:bg-gray-100 cursor-pointer">
-                 <X size={18} />
-              </button>
-              {files.map((f, index) => (
-                <div key={index} className="relative aspect-square bg-gray-100 rounded-md overflow-hidden border">
-                  {f.isVideo ? (
-                    <video src={f.preview} className="w-full h-full object-cover" controls />
-                  ) : (
-                    <img src={f.preview} className="w-full h-full object-cover" alt="preview" />
-                  )}
+          {/* LƯỚI PREVIEW ẢNH */}
+          {mediaCount > 0 && !hasBg && (
+            <div className="preview-gallery">
+              <button onClick={() => setFiles([])} className="absolute top-2 left-2 bg-white text-sm font-semibold px-2 py-1 rounded-md z-10 border hover:bg-gray-100">Xóa tất cả</button>
+              
+              {mediaCount === 1 && (
+                <div className="preview-grid-1">
+                  <div className="preview-item">
+                    <button onClick={(e) => removeSingleFile(0, e)} className="delete-single-img-btn"><X size={16}/></button>
+                    {files[0].isVideo ? <video src={files[0].preview} controls /> : <img src={files[0].preview} />}
+                  </div>
                 </div>
-              ))}
+              )}
+              {mediaCount === 2 && (
+                <div className="preview-grid-2">
+                  <div className="preview-item"><button onClick={(e) => removeSingleFile(0, e)} className="delete-single-img-btn"><X size={16}/></button>{files[0].isVideo ? <video src={files[0].preview} /> : <img src={files[0].preview} />}</div>
+                  <div className="preview-item"><button onClick={(e) => removeSingleFile(1, e)} className="delete-single-img-btn"><X size={16}/></button>{files[1].isVideo ? <video src={files[1].preview} /> : <img src={files[1].preview} />}</div>
+                </div>
+              )}
+              {mediaCount >= 3 && (
+                <div className="preview-grid-3">
+                  <div className="preview-item preview-item-main"><button onClick={(e) => removeSingleFile(0, e)} className="delete-single-img-btn"><X size={16}/></button>{files[0].isVideo ? <video src={files[0].preview} /> : <img src={files[0].preview} />}</div>
+                  <div className="preview-item preview-item-sub"><button onClick={(e) => removeSingleFile(1, e)} className="delete-single-img-btn"><X size={16}/></button>{files[1].isVideo ? <video src={files[1].preview} /> : <img src={files[1].preview} />}</div>
+                  <div className="preview-item preview-item-sub">
+                    <button onClick={(e) => removeSingleFile(2, e)} className="delete-single-img-btn"><X size={16}/></button>
+                    {files[2].isVideo ? <video src={files[2].preview} /> : <img src={files[2].preview} />}
+                    {mediaCount > 3 && <div className="preview-overlay">+{mediaCount - 3}</div>}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Khu vực Add to post & Đăng */}
+        {/* THÊM VÀO BÀI VIẾT */}
         <div className="p-4 pt-2">
           <div className="add-to-post-box">
             <span className="add-to-post-text">Thêm vào bài viết của bạn</span>
-            <div className="flex gap-1">
+            <div className="flex gap-1 items-center relative">
               <input type="file" multiple accept="image/*,video/*" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
               
-              <button onClick={() => fileInputRef.current?.click()} className="icon-btn-circle" title="Ảnh/video">
+              <button 
+                onClick={() => !hasBg && fileInputRef.current?.click()} 
+                className={`p-2 rounded-full transition ${hasBg ? 'icon-btn-disabled' : 'hover:bg-[#f0f2f5]'}`}
+                title={hasBg ? "Không thể thêm ảnh/video khi đang dùng màu nền" : "Ảnh/video"}
+              >
                 <ImageIcon size={24} className="text-[#45bd62]" />
               </button>
-              <button className="icon-btn-circle hidden sm:flex" title="Gắn thẻ">
+              
+              <button onClick={handleOpenTagModal} className="p-2 hover:bg-[#f0f2f5] rounded-full transition hidden sm:flex" title="Gắn thẻ người khác">
                 <UserPlus size={24} className="text-[#1877f2]" />
               </button>
-              <button className="icon-btn-circle" title="Cảm xúc">
-                <Smile size={24} className="text-[#f7b928]" />
-              </button>
-              <button className="icon-btn-circle hidden sm:flex" title="Check in">
-                <MapPin size={24} className="text-[#f5533d]" />
-              </button>
-              <button className="icon-btn-circle" title="Xem thêm">
-                <MoreHorizontal size={24} className="text-[#606266]" />
-              </button>
+              
+              <button onClick={() => setShowEmoji(!showEmoji)} className="p-2 hover:bg-[#f0f2f5] rounded-full transition" title="Cảm xúc"><Smile size={24} className="text-[#f7b928]" /></button>
+              <button className="p-2 hover:bg-[#f0f2f5] rounded-full transition hidden sm:flex" title="Check in"><MapPin size={24} className="text-[#f5533d]" /></button>
+              <button className="p-2 hover:bg-[#f0f2f5] rounded-full transition" title="Xem thêm"><MoreHorizontal size={24} className="text-[#606266]" /></button>
             </div>
           </div>
-
-          <button 
-            onClick={handleSubmit} 
-            disabled={isPostEmpty || loading}
-            className="submit-post-btn"
-          >
-            {loading ? "Đang đăng..." : "Đăng"}
-          </button>
+          <button onClick={handleSubmit} disabled={isPostEmpty || loading} className="submit-post-btn">{loading ? "Đang đăng..." : "Đăng"}</button>
         </div>
-
       </div>
     </div>
   );

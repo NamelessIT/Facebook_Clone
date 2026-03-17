@@ -16,6 +16,9 @@ public class PostResponseDto
     public int ReactionsCount { get; set; }
     public int CommentsCount { get; set; }
 
+    public int? MyReaction { get; set; }
+    public List<int> TopReactions { get; set; } = new List<int>();
+    public List<string> ReactorNames { get; set; } = new List<string>();
     // 👇 THÊM DÒNG NÀY ĐỂ TRẢ VỀ DANH SÁCH FILE ĐÍNH KÈM
     public List<MediaDto> Medias { get; set; } = new List<MediaDto>();
 }

@@ -85,10 +85,35 @@ public class PostService : IPostService
         return _mapper.Map<PostResponseDto>(createdPost);
     }
 
-    public async Task<IEnumerable<PostResponseDto>> GetNewsFeedAsync(int pageNumber = 1, int pageSize = 10)
+    public async Task<IEnumerable<PostResponseDto>> GetNewsFeedAsync(Guid currentUserId, int pageNumber = 1, int pageSize = 10)
     {
         var posts = await _postRepository.GetNewsFeedAsync(pageNumber, pageSize);
-        return _mapper.Map<IEnumerable<PostResponseDto>>(posts);
+        var postDtos = _mapper.Map<IEnumerable<PostResponseDto>>(posts).ToList();
+
+        foreach (var dto in postDtos)
+        {
+            var originalPost = posts.First(p => p.Id == dto.Id);
+            
+            // Tính MyReaction cho user hiện tại
+            var userReaction = originalPost.Reactions.FirstOrDefault(r => r.UserId == currentUserId);
+            dto.MyReaction = userReaction != null ? (int)userReaction.ReactionType : null;
+
+            // 👇 BÍ QUYẾT MỚI LÀ ĐÂY: Lọc Top 3 loại cảm xúc được thả nhiều nhất trên bài này
+            dto.TopReactions = originalPost.Reactions
+                .GroupBy(r => (int)r.ReactionType)       // Gom nhóm theo loại cảm xúc
+                .OrderByDescending(g => g.Count())       // Sắp xếp loại nào nhiều nhất lên đầu
+                .Select(g => g.Key)                      // Chỉ lấy cái ID của cảm xúc (1, 2, 3...)
+                .Take(3)                                 // Chỉ lấy tối đa 3 loại
+                .ToList();
+            // Cắt bớt, lấy tên 5 người mới nhất thả cảm xúc
+            dto.ReactorNames = originalPost.Reactions
+                .OrderByDescending(r => r.CreatedAt) // 👈 Ưu tiên người mới thả lên đầu
+                .Select(r => r.User != null ? r.User.FullName : "Người dùng") // 👈 Bọc an toàn chống null
+                .Take(5) 
+                .ToList();
+        }
+
+        return postDtos;
     }
 
     public async Task<PostResponseDto> UpdatePostAsync(Guid postId, Guid userId, UpdatePostRequest request)

@@ -24,15 +24,16 @@ public class PostRepository : IPostRepository
     public async Task<IEnumerable<Post>> GetNewsFeedAsync(int pageNumber = 1, int pageSize = 10)
     {
         return await _context.Posts
-            .Include(p => p.User) // Bắt buộc phải Include để lấy tên, avatar người đăng
-            .Include(p => p.Medias) // 👈 THÊM DÒNG NÀY VÀO CHUỖI INCLUDE
+            .Include(p => p.User) 
+            .Include(p => p.Medias) 
             .Include(p => p.Reactions)
+                .ThenInclude(r => r.User) // 👈 BẮT BUỘC PHẢI THÊM DÒNG NÀY ĐỂ LẤY FULLNAME
             .Include(p => p.Comments)
             .Where(p => !p.IsDeleted)
             .OrderByDescending(p => p.CreatedAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .AsNoTracking() // Tối ưu hóa vì ta chỉ đọc
+            .AsNoTracking() 
             .ToListAsync();
     }
 

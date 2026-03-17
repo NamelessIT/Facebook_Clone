@@ -29,7 +29,8 @@ public class PostsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetNewsFeed([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
-        var posts = await _postService.GetNewsFeedAsync(pageNumber, pageSize);
+        var currentUserId = GetCurrentUserId(); // 👈 Lấy ID của user đang đăng nhập
+        var posts = await _postService.GetNewsFeedAsync(currentUserId, pageNumber, pageSize);
         return Ok(new { success = true, data = posts });
     }
 

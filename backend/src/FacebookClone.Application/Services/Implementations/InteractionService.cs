@@ -31,6 +31,17 @@ public class InteractionService : IInteractionService
 
         var existingReaction = await _interactionRepo.GetReactionAsync(userId, postId);
 
+        // 👇 THÊM ĐOẠN NÀY: Bắt trường hợp Frontend gửi 0 để yêu cầu Hủy Like
+        if ((int)request.ReactionType == 0)
+        {
+            if (existingReaction != null)
+            {
+                await _interactionRepo.DeleteReactionAsync(existingReaction);
+                return "Đã gỡ cảm xúc.";
+            }
+            return "Không có cảm xúc để gỡ.";
+        }
+
         if (existingReaction == null)
         {
             // 1. Chưa thả -> Thêm mới
@@ -42,7 +53,8 @@ public class InteractionService : IInteractionService
                 ReactionType = request.ReactionType,
                 CreatedAt = DateTime.UtcNow
             });
-            // 👇 THÊM DÒNG NÀY: Thông báo cho chủ bài viết là có người Thả cảm xúc            
+            
+            // Thông báo cho chủ bài viết là có người Thả cảm xúc            
             await _notiService.CreateNotificationAsync(post.UserId, userId, NotificationType.Like, postId);
             return "Đã bày tỏ cảm xúc.";
         }

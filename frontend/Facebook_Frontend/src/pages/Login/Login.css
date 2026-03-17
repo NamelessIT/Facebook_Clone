@@ -123,3 +123,98 @@
   }
   .fb-logo { margin: 0 auto; }
 }
+
+/* =========================================
+   MODAL ĐĂNG KÝ
+========================================= */
+.register-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-modal {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 432px;
+  display: flex;
+  flex-direction: column;
+}
+
+.register-header {
+  padding: 16px;
+  border-bottom: 1px solid #dadde1;
+  position: relative;
+}
+
+.register-header h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1c1e21;
+  margin: 0;
+  line-height: 38px;
+}
+
+.register-header p {
+  font-size: 15px;
+  color: #606770;
+  margin: 0;
+  margin-top: 5px;
+}
+
+.close-register-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #606770;
+  transition: 0.2s;
+}
+.close-register-btn:hover { color: #1c1e21; }
+
+.register-body {
+  padding: 16px;
+}
+
+.name-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.reg-input {
+  width: 100%;
+  background-color: #f5f6f7;
+  border: 1px solid #ccd0d5;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 15px;
+  margin-bottom: 10px;
+  outline: none;
+}
+.reg-input:focus { border-color: #1877f2; }
+
+.btn-register-submit {
+  width: 194px;
+  background-color: #00a400;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  cursor: pointer;
+  margin: 20px auto 10px auto;
+  display: block;
+  transition: 0.2s;
+}
+.btn-register-submit:hover { background-color: #36a420; }
+.btn-register-submit:disabled { background-color: #94d394; cursor: not-allowed; }
