@@ -1,6 +1,9 @@
+using FacebookClone.Application.DTOs.Notification;
+
 namespace FacebookClone.Application.Services.Interfaces;
 
 public interface INotificationHubService
 {
-    Task SendNotificationToUserAsync(Guid userId, string message);
+    Task SendNotificationAsync(Guid userId, NotificationResponseDto notification);
+    Task SendBadgeUpdateAsync(Guid userId, int unreadCount);
 }

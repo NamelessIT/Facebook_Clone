@@ -1,0 +1,79 @@
+.message-input-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fff;
+  border-top: 1px solid #e4e6eb;
+}
+
+.message-input-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.message-input-field {
+  width: 100%;
+  border: none;
+  background: #f0f2f5;
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 15px;
+  color: #050505;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  line-height: 1.4;
+  max-height: 120px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.message-input-field::placeholder {
+  color: #65676b;
+}
+
+.message-input-char-count {
+  position: absolute;
+  bottom: -18px;
+  right: 8px;
+  font-size: 11px;
+  color: #65676b;
+}
+
+.message-input-char-count--warning {
+  color: #e41e3f;
+}
+
+.message-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: #1877f2;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background-color 0.15s;
+}
+
+.message-send-btn:hover:not(:disabled) {
+  background: #f0f2f5;
+}
+
+.message-send-btn:disabled {
+  color: #bec3c9;
+  cursor: not-allowed;
+}
+
+.message-send-btn--loading {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

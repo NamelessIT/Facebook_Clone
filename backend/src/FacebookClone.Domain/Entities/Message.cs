@@ -18,5 +18,7 @@ public class Message
 
     public DateTime CreatedAt { get; set; }
 
+    public bool IsRead { get; set; } = false;
+
     public bool IsDeleted { get; set; }
 }

@@ -4,6 +4,10 @@ import LoginPage from "./pages/Login";
 import MainLayout from "./components/Layout/MainLayout";
 import HomePage from "./pages/Home";
 import ProfileTest from "./pages/Profile";
+import FriendsPage from "./pages/Friends";
+import SearchResultsPage from "./pages/Search/SearchResultsPage";
+import SettingsPage from "./pages/Settings/SettingsPage";
+import ChatListPage from "./pages/Messages/ChatListPage";
 
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -31,6 +35,11 @@ function App() {
             
             {/* Thích thì bạn vẫn có thể giữ route này để xem profile chi tiết */}
             <Route path="profile" element={<ProfileTest />} />
+            <Route path="friends" element={<FriendsPage />} />
+            <Route path="search" element={<SearchResultsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="messages" element={<ChatListPage />} />
+            <Route path="messages/:friendId" element={<ChatListPage />} />
           </Route>
         </Routes>
       </AuthProvider>

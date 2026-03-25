@@ -14,7 +14,19 @@ const userService = {
   getUserById: async (id) => {
     const url = `/users/${id}`;
     return await axiosClient.get(url);
-  }
+  },
+
+  searchUsers: async (query, page = 1, limit = 10) => {
+    return await axiosClient.get('/search/users', { params: { q: query, page, limit } });
+  },
+
+  updatePrivacy: async (data) => {
+    return await axiosClient.put('/users/privacy', data);
+  },
+
+  updatePreferences: async (data) => {
+    return await axiosClient.put('/users/preferences', data);
+  },
 };
 
 export default userService;

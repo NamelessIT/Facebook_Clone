@@ -1,4 +1,5 @@
-using FacebookClone.API.Hubs;
+﻿using FacebookClone.API.Hubs;
+using FacebookClone.Application.DTOs.Notification;
 using FacebookClone.Application.Services.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 
@@ -13,9 +14,15 @@ public class NotificationHubService : INotificationHubService
         _hubContext = hubContext;
     }
 
-    public async Task SendNotificationToUserAsync(Guid userId, string message)
+    public async Task SendNotificationAsync(Guid userId, NotificationResponseDto notification)
     {
-        // Gửi tin nhắn có tên "ReceiveNotification" đến ĐÚNG cái userId đó
-        await _hubContext.Clients.User(userId.ToString()).SendAsync("ReceiveNotification", message);
+        await _hubContext.Clients.User(userId.ToString())
+            .SendAsync("NewNotification", notification);
+    }
+
+    public async Task SendBadgeUpdateAsync(Guid userId, int unreadCount)
+    {
+        await _hubContext.Clients.User(userId.ToString())
+            .SendAsync("BadgeUpdate", unreadCount);
     }
 }

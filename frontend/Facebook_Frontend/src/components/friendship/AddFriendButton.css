@@ -1,0 +1,53 @@
+.add-friend-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.15s;
+}
+
+.add-friend-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.add-friend-btn--add {
+  background: #1877f2;
+  color: white;
+}
+
+.add-friend-btn--add:hover:not(:disabled) {
+  background: #166fe5;
+}
+
+.add-friend-btn--pending {
+  background: #e4e6eb;
+  color: #050505;
+}
+
+.add-friend-btn--pending:hover:not(:disabled) {
+  background: #d8dadf;
+}
+
+.add-friend-btn--accept {
+  background: #42b72a;
+  color: white;
+}
+
+.add-friend-btn--accept:hover:not(:disabled) {
+  background: #36a420;
+}
+
+.add-friend-btn--friends {
+  background: #e4e6eb;
+  color: #050505;
+}
+
+.add-friend-btn--friends:hover:not(:disabled) {
+  background: #d8dadf;
+}

@@ -30,4 +30,24 @@ public class UserRepository : IUserRepository
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<(IEnumerable<User> Items, int Total)> SearchAsync(string query, int pageNumber, int pageSize)
+    {
+        var normalizedQuery = query.ToLower().Trim();
+        var baseQuery = _context.Users
+            .Where(u => !u.IsDeleted &&
+                (u.FirstName.ToLower().Contains(normalizedQuery) ||
+                 u.LastName.ToLower().Contains(normalizedQuery) ||
+                 (u.FirstName + " " + u.LastName).ToLower().Contains(normalizedQuery)));
+
+        var total = await baseQuery.CountAsync();
+        var items = await baseQuery
+            .OrderBy(u => u.FirstName)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return (items, total);
+    }
 }

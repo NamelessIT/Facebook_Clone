@@ -55,20 +55,45 @@ public class UsersController : ControllerBase
     {
         try
         {
-            // 👇 GỌI TRỰC TIẾP HÀM HELPER, KHÔNG CÓ CHỮ "User." Ở TRƯỚC
             var userId = GetCurrentUserId(); 
-            
             var newAvatarUrl = await _userService.UpdateAvatarAsync(userId, request.AvatarUrl);
             return Ok(new { success = true, data = newAvatarUrl, message = "Cập nhật ảnh đại diện thành công!" });
         }
         catch (UnauthorizedAccessException)
         {
-            // Bắt lỗi nếu GetCurrentUserId() quăng ra Invalid Token
             return Unauthorized(new { success = false, message = "Token không hợp lệ" });
         }
         catch (Exception ex)
         {
             return BadRequest(new { success = false, message = ex.Message });
         }
+    }
+
+    // PUT /api/v1/users/me/privacy
+    [HttpPut("me/privacy")]
+    public async Task<IActionResult> UpdatePrivacy([FromBody] UpdatePrivacyRequest request)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            await _userService.UpdatePrivacyAsync(userId, request);
+            return Ok(new { success = true, message = "Đã cập nhật cài đặt riêng tư." });
+        }
+        catch (UnauthorizedAccessException) { return Unauthorized(new { success = false, message = "Token không hợp lệ" }); }
+        catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
+    }
+
+    // PUT /api/v1/users/me/preferences
+    [HttpPut("me/preferences")]
+    public async Task<IActionResult> UpdatePreferences([FromBody] UpdatePreferencesRequest request)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            await _userService.UpdatePreferencesAsync(userId, request);
+            return Ok(new { success = true, message = "Đã cập nhật tùy chọn." });
+        }
+        catch (UnauthorizedAccessException) { return Unauthorized(new { success = false, message = "Token không hợp lệ" }); }
+        catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
     }
 }

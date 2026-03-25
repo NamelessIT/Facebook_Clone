@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FacebookClone.API.Services;
 using FacebookClone.API.Extensions;
+using FacebookClone.API.Filters;
 using FacebookClone.API.Hubs;
 using FacebookClone.Domain.Interfaces;
 using FacebookClone.Application.Auth.Services;
@@ -77,6 +78,7 @@ try
     });
 
     builder.Services.AddScoped<INotificationHubService, NotificationHubService>();
+    builder.Services.AddScoped<PostOwnerFilter>();
 
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IUserService, UserService>();
@@ -98,6 +100,7 @@ try
     builder.Services.AddScoped<IReelService, ReelService>();
     builder.Services.AddScoped<IGroupRepository, GroupRepository>();
     builder.Services.AddScoped<IGroupService, GroupService>();
+    builder.Services.AddScoped<ISearchService, SearchService>();
 
     // ---------------------------------------------------------
     // 5. SWAGGER (Swashbuckle) & CORS

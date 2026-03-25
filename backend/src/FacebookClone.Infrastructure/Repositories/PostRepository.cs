@@ -52,4 +52,27 @@ public class PostRepository : IPostRepository
         _context.Posts.Update(post);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<(IEnumerable<Post> Items, int Total)> SearchAsync(string query, int pageNumber, int pageSize)
+    {
+        var normalizedQuery = query.ToLower().Trim();
+        var baseQuery = _context.Posts
+            .Include(p => p.User)
+            .Include(p => p.Medias)
+            .Include(p => p.Reactions)
+            .Include(p => p.Comments)
+            .Where(p => !p.IsDeleted &&
+                p.Privacy == FacebookClone.Domain.Enums.PostPrivacy.Public &&
+                p.Content.ToLower().Contains(normalizedQuery));
+
+        var total = await baseQuery.CountAsync();
+        var items = await baseQuery
+            .OrderByDescending(p => p.CreatedAt)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return (items, total);
+    }
 }   

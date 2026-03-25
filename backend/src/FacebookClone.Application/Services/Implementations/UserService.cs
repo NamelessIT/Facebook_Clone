@@ -46,7 +46,7 @@ public class UserService : IUserService
     public async Task<string> UpdateAvatarAsync(Guid userId, string avatarUrl)
     {
         var user = await _userRepository.GetByIdAsync(userId);
-        if (user == null) 
+        if (user == null)
             throw new Exception("Không tìm thấy người dùng.");
 
         user.AvatarUrl = avatarUrl;
@@ -55,5 +55,34 @@ public class UserService : IUserService
         await _userRepository.UpdateAsync(user);
 
         return user.AvatarUrl;
+    }
+
+    public async Task UpdatePrivacyAsync(Guid userId, UpdatePrivacyRequest request)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+            throw new NotFoundException("User not found");
+
+        user.PrivateProfile = request.PrivateProfile;
+        user.HideFriendsList = request.HideFriendsList;
+        user.OnlyFriendsCanMessage = request.OnlyFriendsCanMessage;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _userRepository.UpdateAsync(user);
+    }
+
+    public async Task UpdatePreferencesAsync(Guid userId, UpdatePreferencesRequest request)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+            throw new NotFoundException("User not found");
+
+        user.EmailNotifications = request.EmailNotifications;
+        user.ShowOnlineStatus = request.ShowOnlineStatus;
+        user.Language = request.Language;
+        user.Theme = request.Theme;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _userRepository.UpdateAsync(user);
     }
 }

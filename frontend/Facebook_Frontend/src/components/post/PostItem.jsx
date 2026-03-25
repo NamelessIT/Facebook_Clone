@@ -1,10 +1,11 @@
 import { useAuth } from "../../contexts/AuthContext";
-import { useState } from "react";
-import { ThumbsUp, MessageSquare, Share2, MoreHorizontal } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { ThumbsUp, MessageSquare, Share2, MoreHorizontal, Edit3, Trash2, X } from "lucide-react";
 import Avatar from "../common/Avatar";
 import MediaViewerModal from "./MediaViewerModal";
 import { getImageUrl } from "../../utils/formatUrl";
 import postService from "../../services/postService";
+import toast from "react-hot-toast";
 import "./PostItem.css";
 
 // Danh sách Cảm xúc chuẩn Facebook
@@ -17,10 +18,84 @@ const REACTIONS = [
   { id: 6, icon: '😡', name: 'Phẫn nộ', colorClass: 'reacted-angry' },
 ];
 
-const PostItem = ({ post }) => {
+const PostItem = ({ post, onPostUpdated }) => {
   const { user } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
   const [viewerData, setViewerData] = useState({ isOpen: false, index: 0 });
+
+  // Permission check: chỉ hiển thị Edit/Delete nếu user là chủ post
+  const isOwner = user?.id === post.author?.id;
+
+  // --- STATE MENU 3 CHẤM ---
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  // --- STATE EDIT POST MODAL ---
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editContent, setEditContent] = useState("");
+  const [editError, setEditError] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
+
+  // --- STATE DELETE POST MODAL ---
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Đóng menu khi click ngoài
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // --- HANDLERS EDIT POST ---
+  const handleOpenEdit = () => {
+    setEditContent(post.content || "");
+    setEditError("");
+    setShowEditModal(true);
+    setShowMenu(false);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editContent.trim()) {
+      setEditError("Nội dung không được để trống");
+      return;
+    }
+    setEditLoading(true);
+    try {
+      await postService.updatePost(post.id, { content: editContent });
+      toast.success("Cập nhật bài viết thành công!");
+      setShowEditModal(false);
+      onPostUpdated?.();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Cập nhật thất bại!");
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  // --- HANDLERS DELETE POST ---
+  const handleOpenDelete = () => {
+    setShowDeleteModal(true);
+    setShowMenu(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    setDeleteLoading(true);
+    try {
+      await postService.deletePost(post.id);
+      toast.success("Đã xóa bài viết!");
+      setShowDeleteModal(false);
+      onPostUpdated?.();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Xóa bài viết thất bại!");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   // --- STATE CẢM XÚC (Optimistic UI) ---
   // Giả sử backend trả về post.myReaction (ID cảm xúc user đã thả) và post.reactionsCount
@@ -126,7 +201,18 @@ const PostItem = ({ post }) => {
             <span className="post-time hover:underline cursor-pointer">{new Date(post.createdAt).toLocaleString('vi-VN')} • 🌎</span>
           </div>
         </div>
-        <button className="post-header-more-btn"><MoreHorizontal size={20} /></button>
+        <button className="post-header-more-btn" onClick={() => setShowMenu(!showMenu)}><MoreHorizontal size={20} /></button>
+        {/* Dropdown menu cho Edit/Delete */}
+        {showMenu && isOwner && (
+          <div className="post-dropdown-menu" ref={menuRef}>
+            <button className="post-dropdown-item" onClick={handleOpenEdit}>
+              <Edit3 size={16} /> Chỉnh sửa bài viết
+            </button>
+            <button className="post-dropdown-item post-dropdown-danger" onClick={handleOpenDelete}>
+              <Trash2 size={16} /> Xóa bài viết
+            </button>
+          </div>
+        )}
       </div>
 
       {post.content && (
@@ -241,6 +327,55 @@ const PostItem = ({ post }) => {
       </div>
 
       <MediaViewerModal isOpen={viewerData.isOpen} onClose={() => setViewerData({ isOpen: false, index: 0 })} medias={post.medias} initialIndex={viewerData.index}/>
+
+      {/* MODAL CHỈNH SỬA BÀI VIẾT */}
+      {showEditModal && (
+        <div className="post-modal-overlay" onMouseDown={() => setShowEditModal(false)}>
+          <div className="post-modal" onMouseDown={(e) => e.stopPropagation()}>
+            <div className="post-modal-header">
+              <h3>Chỉnh sửa bài viết</h3>
+              <button className="post-modal-close" onClick={() => setShowEditModal(false)}><X size={20} /></button>
+            </div>
+            <div className="post-modal-body">
+              <textarea
+                className="post-modal-textarea"
+                value={editContent}
+                onChange={(e) => { setEditContent(e.target.value); setEditError(""); }}
+                placeholder="Bạn đang nghĩ gì?"
+                rows={5}
+              />
+              {editError && <p className="post-modal-error">{editError}</p>}
+            </div>
+            <div className="post-modal-footer">
+              <button className="post-modal-btn post-modal-btn-cancel" onClick={() => setShowEditModal(false)}>Hủy</button>
+              <button className="post-modal-btn post-modal-btn-save" onClick={handleSaveEdit} disabled={editLoading}>
+                {editLoading ? "Đang lưu..." : "Lưu"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL XÁC NHẬN XÓA BÀI VIẾT */}
+      {showDeleteModal && (
+        <div className="post-modal-overlay" onMouseDown={() => setShowDeleteModal(false)}>
+          <div className="post-modal post-modal-sm" onMouseDown={(e) => e.stopPropagation()}>
+            <div className="post-modal-header">
+              <h3>Xóa bài viết</h3>
+              <button className="post-modal-close" onClick={() => setShowDeleteModal(false)}><X size={20} /></button>
+            </div>
+            <div className="post-modal-body">
+              <p>Bạn chắc chắn muốn xóa bài post này? Hành động này không thể hoàn tác.</p>
+            </div>
+            <div className="post-modal-footer">
+              <button className="post-modal-btn post-modal-btn-cancel" onClick={() => setShowDeleteModal(false)}>Hủy</button>
+              <button className="post-modal-btn post-modal-btn-delete" onClick={handleConfirmDelete} disabled={deleteLoading}>
+                {deleteLoading ? "Đang xóa..." : "Xóa"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

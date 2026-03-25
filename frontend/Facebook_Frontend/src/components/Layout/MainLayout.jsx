@@ -1,13 +1,16 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { getImageUrl } from "../../utils/formatUrl";
-import { Home, Tv, Store, Users, Search, Bell, MessageCircle, Grid } from "lucide-react"; // BỘ ICON XỊN SÒ
+import { Home, Tv, Store, Users, MessageCircle, Grid } from "lucide-react";
 import "./MainLayout.css";
 import Avatar from '../common/Avatar';
+import SearchBar from '../common/SearchBar';
+import NotificationBell from '../Notifications/NotificationBell';
 
 const MainLayout = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   // Tạm thời mock data. Sau này bạn fetch từ API Chat/Friends gán vào đây
   const [contacts, setContacts] = useState([
     { id: 1, fullName: "Bob Nguyễn", avatarUrl: null },
@@ -22,10 +25,7 @@ const MainLayout = () => {
           <Link to="/">
             <img src="../../assets/images/Facebook-Logo.png" className="nav-logo" alt="logo" />
           </Link>
-          <div className="search-container">
-            <Search size={18} className="search-icon text-gray-500" />
-            <input type="text" className="nav-search" placeholder="Tìm kiếm trên Facebook" />
-          </div>
+          <SearchBar />
         </div>
 
         {/* Giữa */}
@@ -39,8 +39,8 @@ const MainLayout = () => {
         {/* Góc Phải */}
         <div className="nav-right">
           <div className="icon-btn"><Grid size={20} /></div>
-          <div className="icon-btn"><MessageCircle size={20} /></div>
-          <div className="icon-btn"><Bell size={20} /></div>
+          <div className="icon-btn" onClick={() => navigate('/messages')} title="Messenger"><MessageCircle size={20} /></div>
+          <NotificationBell />
           <Avatar 
             src={user?.avatarUrl} 
             className="user-avatar" 

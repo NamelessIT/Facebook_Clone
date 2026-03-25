@@ -1,4 +1,4 @@
-using FacebookClone.Domain.Entities;
+﻿using FacebookClone.Domain.Entities;
 using FacebookClone.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,8 +22,8 @@ public class NotificationRepository : INotificationRepository
     public async Task<IEnumerable<Notification>> GetUserNotificationsAsync(Guid userId, int pageNumber, int pageSize)
     {
         return await _context.Notifications
-            .Include(n => n.Actor) // Lấy thông tin người tạo thông báo
-            .Where(n => n.UserId == userId)
+            .Include(n => n.Actor)
+            .Where(n => n.UserId == userId && !n.IsDeleted)
             .OrderByDescending(n => n.CreatedAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -31,9 +31,23 @@ public class NotificationRepository : INotificationRepository
             .ToListAsync();
     }
 
+    public async Task<int> GetTotalCountAsync(Guid userId)
+    {
+        return await _context.Notifications
+            .CountAsync(n => n.UserId == userId && !n.IsDeleted);
+    }
+
+    public async Task<int> GetUnreadCountAsync(Guid userId)
+    {
+        return await _context.Notifications
+            .CountAsync(n => n.UserId == userId && !n.IsRead && !n.IsDeleted);
+    }
+
     public async Task<Notification?> GetByIdAsync(Guid id)
     {
-        return await _context.Notifications.FindAsync(id);
+        return await _context.Notifications
+            .Include(n => n.Actor)
+            .FirstOrDefaultAsync(n => n.Id == id && !n.IsDeleted);
     }
 
     public async Task UpdateAsync(Notification notification)
@@ -44,14 +58,16 @@ public class NotificationRepository : INotificationRepository
 
     public async Task MarkAllAsReadAsync(Guid userId)
     {
-        var unreadNotis = await _context.Notifications
-            .Where(n => n.UserId == userId && !n.IsRead)
-            .ToListAsync();
+        await _context.Notifications
+            .Where(n => n.UserId == userId && !n.IsRead && !n.IsDeleted)
+            .ExecuteUpdateAsync(s => s.SetProperty(n => n.IsRead, true));
+    }
 
-        foreach (var noti in unreadNotis)
-        {
-            noti.IsRead = true;
-        }
-        await _context.SaveChangesAsync();
+    public async Task DeleteNotificationAsync(Guid notificationId)
+    {
+        // Soft delete: khong xoa thuc su
+        await _context.Notifications
+            .Where(n => n.Id == notificationId)
+            .ExecuteUpdateAsync(s => s.SetProperty(n => n.IsDeleted, true));
     }
 }

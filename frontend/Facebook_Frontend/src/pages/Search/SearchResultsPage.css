@@ -1,0 +1,121 @@
+.search-results-page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+.search-results-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #050505;
+  margin: 0 0 16px;
+}
+
+.search-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #e4e6eb;
+  margin-bottom: 16px;
+}
+
+.search-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #65676b;
+  border-bottom: 3px solid transparent;
+  transition: all 0.15s;
+}
+
+.search-tab:hover {
+  background: #f0f2f5;
+  border-radius: 6px 6px 0 0;
+}
+
+.search-tab--active {
+  color: #1877f2;
+  border-bottom-color: #1877f2;
+}
+
+.search-results-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.search-results-loading,
+.search-results-empty {
+  text-align: center;
+  color: #65676b;
+  padding: 40px 16px;
+  font-size: 15px;
+}
+
+.search-user-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.search-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-user-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: #050505;
+  margin: 0;
+}
+
+.search-user-bio {
+  font-size: 13px;
+  color: #65676b;
+  margin: 2px 0 0;
+}
+
+.search-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px 0;
+}
+
+.search-page-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: #e4e6eb;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #050505;
+  transition: background-color 0.15s;
+}
+
+.search-page-btn:hover:not(:disabled) {
+  background: #d8dadf;
+}
+
+.search-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.search-page-info {
+  font-size: 14px;
+  color: #65676b;
+}

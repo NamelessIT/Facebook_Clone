@@ -9,11 +9,21 @@ const postService = {
     return await axiosClient.post('/posts', formData);
   },
 
-  // 👇 THÊM HÀM NÀY ĐỂ THẢ CẢM XÚC
-  // reactionType có thể là số (1: Thích, 2: Tim, 3: Haha...) tùy backend của bạn
   reactPost: async (postId, reactionType) => {
     return await axiosClient.post(`/posts/${postId}/reactions`, { reactionType });
-  }
+  },
+
+  updatePost: async (postId, data) => {
+    return await axiosClient.put(`/posts/${postId}`, data);
+  },
+
+  deletePost: async (postId) => {
+    return await axiosClient.delete(`/posts/${postId}`);
+  },
+
+  searchPosts: async (query, page = 1, limit = 10) => {
+    return await axiosClient.get(`/search/posts`, { params: { q: query, page, limit } });
+  },
 };
 
 export default postService;

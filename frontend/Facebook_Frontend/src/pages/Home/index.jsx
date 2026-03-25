@@ -78,7 +78,7 @@ const HomePage = () => {
 
       {/* DANH SÁCH BÀI VIẾT */}
       {posts.map((post) => (
-         <PostItem key={post.id} post={post} />
+         <PostItem key={post.id} post={post} onPostUpdated={fetchPosts} />
       ))}
       
     </div>

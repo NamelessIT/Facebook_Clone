@@ -9,5 +9,6 @@ public class UserProfileDto
     public string? AvatarUrl { get; set; }
     public string? Bio { get; set; }
     public string? Location { get; set; }
+    public bool IsOnline { get; set; }
     public DateTime CreatedAt { get; set; }
 }

@@ -6,4 +6,6 @@ public interface IUserService
     Task<UserProfileDto> GetProfileAsync(Guid userId);
     Task<UserProfileDto> UpdateProfileAsync(Guid userId, UpdateProfileDto request);
     Task<string> UpdateAvatarAsync(Guid userId, string avatarUrl);
+    Task UpdatePrivacyAsync(Guid userId, UpdatePrivacyRequest request);
+    Task UpdatePreferencesAsync(Guid userId, UpdatePreferencesRequest request);
 }

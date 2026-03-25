@@ -72,6 +72,9 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("LastMessageAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -236,6 +239,11 @@ namespace FacebookClone.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<int>("MessageType")
                         .HasColumnType("integer");
 
@@ -247,11 +255,13 @@ namespace FacebookClone.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ConversationId");
-
                     b.HasIndex("SenderId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("ConversationId", "CreatedAt");
+
+                    b.HasIndex("ConversationId", "IsRead", "SenderId");
 
                     b.ToTable("Messages", (string)null);
                 });
@@ -268,8 +278,19 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsRead")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<Guid>("ReferenceId")
                         .HasColumnType("uuid");
@@ -284,7 +305,9 @@ namespace FacebookClone.Infrastructure.Migrations
 
                     b.HasIndex("ActorId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "CreatedAt");
+
+                    b.HasIndex("UserId", "IsRead");
 
                     b.ToTable("Notifications", (string)null);
                 });
@@ -474,10 +497,16 @@ namespace FacebookClone.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<bool>("EmailNotifications")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("HideFriendsList")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -489,6 +518,10 @@ namespace FacebookClone.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -498,11 +531,24 @@ namespace FacebookClone.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<bool>("OnlyFriendsCanMessage")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("PrivateProfile")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("ShowOnlineStatus")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Status")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Theme")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -664,7 +710,7 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.HasOne("FacebookClone.Domain.Entities.User", "Actor")
                         .WithMany()
                         .HasForeignKey("ActorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("FacebookClone.Domain.Entities.User", "User")

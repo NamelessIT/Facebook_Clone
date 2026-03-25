@@ -28,6 +28,17 @@ public class User
 
     public bool IsOnline { get; set; }
 
+    // --- Privacy Settings ---
+    public bool PrivateProfile { get; set; } = false;
+    public bool HideFriendsList { get; set; } = false;
+    public bool OnlyFriendsCanMessage { get; set; } = false;
+
+    // --- Preferences ---
+    public bool EmailNotifications { get; set; } = true;
+    public bool ShowOnlineStatus { get; set; } = true;
+    public string Language { get; set; } = "vi";
+    public string Theme { get; set; } = "light";
+
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

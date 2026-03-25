@@ -1,4 +1,4 @@
-using FacebookClone.Application.DTOs.Chat;
+﻿using FacebookClone.Application.DTOs.Chat;
 using FacebookClone.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace FacebookClone.API.Controllers;
 
-[Route("api/v1/[controller]")]
+[Route("api/v1/chat")]
 [ApiController]
 [Authorize]
 public class ChatController : ControllerBase
@@ -24,19 +24,109 @@ public class ChatController : ControllerBase
         return Guid.Parse(idClaim!);
     }
 
+    private string? GetCorrelationId() =>
+        HttpContext.Items["X-Correlation-Id"]?.ToString();
+
+    // GET /api/v1/chat/conversations
+    // Lấy danh sách tất cả conversations kèm last message + unread count
+    [HttpGet("conversations")]
+    public async Task<IActionResult> GetConversations()
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var conversations = await _chatService.GetConversationListAsync(userId);
+            return Ok(new { success = true, data = conversations });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
+    }
+
+    // GET /api/v1/chat/conversations/{conversationId}/messages?pageNumber=1&pageSize=20
+    // Lấy lịch sử tin nhắn của 1 conversation (pagination)
+    [HttpGet("conversations/{conversationId}/messages")]
+    public async Task<IActionResult> GetMessages(
+        Guid conversationId,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        try
+        {
+            pageSize = Math.Clamp(pageSize, 1, 100);
+            var currentUserId = GetCurrentUserId();
+            var (items, total) = await _chatService.GetMessagesAsync(conversationId, currentUserId, pageNumber, pageSize);
+            var totalPages = (int)Math.Ceiling(total / (double)pageSize);
+
+            return Ok(new
+            {
+                success = true,
+                data = items,
+                pagination = new { page = pageNumber, limit = pageSize, total, totalPages }
+            });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { success = false, message = ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { success = false, message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
+    }
+
+    // POST /api/v1/chat/messages
+    // Gửi tin nhắn qua REST API (thay thế hoặc fallback khi SignalR không khả dụng)
     [HttpPost("messages")]
     public async Task<IActionResult> SendMessage([FromBody] SendMessageRequest request)
     {
-        try {
-            var message = await _chatService.SendMessageAsync(GetCurrentUserId(), request);
-            return Ok(new { success = true, data = message });
-        } catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
+        try
+        {
+            var senderId = GetCurrentUserId();
+            var message = await _chatService.SendMessageAsync(senderId, request, GetCorrelationId());
+            return Ok(new { success = true, data = message, message = "Đã gửi tin nhắn." });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { success = false, message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
     }
 
-    [HttpGet("conversations/{conversationId}/messages")]
-    public async Task<IActionResult> GetMessages(Guid conversationId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+    // POST /api/v1/chat/conversations/{conversationId}/read
+    // Đánh dấu tất cả messages trong conversation là đã đọc
+    [HttpPost("conversations/{conversationId}/read")]
+    public async Task<IActionResult> MarkAsRead(Guid conversationId)
     {
-        var messages = await _chatService.GetMessagesAsync(conversationId, pageNumber, pageSize);
-        return Ok(new { success = true, data = messages });
+        try
+        {
+            var currentUserId = GetCurrentUserId();
+            await _chatService.MarkConversationAsReadAsync(conversationId, currentUserId);
+            return Ok(new { success = true, message = "Đã đánh dấu đã đọc." });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { success = false, message = ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { success = false, message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
     }
 }

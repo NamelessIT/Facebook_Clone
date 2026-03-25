@@ -8,4 +8,5 @@ public interface IPostRepository
     Task<IEnumerable<Post>> GetNewsFeedAsync(int pageNumber, int pageSize);
     Task<Post?> GetByIdAsync(Guid id);
     Task UpdateAsync(Post post);
+    Task<(IEnumerable<Post> Items, int Total)> SearchAsync(string query, int pageNumber, int pageSize);
 }

@@ -22,5 +22,11 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
 
         builder.Property(x => x.MessageType).IsRequired();
         builder.Property(x => x.IsDeleted).HasDefaultValue(false);
+        builder.Property(x => x.IsRead).HasDefaultValue(false);
+
+        // Index để tăng tốc query lịch sử chat theo conversation
+        builder.HasIndex(x => new { x.ConversationId, x.CreatedAt });
+        // Index để query unread messages nhanh
+        builder.HasIndex(x => new { x.ConversationId, x.IsRead, x.SenderId });
     }
 }

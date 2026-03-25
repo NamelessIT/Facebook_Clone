@@ -18,4 +18,25 @@ public class UpdateProfileDto
 
     // Lưu ý: Avatar thường xử lý qua API Upload riêng, trả về URL string
     public string? AvatarUrl { get; set; }
+
+    public string? CoverUrl { get; set; }
+}
+
+public class UpdatePrivacyRequest
+{
+    public bool PrivateProfile { get; set; }
+    public bool HideFriendsList { get; set; }
+    public bool OnlyFriendsCanMessage { get; set; }
+}
+
+public class UpdatePreferencesRequest
+{
+    public bool EmailNotifications { get; set; }
+    public bool ShowOnlineStatus { get; set; }
+
+    [MaxLength(10)]
+    public string Language { get; set; } = "vi";
+
+    [MaxLength(20)]
+    public string Theme { get; set; } = "light";
 }

@@ -12,6 +12,7 @@ public class Conversation
     public User Creator { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
+    public DateTime? LastMessageAt { get; set; }
 
     /* Navigation */
     public ICollection<ConversationMember> Members { get; set; } = new List<ConversationMember>();

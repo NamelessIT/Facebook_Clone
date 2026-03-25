@@ -1,5 +1,6 @@
-using FacebookClone.Application.DTOs.Friendship;
+﻿using FacebookClone.Application.DTOs.Friendship;
 using FacebookClone.Application.Services.Interfaces;
+using FacebookClone.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,10 +13,12 @@ namespace FacebookClone.API.Controllers;
 public class FriendshipsController : ControllerBase
 {
     private readonly IFriendshipService _friendshipService;
+    private readonly INotificationService _notificationService;
 
-    public FriendshipsController(IFriendshipService friendshipService)
+    public FriendshipsController(IFriendshipService friendshipService, INotificationService notificationService)
     {
         _friendshipService = friendshipService;
+        _notificationService = notificationService;
     }
 
     private Guid GetCurrentUserId()
@@ -24,6 +27,7 @@ public class FriendshipsController : ControllerBase
         return Guid.Parse(idClaim!);
     }
 
+    // Gui loi moi ket ban - FriendshipService da tu trigger FriendRequest notification
     [HttpPost("request/{receiverId}")]
     public async Task<IActionResult> SendRequest(Guid receiverId)
     {
@@ -33,11 +37,20 @@ public class FriendshipsController : ControllerBase
         } catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
     }
 
+    // Chap nhan / tu choi loi moi - neu chap nhan thi trigger FriendAccepted notification
     [HttpPost("respond/{requesterId}")]
     public async Task<IActionResult> RespondToRequest(Guid requesterId, [FromQuery] bool accept)
     {
         try {
-            var message = await _friendshipService.RespondToRequestAsync(GetCurrentUserId(), requesterId, accept);
+            var currentUserId = GetCurrentUserId();
+            var message = await _friendshipService.RespondToRequestAsync(currentUserId, requesterId, accept);
+
+            // Chi trigger FriendAccepted notification khi chap nhan
+            if (accept)
+            {
+                _ = TriggerFriendAcceptedNotificationAsync(requesterId, currentUserId);
+            }
+
             return Ok(new { success = true, message });
         } catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
     }
@@ -63,5 +76,17 @@ public class FriendshipsController : ControllerBase
     {
         var requests = await _friendshipService.GetPendingRequestsAsync(GetCurrentUserId());
         return Ok(new { success = true, data = requests });
+    }
+
+    // Fire-and-forget: gui FriendAccepted notification cho nguoi da gui loi moi
+    private async Task TriggerFriendAcceptedNotificationAsync(Guid requesterId, Guid acceptorId)
+    {
+        try
+        {
+            await _notificationService.CreateNotificationAsync(
+                requesterId, acceptorId, NotificationType.FriendAccepted, acceptorId,
+                "da chap nhan loi moi ket ban cua ban");
+        }
+        catch { /* Notification failure khong duoc break action chinh */ }
     }
 }
