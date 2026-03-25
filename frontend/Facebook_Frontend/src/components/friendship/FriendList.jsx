@@ -60,15 +60,15 @@ const FriendList = ({ userId }) => {
     <div className="friend-list">
       <div className="friend-list-grid">
         {friends.map((friend) => (
-          <div key={friend.id} className="friend-card">
-            <Avatar src={friend.avatarUrl} className="w-20 h-20" />
+          <div key={friend.friendshipId} className="friend-card">
+            <Avatar src={friend.profile?.avatarUrl} className="w-20 h-20" />
             <div className="friend-card-info">
-              <h4 className="friend-card-name">{friend.fullName}</h4>
+              <h4 className="friend-card-name">{friend.profile?.fullName}</h4>
             </div>
             <button
               className="friend-card-remove"
-              onClick={() => handleRemoveFriend(friend.id, friend.fullName)}
-              disabled={removingId === friend.id}
+              onClick={() => handleRemoveFriend(friend.userId, friend.profile?.fullName)}
+              disabled={removingId === friend.userId}
               title="Hủy kết bạn"
             >
               <UserMinus size={16} />

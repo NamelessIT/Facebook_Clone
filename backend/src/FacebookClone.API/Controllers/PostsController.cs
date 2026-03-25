@@ -87,7 +87,23 @@ public class PostsController : ControllerBase
         catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
     }
 
-    // 5. TOGGLE REACTION (Like/Unlike) - co trigger notification
+    // 5. CHIA SE BAI VIET
+    [HttpPost("{id}/share")]
+    public async Task<IActionResult> SharePost(Guid id, [FromBody] SharePostRequest request)
+    {
+        var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(userIdString, out Guid userId))
+            return Unauthorized(new { success = false, message = "Token khong hop le" });
+
+        try
+        {
+            var sharedPost = await _postService.SharePostAsync(userId, id, request);
+            return Ok(new { success = true, data = sharedPost, message = "Da chia se bai viet." });
+        }
+        catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
+    }
+
+    // 6. TOGGLE REACTION (Like/Unlike) - co trigger notification
     [HttpPost("{postId}/reactions")]
     public async Task<IActionResult> ToggleReaction(Guid postId, [FromBody] ReactionRequest request)
     {
@@ -105,7 +121,6 @@ public class PostsController : ControllerBase
         } catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
     }
 
-    // 6. THEM BINH LUAN - co trigger notification
     [HttpPost("{postId}/comments")]
     public async Task<IActionResult> AddComment(Guid postId, [FromBody] CreateCommentRequest request)
     {

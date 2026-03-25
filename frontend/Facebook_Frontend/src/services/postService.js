@@ -21,8 +21,24 @@ const postService = {
     return await axiosClient.delete(`/posts/${postId}`);
   },
 
-  searchPosts: async (query, page = 1, limit = 10) => {
-    return await axiosClient.get(`/search/posts`, { params: { q: query, page, limit } });
+  searchPosts: async (query, pageNumber = 1, pageSize = 10) => {
+    return await axiosClient.get('/search/posts', { params: { q: query, pageNumber, pageSize } });
+  },
+
+  getComments: async (postId, pageNumber = 1, pageSize = 10) => {
+    return await axiosClient.get(`/posts/${postId}/comments`, { params: { pageNumber, pageSize } });
+  },
+
+  createComment: async (postId, data) => {
+    return await axiosClient.post(`/posts/${postId}/comments`, data);
+  },
+
+  reactComment: async (commentId, reactionType) => {
+    return await axiosClient.post(`/posts/comments/${commentId}/reactions`, { reactionType });
+  },
+
+  sharePost: async (data) => {
+    return await axiosClient.post('/posts', data);
   },
 };
 

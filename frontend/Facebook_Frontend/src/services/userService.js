@@ -16,8 +16,8 @@ const userService = {
     return await axiosClient.get(url);
   },
 
-  searchUsers: async (query, page = 1, limit = 10) => {
-    return await axiosClient.get('/search/users', { params: { q: query, page, limit } });
+  searchUsers: async (query, pageNumber = 1, pageSize = 10) => {
+    return await axiosClient.get('/search/users', { params: { q: query, pageNumber, pageSize } });
   },
 
   updatePrivacy: async (data) => {

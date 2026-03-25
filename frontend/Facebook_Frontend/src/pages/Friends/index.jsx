@@ -37,12 +37,12 @@ const FriendsPage = () => {
     }
   }, [activeTab]);
 
-  const handleAccept = async (requestId) => {
-    setProcessingId(requestId);
+  const handleAccept = async (request) => {
+    setProcessingId(request.userId);
     try {
-      await friendshipService.acceptFriendRequest(requestId);
+      await friendshipService.acceptFriendRequest(request.userId);
       toast.success("Đã chấp nhận lời mời kết bạn!");
-      setRequests((prev) => prev.filter((r) => r.id !== requestId));
+      setRequests((prev) => prev.filter((r) => r.userId !== request.userId));
     } catch (error) {
       toast.error(error.response?.data?.message || "Có lỗi xảy ra!");
     } finally {
@@ -50,12 +50,12 @@ const FriendsPage = () => {
     }
   };
 
-  const handleReject = async (requestId) => {
-    setProcessingId(requestId);
+  const handleReject = async (request) => {
+    setProcessingId(request.userId);
     try {
-      await friendshipService.rejectFriendRequest(requestId);
+      await friendshipService.rejectFriendRequest(request.userId);
       toast.success("Đã từ chối lời mời kết bạn");
-      setRequests((prev) => prev.filter((r) => r.id !== requestId));
+      setRequests((prev) => prev.filter((r) => r.userId !== request.userId));
     } catch (error) {
       toast.error(error.response?.data?.message || "Có lỗi xảy ra!");
     } finally {
@@ -92,22 +92,22 @@ const FriendsPage = () => {
           ) : (
             <div className="friend-requests-grid">
               {requests.map((request) => (
-                <div key={request.id} className="friend-request-card">
-                  <Avatar src={request.fromUser?.avatarUrl} className="w-20 h-20" />
-                  <h4 className="friend-request-name">{request.fromUser?.fullName}</h4>
+                <div key={request.friendshipId} className="friend-request-card">
+                  <Avatar src={request.profile?.avatarUrl} className="w-20 h-20" />
+                  <h4 className="friend-request-name">{request.profile?.fullName}</h4>
                   <div className="friend-request-actions">
                     <button
                       className="friend-request-btn friend-request-btn--accept"
-                      onClick={() => handleAccept(request.id)}
-                      disabled={processingId === request.id}
+                      onClick={() => handleAccept(request)}
+                      disabled={processingId === request.userId}
                     >
                       <UserCheck size={16} />
                       Chấp nhận
                     </button>
                     <button
                       className="friend-request-btn friend-request-btn--reject"
-                      onClick={() => handleReject(request.id)}
-                      disabled={processingId === request.id}
+                      onClick={() => handleReject(request)}
+                      disabled={processingId === request.userId}
                     >
                       <UserX size={16} />
                       Từ chối

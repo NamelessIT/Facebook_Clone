@@ -13,7 +13,6 @@ const FRIENDSHIP_STATUS = {
 
 const AddFriendButton = ({ targetUserId, initialStatus }) => {
   const [status, setStatus] = useState(initialStatus || FRIENDSHIP_STATUS.NONE);
-  const [requestId, setRequestId] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -28,7 +27,6 @@ const AddFriendButton = ({ targetUserId, initialStatus }) => {
       const data = res.data?.data;
       if (data) {
         setStatus(data.status);
-        setRequestId(data.requestId);
       }
     } catch {
       setStatus(FRIENDSHIP_STATUS.NONE);
@@ -40,27 +38,24 @@ const AddFriendButton = ({ targetUserId, initialStatus }) => {
     try {
       switch (status) {
         case FRIENDSHIP_STATUS.NONE: {
-          const res = await friendshipService.sendFriendRequest(targetUserId);
-          setRequestId(res.data?.data?.id);
+          await friendshipService.sendFriendRequest(targetUserId);
           setStatus(FRIENDSHIP_STATUS.PENDING_SENT);
           toast.success("Đã gửi lời mời kết bạn!");
           break;
         }
         case FRIENDSHIP_STATUS.PENDING_SENT:
-          await friendshipService.cancelFriendRequest(requestId);
+          await friendshipService.removeFriend(targetUserId);
           setStatus(FRIENDSHIP_STATUS.NONE);
-          setRequestId(null);
           toast.success("Đã hủy lời mời kết bạn");
           break;
         case FRIENDSHIP_STATUS.PENDING_RECEIVED:
-          await friendshipService.acceptFriendRequest(requestId);
+          await friendshipService.acceptFriendRequest(targetUserId);
           setStatus(FRIENDSHIP_STATUS.FRIENDS);
           toast.success("Đã chấp nhận lời mời kết bạn!");
           break;
         case FRIENDSHIP_STATUS.FRIENDS:
           await friendshipService.removeFriend(targetUserId);
           setStatus(FRIENDSHIP_STATUS.NONE);
-          setRequestId(null);
           toast.success("Đã hủy kết bạn");
           break;
       }

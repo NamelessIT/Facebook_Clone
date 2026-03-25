@@ -21,4 +21,5 @@ public class PostResponseDto
     public List<string> ReactorNames { get; set; } = new List<string>();
     // 👇 THÊM DÒNG NÀY ĐỂ TRẢ VỀ DANH SÁCH FILE ĐÍNH KÈM
     public List<MediaDto> Medias { get; set; } = new List<MediaDto>();
+    public PostResponseDto? SharedPost { get; set; }
 }

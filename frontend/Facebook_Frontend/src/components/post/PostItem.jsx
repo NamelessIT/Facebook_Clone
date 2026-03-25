@@ -3,6 +3,8 @@ import { useState, useRef, useEffect } from "react";
 import { ThumbsUp, MessageSquare, Share2, MoreHorizontal, Edit3, Trash2, X } from "lucide-react";
 import Avatar from "../common/Avatar";
 import MediaViewerModal from "./MediaViewerModal";
+import CommentSection from "./CommentSection";
+import SharePostModal from "./SharePostModal";
 import { getImageUrl } from "../../utils/formatUrl";
 import postService from "../../services/postService";
 import toast from "react-hot-toast";
@@ -39,6 +41,13 @@ const PostItem = ({ post, onPostUpdated }) => {
   // --- STATE DELETE POST MODAL ---
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // --- STATE COMMENT SECTION ---
+  const [showComments, setShowComments] = useState(false);
+  const [localCommentsCount, setLocalCommentsCount] = useState(post.commentsCount || 0);
+
+  // --- STATE SHARE POST MODAL ---
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // Đóng menu khi click ngoài
   useEffect(() => {
@@ -281,7 +290,7 @@ const PostItem = ({ post, onPostUpdated }) => {
 
         {/* PHẢI: Bình luận và Chia sẻ */}
         <div className="stats-right">
-          <div className="hover:underline cursor-pointer">{post.commentsCount || 0} bình luận</div>
+          <div className="hover:underline cursor-pointer" onClick={() => setShowComments(!showComments)}>{localCommentsCount || 0} bình luận</div>
           {(post.sharesCount > 0) && <div className="hover:underline cursor-pointer">{post.sharesCount} chia sẻ</div>}
         </div>
       </div>
@@ -322,11 +331,27 @@ const PostItem = ({ post, onPostUpdated }) => {
           </div>
         </div>
 
-        <button className="action-btn"><MessageSquare size={20} /> Bình luận</button>
-        <button className="action-btn"><Share2 size={20} /> Chia sẻ</button>
+        <button className="action-btn" onClick={() => setShowComments(!showComments)}><MessageSquare size={20} /> Bình luận</button>
+        <button className="action-btn" onClick={() => setShowShareModal(true)}><Share2 size={20} /> Chia sẻ</button>
       </div>
 
       <MediaViewerModal isOpen={viewerData.isOpen} onClose={() => setViewerData({ isOpen: false, index: 0 })} medias={post.medias} initialIndex={viewerData.index}/>
+
+      {/* COMMENT SECTION */}
+      {showComments && (
+        <CommentSection
+          postId={post.id}
+          onCommentAdded={() => setLocalCommentsCount((c) => c + 1)}
+        />
+      )}
+
+      {/* SHARE POST MODAL */}
+      <SharePostModal
+        post={post}
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        onShared={onPostUpdated}
+      />
 
       {/* MODAL CHỈNH SỬA BÀI VIẾT */}
       {showEditModal && (

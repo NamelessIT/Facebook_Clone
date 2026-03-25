@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Bell, ThumbsUp, MessageSquare, UserPlus, MessageCircle } from 'lucide-react';
+import { Bell, ThumbsUp, MessageSquare, UserPlus, MessageCircle, UserCheck } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import Avatar from '../common/Avatar';
@@ -10,6 +10,7 @@ const NOTIFICATION_TYPE = {
   COMMENT: 2,
   FRIEND_REQUEST: 3,
   MESSAGE: 4,
+  FRIEND_ACCEPTED: 5,
 };
 
 const getNotificationIcon = (type) => {
@@ -22,6 +23,8 @@ const getNotificationIcon = (type) => {
       return { icon: UserPlus, className: 'notification-icon--friend' };
     case NOTIFICATION_TYPE.MESSAGE:
       return { icon: MessageCircle, className: 'notification-icon--message' };
+    case NOTIFICATION_TYPE.FRIEND_ACCEPTED:
+      return { icon: UserCheck, className: 'notification-icon--friend' };
     default:
       return { icon: Bell, className: 'notification-icon--like' };
   }
@@ -38,6 +41,8 @@ const getNotificationText = (notification) => {
       return { name: actorName, action: ' đã gửi cho bạn lời mời kết bạn.' };
     case NOTIFICATION_TYPE.MESSAGE:
       return { name: actorName, action: ' đã gửi cho bạn một tin nhắn.' };
+    case NOTIFICATION_TYPE.FRIEND_ACCEPTED:
+      return { name: actorName, action: ' đã chấp nhận lời mời kết bạn của bạn.' };
     default:
       return { name: actorName, action: ' đã thực hiện một hành động.' };
   }
@@ -57,6 +62,7 @@ const getNotificationLink = (notification) => {
     case NOTIFICATION_TYPE.COMMENT:
       return '/';
     case NOTIFICATION_TYPE.FRIEND_REQUEST:
+    case NOTIFICATION_TYPE.FRIEND_ACCEPTED:
       return '/friends';
     case NOTIFICATION_TYPE.MESSAGE:
       return `/messages/${notification.actor?.id || ''}`;

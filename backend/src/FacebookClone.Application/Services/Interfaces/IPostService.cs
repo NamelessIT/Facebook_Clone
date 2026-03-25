@@ -8,4 +8,5 @@ public interface IPostService
     Task<IEnumerable<PostResponseDto>> GetNewsFeedAsync(Guid currentUserId, int pageNumber = 1, int pageSize = 10);
     Task<PostResponseDto> UpdatePostAsync(Guid postId, Guid userId, UpdatePostRequest request);
     Task<bool> DeletePostAsync(Guid postId, Guid userId);
+    Task<PostResponseDto> SharePostAsync(Guid userId, Guid postId, SharePostRequest request);
 }

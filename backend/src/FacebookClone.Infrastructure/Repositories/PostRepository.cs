@@ -27,8 +27,12 @@ public class PostRepository : IPostRepository
             .Include(p => p.User) 
             .Include(p => p.Medias) 
             .Include(p => p.Reactions)
-                .ThenInclude(r => r.User) // 👈 BẮT BUỘC PHẢI THÊM DÒNG NÀY ĐỂ LẤY FULLNAME
+                .ThenInclude(r => r.User)
             .Include(p => p.Comments)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.User)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Medias)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Reactions)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Comments)
             .Where(p => !p.IsDeleted)
             .OrderByDescending(p => p.CreatedAt)
             .Skip((pageNumber - 1) * pageSize)
@@ -40,10 +44,14 @@ public class PostRepository : IPostRepository
     public async Task<Post?> GetByIdAsync(Guid id)
     {
         return await _context.Posts
-            .Include(p => p.User) // Kéo theo User để không bị lỗi Author = null
-            .Include(p => p.Medias) // 👈 THÊM DÒNG NÀY VÀO CHUỖI INCLUDE
+            .Include(p => p.User)
+            .Include(p => p.Medias)
             .Include(p => p.Reactions)
             .Include(p => p.Comments)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.User)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Medias)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Reactions)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Comments)
             .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
     }
 

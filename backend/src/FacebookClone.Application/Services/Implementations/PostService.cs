@@ -152,4 +152,29 @@ public class PostService : IPostService
         await _postRepository.UpdateAsync(post);
         return true;
     }
+
+    public async Task<PostResponseDto> SharePostAsync(Guid userId, Guid postId, SharePostRequest request)
+    {
+        var originalPost = await _postRepository.GetByIdAsync(postId);
+        if (originalPost == null)
+            throw new Exception("Bai viet goc khong ton tai hoac da bi xoa.");
+
+        var sharedPost = new Post
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Content = request.Caption ?? string.Empty,
+            Privacy = request.Privacy,
+            PostType = PostType.Share,
+            SharedPostId = postId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            IsDeleted = false
+        };
+
+        await _postRepository.CreateAsync(sharedPost);
+
+        var created = await _postRepository.GetByIdAsync(sharedPost.Id);
+        return _mapper.Map<PostResponseDto>(created);
+    }
 }

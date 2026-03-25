@@ -5,28 +5,28 @@ const friendshipService = {
     return await axiosClient.get('/friendships/friends', { params: { page, limit } });
   },
 
-  sendFriendRequest: async (userId) => {
-    return await axiosClient.post('/friendships/request', { toUserId: userId });
+  sendFriendRequest: async (receiverId) => {
+    return await axiosClient.post(`/friendships/request/${receiverId}`);
   },
 
-  acceptFriendRequest: async (requestId) => {
-    return await axiosClient.put(`/friendships/request/${requestId}/accept`);
+  respondToRequest: async (requesterId, accept) => {
+    return await axiosClient.post(`/friendships/respond/${requesterId}?accept=${accept}`);
   },
 
-  rejectFriendRequest: async (requestId) => {
-    return await axiosClient.put(`/friendships/request/${requestId}/reject`);
+  acceptFriendRequest: async (requesterId) => {
+    return await axiosClient.post(`/friendships/respond/${requesterId}?accept=true`);
   },
 
-  cancelFriendRequest: async (requestId) => {
-    return await axiosClient.delete(`/friendships/request/${requestId}`);
+  rejectFriendRequest: async (requesterId) => {
+    return await axiosClient.post(`/friendships/respond/${requesterId}?accept=false`);
   },
 
   removeFriend: async (friendId) => {
-    return await axiosClient.delete(`/friendships/${friendId}`);
+    return await axiosClient.delete(`/friendships/unfriend/${friendId}`);
   },
 
   getFriendRequests: async (page = 1, limit = 20) => {
-    return await axiosClient.get('/friendships/requests', { params: { page, limit } });
+    return await axiosClient.get('/friendships/requests/pending', { params: { page, limit } });
   },
 
   getFriendshipStatus: async (userId) => {
