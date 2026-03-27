@@ -81,6 +81,28 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
     setActiveConvId(conversationId);
   }, [conversationId]);
 
+  // Tìm conversation đã tồn tại khi mở chat với bạn bè nhưng chưa có conversationId
+  useEffect(() => {
+    const friendId = friend?.userId || friend?.id;
+    if (!friendId || conversationId) return; // Đã có conversationId thì không cần tìm nữa
+
+    const findExistingConversation = async () => {
+      try {
+        const res = await chatService.getConversations();
+        const convs = res.data?.data || [];
+        const existing = convs.find((c) => c.otherUser?.id === friendId);
+        if (existing?.conversationId) {
+          setActiveConvId(existing.conversationId);
+          onConversationCreated?.(existing.conversationId);
+        }
+      } catch {
+        // Chưa có conversation — sẽ tạo khi gửi tin nhắn đầu tiên
+      }
+    };
+
+    findExistingConversation();
+  }, [friend?.userId, friend?.id, conversationId]);
+
   // Auto-scroll on new messages
   useEffect(() => {
     if (messages.length > 0) {
@@ -88,6 +110,39 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
       isInitialLoad.current = false;
     }
   }, [messages, scrollToBottom]);
+
+  // Query initial online status when friend changes
+  useEffect(() => {
+    const friendId = friend?.userId || friend?.id;
+    if (!friendId) return;
+
+    const queryOnlineStatus = async () => {
+      try {
+        const userService = (await import('../../services/userService')).default;
+        const res = await userService.getUserById(friendId);
+        const userData = res.data?.data;
+        
+        // Determine if online based on lastSeenAt
+        // If lastSeenAt is recent (within last few minutes), consider online
+        // Otherwise offline
+        if (userData?.lastSeenAt) {
+          const lastSeen = new Date(userData.lastSeenAt);
+          const now = new Date();
+          const minutesAgo = (now - lastSeen) / (1000 * 60);
+          
+          // If last seen within 5 minutes, consider online (or rely on isOnline field if exists)
+          setIsOnline(userData.isOnline !== undefined ? userData.isOnline : minutesAgo < 5);
+        } else {
+          setIsOnline(false);
+        }
+      } catch {
+        // Silently fail - will be updated via SignalR events
+        setIsOnline(false);
+      }
+    };
+
+    queryOnlineStatus();
+  }, [friend?.userId, friend?.id]);
 
   // Load older messages
   const loadMore = async () => {
@@ -112,10 +167,11 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
     const handleReceiveMessage = (message) => {
       const senderId = message.sender?.id || message.senderId;
       const convId = message.conversationId;
+      const friendId = friend?.userId || friend?.id;
 
       if (convId === activeConvId) {
         setMessages((prev) => [...prev, message]);
-      } else if (senderId === friend?.id) {
+      } else if (senderId === friendId) {
         // Message from this friend but different conversation
         setMessages((prev) => [...prev, message]);
         if (!activeConvId && convId) {
@@ -130,16 +186,16 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
     };
 
     const handleUserOnline = (userId) => {
-      if (userId === friend?.id) setIsOnline(true);
+      if (userId === (friend?.userId || friend?.id)) setIsOnline(true);
     };
 
     const handleUserOffline = (userId) => {
-      if (userId === friend?.id) setIsOnline(false);
+      if (userId === (friend?.userId || friend?.id)) setIsOnline(false);
     };
 
     const handleTyping = (userId) => {
-      if (userId !== friend?.id) return;
-      setTypingUser(friend?.fullName || 'Người dùng');
+      if (userId !== (friend?.userId || friend?.id)) return;
+      setTypingUser(friend?.profile?.fullName || friend?.fullName || 'Người dùng');
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = setTimeout(() => setTypingUser(null), TYPING_TIMEOUT_MS);
     };
@@ -186,9 +242,9 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
     <div className="chat-window">
       {/* Header */}
       <div className="chat-window-header">
-        <Avatar src={friend.avatarUrl} className="w-10 h-10" />
+        <Avatar src={friend.profile?.avatarUrl || friend.avatarUrl} className="w-10 h-10" />
         <div className="chat-header-info">
-          <h4 className="chat-header-name">{friend.fullName}</h4>
+          <h4 className="chat-header-name">{friend.profile?.fullName || friend.fullName}</h4>
           <p className="chat-header-status">
             {isOnline && <span className="online-dot" />}
             {isOnline ? 'Đang hoạt động' : 'Ngoại tuyến'}
@@ -226,7 +282,7 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
                 )}
                 <div className={`message-row ${isOwn ? 'message-row--own' : 'message-row--other'}`}>
                   {!isOwn && (
-                    <Avatar src={friend.avatarUrl} className="w-7 h-7" />
+                    <Avatar src={friend.profile?.avatarUrl || friend.avatarUrl} className="w-7 h-7" />
                   )}
                   <div className={`message-bubble ${isOwn ? 'message-bubble--own' : 'message-bubble--other'}`}>
                     {msg.content}
@@ -257,7 +313,7 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
       {/* Input */}
       <MessageInput
         conversationId={activeConvId}
-        receiverId={friend.id}
+        receiverId={friend.userId || friend.id}
         onMessageSent={handleMessageSent}
       />
     </div>
