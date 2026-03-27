@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { Users, FileText } from "lucide-react";
 import Avatar from "../../components/common/Avatar";
 import PostItem from "../../components/post/PostItem";
@@ -120,13 +120,13 @@ const SearchResultsPage = () => {
             <>
               {users.map((u) => (
                 <div key={u.id} className="search-user-card">
-                  <div className="search-user-info">
+                  <Link to={`/profile/${u.id}`} className="search-user-info">
                     <Avatar src={u.avatarUrl} className="w-14 h-14" />
                     <div>
                       <h4 className="search-user-name">{u.fullName}</h4>
                       {u.bio && <p className="search-user-bio">{u.bio}</p>}
                     </div>
-                  </div>
+                  </Link>
                   {currentUser?.id !== u.id && (
                     <AddFriendButton targetUserId={u.id} />
                   )}

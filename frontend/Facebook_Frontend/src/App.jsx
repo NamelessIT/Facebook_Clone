@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import LoginPage from "./pages/Login";
 import MainLayout from "./components/Layout/MainLayout";
 import HomePage from "./pages/Home";
-import ProfileTest from "./pages/Profile";
+import ProfilePage from "./pages/Profile/ProfilePage";
 import FriendsPage from "./pages/Friends";
 import SearchResultsPage from "./pages/Search/SearchResultsPage";
 import SettingsPage from "./pages/Settings/SettingsPage";
@@ -33,8 +33,8 @@ function App() {
             {/* Index route: Đường dẫn mặc định khi vào "/" */}
             <Route index element={<HomePage />} />
             
-            {/* Thích thì bạn vẫn có thể giữ route này để xem profile chi tiết */}
-            <Route path="profile" element={<ProfileTest />} />
+            {/* Profile page */}
+            <Route path="profile/:userId" element={<ProfilePage />} />
             <Route path="friends" element={<FriendsPage />} />
             <Route path="search" element={<SearchResultsPage />} />
             <Route path="settings" element={<SettingsPage />} />

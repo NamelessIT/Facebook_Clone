@@ -9,4 +9,5 @@ public interface IPostService
     Task<PostResponseDto> UpdatePostAsync(Guid postId, Guid userId, UpdatePostRequest request);
     Task<bool> DeletePostAsync(Guid postId, Guid userId);
     Task<PostResponseDto> SharePostAsync(Guid userId, Guid postId, SharePostRequest request);
+    Task<(IEnumerable<PostResponseDto> Items, int Total)> GetUserPostsAsync(Guid currentUserId, Guid targetUserId, int pageNumber, int pageSize);
 }

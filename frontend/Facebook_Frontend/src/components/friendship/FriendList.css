@@ -39,6 +39,15 @@
   margin: 0;
 }
 
+.friend-card-name-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.friend-card-name-link:hover .friend-card-name {
+  text-decoration: underline;
+}
+
 .friend-card-remove {
   position: absolute;
   top: 8px;

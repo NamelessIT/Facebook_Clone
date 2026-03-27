@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Bell, ThumbsUp, MessageSquare, UserPlus, MessageCircle, UserCheck } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -122,7 +122,9 @@ const NotificationPanel = ({
                 onClick={() => handleClickNotification(notification)}
               >
                 <div className="notification-item-avatar">
-                  <Avatar src={notification.actor?.avatarUrl} className="w-12 h-12" />
+                  <Link to={`/profile/${notification.actor?.id}`} onClick={(e) => e.stopPropagation()}>
+                    <Avatar src={notification.actor?.avatarUrl} className="w-12 h-12" />
+                  </Link>
                   <div className={`notification-item-icon ${iconClass}`}>
                     <IconComponent size={10} />
                   </div>

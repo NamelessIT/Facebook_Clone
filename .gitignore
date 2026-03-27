@@ -5,3 +5,6 @@ backend/src/FacebookClone.API/wwwroot/uploads/videos/cf3f6694-1a30-4fe0-a156-7c6
 AGENTS.md
 CLAUDE.md
 /.claude
+/backend/src/FacebookClone.API/logs
+/backend/src/FacebookClone.API/wwwroot
+agent_workspace.md

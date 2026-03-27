@@ -39,6 +39,32 @@ public class PostsController : ControllerBase
         return Ok(new { success = true, data = posts });
     }
 
+    // 1b. LAY DANH SACH BAI VIET THEO USER
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult> GetUserPosts(Guid userId,
+        [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+    {
+        pageNumber = Math.Max(1, pageNumber);
+        pageSize = Math.Clamp(pageSize, 1, 50);
+
+        var currentUserId = GetCurrentUserId();
+        var (posts, total) = await _postService.GetUserPostsAsync(currentUserId, userId, pageNumber, pageSize);
+
+        return Ok(new
+        {
+            success = true,
+            message = "Lay danh sach bai viet thanh cong.",
+            data = posts,
+            pagination = new
+            {
+                page = pageNumber,
+                limit = pageSize,
+                total,
+                totalPages = (int)Math.Ceiling((double)total / pageSize)
+            }
+        });
+    }
+
     // 2. DANG BAI VIET
     [HttpPost]
     [DisableRequestSizeLimit]

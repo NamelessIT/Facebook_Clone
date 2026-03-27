@@ -2,7 +2,7 @@ using AutoMapper;
 using FacebookClone.Application.DTOs.Post;
 using FacebookClone.Application.Services.Interfaces;
 using FacebookClone.Domain.Entities;
-using FacebookClone.Domain.Enums; // 👈 1. Đã thêm using Enums
+using FacebookClone.Domain.Enums;
 using FacebookClone.Domain.Interfaces;
 
 namespace FacebookClone.Application.Services.Implementations;
@@ -12,15 +12,16 @@ public class PostService : IPostService
     private readonly IUserRepository _userRepository;
     private readonly IPostRepository _postRepository;
     private readonly IMapper _mapper;
-    private readonly IFileService _fileService; // 👈 2. Đã thêm IFileService
+    private readonly IFileService _fileService;
+    private readonly IFriendshipRepository _friendshipRepository;
 
-    // 👇 3. Đã inject IFileService vào Constructor
-    public PostService(IPostRepository postRepository, IMapper mapper, IUserRepository userRepository, IFileService fileService)
+    public PostService(IPostRepository postRepository, IMapper mapper, IUserRepository userRepository, IFileService fileService, IFriendshipRepository friendshipRepository)
     {
         _postRepository = postRepository;
         _mapper = mapper;
         _userRepository = userRepository;
-        _fileService = fileService; 
+        _fileService = fileService;
+        _friendshipRepository = friendshipRepository;
     }
 
     public async Task<PostResponseDto> CreatePostAsync(Guid userId, CreatePostRequest request)
@@ -176,5 +177,47 @@ public class PostService : IPostService
 
         var created = await _postRepository.GetByIdAsync(sharedPost.Id);
         return _mapper.Map<PostResponseDto>(created);
+    }
+
+    public async Task<(IEnumerable<PostResponseDto> Items, int Total)> GetUserPostsAsync(
+        Guid currentUserId, Guid targetUserId, int pageNumber, int pageSize)
+    {
+        IEnumerable<PostPrivacy> allowedPrivacies;
+
+        if (currentUserId == targetUserId)
+        {
+            // Xem profile chinh minh → thay tat ca post
+            allowedPrivacies = new[] { PostPrivacy.Public, PostPrivacy.Friends, PostPrivacy.Private };
+        }
+        else
+        {
+            var friendship = await _friendshipRepository.GetFriendshipAsync(currentUserId, targetUserId);
+            bool isFriend = friendship?.Status == FriendshipStatus.Accepted;
+            // Ban be: xem Public + Friends; Nguoi la: chi xem Public
+            allowedPrivacies = isFriend
+                ? new[] { PostPrivacy.Public, PostPrivacy.Friends }
+                : new[] { PostPrivacy.Public };
+        }
+
+        var (posts, total) = await _postRepository.GetUserPostsAsync(targetUserId, allowedPrivacies, pageNumber, pageSize);
+        var dtos = _mapper.Map<IEnumerable<PostResponseDto>>(posts).ToList();
+
+        foreach (var dto in dtos)
+        {
+            var originalPost = posts.First(p => p.Id == dto.Id);
+            var userReaction = originalPost.Reactions.FirstOrDefault(r => r.UserId == currentUserId);
+            dto.MyReaction = userReaction != null ? (int)userReaction.ReactionType : null;
+            dto.TopReactions = originalPost.Reactions
+                .GroupBy(r => (int)r.ReactionType)
+                .OrderByDescending(g => g.Count())
+                .Select(g => g.Key)
+                .Take(3).ToList();
+            dto.ReactorNames = originalPost.Reactions
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => r.User != null ? r.User.FullName : "Nguoi dung")
+                .Take(5).ToList();
+        }
+
+        return (dtos, total);
     }
 }

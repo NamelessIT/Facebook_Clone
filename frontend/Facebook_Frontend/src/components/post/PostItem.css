@@ -28,6 +28,15 @@
   margin-bottom: 2px;
 }
 
+.author-name-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.author-name-link:hover .author-name {
+  text-decoration: underline;
+}
+
 .post-time {
   font-size: 13px; 
   font-weight: 400; 

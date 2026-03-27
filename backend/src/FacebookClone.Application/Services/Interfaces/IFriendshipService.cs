@@ -9,4 +9,6 @@ public interface IFriendshipService
     Task<string> UnfriendAsync(Guid currentUserId, Guid friendId);
     Task<IEnumerable<FriendResponseDto>> GetFriendsAsync(Guid userId);
     Task<IEnumerable<FriendResponseDto>> GetPendingRequestsAsync(Guid userId);
+    Task<(IEnumerable<FriendResponseDto> Items, int Total)> GetUserFriendsAsync(Guid viewerId, Guid targetUserId, int pageNumber, int pageSize);
+    Task<string> GetFriendshipStatusAsync(Guid currentUserId, Guid targetUserId);
 }

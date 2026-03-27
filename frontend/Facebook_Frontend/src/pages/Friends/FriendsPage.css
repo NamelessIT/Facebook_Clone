@@ -81,6 +81,15 @@
   text-align: center;
 }
 
+.friend-request-name-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.friend-request-name-link:hover .friend-request-name {
+  text-decoration: underline;
+}
+
 .friend-request-actions {
   display: flex;
   gap: 8px;
@@ -123,4 +132,49 @@
 
 .friend-request-btn--reject:hover:not(:disabled) {
   background: #d8dadf;
+}
+
+/* === DISCOVER TAB === */
+.friend-discover {
+  padding: 16px 0;
+}
+
+.friend-discover-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.friend-discover-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px 0;
+}
+
+.friend-page-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #e4e6eb;
+  font-size: 14px;
+  font-weight: 600;
+  color: #050505;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.friend-page-btn:hover:not(:disabled) {
+  background: #d8dadf;
+}
+
+.friend-page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.friend-page-info {
+  font-size: 14px;
+  color: #65676b;
 }

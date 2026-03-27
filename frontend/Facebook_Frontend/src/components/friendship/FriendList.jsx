@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { UserMinus } from "lucide-react";
 import Avatar from "../common/Avatar";
 import friendshipService from "../../services/friendshipService";
@@ -61,9 +62,13 @@ const FriendList = ({ userId }) => {
       <div className="friend-list-grid">
         {friends.map((friend) => (
           <div key={friend.friendshipId} className="friend-card">
-            <Avatar src={friend.profile?.avatarUrl} className="w-20 h-20" />
+            <Link to={`/profile/${friend.userId}`}>
+              <Avatar src={friend.profile?.avatarUrl} className="w-20 h-20" />
+            </Link>
             <div className="friend-card-info">
-              <h4 className="friend-card-name">{friend.profile?.fullName}</h4>
+              <Link to={`/profile/${friend.userId}`} className="friend-card-name-link">
+                <h4 className="friend-card-name">{friend.profile?.fullName}</h4>
+              </Link>
             </div>
             <button
               className="friend-card-remove"

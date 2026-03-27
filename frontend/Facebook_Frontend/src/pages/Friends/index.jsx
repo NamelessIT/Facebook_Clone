@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { UserCheck, UserX } from "lucide-react";
 import Avatar from "../../components/common/Avatar";
 import FriendList from "../../components/friendship/FriendList";
+import UserCard from "../../components/friendship/UserCard";
 import friendshipService from "../../services/friendshipService";
+import userService from "../../services/userService";
 import { useAuth } from "../../contexts/AuthContext";
 import toast from "react-hot-toast";
 import "./FriendsPage.css";
@@ -10,6 +13,7 @@ import "./FriendsPage.css";
 const TABS = {
   FRIENDS: "friends",
   REQUESTS: "requests",
+  DISCOVER: "discover",
 };
 
 const FriendsPage = () => {
@@ -18,6 +22,12 @@ const FriendsPage = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [processingId, setProcessingId] = useState(null);
+
+  // Discover state
+  const [discoverUsers, setDiscoverUsers] = useState([]);
+  const [discoverLoading, setDiscoverLoading] = useState(false);
+  const [discoverPage, setDiscoverPage] = useState(1);
+  const [discoverTotalPages, setDiscoverTotalPages] = useState(1);
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -36,6 +46,29 @@ const FriendsPage = () => {
       fetchRequests();
     }
   }, [activeTab]);
+
+  // Fetch discover users
+  const fetchDiscoverUsers = async (page = 1) => {
+    setDiscoverLoading(true);
+    try {
+      const res = await userService.searchUsers("", page, 20);
+      const data = res.data?.data || [];
+      setDiscoverUsers(data.filter((u) => u.id !== user?.id));
+      if (res.data?.pagination) {
+        setDiscoverTotalPages(res.data.pagination.totalPages || 1);
+      }
+    } catch {
+      setDiscoverUsers([]);
+    } finally {
+      setDiscoverLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === TABS.DISCOVER) {
+      fetchDiscoverUsers(discoverPage);
+    }
+  }, [activeTab, discoverPage]);
 
   const handleAccept = async (request) => {
     setProcessingId(request.userId);
@@ -80,6 +113,12 @@ const FriendsPage = () => {
           >
             Tất cả bạn bè
           </button>
+          <button
+            className={`friends-tab ${activeTab === TABS.DISCOVER ? "friends-tab--active" : ""}`}
+            onClick={() => setActiveTab(TABS.DISCOVER)}
+          >
+            Khám phá
+          </button>
         </div>
       </div>
 
@@ -93,8 +132,12 @@ const FriendsPage = () => {
             <div className="friend-requests-grid">
               {requests.map((request) => (
                 <div key={request.friendshipId} className="friend-request-card">
-                  <Avatar src={request.profile?.avatarUrl} className="w-20 h-20" />
-                  <h4 className="friend-request-name">{request.profile?.fullName}</h4>
+                  <Link to={`/profile/${request.userId}`}>
+                    <Avatar src={request.profile?.avatarUrl} className="w-20 h-20" />
+                  </Link>
+                  <Link to={`/profile/${request.userId}`} className="friend-request-name-link">
+                    <h4 className="friend-request-name">{request.profile?.fullName}</h4>
+                  </Link>
                   <div className="friend-request-actions">
                     <button
                       className="friend-request-btn friend-request-btn--accept"
@@ -122,6 +165,46 @@ const FriendsPage = () => {
 
       {activeTab === TABS.FRIENDS && (
         <FriendList userId={user?.id} />
+      )}
+
+      {/* TAB: Khám phá */}
+      {activeTab === TABS.DISCOVER && (
+        <div className="friend-discover">
+          {discoverLoading && discoverUsers.length === 0 ? (
+            <div className="friend-requests-loading">Đang tải...</div>
+          ) : discoverUsers.length === 0 ? (
+            <div className="friend-requests-empty">Không tìm thấy người dùng nào</div>
+          ) : (
+            <>
+              <div className="friend-discover-grid">
+                {discoverUsers.map((u) => (
+                  <UserCard key={u.id} user={u} />
+                ))}
+              </div>
+              {discoverTotalPages > 1 && (
+                <div className="friend-discover-pagination">
+                  <button
+                    disabled={discoverPage <= 1}
+                    onClick={() => setDiscoverPage(discoverPage - 1)}
+                    className="friend-page-btn"
+                  >
+                    Trước
+                  </button>
+                  <span className="friend-page-info">
+                    Trang {discoverPage} / {discoverTotalPages}
+                  </span>
+                  <button
+                    disabled={discoverPage >= discoverTotalPages}
+                    onClick={() => setDiscoverPage(discoverPage + 1)}
+                    className="friend-page-btn"
+                  >
+                    Tiếp
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       )}
     </div>
   );

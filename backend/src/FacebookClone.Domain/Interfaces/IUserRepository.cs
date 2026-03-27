@@ -9,4 +9,5 @@ public interface IUserRepository
     Task AddAsync(User user);
     Task UpdateAsync(User user);
     Task<(IEnumerable<User> Items, int Total)> SearchAsync(string query, int pageNumber, int pageSize);
+    Task<(IEnumerable<User> Items, int Total)> GetAllUsersAsync(Guid excludeUserId, int pageNumber, int pageSize);
 }

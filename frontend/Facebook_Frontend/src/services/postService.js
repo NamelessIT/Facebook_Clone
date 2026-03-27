@@ -40,6 +40,10 @@ const postService = {
   sharePost: async (data) => {
     return await axiosClient.post('/posts', data);
   },
+
+  getUserPosts: async (userId, pageNumber = 1, pageSize = 10) => {
+    return await axiosClient.get(`/posts/user/${userId}`, { params: { pageNumber, pageSize } });
+  },
 };
 
 export default postService;

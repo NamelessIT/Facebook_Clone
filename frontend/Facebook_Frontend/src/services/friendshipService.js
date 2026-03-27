@@ -32,6 +32,10 @@ const friendshipService = {
   getFriendshipStatus: async (userId) => {
     return await axiosClient.get(`/friendships/status/${userId}`);
   },
+
+  getUserFriends: async (userId, pageNumber = 1, pageSize = 20) => {
+    return await axiosClient.get(`/friendships/${userId}/friends`, { params: { pageNumber, pageSize } });
+  },
 };
 
 export default friendshipService;

@@ -71,6 +71,48 @@ public class FriendshipsController : ControllerBase
         return Ok(new { success = true, data = friends });
     }
 
+    // Xem danh sach ban be cua user bat ky (co respect HideFriendsList)
+    [HttpGet("{userId}/friends")]
+    public async Task<IActionResult> GetUserFriends(Guid userId,
+        [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+    {
+        pageNumber = Math.Max(1, pageNumber);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
+        try
+        {
+            var viewerId = GetCurrentUserId();
+            var (friends, total) = await _friendshipService.GetUserFriendsAsync(viewerId, userId, pageNumber, pageSize);
+            return Ok(new
+            {
+                success = true,
+                message = "Lay danh sach ban be thanh cong.",
+                data = friends,
+                pagination = new
+                {
+                    page = pageNumber,
+                    limit = pageSize,
+                    total,
+                    totalPages = (int)Math.Ceiling((double)total / pageSize)
+                }
+            });
+        }
+        catch (UnauthorizedAccessException ex) { return StatusCode(403, new { success = false, message = ex.Message }); }
+        catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
+    }
+
+    // Check trang thai ket ban voi user khac
+    [HttpGet("status/{targetUserId}")]
+    public async Task<IActionResult> GetFriendshipStatus(Guid targetUserId)
+    {
+        try
+        {
+            var status = await _friendshipService.GetFriendshipStatusAsync(GetCurrentUserId(), targetUserId);
+            return Ok(new { success = true, data = new { status } });
+        }
+        catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
+    }
+
     [HttpGet("requests/pending")]
     public async Task<IActionResult> GetPendingRequests()
     {

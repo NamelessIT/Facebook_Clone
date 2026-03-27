@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Search, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
@@ -19,6 +19,7 @@ const ChatListPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [conversationMap, setConversationMap] = useState({});
+  const [sidebarWidth, setSidebarWidth] = useState(40);
 
   // Load friends list
   useEffect(() => {
@@ -59,7 +60,9 @@ const ChatListPage = () => {
   const filteredFriends = useMemo(() => {
     if (!searchQuery.trim()) return friends;
     const q = searchQuery.toLowerCase();
-    return friends.filter((f) => f.fullName?.toLowerCase().includes(q));
+    return friends.filter((f) =>
+      (f.profile?.fullName || f.fullName || '').toLowerCase().includes(q)
+    );
   }, [friends, searchQuery]);
 
   const handleSelectFriend = (friend) => {
@@ -69,18 +72,42 @@ const ChatListPage = () => {
 
   const handleConversationCreated = (convId) => {
     if (selectedFriend) {
-      setConversationMap((prev) => ({ ...prev, [selectedFriend.id]: convId }));
+      const key = selectedFriend.userId || selectedFriend.id;
+      setConversationMap((prev) => ({ ...prev, [key]: convId }));
     }
   };
 
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = sidebarWidth;
+    const chatPageEl = document.querySelector('.chat-page');
+    const pageWidth = chatPageEl?.offsetWidth || window.innerWidth;
+
+    const handleMouseMove = (moveEvent) => {
+      const diff = moveEvent.clientX - startX;
+      const diffPercent = (diff / pageWidth) * 100;
+      const newWidth = Math.max(20, Math.min(80, startWidth + diffPercent));
+      setSidebarWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
   const activeConversationId = selectedFriend
-    ? conversationMap[selectedFriend.id] || null
+    ? conversationMap[selectedFriend.userId || selectedFriend.id] || null
     : null;
 
   return (
     <div className="chat-page">
       {/* Left Panel — Friend/Conversation List */}
-      <div className="chat-sidebar">
+      <div className="chat-sidebar" style={{ width: `${sidebarWidth}%` }}>
         <div className="chat-sidebar-header">
           <h2>Chat</h2>
           <div className="chat-search-form">
@@ -106,15 +133,21 @@ const ChatListPage = () => {
           ) : (
             filteredFriends.map((friend) => (
               <button
-                key={friend.id}
-                className={`chat-contact-item ${selectedFriend?.id === friend.id ? 'chat-contact-item--active' : ''}`}
+                key={friend.friendshipId}
+                className={`chat-contact-item ${
+                  selectedFriend?.userId === friend.userId
+                    ? 'chat-contact-item--active'
+                    : ''
+                }`}
                 onClick={() => handleSelectFriend(friend)}
               >
                 <div className="chat-contact-avatar">
-                  <Avatar src={friend.avatarUrl} className="w-12 h-12" />
+                  <Link to={`/profile/${friend.userId || friend.id}`} onClick={(e) => e.stopPropagation()}>
+                    <Avatar src={friend.profile?.avatarUrl || friend.avatarUrl} className="w-12 h-12" />
+                  </Link>
                 </div>
                 <div className="chat-contact-info">
-                  <p className="chat-contact-name">{friend.fullName}</p>
+                  <p className="chat-contact-name">{friend.profile?.fullName || friend.fullName}</p>
                   <p className="chat-contact-preview">Nhấn để bắt đầu trò chuyện</p>
                 </div>
               </button>
@@ -123,8 +156,11 @@ const ChatListPage = () => {
         </div>
       </div>
 
+      {/* Divider */}
+      <div className="chat-divider" onMouseDown={handleMouseDown}></div>
+
       {/* Right Panel — Chat Window */}
-      <div className="chat-main">
+      <div className="chat-main" style={{ width: `${100 - sidebarWidth}%` }}>
         <ChatWindow
           friend={selectedFriend}
           conversationId={activeConversationId}

@@ -1,0 +1,63 @@
+/* === USER CARD (Discovery Tab) === */
+.user-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.user-card-avatar {
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 50% !important;
+  object-fit: cover;
+}
+
+.user-card-name-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.user-card-name-link:hover .user-card-name {
+  text-decoration: underline;
+}
+
+.user-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #050505;
+  margin: 0;
+  text-align: center;
+}
+
+.user-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.user-card-message-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background: #e4e6eb;
+  font-size: 14px;
+  font-weight: 600;
+  color: #050505;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.user-card-message-btn:hover {
+  background: #d8dadf;
+}

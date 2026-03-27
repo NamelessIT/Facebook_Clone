@@ -1,20 +1,32 @@
-import { Outlet, Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { getImageUrl } from "../../utils/formatUrl";
-import { Home, Tv, Store, Users, MessageCircle, Grid } from "lucide-react";
+import { Home, Tv, Store, Users, MessageCircle, Grid, Clock, Bookmark } from "lucide-react";
 import "./MainLayout.css";
 import Avatar from '../common/Avatar';
 import SearchBar from '../common/SearchBar';
 import NotificationBell from '../Notifications/NotificationBell';
+import UserDropdown from './UserDropdown';
+import ChatFloatingPanel from '../Chat/ChatFloatingPanel';
+import friendshipService from '../../services/friendshipService';
 
 const MainLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  // Tạm thời mock data. Sau này bạn fetch từ API Chat/Friends gán vào đây
-  const [contacts, setContacts] = useState([
-    { id: 1, fullName: "Bob Nguyễn", avatarUrl: null },
-    { id: 2, fullName: "Alice Trần", avatarUrl: "f30955c0-791e-4e87-bd36-30b46e2eaa4d.png" },]);
+  const location = useLocation();
+  const [contacts, setContacts] = useState([]);
+  const [chatPanelOpen, setChatPanelOpen] = useState(false);
+  const [chatInitialFriend, setChatInitialFriend] = useState(null);
+
+  // Load real contacts from API
+  useEffect(() => {
+    let cancelled = false;
+    friendshipService.getFriends(1, 20)
+      .then((res) => { if (!cancelled) setContacts(res.data?.data || []); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <div className="main-layout">
@@ -30,23 +42,20 @@ const MainLayout = () => {
 
         {/* Giữa */}
         <div className="nav-center">
-          <div className="nav-tab active"><Home size={28} /></div>
+          <Link to="/" className={`nav-tab${location.pathname === '/' ? ' active' : ''}`}><Home size={28} /></Link>
           <div className="nav-tab"><Tv size={28} /></div>
           <div className="nav-tab"><Store size={28} /></div>
-          <div className="nav-tab"><Users size={28} /></div>
+          <Link to="/friends" className={`nav-tab${location.pathname.startsWith('/friends') ? ' active' : ''}`}><Users size={28} /></Link>
         </div>
 
         {/* Góc Phải */}
         <div className="nav-right">
           <div className="icon-btn"><Grid size={20} /></div>
-          <div className="icon-btn" onClick={() => navigate('/messages')} title="Messenger"><MessageCircle size={20} /></div>
+          <div className="icon-btn" onClick={() => setChatPanelOpen((prev) => !prev)} title="Messenger">
+            <MessageCircle size={20} />
+          </div>
           <NotificationBell />
-          <Avatar 
-            src={user?.avatarUrl} 
-            className="user-avatar" 
-            onClick={logout}
-            title="Đăng xuất"
-          />
+          <UserDropdown />
         </div>
       </nav>
 
@@ -55,10 +64,10 @@ const MainLayout = () => {
         
         {/* Cột Trái: Menu */}
         <aside className="sidebar">
-          <div className="menu-item mt-4">
+          <Link to={`/profile/${user?.id}`} className="menu-item mt-4" style={{ textDecoration: 'none', color: 'inherit' }}>
             <Avatar src={user?.avatarUrl} className="w-9 h-9" />
             <span className="font-semibold">{user?.fullName}</span>
-          </div>
+          </Link>
           <div className="menu-item"><Users size={28} className="text-blue-500 mr-2" /> Bạn bè</div>
           <div className="menu-item"><Clock size={28} className="text-blue-500 mr-2" /> Kỷ niệm</div>
           <div className="menu-item"><Bookmark size={28} className="text-purple-500 mr-2" /> Đã lưu</div>
@@ -74,11 +83,20 @@ const MainLayout = () => {
           {contacts.length > 0 && (
             <>
               <h4 className="text-gray-500 font-semibold text-[15px] px-2 mt-4 mb-2">Người liên hệ</h4>
-              {contacts.map(contact => (
-                <div key={contact.id} className="menu-item">
-                  {/* 👇 DÙNG COMPONENT AVATAR Ở ĐÂY */}
-                  <Avatar src={contact.avatarUrl} className="w-8 h-8" />
-                  <span className="font-semibold text-[15px]">{contact.fullName}</span>
+              {contacts.map((contact) => (
+                <div
+                  key={contact.friendshipId}
+                  className="menu-item"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    setChatInitialFriend(contact);
+                    setChatPanelOpen(true);
+                  }}
+                >
+                  <Avatar src={contact.profile?.avatarUrl || contact.avatarUrl} className="w-8 h-8" />
+                  <span className="font-semibold text-[15px]">
+                    {contact.profile?.fullName || contact.fullName}
+                  </span>
                 </div>
               ))}
             </>
@@ -86,11 +104,17 @@ const MainLayout = () => {
         </aside>
 
       </div>
+
+      {/* Floating Chat Panel */}
+      {chatPanelOpen && (
+        <ChatFloatingPanel
+          key={chatInitialFriend?.userId || chatInitialFriend?.id || 'panel'}
+          initialFriend={chatInitialFriend}
+          onClose={() => { setChatPanelOpen(false); setChatInitialFriend(null); }}
+        />
+      )}
     </div>
   );
 };
-
-// Khai báo thêm vài icon dùng ở Sidebar cho tiện
-import { Clock, Bookmark } from "lucide-react";
 
 export default MainLayout;

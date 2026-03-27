@@ -122,4 +122,59 @@ public class FriendshipService : IFriendshipService
         });
         return result;
     }
+
+    public async Task<(IEnumerable<FriendResponseDto> Items, int Total)> GetUserFriendsAsync(
+        Guid viewerId, Guid targetUserId, int pageNumber, int pageSize)
+    {
+        var targetUser = await _userRepo.GetByIdAsync(targetUserId);
+        if (targetUser == null)
+            throw new Exception("Nguoi dung khong ton tai.");
+
+        // Respect HideFriendsList: nguoi la chi biet minh la ban moi xem duoc
+        if (targetUser.HideFriendsList && viewerId != targetUserId)
+        {
+            var friendship = await _friendshipRepo.GetFriendshipAsync(viewerId, targetUserId);
+            bool isFriend = friendship?.Status == FriendshipStatus.Accepted;
+            if (!isFriend)
+                throw new UnauthorizedAccessException("Danh sach ban be cua nguoi nay la rieng tu.");
+        }
+
+        var (friendships, total) = await _friendshipRepo.GetFriendsListPagedAsync(targetUserId, pageNumber, pageSize);
+        var result = friendships.Select(f =>
+        {
+            var friendUser = f.RequesterId == targetUserId ? f.Receiver : f.Requester;
+            return new FriendResponseDto
+            {
+                FriendshipId = f.Id,
+                UserId = friendUser.Id,
+                Profile = _mapper.Map<UserProfileDto>(friendUser),
+                Status = f.Status,
+                CreatedAt = f.CreatedAt
+            };
+        }).ToList();
+
+        return (result, total);
+    }
+
+    public async Task<string> GetFriendshipStatusAsync(Guid currentUserId, Guid targetUserId)
+    {
+        if (currentUserId == targetUserId)
+            return "self";
+
+        var friendship = await _friendshipRepo.GetFriendshipAsync(currentUserId, targetUserId);
+        if (friendship == null)
+            return "none";
+
+        if (friendship.Status == FriendshipStatus.Accepted)
+            return "friends";
+
+        if (friendship.Status == FriendshipStatus.Pending)
+        {
+            return friendship.RequesterId == currentUserId
+                ? "pending_sent"
+                : "pending_received";
+        }
+
+        return "none";
+    }
 }

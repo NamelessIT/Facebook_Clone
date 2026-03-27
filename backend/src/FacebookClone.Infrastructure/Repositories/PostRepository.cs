@@ -1,4 +1,5 @@
 using FacebookClone.Domain.Entities;
+using FacebookClone.Domain.Enums;
 using FacebookClone.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -83,4 +84,31 @@ public class PostRepository : IPostRepository
 
         return (items, total);
     }
-}   
+
+    public async Task<(IEnumerable<Post> Items, int Total)> GetUserPostsAsync(
+        Guid userId, IEnumerable<PostPrivacy> allowedPrivacies, int pageNumber, int pageSize)
+    {
+        var privacyList = allowedPrivacies.ToList();
+        var baseQuery = _context.Posts
+            .Include(p => p.User)
+            .Include(p => p.Medias)
+            .Include(p => p.Reactions)
+                .ThenInclude(r => r.User)
+            .Include(p => p.Comments)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.User)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Medias)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Reactions)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Comments)
+            .Where(p => !p.IsDeleted && p.UserId == userId && privacyList.Contains(p.Privacy));
+
+        var total = await baseQuery.CountAsync();
+        var items = await baseQuery
+            .OrderByDescending(p => p.CreatedAt)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return (items, total);
+    }
+}

@@ -4,6 +4,7 @@ import axiosClient from './axiosClient';
 const SIGNALR_HUB_URL = 'http://localhost:5286/hubs/notification';
 
 let connection = null;
+let isConnecting = false;
 
 const notificationService = {
   // ========== SignalR Connection ==========
@@ -11,18 +12,18 @@ const notificationService = {
   getConnection: () => connection,
 
   startConnection: async () => {
-    if (connection && connection.state === signalR.HubConnectionState.Connected) {
-      return connection;
-    }
+    if (isConnecting) return connection;
+    if (connection?.state === signalR.HubConnectionState.Connected) return connection;
 
     const token = localStorage.getItem('accessToken');
     if (!token) return null;
 
+    isConnecting = true;
     connection = new signalR.HubConnectionBuilder()
       .withUrl(SIGNALR_HUB_URL, {
         accessTokenFactory: () => localStorage.getItem('accessToken'),
       })
-      .withAutomaticReconnect([0, 2000, 5000])
+      .withAutomaticReconnect([0, 2000, 5000, 10000])
       .build();
 
     try {
@@ -31,11 +32,14 @@ const notificationService = {
     } catch {
       connection = null;
       return null;
+    } finally {
+      isConnecting = false;
     }
   },
 
   stopConnection: async () => {
-    if (connection) {
+    if (isConnecting) return; // Không dừng khi đang kết nối
+    if (connection && connection.state !== signalR.HubConnectionState.Disconnected) {
       await connection.stop();
       connection = null;
     }
@@ -60,11 +64,11 @@ const notificationService = {
   },
 
   markAsRead: async (notificationId) => {
-    return await axiosClient.put(`/notifications/${notificationId}/read`);
+    return await axiosClient.post(`/notifications/${notificationId}/read`);
   },
 
   markAllAsRead: async () => {
-    return await axiosClient.put('/notifications/read-all');
+    return await axiosClient.post('/notifications/all/read');
   },
 };
 

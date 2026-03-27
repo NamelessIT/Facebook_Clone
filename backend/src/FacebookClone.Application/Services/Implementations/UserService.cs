@@ -85,4 +85,22 @@ public class UserService : IUserService
 
         await _userRepository.UpdateAsync(user);
     }
+
+    public async Task<(IEnumerable<UserProfileDto> Items, int Total)> GetAllUsersAsync(
+        Guid currentUserId, int pageNumber, int pageSize)
+    {
+        var (users, total) = await _userRepository.GetAllUsersAsync(currentUserId, pageNumber, pageSize);
+        var dtos = users.Select(u => new UserProfileDto
+        {
+            Id = u.Id,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            AvatarUrl = u.AvatarUrl,
+            Bio = u.Bio,
+            Location = u.Location,
+            IsOnline = u.IsOnline,
+            CreatedAt = u.CreatedAt
+        });
+        return (dtos, total);
+    }
 }

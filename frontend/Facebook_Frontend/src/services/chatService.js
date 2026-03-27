@@ -4,6 +4,7 @@ import axiosClient from './axiosClient';
 const SIGNALR_HUB_URL = 'http://localhost:5286/hubs/chat';
 
 let connection = null;
+let isConnecting = false;
 
 const chatService = {
   // ========== SignalR Connection ==========
@@ -11,18 +12,18 @@ const chatService = {
   getConnection: () => connection,
 
   startConnection: async () => {
-    if (connection && connection.state === signalR.HubConnectionState.Connected) {
-      return connection;
-    }
+    if (isConnecting) return connection;
+    if (connection?.state === signalR.HubConnectionState.Connected) return connection;
 
     const token = localStorage.getItem('accessToken');
     if (!token) return null;
 
+    isConnecting = true;
     connection = new signalR.HubConnectionBuilder()
       .withUrl(SIGNALR_HUB_URL, {
         accessTokenFactory: () => localStorage.getItem('accessToken'),
       })
-      .withAutomaticReconnect([0, 2000, 5000])
+      .withAutomaticReconnect([0, 2000, 5000, 10000])
       .build();
 
     try {
@@ -31,11 +32,14 @@ const chatService = {
     } catch {
       connection = null;
       return null;
+    } finally {
+      isConnecting = false;
     }
   },
 
   stopConnection: async () => {
-    if (connection) {
+    if (isConnecting) return; // Không dừng khi đang kết nối
+    if (connection && connection.state !== signalR.HubConnectionState.Disconnected) {
       await connection.stop();
       connection = null;
     }
@@ -85,7 +89,7 @@ const chatService = {
 
   // ========== REST API ==========
 
-  sendMessage: async ({ conversationId, receiverId, content, messageType = 0 }) => {
+  sendMessage: async ({ conversationId, receiverId, content, messageType = 1 }) => {
     return await axiosClient.post('/chat/messages', {
       conversationId,
       receiverId,
@@ -98,6 +102,10 @@ const chatService = {
     return await axiosClient.get(`/chat/conversations/${conversationId}/messages`, {
       params: { pageNumber, pageSize },
     });
+  },
+
+  getConversations: async () => {
+    return await axiosClient.get('/chat/conversations');
   },
 };
 

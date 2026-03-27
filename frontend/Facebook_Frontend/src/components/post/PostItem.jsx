@@ -1,5 +1,6 @@
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { ThumbsUp, MessageSquare, Share2, MoreHorizontal, Edit3, Trash2, X } from "lucide-react";
 import Avatar from "../common/Avatar";
 import MediaViewerModal from "./MediaViewerModal";
@@ -204,9 +205,13 @@ const PostItem = ({ post, onPostUpdated }) => {
     <div className="fb-card">
       <div className="post-header">
         <div className="post-header-left">
-          <Avatar src={post.author?.avatarUrl} className="w-10 h-10" />
+          <Link to={`/profile/${post.author?.id}`}>
+            <Avatar src={post.author?.avatarUrl} className="w-10 h-10" />
+          </Link>
           <div className="author-info">
-            <h4 className="author-name">{post.author?.fullName}</h4>
+            <Link to={`/profile/${post.author?.id}`} className="author-name-link">
+              <h4 className="author-name">{post.author?.fullName}</h4>
+            </Link>
             <span className="post-time hover:underline cursor-pointer">{new Date(post.createdAt).toLocaleString('vi-VN')} • 🌎</span>
           </div>
         </div>

@@ -50,6 +50,32 @@ public class UsersController : ControllerBase
          return Ok(profile);
     }
 
+    // API lay danh sach tat ca user (tru chinh minh), dung cho trang Friends Discovery
+    [HttpGet]
+    public async Task<IActionResult> GetAllUsers(
+        [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+    {
+        pageNumber = Math.Max(1, pageNumber);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
+        var currentUserId = GetCurrentUserId();
+        var (users, total) = await _userService.GetAllUsersAsync(currentUserId, pageNumber, pageSize);
+
+        return Ok(new
+        {
+            success = true,
+            message = "Lay danh sach nguoi dung thanh cong.",
+            data = users,
+            pagination = new
+            {
+                page = pageNumber,
+                limit = pageSize,
+                total,
+                totalPages = (int)Math.Ceiling((double)total / pageSize)
+            }
+        });
+    }
+
     [HttpPut("me/avatar")]
     public async Task<IActionResult> UpdateAvatar([FromBody] UpdateAvatarRequest request)
     {

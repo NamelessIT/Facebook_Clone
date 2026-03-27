@@ -50,4 +50,22 @@ public class UserRepository : IUserRepository
 
         return (items, total);
     }
+
+    public async Task<(IEnumerable<User> Items, int Total)> GetAllUsersAsync(
+        Guid excludeUserId, int pageNumber, int pageSize)
+    {
+        var baseQuery = _context.Users
+            .Where(u => !u.IsDeleted && u.Id != excludeUserId);
+
+        var total = await baseQuery.CountAsync();
+        var items = await baseQuery
+            .OrderBy(u => u.FirstName)
+            .ThenBy(u => u.LastName)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return (items, total);
+    }
 }

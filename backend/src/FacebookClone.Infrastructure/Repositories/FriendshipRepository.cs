@@ -50,6 +50,26 @@ public class FriendshipRepository : IFriendshipRepository
             .ToListAsync();
     }
 
+    public async Task<(IEnumerable<Friendship> Items, int Total)> GetFriendsListPagedAsync(
+        Guid userId, int pageNumber, int pageSize)
+    {
+        var baseQuery = _context.Friendships
+            .Include(f => f.Requester)
+            .Include(f => f.Receiver)
+            .Where(f => (f.RequesterId == userId || f.ReceiverId == userId)
+                        && f.Status == FriendshipStatus.Accepted);
+
+        var total = await baseQuery.CountAsync();
+        var items = await baseQuery
+            .OrderByDescending(f => f.UpdatedAt)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return (items, total);
+    }
+
     public async Task<IEnumerable<Friendship>> GetPendingRequestsAsync(Guid userId)
     {
         // Lấy danh sách ai đó gửi cho mình (Status = Pending)
