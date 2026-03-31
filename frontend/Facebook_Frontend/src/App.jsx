@@ -8,6 +8,7 @@ import FriendsPage from "./pages/Friends";
 import SearchResultsPage from "./pages/Search/SearchResultsPage";
 import SettingsPage from "./pages/Settings/SettingsPage";
 import ChatListPage from "./pages/Messages/ChatListPage";
+import ReelsPage from "./pages/Reels/ReelsPage";
 
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -40,6 +41,7 @@ function App() {
             <Route path="settings" element={<SettingsPage />} />
             <Route path="messages" element={<ChatListPage />} />
             <Route path="messages/:friendId" element={<ChatListPage />} />
+            <Route path="reels" element={<ReelsPage />} />
           </Route>
         </Routes>
       </AuthProvider>

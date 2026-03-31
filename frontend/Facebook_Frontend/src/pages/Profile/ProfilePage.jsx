@@ -1,7 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Camera, MapPin, Calendar, MessageCircle, Edit3 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import {
+  Camera, MapPin, Calendar, MessageCircle, Edit3,
+  Grid3X3, FileText, Users, Image, Film, ChevronDown
+} from 'lucide-react';
+import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
@@ -10,16 +13,19 @@ import postService from '../../services/postService';
 import friendshipService from '../../services/friendshipService';
 import Avatar from '../../components/common/Avatar';
 import PostItem from '../../components/post/PostItem';
-import FriendList from '../../components/friendship/FriendList';
 import AddFriendButton from '../../components/friendship/AddFriendButton';
 import EditProfileModal from '../../components/profile/EditProfileModal';
+import ProfileSidebar from '../../components/profile/ProfileSidebar';
+import ReelsGrid from '../../components/reels/ReelsGrid';
 import { getImageUrl } from '../../utils/formatUrl';
 import './ProfilePage.css';
 
 const TABS = {
-  POSTS: 'posts',
-  FRIENDS: 'friends',
+  ALL: 'all',
   ABOUT: 'about',
+  FRIENDS: 'friends',
+  PHOTOS: 'photos',
+  REELS: 'reels',
 };
 
 const ProfilePage = () => {
@@ -30,32 +36,36 @@ const ProfilePage = () => {
   const [profileUser, setProfileUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState(TABS.POSTS);
+  const [activeTab, setActiveTab] = useState(TABS.ALL);
 
-  // Posts state
   const [posts, setPosts] = useState([]);
-  const [postsLoading, setPostsLoading] = useState(false);
   const [postsPage, setPostsPage] = useState(1);
   const [postsTotalPages, setPostsTotalPages] = useState(1);
+  const [postsTotal, setPostsTotal] = useState(0);
+  const [postsLoading, setPostsLoading] = useState(false);
 
-  // Edit modal
+  const [friends, setFriends] = useState([]);
+  const [friendsPage, setFriendsPage] = useState(1);
+  const [friendsTotalPages, setFriendsTotalPages] = useState(1);
+  const [friendsTotal, setFriendsTotal] = useState(0);
+  const [friendsLoading, setFriendsLoading] = useState(false);
+
+  const [photos, setPhotos] = useState([]);
+  const [photosLoading, setPhotosLoading] = useState(false);
+
   const [showEditModal, setShowEditModal] = useState(false);
 
   const isOwnProfile = currentUser?.id === userId;
 
-  // Fetch profile
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
       setError(null);
       try {
-        if (isOwnProfile) {
-          const res = await userService.getMe();
-          setProfileUser(res.data);
-        } else {
-          const res = await userService.getUserById(userId);
-          setProfileUser(res.data?.data || res.data);
-        }
+        const res = isOwnProfile
+          ? await userService.getMe()
+          : await userService.getUserById(userId);
+        setProfileUser(res.data?.data || res.data);
       } catch {
         setError('Không tìm thấy người dùng này.');
       } finally {
@@ -65,67 +75,111 @@ const ProfilePage = () => {
     if (userId) fetchProfile();
   }, [userId, isOwnProfile]);
 
-  // Fetch posts when tab = posts
-  const fetchPosts = async (page = 1) => {
-    setPostsLoading(true);
-    try {
-      const res = await postService.getUserPosts(userId, page, 10);
-      setPosts(res.data?.data || []);
-      if (res.data?.pagination) {
-        setPostsTotalPages(res.data.pagination.totalPages || 1);
+  const fetchPosts = useCallback(
+    async (page = 1) => {
+      setPostsLoading(true);
+      try {
+        const res = await postService.getUserPosts(userId, page, 10);
+        setPosts(res.data?.data || []);
+        const pg = res.data?.pagination;
+        if (pg) {
+          setPostsTotalPages(pg.totalPages || 1);
+          setPostsTotal(pg.total || 0);
+        }
+      } catch {
+        setPosts([]);
+      } finally {
+        setPostsLoading(false);
       }
+    },
+    [userId]
+  );
+
+  const fetchFriends = useCallback(
+    async (page = 1) => {
+      setFriendsLoading(true);
+      try {
+        const res = await friendshipService.getUserFriends(userId, page, 12);
+        setFriends(res.data?.data || []);
+        const pg = res.data?.pagination;
+        if (pg) {
+          setFriendsTotalPages(pg.totalPages || 1);
+          setFriendsTotal(pg.total || 0);
+        }
+      } catch {
+        setFriends([]);
+      } finally {
+        setFriendsLoading(false);
+      }
+    },
+    [userId]
+  );
+
+  const fetchPhotos = useCallback(async () => {
+    setPhotosLoading(true);
+    try {
+      const res = await postService.getUserPosts(userId, 1, 50);
+      const allPosts = res.data?.data || [];
+      const imgs = [];
+      allPosts.forEach((p) => {
+        (p.medias || [])
+          .filter((m) => m.mediaType === 1 || m.mediaType === 'Image')
+          .forEach((m) => imgs.push({ id: m.id, url: m.url, postId: p.id }));
+      });
+      setPhotos(imgs);
     } catch {
-      setPosts([]);
+      setPhotos([]);
     } finally {
-      setPostsLoading(false);
+      setPhotosLoading(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
-    if (activeTab === TABS.POSTS && userId) {
-      fetchPosts(postsPage);
-    }
-  }, [activeTab, postsPage, userId]);
+    if (!userId) return;
+    if (activeTab === TABS.ALL) fetchPosts(postsPage);
+  }, [activeTab, postsPage, userId, fetchPosts]);
+
+  useEffect(() => {
+    if (activeTab === TABS.FRIENDS && userId) fetchFriends(friendsPage);
+  }, [activeTab, friendsPage, userId, fetchFriends]);
+
+  useEffect(() => {
+    if (activeTab === TABS.PHOTOS && userId) fetchPhotos();
+  }, [activeTab, userId, fetchPhotos]);
 
   const handleProfileUpdated = (updatedData) => {
     setProfileUser((prev) => ({ ...prev, ...updatedData }));
+    toast.success('Đã cập nhật trang cá nhân!');
   };
 
-  const formatJoinDate = (dateStr) => {
-    if (!dateStr) return 'Không rõ';
-    try {
-      return formatDistanceToNow(new Date(dateStr), { addSuffix: true, locale: vi });
-    } catch {
-      return 'Không rõ';
-    }
-  };
+  const joinDate = profileUser?.createdAt
+    ? format(new Date(profileUser.createdAt), "MMMM 'năm' yyyy", { locale: vi })
+    : null;
 
-  // Loading skeleton
   if (loading) {
     return (
-      <div className="profile-page">
-        <div className="profile-cover profile-cover--skeleton" />
-        <div className="profile-header">
-          <div className="profile-avatar-wrapper">
-            <div className="profile-avatar profile-avatar--skeleton" />
+      <div className="pp-page">
+        <div className="pp-cover pp-cover--skeleton" />
+        <div className="pp-header-bar">
+          <div className="pp-avatar-wrap">
+            <div className="pp-avatar pp-avatar--skeleton" />
           </div>
-          <div className="profile-info">
-            <div className="skeleton-text skeleton-name" />
-            <div className="skeleton-text skeleton-bio" />
+          <div className="pp-header-info">
+            <div className="pp-skel-name" />
+            <div className="pp-skel-bio" />
           </div>
         </div>
       </div>
     );
   }
 
-  // Error state
   if (error) {
     return (
-      <div className="profile-page">
-        <div className="profile-error">
-          <h3>Oops!</h3>
+      <div className="pp-page">
+        <div className="pp-error-card">
+          <h3>Không tìm thấy người dùng</h3>
           <p>{error}</p>
-          <button className="profile-error-btn" onClick={() => navigate('/')}>
+          <button className="pp-btn pp-btn--primary" onClick={() => navigate('/')}>
             Về trang chủ
           </button>
         </div>
@@ -135,34 +189,91 @@ const ProfilePage = () => {
 
   if (!profileUser) return null;
 
+  const tabConfig = [
+    { key: TABS.ALL, label: 'Tất cả', icon: <Grid3X3 size={16} /> },
+    { key: TABS.ABOUT, label: 'Giới thiệu', icon: <FileText size={16} /> },
+    { key: TABS.FRIENDS, label: 'Bạn bè', icon: <Users size={16} /> },
+    { key: TABS.PHOTOS, label: 'Ảnh', icon: <Image size={16} /> },
+    { key: TABS.REELS, label: 'Reels', icon: <Film size={16} /> },
+    { key: 'more', label: 'Xem thêm', icon: <ChevronDown size={16} /> },
+  ];
+
   return (
-    <div className="profile-page">
-      {/* Cover Photo */}
-      <div className="profile-cover">
+    <div className="pp-page">
+      {/* Cover */}
+      <div className="pp-cover">
         {profileUser.coverUrl ? (
           <img
-            src={getImageUrl(profileUser.coverUrl, 'avatars')}
+            src={getImageUrl(profileUser.coverUrl, 'covers')}
             alt="Cover"
-            className="profile-cover-img"
+            className="pp-cover-img"
           />
         ) : (
-          <div className="profile-cover-placeholder" />
+          <div className="pp-cover-placeholder" />
+        )}
+        {isOwnProfile && (
+          <button
+            className="pp-cover-edit-btn"
+            onClick={() => setShowEditModal(true)}
+            title="Thay ảnh bìa"
+          >
+            <Camera size={14} />
+            Chỉnh sửa ảnh bìa
+          </button>
         )}
       </div>
 
-      {/* Profile Header */}
-      <div className="profile-header">
-        <div className="profile-avatar-wrapper">
-          <Avatar src={profileUser.avatarUrl} className="profile-avatar" />
+      {/* Header Bar */}
+      <div className="pp-header-bar">
+        <div className="pp-avatar-section">
+          <div className="pp-avatar-wrap">
+            <Avatar
+              src={profileUser.avatarUrl}
+              className="pp-avatar"
+              alt={profileUser.fullName}
+            />
+            {isOwnProfile && (
+              <button
+                className="pp-avatar-edit-btn"
+                onClick={() => setShowEditModal(true)}
+                title="Thay ảnh đại diện"
+              >
+                <Camera size={14} />
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="profile-info">
-          <div className="profile-info-top">
-            <h1 className="profile-name">{profileUser.fullName}</h1>
-            <div className="profile-actions">
+        <div className="pp-header-info">
+          <div className="pp-header-top">
+            <div className="pp-header-text">
+              <h1 className="pp-name">{profileUser.fullName}</h1>
+              <div className="pp-stats">
+                {postsTotal > 0 && <span>{postsTotal} Bài viết</span>}
+                {friendsTotal > 0 && <span>{friendsTotal} Bạn bè</span>}
+                {photos.length > 0 && <span>{photos.length} Ảnh</span>}
+              </div>
+              {profileUser.bio && <p className="pp-bio">{profileUser.bio}</p>}
+              <div className="pp-meta">
+                {profileUser.location && (
+                  <span className="pp-meta-item">
+                    <MapPin size={14} />
+                    {profileUser.location}
+                  </span>
+                )}
+                {joinDate && (
+                  <span className="pp-meta-item">
+                    <Calendar size={14} />
+                    Tham gia {joinDate}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="pp-actions">
               {isOwnProfile ? (
                 <button
-                  className="profile-edit-btn"
+                  className="pp-btn pp-btn--secondary"
                   onClick={() => setShowEditModal(true)}
                 >
                   <Edit3 size={16} />
@@ -172,7 +283,7 @@ const ProfilePage = () => {
                 <>
                   <AddFriendButton targetUserId={userId} />
                   <button
-                    className="profile-message-btn"
+                    className="pp-btn pp-btn--primary"
                     onClick={() => navigate(`/messages/${userId}`)}
                   >
                     <MessageCircle size={16} />
@@ -182,114 +293,199 @@ const ProfilePage = () => {
               )}
             </div>
           </div>
-          {profileUser.bio && (
-            <p className="profile-bio">{profileUser.bio}</p>
-          )}
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="profile-tabs">
-        <button
-          className={`profile-tab ${activeTab === TABS.POSTS ? 'profile-tab--active' : ''}`}
-          onClick={() => setActiveTab(TABS.POSTS)}
-        >
-          Bài viết
-        </button>
-        <button
-          className={`profile-tab ${activeTab === TABS.FRIENDS ? 'profile-tab--active' : ''}`}
-          onClick={() => setActiveTab(TABS.FRIENDS)}
-        >
-          Bạn bè
-        </button>
-        <button
-          className={`profile-tab ${activeTab === TABS.ABOUT ? 'profile-tab--active' : ''}`}
-          onClick={() => setActiveTab(TABS.ABOUT)}
-        >
-          Giới thiệu
-        </button>
+      <div className="pp-tabs-bar">
+        <div className="pp-tabs">
+          {tabConfig.map((tab) => (
+            <button
+              key={tab.key}
+              className={`pp-tab${activeTab === tab.key ? ' pp-tab--active' : ''}${tab.key === 'more' ? ' pp-tab--disabled' : ''}`}
+              onClick={() => tab.key !== 'more' && setActiveTab(tab.key)}
+              disabled={tab.key === 'more'}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Tab Content */}
-      <div className="profile-content">
-        {/* TAB: Bài viết */}
-        {activeTab === TABS.POSTS && (
-          <div className="profile-posts">
-            {postsLoading && posts.length === 0 ? (
-              <div className="profile-loading-text">Đang tải bài viết...</div>
-            ) : posts.length === 0 ? (
-              <div className="profile-empty-text">Chưa có bài viết nào</div>
-            ) : (
-              <>
-                {posts.map((post) => (
-                  <PostItem
-                    key={post.id}
-                    post={post}
-                    onPostUpdated={() => fetchPosts(postsPage)}
-                  />
-                ))}
-                {postsTotalPages > 1 && (
-                  <div className="profile-pagination">
-                    <button
-                      disabled={postsPage <= 1}
-                      onClick={() => setPostsPage(postsPage - 1)}
-                      className="profile-page-btn"
-                    >
-                      Trước
-                    </button>
-                    <span className="profile-page-info">
-                      Trang {postsPage} / {postsTotalPages}
-                    </span>
-                    <button
-                      disabled={postsPage >= postsTotalPages}
-                      onClick={() => setPostsPage(postsPage + 1)}
-                      className="profile-page-btn"
-                    >
-                      Tiếp
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+      {/* Body */}
+      <div className={`pp-body${activeTab === TABS.ALL ? ' pp-body--sidebar' : ''}`}>
+        {/* Sidebar only on ALL tab */}
+        {activeTab === TABS.ALL && (
+          <aside className="pp-sidebar-col">
+            <ProfileSidebar profileUser={profileUser} />
+          </aside>
         )}
 
-        {/* TAB: Bạn bè */}
-        {activeTab === TABS.FRIENDS && (
-          <FriendList userId={userId} />
-        )}
-
-        {/* TAB: Giới thiệu */}
-        {activeTab === TABS.ABOUT && (
-          <div className="profile-about">
-            <div className="profile-about-card">
-              <h3>Giới thiệu</h3>
-              {profileUser.bio ? (
-                <div className="profile-about-item">
-                  <p className="profile-about-bio">{profileUser.bio}</p>
-                </div>
+        {/* Main content */}
+        <div className="pp-main-col">
+          {/* ALL: posts list */}
+          {activeTab === TABS.ALL && (
+            <div className="pp-posts-list">
+              {postsLoading && posts.length === 0 ? (
+                <div className="pp-loading">Đang tải bài viết...</div>
+              ) : posts.length === 0 ? (
+                <div className="pp-empty">Chưa có bài viết nào</div>
               ) : (
-                <p className="profile-about-empty">Chưa có tiểu sử</p>
+                <>
+                  {posts.map((post) => (
+                    <PostItem
+                      key={post.id}
+                      post={post}
+                      onPostUpdated={() => fetchPosts(postsPage)}
+                    />
+                  ))}
+                  {postsTotalPages > 1 && (
+                    <div className="pp-pagination">
+                      <button
+                        className="pp-page-btn"
+                        disabled={postsPage <= 1}
+                        onClick={() => setPostsPage((p) => p - 1)}
+                      >
+                        Trước
+                      </button>
+                      <span>Trang {postsPage} / {postsTotalPages}</span>
+                      <button
+                        className="pp-page-btn"
+                        disabled={postsPage >= postsTotalPages}
+                        onClick={() => setPostsPage((p) => p + 1)}
+                      >
+                        Tiếp
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
-              {profileUser.location && (
-                <div className="profile-about-item">
-                  <MapPin size={18} className="profile-about-icon" />
-                  <span>Sống tại <strong>{profileUser.location}</strong></span>
+            </div>
+          )}
+
+          {/* ABOUT */}
+          {activeTab === TABS.ABOUT && (
+            <div className="pp-card">
+              <h3 className="pp-card-title">Giới thiệu</h3>
+              {profileUser.bio ? (
+                <p className="pp-about-bio">{profileUser.bio}</p>
+              ) : (
+                <p className="pp-empty">Chưa có tiểu sử</p>
+              )}
+              <ul className="pp-about-list">
+                {profileUser.location && (
+                  <li>
+                    <MapPin size={16} />
+                    Sống tại <strong>{profileUser.location}</strong>
+                  </li>
+                )}
+                {joinDate && (
+                  <li>
+                    <Calendar size={16} />
+                    Tham gia vào <strong>{joinDate}</strong>
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
+
+          {/* FRIENDS */}
+          {activeTab === TABS.FRIENDS && (
+            <div className="pp-card">
+              <h3 className="pp-card-title">Bạn bè ({friendsTotal})</h3>
+              {friendsLoading ? (
+                <div className="pp-loading">Đang tải...</div>
+              ) : friends.length === 0 ? (
+                <div className="pp-empty">Chưa có bạn bè nào</div>
+              ) : (
+                <>
+                  <div className="pp-friends-grid">
+                    {friends.map((f) => {
+                      const fu = f.profile || f;
+                      return (
+                        <Link
+                          key={f.userId || f.id}
+                          to={`/profile/${f.userId || f.id}`}
+                          className="pp-friend-card"
+                        >
+                          <Avatar
+                            src={fu.avatarUrl}
+                            className="pp-friend-avatar"
+                            alt={fu.fullName}
+                          />
+                          <span className="pp-friend-name">{fu.fullName}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                  {friendsTotalPages > 1 && (
+                    <div className="pp-pagination">
+                      <button
+                        className="pp-page-btn"
+                        disabled={friendsPage <= 1}
+                        onClick={() => setFriendsPage((p) => p - 1)}
+                      >
+                        Trước
+                      </button>
+                      <span>Trang {friendsPage} / {friendsTotalPages}</span>
+                      <button
+                        className="pp-page-btn"
+                        disabled={friendsPage >= friendsTotalPages}
+                        onClick={() => setFriendsPage((p) => p + 1)}
+                      >
+                        Tiếp
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
+          {/* PHOTOS */}
+          {activeTab === TABS.PHOTOS && (
+            <div className="pp-card">
+              <h3 className="pp-card-title">Ảnh ({photos.length})</h3>
+              {photosLoading ? (
+                <div className="pp-loading">Đang tải...</div>
+              ) : photos.length === 0 ? (
+                <div className="pp-empty">Chưa có ảnh nào</div>
+              ) : (
+                <div className="pp-photos-grid">
+                  {photos.map((photo) => (
+                    <a
+                      key={photo.id}
+                      href={getImageUrl(photo.url, 'posts')}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="pp-photo-item"
+                    >
+                      <img
+                        src={getImageUrl(photo.url, 'posts')}
+                        alt="photo"
+                        className="pp-photo-img"
+                        loading="lazy"
+                      />
+                    </a>
+                  ))}
                 </div>
               )}
-              <div className="profile-about-item">
-                <Calendar size={18} className="profile-about-icon" />
-                <span>Tham gia {formatJoinDate(profileUser.createdAt)}</span>
-              </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* REELS */}
+          {activeTab === TABS.REELS && (
+            <div className="pp-reels-section">
+              <ReelsGrid userId={userId} />
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Edit Profile Modal */}
       {showEditModal && (
         <EditProfileModal
-          user={profileUser}
+          profileUser={profileUser}
           onClose={() => setShowEditModal(false)}
           onUpdated={handleProfileUpdated}
         />
@@ -299,3 +495,4 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+

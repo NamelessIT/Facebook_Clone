@@ -13,8 +13,8 @@ const postService = {
     return await axiosClient.post(`/posts/${postId}/reactions`, { reactionType });
   },
 
-  updatePost: async (postId, data) => {
-    return await axiosClient.put(`/posts/${postId}`, data);
+  updatePost: async (postId, formData) => {
+    return await axiosClient.put(`/posts/${postId}`, formData);
   },
 
   deletePost: async (postId) => {

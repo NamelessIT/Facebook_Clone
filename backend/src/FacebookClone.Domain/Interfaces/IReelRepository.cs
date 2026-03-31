@@ -6,11 +6,9 @@ public interface IReelRepository
 {
     Task AddReelAsync(Reel reel);
     Task<Reel?> GetByIdAsync(Guid id);
-    
-    // Lấy danh sách Reels lướt (mới nhất)
+    Task UpdateAsync(Reel reel);
     Task<IEnumerable<Reel>> GetReelsFeedAsync(int pageNumber, int pageSize);
-    
-    // Các hàm cho Like
+    Task<(IEnumerable<Reel> Items, int Total)> GetUserReelsAsync(Guid userId, int pageNumber, int pageSize);
     Task<ReelLike?> GetLikeAsync(Guid reelId, Guid userId);
     Task AddLikeAsync(ReelLike like);
     Task RemoveLikeAsync(ReelLike like);

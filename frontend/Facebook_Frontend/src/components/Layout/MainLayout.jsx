@@ -2,7 +2,7 @@ import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { getImageUrl } from "../../utils/formatUrl";
-import { Home, Tv, Store, Users, MessageCircle, Grid, Clock, Bookmark } from "lucide-react";
+import { Home, Tv, Store, Users, MessageCircle, Grid, Clock, Bookmark, Film } from "lucide-react";
 import "./MainLayout.css";
 import Avatar from '../common/Avatar';
 import SearchBar from '../common/SearchBar';
@@ -46,6 +46,7 @@ const MainLayout = () => {
           <div className="nav-tab"><Tv size={28} /></div>
           <div className="nav-tab"><Store size={28} /></div>
           <Link to="/friends" className={`nav-tab${location.pathname.startsWith('/friends') ? ' active' : ''}`}><Users size={28} /></Link>
+          <Link to="/reels" className={`nav-tab${location.pathname.startsWith('/reels') ? ' active' : ''}`}><Film size={28} /></Link>
         </div>
 
         {/* Góc Phải */}

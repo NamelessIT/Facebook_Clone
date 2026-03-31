@@ -21,9 +21,10 @@ public class PostRepository : IPostRepository
         return post;
     }
 
-    // Lấy bảng tin: Sắp xếp mới nhất, lấy luôn thông tin User (Include)
-    public async Task<IEnumerable<Post>> GetNewsFeedAsync(int pageNumber = 1, int pageSize = 10)
+    public async Task<IEnumerable<Post>> GetNewsFeedAsync(Guid currentUserId, IEnumerable<Guid> friendIds, int pageNumber = 1, int pageSize = 10)
     {
+        var friendIdList = friendIds.ToList();
+
         return await _context.Posts
             .Include(p => p.User) 
             .Include(p => p.Medias) 
@@ -34,7 +35,11 @@ public class PostRepository : IPostRepository
             .Include(p => p.SharedPost!).ThenInclude(sp => sp.Medias)
             .Include(p => p.SharedPost!).ThenInclude(sp => sp.Reactions)
             .Include(p => p.SharedPost!).ThenInclude(sp => sp.Comments)
-            .Where(p => !p.IsDeleted)
+            .Where(p => !p.IsDeleted && (
+                p.Privacy == PostPrivacy.Public ||
+                p.UserId == currentUserId ||
+                (p.Privacy == PostPrivacy.Friends && friendIdList.Contains(p.UserId))
+            ))
             .OrderByDescending(p => p.CreatedAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)

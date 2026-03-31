@@ -1,317 +1,1003 @@
-# BẢNG CÔNG VIỆC DỰ ÁN FACEBOOK_CLONE
-**Cập nhật lần cuối:** 2026-03-25 14:20  
-**Trạng thái tổng thể:** ⏳ NOT STARTED
+# BẢNG CÔNG VIỆC DỰ ÁN FACEBOOK_CLONE - PHASE 2: POST & PROFILE FEATURES
+**Cập nhật lần cuối:** 2026-03-31 10:00  
+**Trạng thái tổng thể:** 🔴 PLANNING → SESSION-1 READY  
+**Manager:** Planning & Task Breakdown
+
 
 ---
 
-## 1) TỔNG QUAN & PHỤ THUỘC
+## 📊 TỔNG QUAN - 30+ SUBTASK PHÂN THÀNH 2 SESSIONS
 
-```text
-SEARCH  ─┐
-FRIENDS ─┼──> POSTS ──> NOTIFICATIONS
-         └──> PROFILE/FRIEND DETAIL
+| Session | Nhóm | Status | Tasks | Timeline |
+|---------|------|--------|-------|----------|
+| **SESSION-1** | Post Privacy + Edit | 🔴 READY | 22 subtasks | ~6-8h |
+| **SESSION-1** | UserDropdown + Fix | 🔴 READY | 8 subtasks | ~2-3h |
+| **SESSION-2** | ProfilePage Redesign | ⏳ TODO | 12 subtasks | ~8-10h |
+| **SESSION-2** | Reels Feature | ⏳ TODO | 15 subtasks | ~10-12h |
 
-Ghi chú:
-- Session 1: Frontend
-- Session 2: Backend
-- Hai session chạy song song, mỗi session chỉ xử lý phần FE hoặc BE của từng task.
+**Total: ~40 subtasks → 26-33 hours work**
+
+---
+
+## 🎯 SESSION-1 EXECUTION PLAN (12-14 HOURS)
+
+### GROUP-1: POST PRIVACY & DISPLAY (PRIORITY 1)
+**Objective:** Implement post privacy levels (PUBLIC/FRIENDS/PRIVATE) with proper access control
+
+#### TASK-1-1: Backend - Post Privacy Model & Enum
+**Subtasks:**
+- [ ] **BE-101** — Add `Privacy` enum in `FacebookClone.Domain/Enums/PrivacyEnum.cs`
+  - Values: `PUBLIC = 1`, `FRIENDS = 2`, `ONLY_ME = 3`
+  - File: Create new enum file
+  
+- [ ] **BE-102** — Add `Privacy` field to `Post` entity in `FacebookClone.Domain/Entities/Post.cs`
+  - Type: `PrivacyEnum` (default: `PUBLIC`)
+  - Make nullable to support migration
+  
+- [ ] **BE-103** — Create EF Core migration: `AddPostPrivacyField`
+  - Command: `dotnet ef migrations add AddPostPrivacyField -p FacebookClone.Infrastructure`
+  - Auto-set existing posts to `PUBLIC`
+
+#### TASK-1-2: Backend - Post Privacy API Endpoint
+**Subtasks:**
+- [ ] **BE-104** — Add `privacy` field to `CreatePostRequest` DTO
+  - File: `FacebookClone.Application/DTOs/Posts/CreatePostRequest.cs`
+  - Type: `PrivacyEnum`
+  - Default: `PUBLIC`
+  - Add validation: only allow valid enum values
+
+- [ ] **BE-105** — Add `privacy` field to `PostResponseDto` DTO
+  - File: `FacebookClone.Application/DTOs/Posts/PostResponseDto.cs`
+  - Include in response so FE knows post visibility
+
+- [ ] **BE-106** — Update `CreatePostAsync` in `PostService.cs`
+  - Add: `post.Privacy = request.Privacy ?? PrivacyEnum.PUBLIC;`
+  - Before save to DB
+
+#### TASK-1-3: Backend - Post Access Control & Filtering
+**Subtasks:**
+- [ ] **BE-107** — Add access check method to `PostService.cs`
+  - Method: `CanUserViewPost(post, currentUserId)` → bool
+  - Logic:
+    - If `post.Privacy == PUBLIC` → return true
+    - If `post.Privacy == ONLY_ME` → return userId == post.AuthorId
+    - If `post.Privacy == FRIENDS` → check if users are friends (via FriendshipService)
+    - If post author → always allow (true)
+
+- [ ] **BE-108** — Modify `GetPostAsync` in `PostService.cs`
+  - Before returning post → call `CanUserViewPost()`
+  - If false → throw `ServiceError(403, "Không có quyền xem bài viết này")`
+
+- [ ] **BE-109** — Modify `GetUserPostsAsync` in `PostService.cs`
+  - Filter posts: only return posts where `CanUserViewPost(post, currentUserId) == true`
+  - Apply privacy check in LINQ query or post-filter
+
+- [ ] **BE-110** — Modify `GetFeedPostsAsync/GetTimelinePostsAsync` (if exists)
+  - Include same privacy check when building feed
+  - Don't return PRIVATE posts of other users
+
+#### TASK-1-4: Frontend - Display Post Privacy Badge
+**Subtasks:**
+- [ ] **FE-111** — Update `PostItem.jsx` component
+  - Render privacy icon next to post time:
+    - PUBLIC → 🌎 (globe icon)
+    - FRIENDS → 👥 (users icon)
+    - ONLY_ME → 🔒 (lock icon)
+  - Add class: `post-privacy-badge`, tooltip showing full text
+  - File: `src/components/post/PostItem.jsx`
+
+---
+
+### GROUP-2: POST EDIT FEATURE (PRIORITY 2)
+**Objective:** Full edit functionality: content + media + privacy
+
+#### TASK-2-1: Backend - Update Post Endpoint
+**Subtasks:**
+- [ ] **BE-201** — Create `UpdatePostRequest` DTO
+  - File: `FacebookClone.Application/DTOs/Posts/UpdatePostRequest.cs`
+  - Fields: `content: string`, `privacy: PrivacyEnum`, `mediasToRemove: Guid[]`, `newMedias: IFormFile[]`
+  - Validation: content not empty, privacy valid
+
+- [ ] **BE-202** — Create `PUT /api/v1/posts/{id}` endpoint in `PostsController.cs`
+  - Action: `UpdatePost(Guid id, [FromForm] UpdatePostRequest request)`
+  - Call `PostService.UpdatePostAsync(id, request, userId)`
+  - Return updated `PostResponseDto`
+
+- [ ] **BE-203** — Implement `UpdatePostAsync` in `PostService.cs`
+  - Validate: user is post author (throw 403 if not)
+  - Update: `content`, `privacy` fields
+  - Handle media removal: delete files from storage for mediasToRemove IDs
+  - Handle new media upload: call `MediaService.UploadMediaAsync()`
+  - Save to DB + commit
+
+#### TASK-2-2: Frontend - Edit Modal UI
+**Subtasks:**
+- [ ] **FE-204** — Create `EditPostModal.jsx` component
+  - File: `src/components/post/EditPostModal.jsx`
+  - Structure:
+    - Header: "Chỉnh sửa bài viết" + close button
+    - Textarea: pre-filled with post content (with char counter: current/500)
+    - Media section:
+      - Show existing media thumbnails (with delete button per item)
+      - Add button to upload new media (file input)
+    - Privacy selector: dropdown/radio (PUBLIC/FRIENDS/PRIVATE)
+    - Footer: Cancel + Save button (disabled while saving)
+  - CSS: `src/components/post/EditPostModal.css`
+
+- [ ] **FE-205** — Update `PostItem.jsx` to show Edit modal
+  - "Chỉnh sửa bài viết" menu item → opens EditPostModal
+  - Pass current `post` data to modal
+  - State: `showEditModal`, `editContent`, `editPrivacy`, `editMedias`
+
+#### TASK-2-3: Frontend - Edit Media Handling
+**Subtasks:**
+- [ ] **FE-206** — Implement media preview in EditPostModal
+  - Show thumbnail for each existing media
+  - Display X button to delete (mark for removal)
+  - Add "+" button to upload new media
+  - Handle file input: .jpg, .png, .mp4, .mov (type validation)
+
+- [ ] **FE-207** — Implement media upload preview
+  - User selects files → show preview (image/video player)
+  - Show file name + size
+  - Allow remove before saving
+
+#### TASK-2-4: Frontend - Edit API Call
+**Subtasks:**
+- [ ] **FE-208** — Create/update `updatePost()` in `postService.js`
+  - Endpoint: `PUT /api/v1/posts/{postId}`
+  - Method: FormData with files + fields
+  - Return: updated post object
+
+- [ ] **FE-209** — Implement save handler in EditPostModal
+  - Collect: content, privacy, files, mediasToRemove IDs
+  - Call updatePost()
+  - Handle errors: show toast
+  - On success: close modal + refresh PostItem (callback: `onPostUpdated()`)
+
+---
+
+### GROUP-3: USERDROPDOWN COMPLETION (PRIORITY 3)
+**Objective:** Enhance UserDropdown with Facebook-like features
+
+#### TASK-3-1: UserDropdown Core Features
+**Subtasks:**
+- [ ] **FE-301** — Polish `UserDropdown.jsx` styling
+  - File: `src/components/Layout/UserDropdown.jsx`
+  - Ensure CSS matches Facebook: rounded corners, shadows, hover effects
+  - File: `src/components/Layout/UserDropdown.css`
+
+- [ ] **FE-302** — Implement Dark Mode properly
+  - Toggle switch: localStorage key `fb_dark_mode`
+  - Apply `data-theme="dark"` to `<html>` when enabled
+  - Persist state across sessions
+
+- [ ] **FE-303** — Add Settings link
+  - Route: `/settings` (or create new settings page)
+  - Icon: Settings (gear)
+  - Text: "Cài đặt & quyền riêng tư"
+  - For now: link to placeholder page (can implement later)
+
+- [ ] **FE-304** — Add Help & Support
+  - Currently disabled (per existing code)
+  - Icon: HelpCircle
+  - Text: "Trợ giúp & hỗ trợ"
+  - Status: Disabled (disabled={true})
+
+- [ ] **FE-305** — Verify Logout
+  - Icon: LogOut
+  - Text: "Đăng xuất"
+  - Call `logout()` from AuthContext
+  - Redirect to login page
+
+#### TASK-3-2: UserDropdown Styling
+**Subtasks:**
+- [ ] **FE-306** — Update UserDropdown.css
+  - Ensure responsive design (mobile-friendly)
+  - Dropdown max-width: 320px
+  - Menu items with proper padding/spacing
+  - Hover state: light background
+  - Divider: 1px gray line
+
+---
+
+### GROUP-4: BUG FIX - userService (PRIORITY 4)
+**Objective:** Fix 400 Bad Request in search users endpoint
+
+#### TASK-4-1: Backend - Search Users Endpoint
+**Subtasks:**
+- [ ] **BE-401** — Check `GET /api/v1/search/users` endpoint in `SearchController.cs`
+  - Verify: `q` parameter accepts empty string
+  - If currently required → make optional with default ""
+  - Test: `localhost:5286/api/v1/search/users?q=&pageNumber=1&pageSize=20` should return 200 + all users
+
+- [ ] **BE-402** — Verify pagination validation
+  - pageNumber: min 1, default 1
+  - pageSize: min 1, max 100, default 20
+  - Remove validation that rejects empty `q`
+
+#### TASK-4-2: Frontend - Fix userService.js
+**Subtasks:**
+- [ ] **FE-403** — Update `searchUsers()` in `src/services/userService.js`
+  - Function: `searchUsers(query = "", page = 1, pageSize = 20)`
+  - Build URL correctly: `/search/users?q=${query}&pageNumber=${page}&pageSize=${pageSize}`
+  - Ensure all params are included even if empty
+
+- [ ] **FE-404** — Test fix
+  - Open Khám phá tab → should load user list without 400 error
+  - Network tab: request should return 200 with data
+
+---
+
+## 🎯 SESSION-2 EXECUTION PLAN (18-22 HOURS)
+
+### GROUP-5: PROFILEPAGE REDESIGN (PRIORITY 5)
+**Objective:** Full-width ProfilePage with Facebook-like layout
+
+#### TASK-5-1: ProfilePage Layout Restructure
+**Subtasks:**
+- [ ] **FE-501** — Make ProfilePage 100% full width
+  - Remove padding/margin constraints
+  - File: `src/pages/Profile/ProfilePage.jsx` + `ProfilePage.css`
+  - Layout: Cover photo (full width) → Header (no sidebar) → Tabs + Content
+
+- [ ] **FE-502** — Rebuild Profile Header
+  - Cover photo (full width, 400px height)
+  - Avatar positioned over cover (bottom-left)
+  - Name + bio + buttons (edit/message/add friend)
+  - Make responsive
+
+#### TASK-5-2: Profile Tabs Expansion
+**Subtasks:**
+- [ ] **FE-503** — Expand tabs from 3 → 7:
+  - 1. "Tất cả" (All posts + photos + reels mixed)
+  - 2. "Giới thiệu" (About - current)
+  - 3. "Bạn bè" (Friends - current)
+  - 4. "Ảnh" (Photos gallery)
+  - 5. "Reels" (Reels grid)
+  - 6. "Xem thêm" (Dropdown: "Thích", "Nhóm", "Bài đánh giá")
+  - File: Update `ProfilePage.jsx` tabs list
+
+- [ ] **FE-504** — Create Photos Tab
+  - Display all photos from user's posts in grid (3 columns)
+  - Click to open photo modal/viewer
+  - Pagination if 100+ photos
+
+- [ ] **FE-505** — Create Reels Tab
+  - Display all reels from user in grid
+  - Click to play (modal with video player)
+  - Show reels count
+
+- [ ] **FE-506** — Create "Xem thêm" Dropdown
+  - Menu items: "Thích" (disabled), "Nhóm" (disabled), "Bài đánh giá" (disabled)
+  - Icons + text
+  - For now: disabled state (placeholder)
+
+#### TASK-5-3: ProfilePage Sidebar
+**Subtasks:**
+- [ ] **FE-507** — Create ProfileSidebar component
+  - File: `src/components/profile/ProfileSidebar.jsx` + `.css`
+  - Position: fixed/sticky on right (25% width)
+  - Sections:
+    1. User Info Card: bio, location, birthday, email, joined date
+    2. Friends List: show first 8 friends with avatars (grid)
+    3. Action buttons: add friend, message, view all friends
+
+- [ ] **FE-508** — Implement ProfileSidebar info display
+  - Fetch user details from `profileUser` state
+  - Format date fields (date-fns)
+  - Show icons: MapPin, Calendar, Mail, etc.
+
+- [ ] **FE-509** — Implement ProfileSidebar friends display
+  - Call `friendshipService.getFriends(userId, 1, 8)`
+  - Show first 8 friends in 2×4 grid
+  - Click avatars → navigate to friend's profile
+  - "View all friends" link → /profile/{userId}/friends
+
+#### TASK-5-4: ProfilePage Main Content Layout
+**Subtasks:**
+- [ ] **FE-510** — Restructure main content area
+  - Two-column layout:
+    - Left: 75% - Tabs + Content (current posts/photos/reels)
+    - Right: 25% - ProfileSidebar (sticky)
+  - Make responsive: on mobile, sidebar moves below
+
+- [ ] **FE-511** — Update "All Posts" tab
+  - Show posts + photos + reels (timestamp sorted)
+  - Use PostItem component for posts
+  - Add photo/reel indicators
+
+- [ ] **FE-512** — Add ProfilePage Stats
+  - Display above tabs: [Posts count] [Friends count] [Photos count] [Reels count]
+  - Format: "120 Bài viết • 45 Bạn bè • 280 Ảnh"
+
+---
+
+### GROUP-6: REELS FEATURE (PRIORITY 6)
+**Objective:** Full Reels upload, edit, delete, and display
+
+#### TASK-6-1: Backend - Reels Entity & API
+**Subtasks:**
+- [ ] **BE-601** — Create `Reel` entity
+  - File: `FacebookClone.Domain/Entities/Reel.cs`
+  - Fields: `Id`, `AuthorId`, `Title`, `Description`, `VideoUrl`, `ThumbnailUrl`, `Privacy (PrivacyEnum)`, `Duration`, `ViewsCount`, `LikesCount`, `CreatedAt`, `UpdatedAt`, `DeletedAt` (soft delete)
+  - Relations: author (User), likes (ReelLike)
+
+- [ ] **BE-602** — Create `ReelLike` entity
+  - File: `FacebookClone.Domain/Entities/ReelLike.cs`
+  - Fields: `Id`, `ReelId`, `UserId`, `CreatedAt`
+  - Unique constraint: (ReelId, UserId)
+
+- [ ] **BE-603** — Add DbSet to AppDbContext
+  - `DbSet<Reel>` and `DbSet<ReelLike>`
+  - Configure relationships
+
+- [ ] **BE-604** — Create migration: `AddReelEntities`
+  - Run: `dotnet ef migrations add AddReelEntities -p FacebookClone.Infrastructure`
+
+- [ ] **BE-605** — Create `ReelResponseDto`
+  - File: `FacebookClone.Application/DTOs/Reels/ReelResponseDto.cs`
+  - Fields: `id`, `authorId`, `authorName`, `authorAvatar`, `title`, `description`, `videoUrl`, `thumbnailUrl`, `privacy`, `duration`, `viewsCount`, `likesCount`, `isLiked`, `createdAt`
+
+- [ ] **BE-606** — Create `CreateReelRequest`
+  - File: `FacebookClone.Application/DTOs/Reels/CreateReelRequest.cs`
+  - Fields: `title: string`, `description: string`, `privacy: PrivacyEnum`, `video: IFormFile` (required, .mp4/.mov only, max 100MB)
+  - Validation: title not empty, video file type
+
+- [ ] **BE-607** — Create `UpdateReelRequest`
+  - Similar to CreateReelRequest but all optional
+  - Video replacement is optional
+
+- [ ] **BE-608** — Create `ReelsController`
+  - File: `FacebookClone.API/Controllers/ReelsController.cs`
+  - Endpoints:
+    - `POST /api/v1/reels` - CreateReel
+    - `GET /api/v1/reels` - GetReelsFeed
+    - `GET /api/v1/users/{userId}/reels` - GetUserReels
+    - `GET /api/v1/reels/{id}` - GetReel
+    - `PUT /api/v1/reels/{id}` - UpdateReel
+    - `DELETE /api/v1/reels/{id}` - DeleteReel
+    - `POST /api/v1/reels/{id}/like` - LikeReel
+    - `DELETE /api/v1/reels/{id}/like` - UnlikeReel
+
+#### TASK-6-2: Backend - Reels Service
+**Subtasks:**
+- [ ] **BE-609** — Create `ReelService.cs`
+  - File: `FacebookClone.Application/Services/ReelService.cs`
+  - Methods:
+    - `CreateReelAsync(CreateReelRequest, userId)` - save video, create reel
+    - `UpdateReelAsync(reelId, UpdateReelRequest, userId)` - check auth, update fields, handle video replacement
+    - `DeleteReelAsync(reelId, userId)` - soft delete, remove files
+    - `GetReelAsync(reelId, userId)` - with privacy check
+    - `GetReelsFeedAsync(page, pageSize, userId)` - only PUBLIC/FRIENDS reels (apply privacy filter)
+    - `GetUserReelsAsync(userId, creatorId, page, pageSize)` - apply privacy check
+    - `LikeReelAsync(reelId, userId)` - create ReelLike record
+    - `UnlikeReelAsync(reelId, userId)` - delete ReelLike
+
+- [ ] **BE-610** — Video storage & processing
+  - Store .mp4 in `wwwroot/uploads/reels/`
+  - Generate thumbnail from video (first frame or at 1s mark)
+  - Store thumbnail in `wwwroot/uploads/reels_thumbs/`
+  - Suppress file size for now (client-side validation)
+
+#### TASK-6-3: Frontend - Upload Reels
+**Subtasks:**
+- [ ] **FE-611** — Create `UploadReelModal.jsx` component
+  - File: `src/components/reels/UploadReelModal.jsx`
+  - Structure:
+    - Title input: max 100 chars (with counter)
+    - Description input: max 500 chars (with counter)
+    - Video upload: drag-drop or file picker (only .mp4, .mov, max 100MB)
+    - Video preview: thumbnail + duration display
+    - Privacy selector: PUBLIC/FRIENDS/PRIVATE (radio buttons)
+    - Footer: Cancel + Upload button (disabled while uploading)
+  - CSS: `src/components/reels/UploadReelModal.css`
+
+- [ ] **FE-612** — Implement video file validation
+  - Check: .mp4 or .mov only
+  - Check: max 100MB
+  - Extract: video duration using `<video>` element
+  - Show error toast if validation fails
+
+- [ ] **FE-613** — Implement upload handler
+  - Call `reelService.uploadReel(formData)` with FormData
+  - Show progress: "Đang tải lên... 45%"
+  - On success: close modal + refresh reels feed
+  - On error: show error toast
+
+#### TASK-6-4: Frontend - Reels Service
+**Subtasks:**
+- [ ] **FE-614** — Create `reelService.js`
+  - File: `src/services/reelService.js`
+  - Methods:
+    - `uploadReel(formData)` - POST /reels, handle progress
+    - `getReelsFeed(page, pageSize)` - GET /reels
+    - `getUserReels(userId, page, pageSize)` - GET /users/{userId}/reels
+    - `getReel(reelId)` - GET /reels/{reelId}
+    - `updateReel(reelId, formData)` - PUT /reels/{reelId}
+    - `deleteReel(reelId)` - DELETE /reels/{reelId}
+    - `likeReel(reelId)` - POST /reels/{reelId}/like
+    - `unlikeReel(reelId)` - DELETE /reels/{reelId}/like
+
+#### TASK-6-5: Frontend - Reels Display
+**Subtasks:**
+- [ ] **FE-615** — Create `ReelsGrid.jsx` component
+  - Display reels in grid (3 columns on desktop, 2 on tablet, 1 on mobile)
+  - Show thumbnail + play icon overlay
+  - Click → open ReelsPlayer modal
+  - File: `src/components/reels/ReelsGrid.jsx` + `.css`
+
+- [ ] **FE-616** — Create `ReelsPlayer.jsx` component
+  - File: `src/components/reels/ReelsPlayer.jsx`
+  - Structure (mobile-first, full-screen):
+    - Video player (full width/height)
+    - Overlay on bottom: author avatar + name, title, description
+    - Overlay on right: like button (count), comment button (count), share button
+    - Bottom controls: previous/next reel buttons
+  - CSS: Full-screen modal styling
+
+- [ ] **FE-617** — Implement ReelsPlayer interactions
+  - Like button: toggle like + update count
+  - Comment button: navigate to comments (or inline comments modal)
+  - Share button: show share modal
+  - Prev/Next: navigate through reels in feed
+
+#### TASK-6-6: Frontend - Edit & Delete Reels
+**Subtasks:**
+- [ ] **FE-618** — Add edit button to ReelsPlayer
+  - Only show if user is owner
+  - Click → open EditReelModal
+  - File: `src/components/reels/EditReelModal.jsx`
+  - Similar structure to UploadReelModal but pre-filled
+  - Video: optional replacement (or keep current)
+
+- [ ] **FE-619** — Implement edit handler
+  - Call `reelService.updateReel(reelId, formData)`
+  - On success: refresh reel data in player
+
+- [ ] **FE-620** — Add delete button to ReelsPlayer
+  - Only show if user is owner
+  - Click → show confirmation modal: "Bạn chắc chắn muốn xóa reel này?"
+  - Confirm → call `reelService.deleteReel(reelId)`
+  - On success: close player + refresh feed
+
+#### TASK-6-7: Frontend - Reels Feed Integration
+**Subtasks:**
+- [ ] **FE-621** — Create `ReelsPage.jsx`
+  - File: `src/pages/Reels/ReelsPage.jsx`
+  - Structure:
+    - Header: "Reels" title + "Upload Reel" button
+    - ReelsGrid component
+    - Infinite scroll: load more as user scrolls down
+  - CSS: `src/pages/Reels/ReelsPage.css`
+
+- [ ] **FE-622** — Create Reels route
+  - Add to App Router: `path: "/reels"`, `element: <ReelsPage />`
+
+- [ ] **FE-623** — Add Reels to MainLayout navigation
+  - Add Reels icon in sidebar (or top nav)
+  - Click → navigate to /reels
+  - Icon: Film or Play icon from lucide-react
+
+- [ ] **FE-624** — Add Reels upload button
+  - AppBar or floating button: "Đăng Reel"
+  - Click → open UploadReelModal
+  - File: Update `MainLayout.jsx`
+
+---
+
+## 📌 DEPENDENCY GRAPH
+
+```
+SESSION-1:
+┌─────────────────────────────────────────┐
+│ GROUP-1: Post Privacy (BE) ◄─── GROUP-4: Fix userService
+│         ↓
+│ GROUP-2: Post Edit (BE + FE)
+│         ↓
+│ GROUP-3: UserDropdown (FE Only)
+└─────────────────────────────────────────┘
+         ↓ (all must complete before SESSION-2)
+
+SESSION-2:
+┌─────────────────────────────────────────┐
+│ GROUP-5: ProfilePage Redesign (FE + BE calls)
+│         ↓
+│ GROUP-6: Reels Feature (BE + FE)
+│         ↓
+│ Final: Integration + Testing
+└─────────────────────────────────────────┘
+```
+
+**Key Dependencies:**
+- BE-103 migration must run BEFORE FE-111 (display privacy badge)
+- FE-111 depends on BE-105 (privacy in response DTO)
+- FE-204 depends on BE-202 (UpdatePost endpoint)
+- BE-601~608 (Reels entities) must exist BEFORE BE-609 (service)
+- FE-611~624 depend on BE-608 (ReelsController endpoints)
+
+---
+
+## ⏱️ TIME ESTIMATION
+
+| Session | Group | Duration | Status |
+|---------|-------|----------|--------|
+| **1** | Post Privacy | 2.5h | 🔴 |
+| **1** | Post Edit | 3h | 🔴 |
+| **1** | UserDropdown | 1h | 🔴 |
+| **1** | Fix userService | 1h | 🔴 |
+| **1** | **TOTAL** | **~7.5h** | 🔴 READY |
+| **2** | ProfilePage | 5h | ⏳ |
+| **2** | Reels Feature | 7h | ⏳ |
+| **2** | **TOTAL** | **~12h** | ⏳ TODO |
+
+---
+
+## ✅ NEXT STEPS
+
+1. ✅ **Manager approval**: Xác nhận danh sách task và thứ tự ưu tiên
+2. 🔴 **Session-1 Execution**: START từ GROUP-1 → GROUP-2 → GROUP-3 → GROUP-4
+3. 🔴 **Session-2 Planning**: Block GROUP-5 & GROUP-6 cho session sau
+
+---
+
+## 📝 NOTES
+
+**SESSION-1 Focus:**
+- Post privacy + edit form core logic
+- UserDropdown polish
+- Fix buggy search endpoint
+
+**SESSION-2 Focus:**
+- Full ProfilePage redesign (sidebar + tabs)
+- Reels from scratch (entity → API → UI)
+
+**Avoid:**
+- Don't start Reels until Session-1 DONE
+- Don't rewrite Post component - extend it
+- Don't change existing DB until migrations applied
+
+---
+
+# 🚀 SESSION-1 EXECUTION PROMPT
+**Duration: 7.5 hours | Priority: NOW**
+
+> **🎯 Objective:** Implement post privacy system + post edit feature + UserDropdown polish + fix userService bug
+
+## EXECUTION ORDER (MUST FOLLOW)
+
+1. **GROUP-1-BE (Post Privacy Backend)** - 1.5h
+   - Add PrivacyEnum.cs
+   - Add Privacy field to Post entity
+   - Create migration AddPostPrivacyField
+   - Implement privacy access control in PostService
+   
+2. **GROUP-1-FE (Post Privacy Display)** - 0.5h
+   - Update CreatePostRequest DTO with privacy field
+   - Update PostResponseDto with privacy field
+   - Update CreatePostAsync service to handle privacy
+   - Enhance PostItem.jsx to show privacy badge
+
+3. **GROUP-2-BE (Post Edit API)** - 1h
+   - Create UpdatePostRequest DTO
+   - Create PUT /api/v1/posts/{id} endpoint
+   - Implement UpdatePostAsync in PostService
+
+4. **GROUP-2-FE (Post Edit Feature)** - 2h
+   - Create EditPostModal.jsx with full form
+   - Implement media preview + upload + delete
+   - Create updatePost() in postService.js
+   - Wire EditPostModal to PostItem actions
+
+5. **GROUP-3-FE (UserDropdown)** - 1h
+   - Polish UserDropdown.jsx styling
+   - Fix dark mode toggle + localStorage
+   - Add Settings link + Help option
+   - Verify Logout functionality
+
+6. **GROUP-4-BE+FE (userService Bug)** - 0.5h
+   - Check GET /search/users endpoint (empty q handling)
+   - Fix FE searchUsers() with correct URL building
+   - Test: Khám phá tab loads without 400 error
+
+## EXECUTION CHECKLIST
+
+### ✅ BEFORE STARTING
+- [ ] Workspace clean (no uncommitted changes)
+- [ ] `dotnet build` → 0 errors
+- [ ] `npm start` → running without errors
+- [ ] Read this entire prompt before coding
+
+### 🔴 GROUP-1 BACKEND
+
+**Task BE-101: Create PrivacyEnum**
+```csharp
+// File: FacebookClone.Domain/Enums/PrivacyEnum.cs
+public enum PrivacyEnum
+{
+    PUBLIC = 1,      // Công khai
+    FRIENDS = 2,     // Chỉ bạn bè
+    ONLY_ME = 3      // Chỉ mình tôi
+}
+```
+
+**Task BE-102: Add Privacy to Post Entity**
+- Open: `FacebookClone.Domain/Entities/Post.cs`
+- Add field: `public PrivacyEnum Privacy { get; set; } = PrivacyEnum.PUBLIC;`
+- Add using: `using FacebookClone.Domain.Enums;`
+
+**Task BE-103: Create Migration**
+```bash
+cd backend
+dotnet ef migrations add AddPostPrivacyField -p FacebookClone.Infrastructure -s FacebookClone.API
+dotnet ef database update
+```
+- Verify: Privacy column added to Posts table with default PUBLIC
+
+**Task BE-104 to BE-110: Privacy Access Control in PostService**
+- Add method: `private bool CanUserViewPost(Post post, Guid userId)`
+  - Logic: PUBLIC → true, ONLY_ME → userId==post.AuthorId, FRIENDS → check friendship
+- Update `GetPostAsync()`: filter by privacy before returning
+- Update `GetUserPostsAsync()`: filter by privacy in query
+- Update `GetFeedPostsAsync()`: include privacy checks
+
+**After GROUP-1-BE:**
+- [ ] `dotnet build` → 0 errors
+- [ ] No compilation warnings
+- [ ] Migration applied successfully
+
+### 🟢 GROUP-1 FRONTEND
+
+**Task FE-111: Update Post DTOs + Display Privacy Badge**
+- Add to `CreatePostRequest`: `public PrivacyEnum Privacy { get; set; } = PrivacyEnum.PUBLIC;`
+- Add to `PostResponseDto`: `public int Privacy { get; set; }`
+- Update `CreatePostAsync` in postService.js to send privacy
+- Update `PostItem.jsx`: Show privacy icon (🌎/👥/🔒) next to timestamp
+
+**After GROUP-1-FE:**
+- [ ] Create new post → can select privacy
+- [ ] Privacy badge shows correctly
+- [ ] No console errors
+
+### 🔴 GROUP-2 BACKEND
+
+**Task BE-201 to BE-203: Post Edit Endpoint**
+- Create `UpdatePostRequest` DTO with: `content`, `privacy`, `mediasToRemove[]`, `newMedias[]`
+- Create `PUT /api/v1/posts/{id}` in PostsController
+  - Call `PostService.UpdatePostAsync(id, request, userId)`
+  - Return updated `PostResponseDto`
+- Implement `UpdatePostAsync` in PostService:
+  - Verify: user is post author (throw 403 if not)
+  - Update content + privacy fields
+  - Delete media files from storage for mediasToRemove IDs
+  - Upload new media using MediaService
+  - Save to DB with transaction
+
+**After GROUP-2-BE:**
+- [ ] `dotnet build` → 0 errors
+- [ ] Use Postman/REST Client to test PUT endpoint
+- [ ] Verify: auth check, media handling, DB transaction
+
+### 🟢 GROUP-2 FRONTEND
+
+**Task FE-204 to FE-209: Edit Post Modal + API**
+1. Create `EditPostModal.jsx`:
+   - Show content textarea (pre-filled)
+   - Show existing media with delete buttons
+   - Show file upload for new media
+   - Show privacy selector
+   - Cancel + Save buttons
+
+2. Update `PostItem.jsx`: 
+   - Add "Chỉnh sửa" menu item → opens EditPostModal
+
+3. Create `updatePost()` in postService.js:
+   - Endpoint: `PUT /api/v1/posts/{postId}`
+   - Method: FormData with files
+
+4. Implement save handler in EditPostModal:
+   - Collect data → call updatePost()
+   - On success: close modal + callback: `onPostUpdated()`
+   - Show toast on error
+
+**After GROUP-2-FE:**
+- [ ] Click post menu → "Chỉnh sửa" works
+- [ ] EditPostModal opens with current data pre-filled
+- [ ] Can change content + privacy + media
+- [ ] Save button works → post updates immediately
+- [ ] Console: 0 errors
+
+### 🟢 GROUP-3 FRONTEND
+
+**Task FE-301 to FE-306: UserDropdown Polish**
+- Fix styling: rounded corners, shadows, hover effects
+- Implement dark mode: toggle switch → localStorage
+- Add Settings link: `/settings` (placeholder page)
+- Add Help button: disabled state
+- Verify Logout: clears token + redirects to `/login`
+
+**After GROUP-3-FE:**
+- [ ] UserDropdown looks polished (like Facebook)
+- [ ] Dark mode toggle works + persists
+- [ ] All links work
+- [ ] Console: 0 errors
+
+### 🔴+🟢 GROUP-4 (Backend + Frontend)
+
+**Task BE-401 to BE-402:**
+- Check `GET /api/v1/search/users?q=&pageNumber=1&pageSize=20`
+- Remove validation that rejects empty `q` parameter
+- Verify returns 200 + all users
+
+**Task FE-403 to FE-404:**
+- Update `searchUsers(query="", page=1, pageSize=20)` in userService.js
+- Test: Khám phá tab → loads user list without 400 error
+
+**After GROUP-4:**
+- [ ] Khám phá page loads correctly
+- [ ] User search works
+- [ ] Network tab: 200 responses
+
+### ✅ SESSION-1 FINAL VERIFICATION
+
+- [ ] `dotnet build` → 0 errors, 0 warnings
+- [ ] `npm start` → running, 0 console errors
+- [ ] Create new post + set privacy ✓
+- [ ] View post → privacy badge shows ✓
+- [ ] Edit post → modal works + saves ✓
+- [ ] Delete media from post ✓
+- [ ] Replace post media ✓
+- [ ] Dark mode toggle works ✓
+- [ ] Search users works (Khám phá) ✓
+- [ ] Logout button works ✓
+
+### 🎯 GIT COMMIT
+```bash
+git add -A
+git commit -m "feat: Session-1 complete - post privacy, edit, UserDropdown, userService fix
+
+- Add post privacy system (PUBLIC/FRIENDS/ONLY_ME)
+- Implement post edit modal with media handling
+- Polish UserDropdown with dark mode + settings
+- Fix userService 400 error on empty search query
+- All 22 subtasks completed (BE-101~110, FE-111~209, FE-301~306, BE-401~402, FE-403~404)
+- 0 errors, all features tested"
 ```
 
 ---
 
-## 2) QUY TẮC CHUNG CHO HAI SESSION
+# 🚀 SESSION-2 EXECUTION PROMPT
+**Duration: 12 hours | Priority: AFTER SESSION-1 COMPLETE**
 
-- Luôn đọc [agent_workspace.md](agent_workspace.md) trước khi làm việc.
-- Chỉ xử lý các subtask có tag phù hợp: `FE` cho Session 1, `BE` cho Session 2.
-- Làm đúng thứ tự trong từng task group, không tự nhảy task.
-- Xong mỗi subtask thì báo lại: subtask nào, file nào, đã đổi gì, còn gap nào nếu có.
-- Không tự sửa [agent_workspace.md](agent_workspace.md); Manager sẽ tick trạng thái.
-- Ưu tiên tái sử dụng component/service hiện có, không tạo UI hay abstraction thừa.
+> **🎯 Objective:** Redesign ProfilePage (full-width, sidebar, expanded tabs) + Implement complete Reels feature (upload, edit, delete, display)
 
----
+## EXECUTION ORDER (MUST FOLLOW)
 
-## 3) TASK-001 | SEARCH
+1. **GROUP-5-FE (ProfilePage Redesign)** - 5h
+   - Make ProfilePage 100% full-width
+   - Rebuild profile header (cover + avatar + info)
+   - Expand tabs from 3 → 7
+   - Create ProfileSidebar component (user info, friends list)
+   - Implement Photos tab + Reels tab
+   - Layout: 75% main content + 25% sticky sidebar
 
-**Mục tiêu:** tìm theo content bài viết và theo người dùng/bạn bè.  
-**Ưu tiên:** CAO
+2. **GROUP-6-BE (Reels Backend)** - 3.5h
+   - Create Reel entity + ReelLike entity
+   - Create EF Core migration
+   - Create DTOs: ReelResponseDto, CreateReelRequest, UpdateReelRequest
+   - Create ReelsController with 8 endpoints
+   - Implement ReelService with full CRUD + like/unlike
 
-### Frontend subtasks
+3. **GROUP-6-FE (Reels Frontend)** - 3.5h
+   - Create UploadReelModal (title, description, privacy, video upload)
+   - Create ReelsService.js with API methods
+   - Create ReelsGrid component (3-column grid)
+   - Create ReelsPlayer component (full-screen modal)
+   - Create EditReelModal + delete functionality
+   - Create ReelsPage + route integration
+   - Add Reels button to MainLayout
 
-- [ ] **SRCH-FE-01** — Search bar debounce và suggestion dropdown
-  - Search theo từ khóa, debounce rõ ràng.
-  - Hiển thị gợi ý người dùng gần đúng.
-  - Chọn gợi ý thì điều hướng vào trang kết quả.
-  - File: [frontend/Facebook_Frontend/src/components/common/SearchBar.jsx](frontend/Facebook_Frontend/src/components/common/SearchBar.jsx)
+## EXECUTION CHECKLIST
 
-- [ ] **SRCH-FE-02** — Search results page với tab Users / Posts
-  - Tách 2 tab rõ ràng.
-  - Mỗi tab có empty, loading, pagination state riêng.
-  - File: [frontend/Facebook_Frontend/src/pages/Search/SearchResultsPage.jsx](frontend/Facebook_Frontend/src/pages/Search/SearchResultsPage.jsx)
+### ✅ BEFORE STARTING SESSION-2
+- [ ] SESSION-1 100% complete + committed
+- [ ] `dotnet build` → 0 errors
+- [ ] `npm start` → running
+- [ ] ProfilePage currently exists with 3 tabs
+- [ ] Ready to redesign from scratch
 
-- [ ] **SRCH-FE-03** — Tích hợp action từ kết quả search
-  - User card có nút add friend.
-  - Post card đi tới post tương ứng.
-  - File: [frontend/Facebook_Frontend/src/pages/Search/SearchResultsPage.jsx](frontend/Facebook_Frontend/src/pages/Search/SearchResultsPage.jsx)
+### 🟢 GROUP-5 FRONTEND
 
-- [ ] **SRCH-FE-04** — Service cho search API
-  - Wrapper rõ ràng cho search users/posts.
-  - Xử lý pagination params thống nhất.
-  - File: [frontend/Facebook_Frontend/src/services/userService.js](frontend/Facebook_Frontend/src/services/userService.js), [frontend/Facebook_Frontend/src/services/postService.js](frontend/Facebook_Frontend/src/services/postService.js)
+**Task FE-501 to FE-512: ProfilePage Redesign**
 
-### Backend subtasks
+1. **FE-501: Full-Width Layout**
+   - Remove padding/max-width constraints
+   - Make ProfilePage take 100% viewport width
 
-- [ ] **SRCH-BE-01** — Search DTOs và response contract
-  - DTO cho user search result.
-  - DTO cho post search result.
-  - DTO/contract cho response phân trang.
-  - File: [backend/src/FacebookClone.Application/DTOs/Search/SearchUserDto.cs](backend/src/FacebookClone.Application/DTOs/Search/SearchUserDto.cs), [backend/src/FacebookClone.Application/DTOs/Search/SearchResultDto.cs](backend/src/FacebookClone.Application/DTOs/Search/SearchResultDto.cs)
+2. **FE-502: Rebuild Profile Header**
+   - Cover photo: 400px height, full width
+   - Avatar: overlay positioned bottom-left
+   - User name + bio + buttons (edit/message/add friend)
 
-- [ ] **SRCH-BE-02** — Search service business logic
-  - Search theo content và theo user.
-  - Không xử lý HTTP ở service.
-  - File: [backend/src/FacebookClone.Application/Services/Implementations/SearchService.cs](backend/src/FacebookClone.Application/Services/Implementations/SearchService.cs)
+3. **FE-503 to FE-506: Expand Tabs**
+   - Tab 1: "Tất cả" - mixed posts + photos + reels
+   - Tab 2: "Giới thiệu" - bio, city, birthday, joined date
+   - Tab 3: "Bạn bè" - friends list
+   - Tab 4: "Ảnh" - photos gallery (3 columns)
+   - Tab 5: "Reels" - reels grid
+   - Tab 6: "Xem thêm" - dropdown menu (disabled for now)
 
-- [ ] **SRCH-BE-03** — Search controller endpoints
-  - GET users.
-  - GET posts.
-  - Validate query/page/limit ngay đầu request.
-  - File: [backend/src/FacebookClone.API/Controllers/SearchController.cs](backend/src/FacebookClone.API/Controllers/SearchController.cs)
+4. **FE-507 to FE-509: ProfileSidebar**
+   - Create component: `src/components/profile/ProfileSidebar.jsx`
+   - Section 1: User info card (bio, location, birthday, email)
+   - Section 2: Friends grid (first 8, click to visit profile)
+   - Section 3: Action buttons
 
----
+5. **FE-510 to FE-512: Main Content Layout**
+   - Left: 75% - tabs + content
+   - Right: 25% - ProfileSidebar (sticky)
+   - Add stats bar above tabs: "120 Bài viết • 45 Bạn bè • 280 Ảnh"
 
-## 4) TASK-002 | FRIENDS
+**After GROUP-5-FE:**
+- [ ] Profile 100% full-width
+- [ ] All 6 tabs visible + working
+- [ ] Sidebar shows user info + friends
+- [ ] Sidebar sticky when scrolling
+- [ ] Responsive on mobile
+- [ ] Console: 0 errors
 
-**Mục tiêu:** gửi lời mời, accept/reject, danh sách bạn bè, remove friend.  
-**Ưu tiên:** CAO
+### 🔴 GROUP-6 BACKEND
 
-### Frontend subtasks
+**Task BE-601 to BE-610: Reels Entity + API**
 
-- [ ] **FRI-FE-01** — Add Friend button theo trạng thái
-  - Trạng thái: add, pending sent, pending received, friends.
-  - File: [frontend/Facebook_Frontend/src/components/friendship/AddFriendButton.jsx](frontend/Facebook_Frontend/src/components/friendship/AddFriendButton.jsx)
+1. **BE-601 to BE-604: Data Model**
+   - Create `Reel` entity: `Id`, `AuthorId`, `Title`, `Description`, `VideoUrl`, `ThumbnailUrl`, `Privacy`, `Duration`, `ViewsCount`, `LikesCount`, `CreatedAt`, `UpdatedAt`, `DeletedAt` (soft delete)
+   - Create `ReelLike` entity: `Id`, `ReelId`, `UserId`, `CreatedAt` (unique constraint)
+   - Add DbSet to AppDbContext
+   - Create migration: `AddReelEntities` + run it
 
-- [ ] **FRI-FE-02** — Friend list có pagination
-  - Hiển thị danh sách bạn bè.
-  - Có hành động hủy kết bạn.
-  - File: [frontend/Facebook_Frontend/src/components/friendship/FriendList.jsx](frontend/Facebook_Frontend/src/components/friendship/FriendList.jsx)
+2. **BE-605 to BE-607: DTOs**
+   - `ReelResponseDto`: all fields + `isLiked` flag
+   - `CreateReelRequest`: title, description, privacy, video file (required, .mp4/.mov, max 100MB)
+   - `UpdateReelRequest`: same but all optional
 
-- [ ] **FRI-FE-03** — Friends page cho requests và list
-  - Tab requests và tab friends.
-  - Accept / reject friend request.
-  - File: [frontend/Facebook_Frontend/src/pages/Friends/index.jsx](frontend/Facebook_Frontend/src/pages/Friends/index.jsx)
+3. **BE-608: ReelsController**
+   - 8 endpoints:
+     - `POST /api/v1/reels` - CreateReel
+     - `GET /api/v1/reels` - GetReelsFeed
+     - `GET /api/v1/users/{userId}/reels` - GetUserReels
+     - `GET /api/v1/reels/{id}` - GetReel
+     - `PUT /api/v1/reels/{id}` - UpdateReel
+     - `DELETE /api/v1/reels/{id}` - DeleteReel
+     - `POST /api/v1/reels/{id}/like` - LikeReel
+     - `DELETE /api/v1/reels/{id}/like` - UnlikeReel
 
-- [ ] **FRI-FE-04** — Friendship service functions
-  - Send, accept, reject, remove, get list, get requests.
-  - File: [frontend/Facebook_Frontend/src/services/friendshipService.js](frontend/Facebook_Frontend/src/services/friendshipService.js)
+4. **BE-609 to BE-610: ReelService**
+   - Implement full CRUD methods
+   - Video storage: `wwwroot/uploads/reels/` + `wwwroot/uploads/reels_thumbs/`
+   - Generate thumbnail from video (first frame)
+   - Apply privacy checks on all Get methods
+   - Transaction on CreateReel + UpdateReel
 
-### Backend subtasks
+**After GROUP-6-BE:**
+- [ ] `dotnet build` → 0 errors
+- [ ] Migration applied successfully
+- [ ] Test endpoints with Postman (auth token in header)
+- [ ] Upload reel → file saved, record in DB
+- [ ] Get reels → respects privacy
 
-- [ ] **FRI-BE-01** — Friendship entity và mapping
-  - Entity, enum status, unique index, no-self-request check.
-  - File: [backend/src/FacebookClone.Domain/Entities/Friendship.cs](backend/src/FacebookClone.Domain/Entities/Friendship.cs), [backend/src/FacebookClone.Infrastructure/AppDbContext.cs](backend/src/FacebookClone.Infrastructure/AppDbContext.cs)
+### 🟢 GROUP-6 FRONTEND
 
-- [ ] **FRI-BE-02** — Repository cho friend workflow
-  - Send / accept / reject / remove / list / requests.
-  - Kiểm tra duplicate và concurrency.
-  - File: [backend/src/FacebookClone.Infrastructure/Repositories/FriendshipRepository.cs](backend/src/FacebookClone.Infrastructure/Repositories/FriendshipRepository.cs)
+**Task FE-611 to FE-624: Reels Frontend**
 
-- [ ] **FRI-BE-03** — Friends controller
-  - Endpoints cho request, accept, reject, remove, list.
-  - Chuẩn response `{ success, message, data }`.
-  - File: [backend/src/FacebookClone.API/Controllers/FriendshipsController.cs](backend/src/FacebookClone.API/Controllers/FriendshipsController.cs)
+1. **FE-611 to FE-613: UploadReelModal**
+   - Create component: `src/components/reels/UploadReelModal.jsx`
+   - Form fields:
+     - Title (max 100 chars, counter)
+     - Description (max 500 chars, counter)
+     - Video upload (drag-drop, .mp4/.mov, max 100MB)
+     - Privacy selector (PUBLIC/FRIENDS/ONLY_ME)
+   - Video validation: file type + size + extract duration
+   - Upload handler with progress tracking
 
-- [ ] **FRI-BE-04** — Migration và sync schema
-  - Đảm bảo schema friendship khớp entity.
-  - File: [backend/src/FacebookClone.Infrastructure/Migrations/](backend/src/FacebookClone.Infrastructure/Migrations/)
+2. **FE-614: ReelsService.js**
+   - Methods: uploadReel, getReelsFeed, getUserReels, getReel, updateReel, deleteReel, likeReel, unlikeReel
+   - Use FormData for file upload
+   - Handle progress tracking
 
----
+3. **FE-615 to FE-617: Reels Display**
+   - Create `ReelsGrid.jsx`: 3-column grid, thumbnail + play icon
+   - Create `ReelsPlayer.jsx`: full-screen modal
+     - Video player
+     - Author info overlay (bottom)
+     - Actions: like, comment, share (right side)
+     - Prev/Next buttons (bottom)
 
-## 5) TASK-003 | POSTS
+4. **FE-618 to FE-620: Edit & Delete**
+   - Add edit button (owner only) → EditReelModal
+   - Add delete button (owner only) → confirmation + delete
 
-**Mục tiêu:** edit post giống Facebook, comment/reply, share post.  
-**Ưu tiên:** CAO
+5. **FE-621 to FE-624: Integration**
+   - Create `ReelsPage.jsx`: header + ReelsGrid + infinite scroll
+   - Add route: `/reels`
+   - Add Reels link to MainLayout sidebar
+   - Add "Đăng Reel" button (floating or top bar)
 
-### Frontend subtasks
+**After GROUP-6-FE:**
+- [ ] Click "Đăng Reel" → UploadReelModal opens
+- [ ] Upload video + metadata → saves successfully
+- [ ] Navigate to /reels → shows all reels grid
+- [ ] Click reel thumbnail → ReelsPlayer opens
+- [ ] Like/unlike reel works
+- [ ] Edit reel (if owner) works
+- [ ] Delete reel (if owner) works
+- [ ] Infinite scroll loads more reels
+- [ ] Console: 0 errors
 
-- [ ] **POST-FE-01** — Edit post modal và validation
-  - Edit content, media, validation lỗi.
-  - File: [frontend/Facebook_Frontend/src/components/post/PostItem.jsx](frontend/Facebook_Frontend/src/components/post/PostItem.jsx)
+### ✅ SESSION-2 FINAL VERIFICATION
 
-- [ ] **POST-FE-02** — Delete post confirmation
-  - Confirm dialog rõ ràng, loading state, refresh feed sau xóa.
-  - File: [frontend/Facebook_Frontend/src/components/post/PostItem.jsx](frontend/Facebook_Frontend/src/components/post/PostItem.jsx)
+- [ ] `dotnet build` → 0 errors, 0 warnings
+- [ ] `npm start` → running, 0 console errors
+- [ ] Profile page 100% full-width ✓
+- [ ] Profile header looks good (cover + avatar + info) ✓
+- [ ] 6 profile tabs working ✓
+- [ ] ProfileSidebar displays user info + friends ✓
+- [ ] Profile stats display: posts/friends/photos ✓
+- [ ] Upload reel → saves video + metadata ✓
+- [ ] /reels page → shows all reels grid ✓
+- [ ] Click reel → ReelsPlayer opens ✓
+- [ ] Like/unlike reel works ✓
+- [ ] Edit reel (owner) works ✓
+- [ ] Delete reel (owner) works ✓
+- [ ] Reels from other users display correctly (privacy respected) ✓
 
-- [ ] **POST-FE-03** — Comment reply UI
-  - Reply nested theo comment cha.
-  - Hiển thị thread dễ đọc.
-  - File: [frontend/Facebook_Frontend/src/components/post/](frontend/Facebook_Frontend/src/components/post/)
+### 🎯 GIT COMMIT
+```bash
+git add -A
+git commit -m "feat: Session-2 complete - ProfilePage redesign + Reels feature
 
-- [ ] **POST-FE-04** — Share post UI
-  - Hành vi share rõ ràng, giữ nguyên source post.
-  - File: [frontend/Facebook_Frontend/src/components/post/](frontend/Facebook_Frontend/src/components/post/)
-
-- [ ] **POST-FE-05** — Post service contract
-  - Update/delete/share/comment/reply wrapper.
-  - File: [frontend/Facebook_Frontend/src/services/postService.js](frontend/Facebook_Frontend/src/services/postService.js)
-
-### Backend subtasks
-
-- [ ] **POST-BE-01** — Update post DTO và validation
-  - DTO cho update post.
-  - Validation content/media.
-  - File: [backend/src/FacebookClone.Application/DTOs/](backend/src/FacebookClone.Application/DTOs/)
-
-- [ ] **POST-BE-02** — Update/delete post flow
-  - Authorization theo chủ post.
-  - Transaction và audit log.
-  - File: [backend/src/FacebookClone.API/Controllers/PostsController.cs](backend/src/FacebookClone.API/Controllers/PostsController.cs), [backend/src/FacebookClone.Application/Services/Implementations/](backend/src/FacebookClone.Application/Services/Implementations/)
-
-- [ ] **POST-BE-03** — Comment và reply flow
-  - Comment cha/con, validate reply chain.
-  - File: [backend/src/FacebookClone.API/Controllers/PostsController.cs](backend/src/FacebookClone.API/Controllers/PostsController.cs), [backend/src/FacebookClone.Domain/Entities/Comment.cs](backend/src/FacebookClone.Domain/Entities/Comment.cs)
-
-- [ ] **POST-BE-04** — Share post flow
-  - Share post theo model hiện tại.
-  - File: [backend/src/FacebookClone.API/Controllers/PostsController.cs](backend/src/FacebookClone.API/Controllers/PostsController.cs), [backend/src/FacebookClone.Domain/Entities/Post.cs](backend/src/FacebookClone.Domain/Entities/Post.cs)
-
-- [ ] **POST-BE-05** — Migration / snapshot sync nếu cần
-  - Chỉ làm khi entity thay đổi.
-  - File: [backend/src/FacebookClone.Infrastructure/Migrations/](backend/src/FacebookClone.Infrastructure/Migrations/)
-
----
-
-## 6) TASK-004 | NOTIFICATIONS
-
-**Mục tiêu:** thông báo realtime, mark as read, click đi đúng target.  
-**Ưu tiên:** CAO
-
-### Frontend subtasks
-
-- [ ] **NOTIF-FE-01** — Notification bell + badge
-  - Badge unread count.
-  - Toggle panel khi click.
-  - File: [frontend/Facebook_Frontend/src/components/Notifications/NotificationBell.jsx](frontend/Facebook_Frontend/src/components/Notifications/NotificationBell.jsx)
-
-- [ ] **NOTIF-FE-02** — Notification panel
-  - List, empty state, load more, mark as read.
-  - File: [frontend/Facebook_Frontend/src/components/Notifications/NotificationPanel.jsx](frontend/Facebook_Frontend/src/components/Notifications/NotificationPanel.jsx)
-
-- [ ] **NOTIF-FE-03** — Notification service
-  - REST calls + SignalR listeners.
-  - File: [frontend/Facebook_Frontend/src/services/notificationService.js](frontend/Facebook_Frontend/src/services/notificationService.js)
-
-- [ ] **NOTIF-FE-04** — Route handling theo loại notification
-  - Friend request → profile/friends.
-  - Post action → focus đúng post.
-  - Message → mở chat/conversation.
-  - File: [frontend/Facebook_Frontend/src/components/Notifications/NotificationPanel.jsx](frontend/Facebook_Frontend/src/components/Notifications/NotificationPanel.jsx)
-
-### Backend subtasks
-
-- [ ] **NOTIF-BE-01** — Notification entity / enum / mapping
-  - Thêm field cần thiết cho read state và target.
-  - File: [backend/src/FacebookClone.Domain/Entities/Notification.cs](backend/src/FacebookClone.Domain/Entities/Notification.cs), [backend/src/FacebookClone.Domain/Enums/NotificationType.cs](backend/src/FacebookClone.Domain/Enums/NotificationType.cs)
-
-- [ ] **NOTIF-BE-02** — Notification repository + service
-  - Create, list, unread count, mark read, mark all read.
-  - File: [backend/src/FacebookClone.Infrastructure/Repositories/NotificationRepository.cs](backend/src/FacebookClone.Infrastructure/Repositories/NotificationRepository.cs), [backend/src/FacebookClone.Application/Services/Implementations/NotificationService.cs](backend/src/FacebookClone.Application/Services/Implementations/NotificationService.cs)
-
-- [ ] **NOTIF-BE-03** — Notification hub realtime broadcast
-  - Push new notification, badge update.
-  - File: [backend/src/FacebookClone.API/Hubs/NotificationHub.cs](backend/src/FacebookClone.API/Hubs/NotificationHub.cs), [backend/src/FacebookClone.API/Services/NotificationHubService.cs](backend/src/FacebookClone.API/Services/NotificationHubService.cs)
-
-- [ ] **NOTIF-BE-04** — Notifications controller
-  - List, unread count, read, read all.
-  - File: [backend/src/FacebookClone.API/Controllers/NotificationsController.cs](backend/src/FacebookClone.API/Controllers/NotificationsController.cs)
-
-- [ ] **NOTIF-BE-05** — Emit notifications from post/friend actions
-  - Like/comment/friend accept triggers.
-  - File: [backend/src/FacebookClone.API/Controllers/PostsController.cs](backend/src/FacebookClone.API/Controllers/PostsController.cs), [backend/src/FacebookClone.API/Controllers/FriendshipsController.cs](backend/src/FacebookClone.API/Controllers/FriendshipsController.cs)
-
-- [ ] **NOTIF-BE-06** — Migration and schema sync
-  - Chỉ chạy khi model thay đổi.
-  - File: [backend/src/FacebookClone.Infrastructure/Migrations/](backend/src/FacebookClone.Infrastructure/Migrations/)
-
----
-
-## 7) PROMPT SESSION 1 - FRONTEND
-
-```text
-Bạn là Session 1 - Frontend Execution Agent.
-
-Nhiệm vụ:
-- Đọc [agent_workspace.md](agent_workspace.md)
-- Xử lý toàn bộ subtask có tag FE theo đúng thứ tự trong từng task group
-- Chỉ sửa file frontend, không đụng backend
-- Dùng shared component hiện có nếu đã có sẵn
-- Không tự sửa [agent_workspace.md](agent_workspace.md)
-
-Quy trình:
-1. Xác nhận task group đang làm.
-2. Chạy từng subtask FE một cách tuần tự.
-3. Sau mỗi subtask, báo rõ:
-   - subtask nào đã xong
-   - file nào đã sửa/tạo
-   - logic gì đã thay đổi
-   - còn gap gì nếu chưa thể hoàn thiện
-4. Khi xong một task group, tóm tắt kết quả và chờ nhóm tiếp theo nếu cần.
-
-Phạm vi ưu tiên:
-- Search
-- Friends
-- Posts
-- Notifications
-
-Yêu cầu chất lượng:
-- Loading / empty / error state phải rõ.
-- Không hardcode string trạng thái nếu có enum/constant phù hợp.
-- Không thêm UI dư thừa.
+- Redesign ProfilePage: 100% full-width, sidebar, 6 expanded tabs
+- Create ProfileSidebar: user info, friends grid, action buttons
+- Implement Photos tab + Reels tab with grid display
+- Build Reels feature from scratch:
+  - Backend: Reel + ReelLike entities, ReelsController (8 endpoints), ReelService
+  - Frontend: UploadReelModal, ReelsGrid, ReelsPlayer, EditReelModal, ReelsPage
+- Add privacy checks on all Reels GET endpoints
+- Add infinite scroll and like/unlike functionality
+- All 36 subtasks completed (FE-501~512, BE-601~610, FE-611~624)
+- 0 errors, all features tested, responsive on mobile"
 ```
 
 ---
 
-## 8) PROMPT SESSION 2 - BACKEND
+## 📋 CRITICAL REMINDERS
 
-```text
-Bạn là Session 2 - Backend Execution Agent (.NET C#).
-
-Nhiệm vụ:
-- Đọc [agent_workspace.md](agent_workspace.md)
-- Xử lý toàn bộ subtask có tag BE theo đúng thứ tự trong từng task group
-- Chỉ sửa backend, không đụng frontend
-- Không tự sửa [agent_workspace.md](agent_workspace.md)
-
-Quy trình:
-1. Xác nhận task group đang làm.
-2. Chạy từng subtask BE tuần tự.
-3. Sau mỗi subtask, báo rõ:
-   - subtask nào đã xong
-   - file nào đã sửa/tạo
-   - business logic nào đã thay đổi
-   - migration nào cần chạy thêm nếu có
-4. Ưu tiên đảm bảo contract API ổn định trước khi chuyển task khác.
-
-Ràng buộc kỹ thuật:
-- Validate input sớm.
-- Dùng transaction cho flow nhiều bước.
-- Không log sensitive data.
-- Response format phải theo chuẩn `{ success, message, data }`.
-- Nếu liên quan notification/realtime thì phải giữ correlationId và audit log khi cần.
-
-Phạm vi ưu tiên:
-- Search
-- Friends
-- Posts
-- Notifications
-```
+**During Execution:**
+1. ✅ ONLY code what's listed (no extra features, no scope creep)
+2. ✅ Each subtask = one focused change
+3. ✅ Test after each group completes (not at the end)
+4. ✅ Commit after SESSION-1, then commit after SESSION-2
+5. ✅ No hardcoded values — always use enums/constants
+6. ✅ Add proper error handling + user feedback
+7. ✅ Follow existing code style/patterns (BE: .NET conventions, FE: React hooks + TailwindCSS)
+8. ✅ Check console/build output after each group
+9. ✅ If stuck: read AGENTS.md for GitNexus impact analysis
+10. ✅ No debug logs in final commit (console.log, print removed)
 
 ---
 
-## 9) CHECKLIST TRƯỚC KHI BẮT ĐẦU
+## 🎉 SUCCESS CONDITION
 
-- [ ] Task breakdown đã đủ rõ để giao cho 2 session.
-- [ ] Session 1 chỉ làm FE.
-- [ ] Session 2 chỉ làm BE.
-- [ ] Thứ tự ưu tiên đã hợp lý: Search → Friends → Posts → Notifications.
-- [ ] Không còn nội dung task cũ gây nhiễu trong plan.
+**Session-1 + Session-2 ALL DONE when:**
+- ✅ 58 subtasks completed (22 in Session-1, 36 in Session-2)
+- ✅ 0 compilation errors, 0 warnings
+- ✅ 0 console errors in browser dev tools
+- ✅ All features manually tested end-to-end
+- ✅ 2 clean commits: Session-1 + Session-2
+- ✅ Code ready for team code review
+
+
+
+
+
 

@@ -30,13 +30,38 @@ public class ReelRepository : IReelRepository
     {
         return await _context.Reels
             .Include(r => r.User)
-            .Include(r => r.Likes) // Lấy kèm lượt like để đếm
-            .Where(r => !r.IsDeleted)
-            .OrderByDescending(r => r.CreatedAt) // Mới nhất lên đầu
+            .Include(r => r.Likes)
+            .Where(r => !r.IsDeleted && r.Privacy == FacebookClone.Domain.Enums.PostPrivacy.Public)
+            .OrderByDescending(r => r.CreatedAt)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .AsNoTracking()
             .ToListAsync();
+    }
+
+    public async Task UpdateAsync(Reel reel)
+    {
+        _context.Reels.Update(reel);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<(IEnumerable<Reel> Items, int Total)> GetUserReelsAsync(
+        Guid userId, int pageNumber, int pageSize)
+    {
+        var baseQuery = _context.Reels
+            .Include(r => r.User)
+            .Include(r => r.Likes)
+            .Where(r => !r.IsDeleted && r.UserId == userId);
+
+        var total = await baseQuery.CountAsync();
+        var items = await baseQuery
+            .OrderByDescending(r => r.CreatedAt)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return (items, total);
     }
 
     public async Task<ReelLike?> GetLikeAsync(Guid reelId, Guid userId)

@@ -1,0 +1,107 @@
+.profile-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: sticky;
+  top: 80px;
+}
+
+.psb-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.psb-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.psb-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1c1e21;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.psb-card-header .psb-card-title {
+  margin-bottom: 0;
+}
+
+.psb-friends-count {
+  font-size: 13px;
+  color: var(--color-primary, #1877f2);
+  font-weight: 500;
+}
+
+.psb-bio {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.psb-info-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.psb-info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.psb-info-item svg {
+  color: #888;
+  flex-shrink: 0;
+}
+
+.psb-friends-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.psb-friend-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.15s;
+}
+
+.psb-friend-item:hover {
+  opacity: 0.8;
+}
+
+.psb-friend-avatar {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 8px;
+}
+
+.psb-friend-name {
+  font-size: 11px;
+  color: #333;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 52px;
+}

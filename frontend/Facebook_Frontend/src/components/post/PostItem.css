@@ -46,6 +46,12 @@
   gap: 4px;
 }
 
+.post-privacy-icon {
+  display: inline-block;
+  vertical-align: middle;
+  color: #65676b;
+}
+
 /* Nút 3 chấm góc phải */
 .post-header-more-btn {
   width: 36px;

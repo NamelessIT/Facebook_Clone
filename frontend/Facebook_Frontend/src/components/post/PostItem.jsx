@@ -1,11 +1,12 @@
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ThumbsUp, MessageSquare, Share2, MoreHorizontal, Edit3, Trash2, X } from "lucide-react";
+import { ThumbsUp, MessageSquare, Share2, MoreHorizontal, Edit3, Trash2, X, Globe, Users, Lock } from "lucide-react";
 import Avatar from "../common/Avatar";
 import MediaViewerModal from "./MediaViewerModal";
 import CommentSection from "./CommentSection";
 import SharePostModal from "./SharePostModal";
+import EditPostModal from "./EditPostModal";
 import { getImageUrl } from "../../utils/formatUrl";
 import postService from "../../services/postService";
 import toast from "react-hot-toast";
@@ -21,6 +22,12 @@ const REACTIONS = [
   { id: 6, icon: '😡', name: 'Phẫn nộ', colorClass: 'reacted-angry' },
 ];
 
+const PRIVACY_MAP = {
+  1: { icon: Globe, label: "Công khai" },
+  2: { icon: Users, label: "Bạn bè" },
+  3: { icon: Lock, label: "Chỉ mình tôi" },
+};
+
 const PostItem = ({ post, onPostUpdated }) => {
   const { user } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -35,9 +42,6 @@ const PostItem = ({ post, onPostUpdated }) => {
 
   // --- STATE EDIT POST MODAL ---
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editContent, setEditContent] = useState("");
-  const [editError, setEditError] = useState("");
-  const [editLoading, setEditLoading] = useState(false);
 
   // --- STATE DELETE POST MODAL ---
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -63,28 +67,8 @@ const PostItem = ({ post, onPostUpdated }) => {
 
   // --- HANDLERS EDIT POST ---
   const handleOpenEdit = () => {
-    setEditContent(post.content || "");
-    setEditError("");
     setShowEditModal(true);
     setShowMenu(false);
-  };
-
-  const handleSaveEdit = async () => {
-    if (!editContent.trim()) {
-      setEditError("Nội dung không được để trống");
-      return;
-    }
-    setEditLoading(true);
-    try {
-      await postService.updatePost(post.id, { content: editContent });
-      toast.success("Cập nhật bài viết thành công!");
-      setShowEditModal(false);
-      onPostUpdated?.();
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Cập nhật thất bại!");
-    } finally {
-      setEditLoading(false);
-    }
   };
 
   // --- HANDLERS DELETE POST ---
@@ -212,7 +196,14 @@ const PostItem = ({ post, onPostUpdated }) => {
             <Link to={`/profile/${post.author?.id}`} className="author-name-link">
               <h4 className="author-name">{post.author?.fullName}</h4>
             </Link>
-            <span className="post-time hover:underline cursor-pointer">{new Date(post.createdAt).toLocaleString('vi-VN')} • 🌎</span>
+            <span className="post-time hover:underline cursor-pointer">
+              {new Date(post.createdAt).toLocaleString('vi-VN')} • 
+              {(() => {
+                const p = PRIVACY_MAP[post.privacy] || PRIVACY_MAP[1];
+                const Icon = p.icon;
+                return <Icon size={12} className="post-privacy-icon" title={p.label} />;
+              })()}
+            </span>
           </div>
         </div>
         <button className="post-header-more-btn" onClick={() => setShowMenu(!showMenu)}><MoreHorizontal size={20} /></button>

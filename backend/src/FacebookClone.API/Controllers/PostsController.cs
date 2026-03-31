@@ -80,7 +80,9 @@ public class PostsController : ControllerBase
     // 3. SUA BAI VIET
     [HttpPut("{id}")]
     [ServiceFilter(typeof(PostOwnerFilter))]
-    public async Task<IActionResult> UpdatePost(Guid id, [FromBody] UpdatePostRequest request)
+    [DisableRequestSizeLimit]
+    [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
+    public async Task<IActionResult> UpdatePost(Guid id, [FromForm] UpdatePostRequest request)
     {
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!Guid.TryParse(userIdString, out Guid userId))

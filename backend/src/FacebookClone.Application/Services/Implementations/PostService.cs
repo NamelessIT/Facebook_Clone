@@ -88,7 +88,13 @@ public class PostService : IPostService
 
     public async Task<IEnumerable<PostResponseDto>> GetNewsFeedAsync(Guid currentUserId, int pageNumber = 1, int pageSize = 10)
     {
-        var posts = await _postRepository.GetNewsFeedAsync(pageNumber, pageSize);
+        var friendships = await _friendshipRepository.GetFriendsListAsync(currentUserId);
+        var friendIds = friendships
+            .Where(f => f.Status == FriendshipStatus.Accepted)
+            .Select(f => f.RequesterId == currentUserId ? f.ReceiverId : f.RequesterId)
+            .Distinct();
+
+        var posts = await _postRepository.GetNewsFeedAsync(currentUserId, friendIds, pageNumber, pageSize);
         var postDtos = _mapper.Map<IEnumerable<PostResponseDto>>(posts).ToList();
 
         foreach (var dto in postDtos)
@@ -127,13 +133,57 @@ public class PostService : IPostService
         if (post.UserId != userId) 
             throw new UnauthorizedAccessException("Bạn không có quyền sửa bài viết của người khác!");
 
-        // Cập nhật thông tin
         post.Content = request.Content;
         post.Privacy = request.Privacy;
         post.UpdatedAt = DateTime.UtcNow;
 
+        // Xóa media theo danh sách ID
+        if (request.MediasToRemove != null && request.MediasToRemove.Any())
+        {
+            var mediasToDelete = post.Medias
+                .Where(m => request.MediasToRemove.Contains(m.Id))
+                .ToList();
+            foreach (var media in mediasToDelete)
+            {
+                post.Medias.Remove(media);
+            }
+        }
+
+        // Upload ảnh mới
+        if (request.NewImages != null && request.NewImages.Any())
+        {
+            foreach (var img in request.NewImages)
+            {
+                var imgUrl = await _fileService.UploadImageAsync(img, "posts");
+                post.Medias.Add(new MediaAttachment
+                {
+                    Id = Guid.NewGuid(),
+                    Url = imgUrl,
+                    MediaType = MediaType.Image,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+        }
+
+        // Upload video mới
+        if (request.NewVideos != null && request.NewVideos.Any())
+        {
+            foreach (var vid in request.NewVideos)
+            {
+                var vidUrl = await _fileService.UploadVideoAsync(vid, "posts");
+                post.Medias.Add(new MediaAttachment
+                {
+                    Id = Guid.NewGuid(),
+                    Url = vidUrl,
+                    MediaType = MediaType.Video,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+        }
+
         await _postRepository.UpdateAsync(post);
-        return _mapper.Map<PostResponseDto>(post);
+        var updatedPost = await _postRepository.GetByIdAsync(postId);
+        return _mapper.Map<PostResponseDto>(updatedPost);
     }
 
     public async Task<bool> DeletePostAsync(Guid postId, Guid userId)
