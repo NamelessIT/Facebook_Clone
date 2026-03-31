@@ -19,14 +19,13 @@ public class SearchController : ControllerBase
     // GET /api/v1/search/users?q=&pageNumber=1&pageSize=10
     [HttpGet("users")]
     public async Task<IActionResult> SearchUsers(
-        [FromQuery] string q,
+        [FromQuery] string q = "",
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        if (string.IsNullOrWhiteSpace(q))
-            return BadRequest(new { success = false, message = "Vui lòng nhập từ khóa tìm kiếm." });
-
         pageSize = Math.Clamp(pageSize, 1, 50);
+        q = q ?? "";
+        
         var (items, total) = await _searchService.SearchUsersAsync(q, pageNumber, pageSize);
         var totalPages = (int)Math.Ceiling(total / (double)pageSize);
 

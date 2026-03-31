@@ -351,30 +351,11 @@ const PostItem = ({ post, onPostUpdated }) => {
 
       {/* MODAL CHỈNH SỬA BÀI VIẾT */}
       {showEditModal && (
-        <div className="post-modal-overlay" onMouseDown={() => setShowEditModal(false)}>
-          <div className="post-modal" onMouseDown={(e) => e.stopPropagation()}>
-            <div className="post-modal-header">
-              <h3>Chỉnh sửa bài viết</h3>
-              <button className="post-modal-close" onClick={() => setShowEditModal(false)}><X size={20} /></button>
-            </div>
-            <div className="post-modal-body">
-              <textarea
-                className="post-modal-textarea"
-                value={editContent}
-                onChange={(e) => { setEditContent(e.target.value); setEditError(""); }}
-                placeholder="Bạn đang nghĩ gì?"
-                rows={5}
-              />
-              {editError && <p className="post-modal-error">{editError}</p>}
-            </div>
-            <div className="post-modal-footer">
-              <button className="post-modal-btn post-modal-btn-cancel" onClick={() => setShowEditModal(false)}>Hủy</button>
-              <button className="post-modal-btn post-modal-btn-save" onClick={handleSaveEdit} disabled={editLoading}>
-                {editLoading ? "Đang lưu..." : "Lưu"}
-              </button>
-            </div>
-          </div>
-        </div>
+        <EditPostModal
+          post={post}
+          onClose={() => setShowEditModal(false)}
+          onPostUpdated={onPostUpdated}
+        />
       )}
 
       {/* MODAL XÁC NHẬN XÓA BÀI VIẾT */}

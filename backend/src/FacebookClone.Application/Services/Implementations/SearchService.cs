@@ -21,9 +21,8 @@ public class SearchService : ISearchService
 
     public async Task<(IEnumerable<SearchUserDto> Items, int Total)> SearchUsersAsync(string query, int pageNumber, int pageSize)
     {
-        if (string.IsNullOrWhiteSpace(query))
-            return (Enumerable.Empty<SearchUserDto>(), 0);
-
+        query = query ?? "";
+        
         var (users, total) = await _userRepository.SearchAsync(query, pageNumber, pageSize);
         var dtos = users.Select(u => new SearchUserDto
         {
