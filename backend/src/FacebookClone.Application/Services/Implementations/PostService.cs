@@ -133,8 +133,12 @@ public class PostService : IPostService
         if (post.UserId != userId) 
             throw new UnauthorizedAccessException("Bạn không có quyền sửa bài viết của người khác!");
 
-        post.Content = request.Content;
-        post.Privacy = request.Privacy;
+        if (!string.IsNullOrEmpty(request.Content))
+            post.Content = request.Content;
+
+        if (request.Privacy.HasValue)
+            post.Privacy = request.Privacy.Value;
+
         post.UpdatedAt = DateTime.UtcNow;
 
         // Xóa media theo danh sách ID

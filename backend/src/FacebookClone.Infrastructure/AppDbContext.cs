@@ -24,6 +24,7 @@ public class AppDbContext : DbContext
     public DbSet<Group> Groups { get; set; }
     public DbSet<GroupMember> GroupMembers { get; set; }
     public DbSet<MediaAttachment> MediaAttachments { get; set; }
+    public DbSet<PostInteraction> PostInteractions { get; set; }
     // (sau này seed thêm thì thêm tiếp)
     // public DbSet<Friendship> Friendships => Set<Friendship>();
     // public DbSet<Reaction> Reactions => Set<Reaction>();
@@ -32,6 +33,16 @@ public class AppDbContext : DbContext
     {
         modelBuilder.Entity<ReelLike>().HasKey(rl => new { rl.ReelId, rl.UserId });
         modelBuilder.Entity<GroupMember>().HasKey(gm => new { gm.GroupId, gm.UserId });
+
+        modelBuilder.Entity<PostInteraction>()
+            .HasKey(pi => new { pi.PostId, pi.UserId, pi.InteractionType });
+
+        modelBuilder.Entity<PostInteraction>()
+            .HasOne(pi => pi.Post)
+            .WithMany()
+            .HasForeignKey(pi => pi.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 }

@@ -115,6 +115,8 @@ try
     builder.Services.AddScoped<IGroupRepository, GroupRepository>();
     builder.Services.AddScoped<IGroupService, GroupService>();
     builder.Services.AddScoped<ISearchService, SearchService>();
+    builder.Services.AddScoped<IPostInteractionRepository, PostInteractionRepository>();
+    builder.Services.AddScoped<IPostInteractionService, PostInteractionService>();
 
     // ---------------------------------------------------------
     // 5. SWAGGER (Swashbuckle) & CORS
