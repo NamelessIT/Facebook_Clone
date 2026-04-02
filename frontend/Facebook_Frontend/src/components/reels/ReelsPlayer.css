@@ -255,3 +255,58 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* ---- SLIDE ANIMATION ---- */
+@keyframes slideInUp {
+  from { transform: translateY(50px); opacity: 0.6; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes slideInDown {
+  from { transform: translateY(-50px); opacity: 0.6; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+.rp-slide-up   { animation: slideInUp   0.28s ease-out; }
+.rp-slide-down { animation: slideInDown 0.28s ease-out; }
+
+/* ---- OWNER 3-DOT MENU ---- */
+.rp-owner-wrap {
+  position: relative;
+}
+
+.rp-owner-menu {
+  position: absolute;
+  right: 0;
+  bottom: 44px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  padding: 4px 0;
+  min-width: 148px;
+  z-index: 10;
+}
+
+.rp-owner-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #050505;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.rp-owner-menu button:hover {
+  background: #f0f2f5;
+}
+
+.rp-owner-menu button:last-child {
+  color: #ef4444;
+}

@@ -38,6 +38,7 @@ public class UserService : IUserService
         if (request.Bio != null) user.Bio = request.Bio;
         if (request.Location != null) user.Location = request.Location;
         if (request.AvatarUrl != null) user.AvatarUrl = request.AvatarUrl;
+        if (request.CoverUrl != null) user.CoverUrl = request.CoverUrl;
 
         await _userRepository.UpdateAsync(user);
 

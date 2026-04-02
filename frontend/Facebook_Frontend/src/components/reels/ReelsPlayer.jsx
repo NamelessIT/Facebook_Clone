@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  X, ChevronLeft, ChevronRight, Heart, Trash2, Edit2, Volume2, VolumeX
+  X, ChevronLeft, ChevronRight, Heart, Trash2, Edit2, Volume2, VolumeX, MoreVertical
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -22,6 +22,9 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [slideDirection, setSlideDirection] = useState(null);
+  const [showOwnerMenu, setShowOwnerMenu] = useState(false);
+  const lastWheelTime = useRef(0);
 
   const reel = reels[currentIndex];
   const isOwner = currentUser?.id === reel?.userId;
@@ -40,23 +43,40 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
     }
   }, [currentIndex]);
 
-  // Close on Escape, navigate with arrow keys
+  // Close on Escape, navigate with arrow / wheel
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') goNext();
-      if (e.key === 'ArrowLeft') goPrev();
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goNext();
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPrev();
+    };
+    const handleWheel = (e) => {
+      const now = Date.now();
+      if (now - lastWheelTime.current < 600) return;
+      lastWheelTime.current = now;
+      if (e.deltaY > 0) goNext();
+      else              goPrev();
     };
     window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    window.addEventListener('wheel', handleWheel, { passive: true });
+    return () => {
+      window.removeEventListener('keydown', handleKey);
+      window.removeEventListener('wheel', handleWheel);
+    };
   });
 
   const goPrev = () => {
-    if (currentIndex > 0) setCurrentIndex((i) => i - 1);
+    if (currentIndex > 0) {
+      setSlideDirection('down');
+      setCurrentIndex((i) => i - 1);
+    }
   };
 
   const goNext = () => {
-    if (currentIndex < reels.length - 1) setCurrentIndex((i) => i + 1);
+    if (currentIndex < reels.length - 1) {
+      setSlideDirection('up');
+      setCurrentIndex((i) => i + 1);
+    }
   };
 
   const handleToggleLike = async () => {
@@ -117,7 +137,11 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
       )}
 
       {/* Player */}
-      <div className="rp-player" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`rp-player${slideDirection ? ` rp-slide-${slideDirection}` : ''}`}
+        onClick={(e) => e.stopPropagation()}
+        onAnimationEnd={() => setSlideDirection(null)}
+      >
         <video
           ref={videoRef}
           className="rp-video"
@@ -163,22 +187,25 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
           </button>
 
           {isOwner && (
-            <>
+            <div className="rp-owner-wrap">
               <button
                 className="rp-action-btn"
-                onClick={() => setShowEditModal(true)}
-                aria-label="Chỉnh sửa"
+                onClick={() => setShowOwnerMenu((v) => !v)}
+                aria-label="Tuỳ chọn"
               >
-                <Edit2 size={22} />
+                <MoreVertical size={22} />
               </button>
-              <button
-                className="rp-action-btn rp-action-btn--danger"
-                onClick={() => setShowDeleteConfirm(true)}
-                aria-label="Xoá"
-              >
-                <Trash2 size={22} />
-              </button>
-            </>
+              {showOwnerMenu && (
+                <div className="rp-owner-menu">
+                  <button onClick={() => { setShowOwnerMenu(false); setShowEditModal(true); }}>
+                    <Edit2 size={15} /> Chỉnh sửa
+                  </button>
+                  <button onClick={() => { setShowOwnerMenu(false); setShowDeleteConfirm(true); }}>
+                    <Trash2 size={15} /> Xoá Reel
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>

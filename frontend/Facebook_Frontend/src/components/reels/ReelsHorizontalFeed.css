@@ -1,0 +1,211 @@
+/* ==========================================
+   REELS HORIZONTAL FEED
+   ========================================== */
+
+.rhf-wrapper {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  margin-bottom: 16px;
+  padding: 12px 0 12px;
+  overflow: hidden;
+}
+
+.rhf-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #050505;
+}
+
+/* ---- SCROLL ZONE ---- */
+.rhf-scroll-zone {
+  position: relative;
+}
+
+/* The scrollable track — hidden scrollbar */
+.rhf-track {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 0 12px 4px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE */
+}
+
+.rhf-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---- ARROW BUTTONS ---- */
+.rhf-arrow {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 5;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+  color: #050505;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.rhf-arrow:hover {
+  background: #f0f2f5;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
+}
+
+.rhf-arrow--left  { left: 4px; }
+.rhf-arrow--right { right: 4px; }
+
+/* ---- CARD BASE ---- */
+.rhf-card {
+  flex: 0 0 auto;
+  width: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  scroll-snap-align: start;
+  transition: transform 0.15s;
+}
+
+.rhf-card:hover {
+  transform: scale(1.03);
+}
+
+/* ---- THUMBNAIL ---- */
+.rhf-thumb {
+  position: relative;
+  width: 110px;
+  height: 160px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1877f2 0%, #42b72a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.rhf-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rhf-thumb-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.rhf-play-badge {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- CREATE CARD ---- */
+.rhf-card--create .rhf-thumb {
+  background: #f0f2f5;
+  border: 2px solid #e4e6eb;
+}
+
+.rhf-thumb--create {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rhf-create-avatar {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 50% !important;
+  border: 3px solid #fff !important;
+}
+
+.rhf-create-plus {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  translate: -50% 50%;
+  background: #1877f2;
+  color: #fff;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+}
+
+/* ---- CARD LABEL ---- */
+.rhf-card-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #050505;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+
+/* ---- SKELETON ---- */
+.rhf-skeleton-track {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  overflow: hidden;
+}
+
+.rhf-skeleton-card {
+  flex: 0 0 auto;
+  width: 110px;
+  height: 172px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #e4e6eb 25%, #f0f2f5 50%, #e4e6eb 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 600px) {
+  .rhf-card { width: 90px; }
+  .rhf-thumb { width: 90px; height: 130px; }
+  .rhf-card-label { max-width: 90px; }
+  .rhf-skeleton-card { width: 90px; height: 142px; }
+}

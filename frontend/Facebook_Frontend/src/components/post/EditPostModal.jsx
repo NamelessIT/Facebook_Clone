@@ -58,8 +58,8 @@ const EditPostModal = ({ post, onClose, onPostUpdated }) => {
     setSaving(true);
     try {
       const formData = new FormData();
-      formData.append("Content", content);
-      formData.append("Privacy", privacy);
+      formData.append("content", content);
+      formData.append("privacy", String(privacy));
 
       mediasToRemove.forEach((id) => formData.append("MediasToRemove", id));
 

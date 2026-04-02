@@ -7,8 +7,14 @@ const userService = {
   },
 
   updateProfile: async (data) => {
-    const url = '/users/me';
+    const url = '/users/profile';
     return await axiosClient.put(url, data);
+  },
+
+  updateCoverPhoto: async (coverFile) => {
+    const formData = new FormData();
+    formData.append('cover', coverFile);
+    return await axiosClient.put('/users/cover', formData);
   },
 
   getUserById: async (id) => {

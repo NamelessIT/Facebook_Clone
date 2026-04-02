@@ -5,7 +5,8 @@ import { Video, Image as ImageIcon, Smile } from "lucide-react";
 import Avatar from "../../components/common/Avatar";
 import CreatePostModal from "../../components/post/CreatePostModal"; 
 import PostItem from "../../components/post/PostItem"; 
-import "./HomePage.css"; // Đã import CSS
+import ReelsHorizontalFeed from "../../components/reels/ReelsHorizontalFeed";
+import "./HomePage.css";
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -75,6 +76,9 @@ const HomePage = () => {
         onClose={() => setIsModalOpen(false)} 
         onSuccess={fetchPosts} 
       />
+
+      {/* REELS CUỘN NGANG */}
+      <ReelsHorizontalFeed />
 
       {/* DANH SÁCH BÀI VIẾT */}
       {posts.map((post) => (

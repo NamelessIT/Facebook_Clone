@@ -11,10 +11,12 @@ namespace FacebookClone.API.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IFileService _fileService;
 
-    public UsersController(IUserService userService)
+    public UsersController(IUserService userService, IFileService fileService)
     {
         _userService = userService;
+        _fileService = fileService;
     }
 
     // Helper để lấy ID từ Token hiện tại
@@ -40,6 +42,71 @@ public class UsersController : ControllerBase
         var userId = GetCurrentUserId();
         var updatedProfile = await _userService.UpdateProfileAsync(userId, request);
         return Ok(updatedProfile);
+    }
+
+    [HttpPut("profile")]
+    [DisableRequestSizeLimit]
+    [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
+    public async Task<IActionResult> UpdateMyProfileForm([FromForm] UpdateProfileFormRequest request)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var updateDto = new UpdateProfileDto
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Bio = request.Bio,
+                Location = request.Location
+            };
+
+            if (request.Avatar != null)
+            {
+                updateDto.AvatarUrl = await _fileService.UploadImageAsync(request.Avatar, "avatars");
+            }
+
+            if (request.Cover != null)
+            {
+                updateDto.CoverUrl = await _fileService.UploadImageAsync(request.Cover, "covers");
+            }
+
+            var updatedProfile = await _userService.UpdateProfileAsync(userId, updateDto);
+            return Ok(new { success = true, message = "Cap nhat trang ca nhan thanh cong.", data = updatedProfile });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized(new { success = false, message = "Token khong hop le" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
+    }
+
+    [HttpPut("cover")]
+    [DisableRequestSizeLimit]
+    [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
+    public async Task<IActionResult> UpdateCoverPhoto([FromForm] IFormFile cover)
+    {
+        try
+        {
+            if (cover == null || cover.Length == 0)
+                return BadRequest(new { success = false, message = "Vui long chon anh bia." });
+
+            var userId = GetCurrentUserId();
+            var coverUrl = await _fileService.UploadImageAsync(cover, "covers");
+            var updatedProfile = await _userService.UpdateProfileAsync(userId, new UpdateProfileDto { CoverUrl = coverUrl });
+
+            return Ok(new { success = true, message = "Cap nhat anh bia thanh cong.", data = updatedProfile });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Unauthorized(new { success = false, message = "Token khong hop le" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
     }
 
     // API lấy thông tin người khác (Public Profile)

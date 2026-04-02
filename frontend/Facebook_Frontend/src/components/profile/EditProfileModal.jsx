@@ -9,10 +9,10 @@ import './EditProfileModal.css';
 const MAX_BIO_LENGTH = 200;
 
 const EditProfileModal = ({ user, onClose, onUpdated }) => {
-  const [firstName, setFirstName] = useState(user.firstName || '');
-  const [lastName, setLastName] = useState(user.lastName || '');
-  const [bio, setBio] = useState(user.bio || '');
-  const [location, setLocation] = useState(user.location || '');
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
+  const [bio, setBio] = useState(user?.bio || '');
+  const [location, setLocation] = useState(user?.location || '');
   const [avatarFile, setAvatarFile] = useState(null);
   const [coverFile, setCoverFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
@@ -22,6 +22,8 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
 
   const avatarInputRef = useRef(null);
   const coverInputRef = useRef(null);
+
+  if (!user) return null;
 
   const validate = () => {
     const newErrors = {};
@@ -114,7 +116,7 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
               {avatarPreview ? (
                 <img src={avatarPreview} alt="Preview" className="edit-avatar-img" />
               ) : (
-                <Avatar src={user.avatarUrl} className="edit-avatar-img" />
+                <Avatar src={user?.avatarUrl} className="edit-avatar-img" />
               )}
             </div>
           </div>
@@ -140,9 +142,9 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
             <div className="edit-profile-cover-preview">
               {coverPreview ? (
                 <img src={coverPreview} alt="Cover preview" className="edit-cover-img" />
-              ) : user.coverUrl ? (
+              ) : user?.coverUrl ? (
                 <img
-                  src={getImageUrl(user.coverUrl, 'avatars')}
+                  src={getImageUrl(user.coverUrl, 'covers')}
                   alt="Cover"
                   className="edit-cover-img"
                 />
