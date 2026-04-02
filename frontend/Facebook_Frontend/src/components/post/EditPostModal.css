@@ -11,6 +11,10 @@
   z-index: 1000;
 }
 
+[data-theme="dark"] .edit-post-overlay {
+  background: rgba(24, 25, 26, 0.9);
+}
+
 .edit-post-modal {
   background: #fff;
   border-radius: 8px;
@@ -21,6 +25,11 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+}
+
+[data-theme="dark"] .edit-post-modal {
+  background: #262626;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
 .edit-post-header {
@@ -37,6 +46,14 @@
   font-weight: 700;
   color: #050505;
   margin: 0;
+}
+
+[data-theme="dark"] .edit-post-header {
+  border-bottom-color: #3d3d3d;
+}
+
+[data-theme="dark"] .edit-post-header h3 {
+  color: #e4e6eb;
 }
 
 .edit-post-close {

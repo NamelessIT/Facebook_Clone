@@ -9,6 +9,10 @@
   justify-content: center;
 }
 
+[data-theme="dark"] .create-post-overlay {
+  background-color: rgba(24, 25, 26, 0.9);
+}
+
 /* Thân Modal */
 .create-post-modal {
   background-color: #fff;
@@ -19,6 +23,11 @@
   display: flex;
   flex-direction: column;
   max-height: 90vh;
+}
+
+[data-theme="dark"] .create-post-modal {
+  background-color: #262626;
+  box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.3), 0 2px 4px 0 rgba(0, 0, 0, 0.2);
 }
 
 /* Nút tắt Modal */
@@ -37,6 +46,15 @@
 }
 .close-btn:hover { background-color: #d8dadf; }
 
+[data-theme="dark"] .close-btn {
+  background-color: #3d3d3d;
+  color: #b0b3b9;
+}
+
+[data-theme="dark"] .close-btn:hover {
+  background-color: #4a4a4a;
+}
+
 /* Khung "Thêm vào bài viết của bạn" */
 .add-to-post-box {
   border: 1px solid #ced0d4;
@@ -52,6 +70,15 @@
   font-weight: 600;
   font-size: 15px;
   color: #050505;
+}
+
+[data-theme="dark"] .add-to-post-box {
+  border-color: #3d3d3d;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+[data-theme="dark"] .add-to-post-text {
+  color: #e4e6eb;
 }
 
 /* Nút ĐĂNG */

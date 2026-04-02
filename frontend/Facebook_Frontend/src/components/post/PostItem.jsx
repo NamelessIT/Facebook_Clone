@@ -207,17 +207,22 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
             </span>
           </div>
         </div>
-        <button className="post-header-more-btn" onClick={() => setShowMenu(!showMenu)}><MoreHorizontal size={20} /></button>
-        {/* Dropdown owner: Edit/Delete */}
-        {showMenu && isOwner && (
-          <div className="post-dropdown-menu" ref={menuRef}>
-            <button className="post-dropdown-item" onClick={handleOpenEdit}>
-              <Edit3 size={16} /> Chỉnh sửa bài viết
-            </button>
-            <button className="post-dropdown-item post-dropdown-danger" onClick={handleOpenDelete}>
-              <Trash2 size={16} /> Xóa bài viết
-            </button>
-          </div>
+        {/* Menu button: chỉ hiển thị khi là owner */}
+        {isOwner && (
+          <>
+            <button className="post-header-more-btn" onClick={() => setShowMenu(!showMenu)}><MoreHorizontal size={20} /></button>
+            {/* Dropdown owner: Edit/Delete */}
+            {showMenu && (
+              <div className="post-dropdown-menu" ref={menuRef}>
+                <button className="post-dropdown-item" onClick={handleOpenEdit}>
+                  <Edit3 size={16} /> Chỉnh sửa bài viết
+                </button>
+                <button className="post-dropdown-item post-dropdown-danger" onClick={handleOpenDelete}>
+                  <Trash2 size={16} /> Xóa bài viết
+                </button>
+              </div>
+            )}
+          </>
         )}
         {/* Dropdown non-owner: tương tác bài viết */}
         {!isOwner && (
