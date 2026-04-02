@@ -11,7 +11,7 @@
 
 /* Khối trắng nền cơ bản (Dùng chung cho Khung Tạo Bài và các thứ khác ở Home) */
 .fb-card {
-  background-color: #fff;
+  background-color: var(--bg-card, #fff);
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); 
   margin-bottom: 16px; 

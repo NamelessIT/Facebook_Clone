@@ -1,0 +1,79 @@
+.pam-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.pam-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: none;
+  border-radius: 50%;
+  color: #65676b;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pam-trigger:hover {
+  background: #f0f2f5;
+}
+
+.pam-trigger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pam-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e4e6ea;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  min-width: 210px;
+  z-index: 200;
+  padding: 6px 0;
+}
+
+.pam-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #050505;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.pam-item:hover:not(:disabled) {
+  background: #f0f2f5;
+}
+
+.pam-item:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pam-item--danger {
+  color: #d93025;
+}
+
+.pam-item--danger:hover:not(:disabled) {
+  background: #fff0f0;
+}
+
+.pam-divider {
+  margin: 6px 0;
+  border: none;
+  border-top: 1px solid #e4e6ea;
+}

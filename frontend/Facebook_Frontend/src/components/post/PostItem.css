@@ -405,3 +405,53 @@
 .post-modal-btn-delete:hover {
   background: #c9172e;
 }
+
+/* =============================================
+   Dark Mode Overrides
+   ============================================= */
+
+[data-theme="dark"] .post-text-content,
+[data-theme="dark"] .author-name,
+[data-theme="dark"] .post-time {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .post-dropdown-menu {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .post-dropdown-item {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .post-dropdown-item:hover {
+  background: var(--hover-bg);
+}
+
+[data-theme="dark"] .action-btn {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .action-btn:hover {
+  background: var(--hover-bg);
+}
+
+[data-theme="dark"] .post-stats {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .post-actions {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .post-modal {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .post-modal-header,
+[data-theme="dark"] .post-modal-footer {
+  border-color: var(--border-color);
+}

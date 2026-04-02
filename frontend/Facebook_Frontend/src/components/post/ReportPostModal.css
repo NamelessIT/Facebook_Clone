@@ -1,0 +1,139 @@
+.rpm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+}
+
+.rpm-modal {
+  background: #fff;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.rpm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e4e6ea;
+}
+
+.rpm-header h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #050505;
+}
+
+.rpm-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: #f0f2f5;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #65676b;
+  transition: background 0.15s;
+}
+
+.rpm-close:hover {
+  background: #e4e6ea;
+}
+
+.rpm-body {
+  padding: 16px 20px;
+}
+
+.rpm-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #65676b;
+  margin: 0 0 12px;
+}
+
+.rpm-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rpm-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #050505;
+  border: 1.5px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.rpm-option:hover {
+  background: #f0f2f5;
+}
+
+.rpm-option--selected {
+  background: #e7f3ff;
+  border-color: #1877f2;
+  color: #1877f2;
+}
+
+.rpm-option input[type="radio"] {
+  accent-color: #1877f2;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.rpm-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 20px;
+  border-top: 1px solid #e4e6ea;
+}
+
+.rpm-btn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.rpm-btn--cancel {
+  background: #f0f2f5;
+  color: #050505;
+}
+
+.rpm-btn--cancel:hover:not(:disabled) {
+  background: #e4e6ea;
+}
+
+.rpm-btn--submit {
+  background: #1877f2;
+  color: #fff;
+}
+
+.rpm-btn--submit:hover:not(:disabled) {
+  background: #166fe5;
+}
+
+.rpm-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

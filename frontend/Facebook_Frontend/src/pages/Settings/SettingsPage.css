@@ -241,3 +241,34 @@
     white-space: nowrap;
   }
 }
+
+/* =============================================
+   Dark Mode Overrides
+   ============================================= */
+
+[data-theme="dark"] .settings-page {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .settings-sidebar {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .settings-sidebar-title,
+[data-theme="dark"] .settings-nav-item {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .settings-nav-item:hover {
+  background: var(--hover-bg);
+}
+
+[data-theme="dark"] .settings-nav-item--active {
+  background: #1a2d44;
+  color: #1877f2;
+}
+
+[data-theme="dark"] .settings-content {
+  background: var(--bg-secondary);
+}

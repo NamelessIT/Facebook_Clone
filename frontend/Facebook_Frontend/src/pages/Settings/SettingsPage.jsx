@@ -1,20 +1,23 @@
 import { useState } from "react";
-import { User, Shield, Sliders } from "lucide-react";
+import { User, Shield, Sliders, Moon } from "lucide-react";
 import ProfileSettings from "./ProfileSettings";
 import PrivacySettings from "./PrivacySettings";
 import PreferencesSettings from "./PreferencesSettings";
+import DarkModeSettings from "./DarkModeSettings";
 import "./SettingsPage.css";
 
 const TABS = {
   PROFILE: "profile",
   PRIVACY: "privacy",
   PREFERENCES: "preferences",
+  DISPLAY: "display",
 };
 
 const TAB_CONFIG = [
   { key: TABS.PROFILE, label: "Hồ sơ", icon: User },
   { key: TABS.PRIVACY, label: "Quyền riêng tư", icon: Shield },
   { key: TABS.PREFERENCES, label: "Tùy chọn", icon: Sliders },
+  { key: TABS.DISPLAY, label: "Giao diện", icon: Moon },
 ];
 
 const SettingsPage = () => {
@@ -42,6 +45,7 @@ const SettingsPage = () => {
         {activeTab === TABS.PROFILE && <ProfileSettings />}
         {activeTab === TABS.PRIVACY && <PrivacySettings />}
         {activeTab === TABS.PREFERENCES && <PreferencesSettings />}
+        {activeTab === TABS.DISPLAY && <DarkModeSettings />}
       </div>
     </div>
   );

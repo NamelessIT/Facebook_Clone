@@ -7,6 +7,7 @@ import MediaViewerModal from "./MediaViewerModal";
 import CommentSection from "./CommentSection";
 import SharePostModal from "./SharePostModal";
 import EditPostModal from "./EditPostModal";
+import PostActionMenu from "./PostActionMenu";
 import { getImageUrl } from "../../utils/formatUrl";
 import postService from "../../services/postService";
 import toast from "react-hot-toast";
@@ -28,7 +29,7 @@ const PRIVACY_MAP = {
   3: { icon: Lock, label: "Chỉ mình tôi" },
 };
 
-const PostItem = ({ post, onPostUpdated }) => {
+const PostItem = ({ post, onPostUpdated, onPostHide }) => {
   const { user } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
   const [viewerData, setViewerData] = useState({ isOpen: false, index: 0 });
@@ -207,7 +208,7 @@ const PostItem = ({ post, onPostUpdated }) => {
           </div>
         </div>
         <button className="post-header-more-btn" onClick={() => setShowMenu(!showMenu)}><MoreHorizontal size={20} /></button>
-        {/* Dropdown menu cho Edit/Delete */}
+        {/* Dropdown owner: Edit/Delete */}
         {showMenu && isOwner && (
           <div className="post-dropdown-menu" ref={menuRef}>
             <button className="post-dropdown-item" onClick={handleOpenEdit}>
@@ -217,6 +218,13 @@ const PostItem = ({ post, onPostUpdated }) => {
               <Trash2 size={16} /> Xóa bài viết
             </button>
           </div>
+        )}
+        {/* Dropdown non-owner: tương tác bài viết */}
+        {!isOwner && (
+          <PostActionMenu
+            postId={post.id}
+            onPostHide={onPostHide}
+          />
         )}
       </div>
 
