@@ -8,6 +8,9 @@ import CommentSection from "./CommentSection";
 import SharePostModal from "./SharePostModal";
 import EditPostModal from "./EditPostModal";
 import PostActionMenu from "./PostActionMenu";
+import DeleteUndoUI from "./DeleteUndoUI";
+import NotInterestedItem from "./NotInterestedItem";
+import ReportPostModal from "./ReportPostModal";
 import { getImageUrl } from "../../utils/formatUrl";
 import postService from "../../services/postService";
 import toast from "react-hot-toast";
@@ -44,9 +47,14 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
   // --- STATE EDIT POST MODAL ---
   const [showEditModal, setShowEditModal] = useState(false);
 
-  // --- STATE DELETE POST MODAL ---
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  // --- STATE DELETE POST ---
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [isDeletionPending, setIsDeletionPending] = useState(false);
+  const [deletionTimeRemaining, setDeletionTimeRemaining] = useState(10);
+  const [showReportFromUndo, setShowReportFromUndo] = useState(false);
+
+  // --- STATE NOT INTERESTED ---
+  const [isNotInterested, setIsNotInterested] = useState(false);
 
   // --- STATE COMMENT SECTION ---
   const [showComments, setShowComments] = useState(false);
@@ -74,22 +82,52 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 
   // --- HANDLERS DELETE POST ---
   const handleOpenDelete = () => {
-    setShowDeleteModal(true);
     setShowMenu(false);
+    setIsDeletionPending(true);
+    setDeletionTimeRemaining(10);
   };
 
-  const handleConfirmDelete = async () => {
+  // Timer: countdown rồi tự xóa khi hết 10s
+  useEffect(() => {
+    if (!isDeletionPending) return;
+    if (deletionTimeRemaining <= 0) {
+      executeDelete();
+      return;
+    }
+    const tid = setTimeout(() => setDeletionTimeRemaining((t) => t - 1), 1000);
+    return () => clearTimeout(tid);
+  }, [isDeletionPending, deletionTimeRemaining]);
+
+  const executeDelete = async () => {
     setDeleteLoading(true);
     try {
       await postService.deletePost(post.id);
-      toast.success("Đã xóa bài viết!");
-      setShowDeleteModal(false);
+      toast.success('Bài viết đã được xóa');
       onPostUpdated?.();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Xóa bài viết thất bại!");
+      toast.error(error.response?.data?.message || 'Xóa bài viết thất bại!');
+      setIsDeletionPending(false);
+      setDeletionTimeRemaining(10);
     } finally {
       setDeleteLoading(false);
     }
+  };
+
+  const handleUndoDelete = () => {
+    setIsDeletionPending(false);
+    setDeletionTimeRemaining(10);
+    toast.success('Bài viết đã được khôi phục');
+  };
+
+  const handleDismissDelete = () => {
+    setIsDeletionPending(false);
+    executeDelete();
+  };
+
+  const handleReportFromUndo = () => {
+    setIsDeletionPending(false);
+    setDeletionTimeRemaining(10);
+    setShowReportFromUndo(true);
   };
 
   // --- STATE CẢM XÚC (Optimistic UI) ---
@@ -186,6 +224,26 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
     );
   };
 
+  if (isNotInterested) {
+    return (
+      <NotInterestedItem
+        onUndo={() => setIsNotInterested(false)}
+        onDismiss={() => onPostHide?.(post.id)}
+      />
+    );
+  }
+
+  if (isDeletionPending) {
+    return (
+      <DeleteUndoUI
+        timeRemaining={deletionTimeRemaining}
+        onUndo={handleUndoDelete}
+        onReport={handleReportFromUndo}
+        onDismiss={handleDismissDelete}
+      />
+    );
+  }
+
   return (
     <div className="fb-card">
       <div className="post-header">
@@ -229,6 +287,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
           <PostActionMenu
             postId={post.id}
             onPostHide={onPostHide}
+            onNotInterested={() => setIsNotInterested(true)}
           />
         )}
       </div>
@@ -371,25 +430,12 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
         />
       )}
 
-      {/* MODAL XÁC NHẬN XÓA BÀI VIẾT */}
-      {showDeleteModal && (
-        <div className="post-modal-overlay" onMouseDown={() => setShowDeleteModal(false)}>
-          <div className="post-modal post-modal-sm" onMouseDown={(e) => e.stopPropagation()}>
-            <div className="post-modal-header">
-              <h3>Xóa bài viết</h3>
-              <button className="post-modal-close" onClick={() => setShowDeleteModal(false)}><X size={20} /></button>
-            </div>
-            <div className="post-modal-body">
-              <p>Bạn chắc chắn muốn xóa bài post này? Hành động này không thể hoàn tác.</p>
-            </div>
-            <div className="post-modal-footer">
-              <button className="post-modal-btn post-modal-btn-cancel" onClick={() => setShowDeleteModal(false)}>Hủy</button>
-              <button className="post-modal-btn post-modal-btn-delete" onClick={handleConfirmDelete} disabled={deleteLoading}>
-                {deleteLoading ? "Đang xóa..." : "Xóa"}
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* REPORT MODAL (từ undo UI) */}
+      {showReportFromUndo && (
+        <ReportPostModal
+          postId={post.id}
+          onClose={() => setShowReportFromUndo(false)}
+        />
       )}
     </div>
   );

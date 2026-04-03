@@ -7,7 +7,7 @@ import postInteractionService from '../../services/postInteractionService';
 import ReportPostModal from './ReportPostModal';
 import './PostActionMenu.css';
 
-const PostActionMenu = ({ postId, onPostHide }) => {
+const PostActionMenu = ({ postId, onPostHide, onNotInterested }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,8 +42,7 @@ const PostActionMenu = ({ postId, onPostHide }) => {
   const handleNotInterested = () =>
     withLoading(async () => {
       await postInteractionService.notInterestedPost(postId);
-      toast.success('Đã ẩn bài viết này');
-      onPostHide?.(postId);
+      onNotInterested?.(postId);
     });
 
   const handleSave = () =>

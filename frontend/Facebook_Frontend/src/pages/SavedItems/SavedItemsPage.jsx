@@ -1,17 +1,32 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Bookmark, BookmarkX } from 'lucide-react';
 import toast from 'react-hot-toast';
-import PostItem from '../../components/post/PostItem';
+import CardSavedPost from '../../components/post/CardSavedPost';
 import savedItemsService from '../../services/savedItemsService';
 import './SavedItemsPage.css';
 
 const PAGE_SIZE = 10;
+
+const DEFAULT_COLLECTIONS = [
+  { id: 'all', name: 'Tất cả bài viết đã lưu' },
+  { id: 'photos', name: 'Ảnh' },
+  { id: 'videos', name: 'Video' },
+];
 
 const SavedItemsPage = () => {
   const [posts, setPosts] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [userCollections, setUserCollections] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('saved_collections') || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  const allCollections = [...DEFAULT_COLLECTIONS, ...userCollections];
 
   const fetchSavedPosts = useCallback(async (currentPage) => {
     setLoading(true);
@@ -41,12 +56,17 @@ const SavedItemsPage = () => {
     }
   };
 
-  const handlePostUpdated = (updatedPost) => {
-    setPosts((prev) => prev.map((p) => (p.id === updatedPost.id ? updatedPost : p)));
-  };
-
-  const handlePostHide = (postId) => {
-    setPosts((prev) => prev.filter((p) => p.id !== postId));
+  const handleSaveToCollection = (postId, colId, newName) => {
+    if (newName) {
+      const newCol = { id: Date.now().toString(), name: newName };
+      const updated = [...userCollections, newCol];
+      setUserCollections(updated);
+      localStorage.setItem('saved_collections', JSON.stringify(updated));
+      toast.success(`Đã tạo bộ sưu tập "${newName}"`);
+    } else {
+      const col = allCollections.find((c) => c.id === colId);
+      toast.success(`Đã thêm vào "${col?.name || 'bộ sưu tập'}"`);
+    }
   };
 
   return (
@@ -78,21 +98,13 @@ const SavedItemsPage = () => {
       )}
 
       {!loading && posts.map((post) => (
-        <div key={post.id} className="saved-post-wrapper">
-          <button
-            className="saved-unsave-btn"
-            onClick={() => handleUnsave(post.id)}
-            title="Bỏ lưu bài viết"
-          >
-            <BookmarkX size={14} />
-            Bỏ lưu
-          </button>
-          <PostItem
-            post={post}
-            onPostUpdated={handlePostUpdated}
-            onPostHide={handlePostHide}
-          />
-        </div>
+        <CardSavedPost
+          key={post.id}
+          post={post}
+          collections={allCollections}
+          onUnsave={handleUnsave}
+          onSaveToCollection={handleSaveToCollection}
+        />
       ))}
 
       {!loading && pagination.totalPages > 1 && (

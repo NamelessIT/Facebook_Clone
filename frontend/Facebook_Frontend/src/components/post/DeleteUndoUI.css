@@ -1,0 +1,138 @@
+.duu-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--bg-card, #fff);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  min-height: 64px;
+  animation: duuFadeIn 0.25s ease-out;
+}
+
+@keyframes duuFadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.duu-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.duu-message {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary, #050505);
+}
+
+.duu-timer {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #65676b);
+  background: var(--hover-bg, #f0f2f5);
+  padding: 2px 8px;
+  border-radius: 10px;
+  min-width: 28px;
+  text-align: center;
+}
+
+.duu-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.duu-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.duu-btn--report {
+  background: none;
+  color: #d93025;
+}
+
+.duu-btn--report:hover {
+  background: #fff0f0;
+}
+
+.duu-btn--undo {
+  background: #e7f3ff;
+  color: #1877f2;
+}
+
+.duu-btn--undo:hover {
+  background: #d2e9ff;
+}
+
+.duu-btn--close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-secondary, #65676b);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.duu-btn--close:hover {
+  background: var(--hover-bg, #f0f2f5);
+}
+
+/* =============================================
+   Dark Mode
+   ============================================= */
+
+[data-theme="dark"] .duu-btn--report {
+  color: #ff6b6b;
+}
+
+[data-theme="dark"] .duu-btn--report:hover {
+  background: rgba(255, 107, 107, 0.12);
+}
+
+[data-theme="dark"] .duu-btn--undo {
+  background: rgba(24, 119, 242, 0.18);
+  color: #4da6ff;
+}
+
+[data-theme="dark"] .duu-btn--undo:hover {
+  background: rgba(24, 119, 242, 0.28);
+}
+
+/* =============================================
+   Mobile
+   ============================================= */
+
+@media (max-width: 480px) {
+  .duu-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .duu-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

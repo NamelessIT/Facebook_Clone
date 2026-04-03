@@ -1,0 +1,198 @@
+import { useState, useRef } from 'react';
+import { MoreHorizontal, Link2, FolderPlus, X } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { getImageUrl } from '../../utils/formatUrl';
+import postInteractionService from '../../services/postInteractionService';
+import './CardSavedPost.css';
+
+// Modal chọn bộ sưu tập để lưu vào
+const CollectionModal = ({ postId, collections, onClose, onSaveToCollection }) => {
+  const [selected, setSelected] = useState(null);
+  const [newName, setNewName] = useState('');
+  const [showCreate, setShowCreate] = useState(false);
+
+  const handleToggle = (colId) => {
+    setSelected((prev) => (prev === colId ? null : colId));
+  };
+
+  const handleConfirm = () => {
+    if (selected) {
+      onSaveToCollection(postId, selected);
+    }
+    onClose();
+  };
+
+  const handleCreate = () => {
+    if (!newName.trim()) return;
+    onSaveToCollection(postId, null, newName.trim());
+    setNewName('');
+    setShowCreate(false);
+    onClose();
+  };
+
+  return (
+    <div className="csp-modal-overlay" onClick={onClose}>
+      <div className="csp-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="csp-modal-header">
+          <span>Thêm vào bộ sưu tập</span>
+          <button className="csp-modal-close" onClick={onClose}><X size={18} /></button>
+        </div>
+        <div className="csp-modal-body">
+          {collections.map((col) => (
+            <button
+              key={col.id}
+              className={`csp-col-item ${selected === col.id ? 'csp-col-item--active' : ''}`}
+              onClick={() => handleToggle(col.id)}
+            >
+              <span className="csp-col-icon">📁</span>
+              <span>{col.name}</span>
+              {selected === col.id && <span className="csp-col-check">✓</span>}
+            </button>
+          ))}
+          {!showCreate ? (
+            <button className="csp-create-btn" onClick={() => setShowCreate(true)}>
+              + Tạo bộ sưu tập mới
+            </button>
+          ) : (
+            <div className="csp-create-form">
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Tên bộ sưu tập..."
+                className="csp-create-input"
+                autoFocus
+              />
+              <button className="csp-create-confirm" onClick={handleCreate}>Tạo</button>
+              <button className="csp-create-cancel" onClick={() => setShowCreate(false)}>Hủy</button>
+            </div>
+          )}
+        </div>
+        <div className="csp-modal-footer">
+          <button className="csp-modal-confirm" onClick={handleConfirm} disabled={!selected}>
+            Xong
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Lấy thumbnail đầu tiên từ post (image hoặc video)
+const getPostThumbnail = (post) => {
+  if (!post.medias || post.medias.length === 0) return null;
+
+  // Ưu tiên ảnh trước
+  const firstImage = post.medias.find((m) => m.mediaType === 0 || m.type === 'image');
+  if (firstImage) return getImageUrl(firstImage.url || firstImage.mediaUrl);
+
+  // Nếu không có ảnh, lấy thumbnail của video
+  const firstVideo = post.medias.find((m) => m.mediaType === 1 || m.type === 'video');
+  if (firstVideo) return firstVideo.thumbnailUrl ? getImageUrl(firstVideo.thumbnailUrl) : null;
+
+  return null;
+};
+
+const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection }) => {
+  const [showMenu, setShowMenu] = useState(false);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
+  const menuRef = useRef(null);
+
+  const thumbnail = getPostThumbnail(post);
+  const contentText = post.content || '(Bài viết không có nội dung văn bản)';
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/posts/${post.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      toast.success('Đã sao chép liên kết');
+    });
+  };
+
+  const handleUnsaveFromMenu = () => {
+    setShowMenu(false);
+    onUnsave(post.id);
+  };
+
+  return (
+    <div className="csp-card">
+      {/* Ảnh thumbnail bên trái */}
+      <div className="csp-thumbnail">
+        {thumbnail ? (
+          <img src={thumbnail} alt="Post media" className="csp-thumbnail-img" />
+        ) : (
+          <div className="csp-thumbnail-empty" />
+        )}
+      </div>
+
+      {/* Nội dung bên phải */}
+      <div className="csp-content">
+        {/* Tên tác giả */}
+        <p className="csp-author">{post.author?.fullName || 'Người dùng'}</p>
+
+        {/* Nội dung bài post */}
+        <p className="csp-text">
+          {contentText.length > 120 ? contentText.slice(0, 120) + '...' : contentText}
+        </p>
+
+        {/* Mục đã lưu vào */}
+        <p className="csp-collection-tag">
+          📁 {post.savedCollection || 'Tất cả bài viết đã lưu'}
+        </p>
+
+        {/* Actions row */}
+        <div className="csp-actions">
+          {/* Thêm vào bộ sưu tập */}
+          <button
+            className="csp-action-btn"
+            onClick={() => setShowCollectionModal(true)}
+            title="Thêm vào bộ sưu tập"
+          >
+            <FolderPlus size={16} />
+            <span>Thêm vào bộ sưu tập</span>
+          </button>
+
+          {/* Chia sẻ / Sao chép link */}
+          <button
+            className="csp-action-btn"
+            onClick={handleCopyLink}
+            title="Sao chép liên kết"
+          >
+            <Link2 size={16} />
+            <span>Chia sẻ</span>
+          </button>
+
+          {/* 3 chấm dropdown */}
+          <div className="csp-menu-wrap" ref={menuRef}>
+            <button
+              className="csp-action-btn csp-action-btn--icon"
+              onClick={() => setShowMenu((v) => !v)}
+              title="Tùy chọn"
+            >
+              <MoreHorizontal size={16} />
+            </button>
+
+            {showMenu && (
+              <div className="csp-dropdown">
+                <button className="csp-dropdown-item csp-dropdown-item--danger" onClick={handleUnsaveFromMenu}>
+                  Bỏ lưu
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Modal bộ sưu tập */}
+      {showCollectionModal && (
+        <CollectionModal
+          postId={post.id}
+          collections={collections}
+          onClose={() => setShowCollectionModal(false)}
+          onSaveToCollection={onSaveToCollection}
+        />
+      )}
+    </div>
+  );
+};
+
+export default CardSavedPost;
