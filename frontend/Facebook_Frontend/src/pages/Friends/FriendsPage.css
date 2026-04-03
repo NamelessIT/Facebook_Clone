@@ -178,3 +178,64 @@
   font-size: 14px;
   color: #65676b;
 }
+
+/* =============================================
+   Dark Mode Overrides
+   ============================================= */
+
+[data-theme="dark"] .friends-page-header h2 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .friends-tabs {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .friends-tab {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .friends-tab:hover {
+  background: var(--hover-bg);
+}
+
+[data-theme="dark"] .friends-tab--active {
+  color: #2d88ff;
+  border-bottom-color: #2d88ff;
+}
+
+[data-theme="dark"] .friend-requests-loading,
+[data-theme="dark"] .friend-requests-empty {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .friend-request-card {
+  background: var(--bg-card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .friend-request-name {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .friend-request-btn--reject {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .friend-request-btn--reject:hover:not(:disabled) {
+  background: #4a4b4c;
+}
+
+[data-theme="dark"] .friend-page-btn {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .friend-page-btn:hover:not(:disabled) {
+  background: #4a4b4c;
+}
+
+[data-theme="dark"] .friend-page-info {
+  color: var(--text-secondary);
+}

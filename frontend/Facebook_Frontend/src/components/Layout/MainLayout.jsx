@@ -71,7 +71,13 @@ const MainLayout = () => {
           </Link>
           <div className="menu-item"><Users size={28} className="text-blue-500 mr-2" /> Bạn bè</div>
           <div className="menu-item"><Clock size={28} className="text-blue-500 mr-2" /> Kỷ niệm</div>
-          <div className="menu-item"><Bookmark size={28} className="text-purple-500 mr-2" /> Đã lưu</div>
+          <Link
+            to="/saved"
+            className={`menu-item${location.pathname.startsWith('/saved') ? ' active' : ''}`}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <Bookmark size={28} className="text-purple-500 mr-2" /> Đã lưu
+          </Link>
         </aside>
 
         {/* Cột Giữa: Bảng Tin */}

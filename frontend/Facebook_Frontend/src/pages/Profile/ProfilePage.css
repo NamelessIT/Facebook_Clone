@@ -491,6 +491,124 @@
   50% { opacity: 0.5; }
 }
 
+/* =============================================
+   Dark Mode Overrides
+   ============================================= */
+
+[data-theme="dark"] .pp-page {
+  background: var(--bg-primary);
+}
+
+[data-theme="dark"] .pp-header-bar {
+  background: var(--bg-card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .pp-name {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .pp-stats span,
+[data-theme="dark"] .pp-bio,
+[data-theme="dark"] .pp-meta-item {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .pp-tabs-bar {
+  background: var(--bg-card);
+  border-top-color: var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .pp-tab {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .pp-tab:hover:not(:disabled) {
+  background: var(--hover-bg);
+  color: #2d88ff;
+}
+
+[data-theme="dark"] .pp-tab--active {
+  color: #2d88ff;
+  border-bottom-color: #2d88ff;
+}
+
+[data-theme="dark"] .pp-card,
+[data-theme="dark"] .pp-reels-section,
+[data-theme="dark"] .pp-error-card {
+  background: var(--bg-card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .pp-card-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .pp-about-bio {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .pp-about-list li {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .pp-about-list li svg {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .pp-friend-card:hover {
+  background: var(--hover-bg);
+}
+
+[data-theme="dark"] .pp-friend-name {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .pp-btn--secondary {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .pp-btn--secondary:hover {
+  background: #4a4b4c;
+}
+
+[data-theme="dark"] .pp-loading,
+[data-theme="dark"] .pp-empty {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .pp-error-card h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .pp-error-card p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .pp-pagination {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .pp-page-btn {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .pp-page-btn:hover:not(:disabled) {
+  background: #4a4b4c;
+}
+
+[data-theme="dark"] .pp-avatar-edit-btn {
+  background: var(--hover-bg);
+  border-color: var(--bg-card);
+}
+
+[data-theme="dark"] .pp-avatar-edit-btn:hover {
+  background: #4a4b4c;
+}
+
 /* ---- RESPONSIVE ---- */
 @media (max-width: 768px) {
   .pp-page {

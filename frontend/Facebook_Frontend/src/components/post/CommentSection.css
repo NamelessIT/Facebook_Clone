@@ -210,3 +210,46 @@
 .comment-load-more-btn:hover {
   text-decoration: underline;
 }
+
+/* =============================================
+   Dark Mode Overrides
+   ============================================= */
+
+[data-theme="dark"] .comment-section {
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .comment-input-wrapper textarea,
+[data-theme="dark"] .reply-input-wrapper textarea {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .comment-input-wrapper textarea:focus,
+[data-theme="dark"] .reply-input-wrapper textarea:focus {
+  background: #4a4b4c;
+}
+
+[data-theme="dark"] .comment-bubble {
+  background: var(--hover-bg);
+}
+
+[data-theme="dark"] .comment-author {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .comment-text {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .comment-loading,
+[data-theme="dark"] .comment-empty {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .comment-meta-btn,
+[data-theme="dark"] .comment-meta-time,
+[data-theme="dark"] .view-replies-btn,
+[data-theme="dark"] .comment-load-more-btn {
+  color: var(--text-secondary);
+}
