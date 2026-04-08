@@ -1,3 +1,10 @@
+export const getVideoUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  return `http://localhost:5286${normalized}`;
+};
+
 export const getImageUrl = (path, type = 'avatars') => {
   // Trả về Avatar xám mặc định nếu không có đường dẫn
   if (!path) return "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";

@@ -9,8 +9,15 @@ import './EditProfileModal.css';
 const MAX_BIO_LENGTH = 200;
 
 const EditProfileModal = ({ user, onClose, onUpdated }) => {
-  const [firstName, setFirstName] = useState(user?.firstName || '');
-  const [lastName, setLastName] = useState(user?.lastName || '');
+  // Handle fullName parsing if firstName/lastName not available
+  const nameParts = (user?.firstName && user?.lastName) 
+    ? [user.firstName, user.lastName]
+    : (user?.fullName || '').split(' ');
+  const firstName = user?.firstName || nameParts[0] || '';
+  const lastName = user?.lastName || nameParts.slice(1).join(' ') || '';
+
+  const [firstNameState, setFirstNameState] = useState(firstName);
+  const [lastNameState, setLastNameState] = useState(lastName);
   const [bio, setBio] = useState(user?.bio || '');
   const [location, setLocation] = useState(user?.location || '');
   const [avatarFile, setAvatarFile] = useState(null);
@@ -27,8 +34,8 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
 
   const validate = () => {
     const newErrors = {};
-    if (!firstName.trim()) newErrors.firstName = 'Tên không được để trống';
-    if (!lastName.trim()) newErrors.lastName = 'Họ không được để trống';
+    if (!firstNameState.trim()) newErrors.firstName = 'Tên không được để trống';
+    if (!lastNameState.trim()) newErrors.lastName = 'Họ không được để trống';
     if (bio.length > MAX_BIO_LENGTH) newErrors.bio = `Tiểu sử tối đa ${MAX_BIO_LENGTH} ký tự`;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -54,8 +61,8 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
     setSaving(true);
     try {
       const formData = new FormData();
-      formData.append('firstName', firstName.trim());
-      formData.append('lastName', lastName.trim());
+      formData.append('firstName', firstNameState.trim());
+      formData.append('lastName', lastNameState.trim());
       formData.append('bio', bio.trim());
       formData.append('location', location.trim());
       if (avatarFile) formData.append('avatar', avatarFile);
@@ -65,9 +72,9 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
 
       toast.success('Cập nhật trang cá nhân thành công!');
       onUpdated?.({
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        fullName: `${firstName.trim()} ${lastName.trim()}`,
+        firstName: firstNameState.trim(),
+        lastName: lastNameState.trim(),
+        fullName: `${firstNameState.trim()} ${lastNameState.trim()}`,
         bio: bio.trim(),
         location: location.trim(),
         ...(avatarPreview && { avatarUrl: avatarPreview }),
@@ -164,8 +171,8 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
               <label>Họ</label>
               <input
                 type="text"
-                value={lastName}
-                onChange={(e) => { setLastName(e.target.value); setErrors((p) => ({ ...p, lastName: '' })); }}
+                value={lastNameState}
+                onChange={(e) => { setLastNameState(e.target.value); setErrors((p) => ({ ...p, lastName: '' })); }}
                 placeholder="Nhập họ"
                 className={errors.lastName ? 'edit-input--error' : ''}
               />
@@ -175,8 +182,8 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
               <label>Tên</label>
               <input
                 type="text"
-                value={firstName}
-                onChange={(e) => { setFirstName(e.target.value); setErrors((p) => ({ ...p, firstName: '' })); }}
+                value={firstNameState}
+                onChange={(e) => { setFirstNameState(e.target.value); setErrors((p) => ({ ...p, firstName: '' })); }}
                 placeholder="Nhập tên"
                 className={errors.firstName ? 'edit-input--error' : ''}
               />

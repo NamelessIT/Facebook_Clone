@@ -27,6 +27,7 @@ public class ReelsController : ControllerBase
     [HttpPost]
     [DisableRequestSizeLimit]
     [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> CreateReel([FromForm] CreateReelRequest request)
     {
         try

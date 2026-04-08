@@ -15,7 +15,7 @@ const PRIVACY_OPTIONS = [
 
 const MAX_CONTENT_LENGTH = 500;
 
-const EditPostModal = ({ post, onClose, onPostUpdated }) => {
+const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) => {
   const { user } = useAuth();
   const [content, setContent] = useState(post.content || "");
   const [privacy, setPrivacy] = useState(post.privacy || 1);
@@ -46,6 +46,26 @@ const EditPostModal = ({ post, onClose, onPostUpdated }) => {
   };
 
   const handleSave = async () => {
+    // In privacyOnly mode, only privacy is required to change
+    if (privacyOnly) {
+      setSaving(true);
+      try {
+        const formData = new FormData();
+        formData.append("content", content);
+        formData.append("privacy", String(privacy));
+
+        await postService.updatePost(post.id, formData);
+        toast.success("Cập nhật chế độ hiển thị thành công!");
+        onPostUpdated?.();
+        onClose();
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Cập nhật thất bại!");
+      } finally {
+        setSaving(false);
+      }
+      return;
+    }
+
     if (!content.trim() && existingMedias.length === 0 && newFiles.length === 0) {
       toast.error("Bài viết phải có nội dung hoặc media.");
       return;
@@ -84,7 +104,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated }) => {
       <div className="edit-post-modal" onMouseDown={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="edit-post-header">
-          <h3>Chỉnh sửa bài viết</h3>
+          <h3>{privacyOnly ? 'Chỉnh sửa chế độ hiển thị' : 'Chỉnh sửa bài viết'}</h3>
           <button className="edit-post-close" onClick={onClose}>
             <X size={20} />
           </button>
@@ -117,6 +137,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated }) => {
             onChange={(e) => setContent(e.target.value)}
             placeholder="Bạn đang nghĩ gì?"
             rows={4}
+            disabled={privacyOnly}
           />
           <div className="edit-post-char-count">
             <span className={content.length > MAX_CONTENT_LENGTH ? "over-limit" : ""}>
@@ -124,12 +145,17 @@ const EditPostModal = ({ post, onClose, onPostUpdated }) => {
             </span>
             /{MAX_CONTENT_LENGTH}
           </div>
+          {privacyOnly && (
+            <p style={{ fontSize: '13px', color: '#65676b', marginTop: '6px', fontStyle: 'italic' }}>
+              🔒 Bài viết này tự động được tạo. Bạn chỉ có thể chỉnh sửa chế độ hiển thị.
+            </p>
+          )}
         </div>
 
-        {/* Existing medias */}
+        {/* Existing medias - read-only in privacyOnly mode */}
         {existingMedias.length > 0 && (
           <div className="edit-post-media-section">
-            <h4 className="edit-post-media-title">Media hiện tại</h4>
+            <h4 className="edit-post-media-title">Media {privacyOnly ? '(không thể chỉnh sửa)' : 'hiện tại'}</h4>
             <div className="edit-post-media-grid">
               {existingMedias.map((media) => (
                 <div key={media.id} className="edit-post-media-item">
@@ -138,21 +164,23 @@ const EditPostModal = ({ post, onClose, onPostUpdated }) => {
                   ) : (
                     <img src={getImageUrl(media.url, "posts")} alt="" />
                   )}
-                  <button
-                    className="edit-post-media-remove"
-                    onClick={() => handleRemoveExistingMedia(media.id)}
-                    title="Xóa"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                  {!privacyOnly && (
+                    <button
+                      className="edit-post-media-remove"
+                      onClick={() => handleRemoveExistingMedia(media.id)}
+                      title="Xóa"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* New files preview */}
-        {newFiles.length > 0 && (
+        {/* New files preview - hidden in privacyOnly mode */}
+        {!privacyOnly && newFiles.length > 0 && (
           <div className="edit-post-media-section">
             <h4 className="edit-post-media-title">Media mới</h4>
             <div className="edit-post-media-grid">
@@ -176,20 +204,22 @@ const EditPostModal = ({ post, onClose, onPostUpdated }) => {
           </div>
         )}
 
-        {/* Add media button */}
-        <div className="edit-post-add-media">
-          <button onClick={() => fileInputRef.current?.click()}>
-            <ImagePlus size={20} /> Thêm ảnh/video
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/gif,video/mp4,video/webm"
-            multiple
-            hidden
-            onChange={handleAddFiles}
-          />
-        </div>
+        {/* Add media button - hidden in privacyOnly mode */}
+        {!privacyOnly && (
+          <div className="edit-post-add-media">
+            <button onClick={() => fileInputRef.current?.click()}>
+              <ImagePlus size={20} /> Thêm ảnh/video
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/gif,video/mp4,video/webm"
+              multiple
+              hidden
+              onChange={handleAddFiles}
+            />
+          </div>
+        )}
 
         {/* Footer */}
         <div className="edit-post-footer">

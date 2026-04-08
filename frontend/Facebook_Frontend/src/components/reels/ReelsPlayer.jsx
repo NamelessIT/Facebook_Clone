@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  X, ChevronLeft, ChevronRight, Heart, Trash2, Edit2, Volume2, VolumeX, MoreVertical
+  X, ChevronLeft, ChevronRight, Heart, Trash2, Edit2, Volume2, VolumeX, MoreVertical,
+  Star, EyeOff, Bookmark, Link2, Flag,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -9,6 +10,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import reelService from '../../services/reelService';
 import Avatar from '../common/Avatar';
 import EditReelModal from './EditReelModal';
+import { getVideoUrl } from '../../utils/formatUrl';
 import './ReelsPlayer.css';
 
 const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUpdated }) => {
@@ -23,11 +25,13 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
   const [showEditModal, setShowEditModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [slideDirection, setSlideDirection] = useState(null);
-  const [showOwnerMenu, setShowOwnerMenu] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const lastWheelTime = useRef(0);
+  const menuRef = useRef(null);
 
   const reel = reels[currentIndex];
-  const isOwner = currentUser?.id === reel?.userId;
+  const isOwner = currentUser?.id === reel?.author?.id;
 
   useEffect(() => {
     if (!reel) return;
@@ -64,6 +68,15 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
       window.removeEventListener('wheel', handleWheel);
     };
   });
+
+  useEffect(() => {
+    if (!showMenu) return;
+    const handler = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setShowMenu(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showMenu]);
 
   const goPrev = () => {
     if (currentIndex > 0) {
@@ -112,6 +125,39 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
     }
   };
 
+  const handleMenuInterest = () => {
+    setShowMenu(false);
+    toast.success('Đã đánh dấu quan tâm Reel này');
+  };
+
+  const handleMenuNotInterested = () => {
+    setShowMenu(false);
+    toast.success('Đã ẩn Reel này');
+    onNotInterested?.(reel.id);
+    if (reels.length <= 1) {
+      onClose();
+    } else {
+      setCurrentIndex((i) => (i >= reels.length - 1 ? i - 1 : i));
+    }
+  };
+
+  const handleMenuSave = () => {
+    setShowMenu(false);
+    setIsSaved((prev) => !prev);
+    toast.success(isSaved ? 'Đã bỏ lưu Reel' : 'Đã lưu Reel');
+  };
+
+  const handleMenuCopyLink = () => {
+    navigator.clipboard.writeText(`${window.location.origin}/reels/${reel.id}`);
+    toast.success('Đã sao chép liên kết');
+    setShowMenu(false);
+  };
+
+  const handleMenuReport = () => {
+    setShowMenu(false);
+    toast.success('Cảm ơn bạn đã báo cáo Reel này');
+  };
+
   if (!reel) return null;
 
   const timeAgo = reel.createdAt
@@ -150,7 +196,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
           muted={muted}
           loop
         >
-          <source src={reel.videoUrl} type="video/mp4" />
+          <source src={getVideoUrl(reel.videoUrl)} type="video/mp4" />
         </video>
 
         {/* Mute toggle */}
@@ -186,27 +232,48 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
             <span>{likeCount}</span>
           </button>
 
-          {isOwner && (
-            <div className="rp-owner-wrap">
-              <button
-                className="rp-action-btn"
-                onClick={() => setShowOwnerMenu((v) => !v)}
-                aria-label="Tuỳ chọn"
-              >
-                <MoreVertical size={22} />
-              </button>
-              {showOwnerMenu && (
-                <div className="rp-owner-menu">
-                  <button onClick={() => { setShowOwnerMenu(false); setShowEditModal(true); }}>
-                    <Edit2 size={15} /> Chỉnh sửa
-                  </button>
-                  <button onClick={() => { setShowOwnerMenu(false); setShowDeleteConfirm(true); }}>
-                    <Trash2 size={15} /> Xoá Reel
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+          <div className="rp-owner-wrap" ref={menuRef}>
+            <button
+              className="rp-action-btn"
+              onClick={() => setShowMenu((v) => !v)}
+              aria-label="Tuỳ chọn"
+            >
+              <MoreVertical size={22} />
+            </button>
+            {showMenu && (
+              <div className="rp-owner-menu">
+                {isOwner ? (
+                  <>
+                    <button onClick={() => { setShowMenu(false); setShowEditModal(true); }}>
+                      <Edit2 size={15} /> Chỉnh sửa
+                    </button>
+                    <button onClick={() => { setShowMenu(false); setShowDeleteConfirm(true); }}>
+                      <Trash2 size={15} /> Xoá Reel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={handleMenuInterest}>
+                      <Star size={15} /> Quan tâm
+                    </button>
+                    <button onClick={handleMenuNotInterested}>
+                      <EyeOff size={15} /> Không quan tâm
+                    </button>
+                    <button onClick={handleMenuSave}>
+                      <Bookmark size={15} /> {isSaved ? 'Bỏ lưu Reel' : 'Lưu Reel'}
+                    </button>
+                    <button onClick={handleMenuCopyLink}>
+                      <Link2 size={15} /> Sao chép liên kết
+                    </button>
+                    <hr className="rp-menu-divider" />
+                    <button className="rp-menu-danger" onClick={handleMenuReport}>
+                      <Flag size={15} /> Báo cáo Reel
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Plus, ChevronLeft, ChevronRight, Play, Film } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import Avatar from '../common/Avatar';
+import { getVideoUrl } from '../../utils/formatUrl';
 import reelService from '../../services/reelService';
 import ReelsPlayer from './ReelsPlayer';
 import UploadReelModal from './UploadReelModal';
@@ -135,15 +136,20 @@ const ReelsHorizontalFeed = () => {
                 <div className="rhf-thumb">
                   {reel.thumbnailUrl ? (
                     <img
-                      src={reel.thumbnailUrl}
+                      src={getVideoUrl(reel.thumbnailUrl)}
                       alt={reel.title || 'Reel'}
                       className="rhf-thumb-img"
                       loading="lazy"
                     />
                   ) : (
-                    <div className="rhf-thumb-placeholder">
-                      <Film size={24} />
-                    </div>
+                    <video
+                      src={getVideoUrl(reel.videoUrl)}
+                      className="rhf-thumb-img"
+                      muted
+                      playsInline
+                      preload="metadata"
+                      onLoadedMetadata={(e) => { e.currentTarget.currentTime = 0.01; }}
+                    />
                   )}
                   <span className="rhf-play-badge">
                     <Play size={10} fill="white" />

@@ -1,7 +1,7 @@
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ThumbsUp, MessageSquare, Share2, MoreHorizontal, Edit3, Trash2, X, Globe, Users, Lock } from "lucide-react";
+import { ThumbsUp, MessageSquare, Share2, MoreHorizontal, Edit3, Trash2, X, Globe, Users, Lock, Bookmark, FolderPlus } from "lucide-react";
 import Avatar from "../common/Avatar";
 import MediaViewerModal from "./MediaViewerModal";
 import CommentSection from "./CommentSection";
@@ -13,6 +13,7 @@ import NotInterestedItem from "./NotInterestedItem";
 import ReportPostModal from "./ReportPostModal";
 import { getImageUrl } from "../../utils/formatUrl";
 import postService from "../../services/postService";
+import savedItemsService from "../../services/savedItemsService";
 import toast from "react-hot-toast";
 import "./PostItem.css";
 
@@ -39,6 +40,8 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 
   // Permission check: chỉ hiển thị Edit/Delete nếu user là chủ post
   const isOwner = user?.id === post.author?.id;
+  // PostType: Normal=1, Share=2, Group=3, ProfilePicture=4, CoverPhoto=5
+  const isAutoPost = post.postType === 4 || post.postType === 5;
 
   // --- STATE MENU 3 CHẤM ---
   const [showMenu, setShowMenu] = useState(false);
@@ -62,6 +65,11 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 
   // --- STATE SHARE POST MODAL ---
   const [showShareModal, setShowShareModal] = useState(false);
+
+  // --- STATE COLLECTION MODAL ---
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
+  const [userCollections, setUserCollections] = useState([]);
+  const [selectedCollections, setSelectedCollections] = useState([]);
 
   // Đóng menu khi click ngoài
   useEffect(() => {
@@ -128,6 +136,49 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
     setIsDeletionPending(false);
     setDeletionTimeRemaining(10);
     setShowReportFromUndo(true);
+  };
+
+  // --- HANDLER SAVE POST ---
+  const handleSavePost = async () => {
+    try {
+      await savedItemsService.savePost(post.id);
+      // Fetch collections từ API để hiện modal
+      try {
+        const res = await savedItemsService.getCollections();
+        setUserCollections(res.data?.data ?? []);
+      } catch { /* ignore */ }
+      setShowCollectionModal(true);
+      toast.success('Đã lưu bài viết');
+    } catch {
+      toast.error('Lưu bài viết thất bại');
+    }
+  };
+
+  const handleSaveToCollection = async (colId, newName) => {
+    if (!colId && !newName) {
+      setShowCollectionModal(false);
+      return;
+    }
+
+    try {
+      if (newName) {
+        const res = await savedItemsService.createCollection(newName);
+        const newCol = res.data?.data;
+        if (newCol) {
+          await savedItemsService.addPostToCollection(newCol.id, post.id);
+          setUserCollections((prev) => [...prev, newCol]);
+          toast.success(`Đã tạo bộ sưu tập "${newName}" và lưu bài viết`);
+        }
+      } else if (colId) {
+        await savedItemsService.addPostToCollection(colId, post.id);
+        const col = userCollections.find((c) => c.id === colId);
+        toast.success(`Đã lưu vào bộ sưu tập "${col?.name || 'bộ sưu tập'}"`);
+      }
+    } catch {
+      toast.error('Thao tác thất bại');
+    }
+
+    setShowCollectionModal(false);
   };
 
   // --- STATE CẢM XÚC (Optimistic UI) ---
@@ -269,15 +320,17 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
         {isOwner && (
           <>
             <button className="post-header-more-btn" onClick={() => setShowMenu(!showMenu)}><MoreHorizontal size={20} /></button>
-            {/* Dropdown owner: Edit/Delete */}
+            {/* Dropdown owner: Edit/Delete — auto posts (ProfilePicture/Cover) không cho phép delete và edit content */}
             {showMenu && (
               <div className="post-dropdown-menu" ref={menuRef}>
                 <button className="post-dropdown-item" onClick={handleOpenEdit}>
-                  <Edit3 size={16} /> Chỉnh sửa bài viết
+                  <Edit3 size={16} /> {isAutoPost ? 'Chỉnh sửa chế độ hiển thị' : 'Chỉnh sửa bài viết'}
                 </button>
-                <button className="post-dropdown-item post-dropdown-danger" onClick={handleOpenDelete}>
-                  <Trash2 size={16} /> Xóa bài viết
-                </button>
+                {!isAutoPost && (
+                  <button className="post-dropdown-item post-dropdown-danger" onClick={handleOpenDelete}>
+                    <Trash2 size={16} /> Xóa bài viết
+                  </button>
+                )}
               </div>
             )}
           </>
@@ -401,6 +454,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 
         <button className="action-btn" onClick={() => setShowComments(!showComments)}><MessageSquare size={20} /> Bình luận</button>
         <button className="action-btn" onClick={() => setShowShareModal(true)}><Share2 size={20} /> Chia sẻ</button>
+        <button className="action-btn" onClick={handleSavePost}><Bookmark size={20} /> Lưu</button>
       </div>
 
       <MediaViewerModal isOpen={viewerData.isOpen} onClose={() => setViewerData({ isOpen: false, index: 0 })} medias={post.medias} initialIndex={viewerData.index}/>
@@ -427,6 +481,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
           post={post}
           onClose={() => setShowEditModal(false)}
           onPostUpdated={onPostUpdated}
+          privacyOnly={isAutoPost}
         />
       )}
 
@@ -437,6 +492,81 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
           onClose={() => setShowReportFromUndo(false)}
         />
       )}
+
+      {/* COLLECTION MODAL */}
+      {showCollectionModal && <PostCollectionModal postId={post.id} onClose={() => setShowCollectionModal(false)} onSaveToCollection={handleSaveToCollection} userCollections={userCollections} />}
+    </div>
+  );
+};
+
+// Modal chọn bộ sưu tập để lưu vào
+const PostCollectionModal = ({ postId, onClose, onSaveToCollection, userCollections }) => {
+  const [selected, setSelected] = useState(null);
+  const [newName, setNewName] = useState('');
+  const [showCreate, setShowCreate] = useState(false);
+
+  const handleConfirm = () => {
+    if (selected) {
+      onSaveToCollection(selected);
+    }
+    onClose();
+  };
+
+  const handleCreate = () => {
+    if (!newName.trim()) return;
+    onSaveToCollection(null, newName.trim());
+    setNewName('');
+    setShowCreate(false);
+    onClose();
+  };
+
+  return (
+    <div className="modal-collection-overlay" onClick={onClose}>
+      <div className="modal-collection" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-collection-header">
+          <span>Lưu vào bộ sưu tập</span>
+          <button className="modal-collection-close" onClick={onClose}><X size={18} /></button>
+        </div>
+        <div className="modal-collection-body">
+          <button className={`modal-collection-item ${!selected ? 'modal-collection-item--active' : ''}`} onClick={() => setSelected(null)}>
+            <span>📌 Tất cả bài viết đã lưu</span>
+            {!selected && <span className="modal-collection-check">✓</span>}
+          </button>
+          {userCollections.map((col) => (
+            <button
+              key={col.id}
+              className={`modal-collection-item ${selected === col.id ? 'modal-collection-item--active' : ''}`}
+              onClick={() => setSelected(col.id)}
+            >
+              <span>📁 {col.name}</span>
+              {selected === col.id && <span className="modal-collection-check">✓</span>}
+            </button>
+          ))}
+          {!showCreate ? (
+            <button className="modal-collection-create-btn" onClick={() => setShowCreate(true)}>
+              + Tạo bộ sưu tập mới
+            </button>
+          ) : (
+            <div className="modal-collection-create-form">
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Tên bộ sưu tập..."
+                className="modal-collection-input"
+                autoFocus
+              />
+              <button className="modal-collection-create-confirm" onClick={handleCreate}>Tạo</button>
+              <button className="modal-collection-create-cancel" onClick={() => setShowCreate(false)}>Hủy</button>
+            </div>
+          )}
+        </div>
+        <div className="modal-collection-footer">
+          <button className="modal-collection-confirm" onClick={handleConfirm}>
+            Xong
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

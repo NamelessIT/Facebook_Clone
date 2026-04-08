@@ -184,6 +184,224 @@
 }
 
 /* =========================================
+   COLLECTION MODAL
+========================================= */
+.modal-collection-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-collection {
+  background: #fff;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 360px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .modal-collection {
+  background: #242526;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.modal-collection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #e4e6eb;
+  font-weight: 600;
+  color: #050505;
+}
+
+[data-theme="dark"] .modal-collection-header {
+  border-bottom-color: #3e4042;
+  color: #e4e6eb;
+}
+
+.modal-collection-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #65676b;
+  display: flex;
+  align-items: center;
+}
+
+[data-theme="dark"] .modal-collection-close {
+  color: #b0b3b8;
+}
+
+.modal-collection-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.modal-collection-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #050505;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.modal-collection-item:hover {
+  background-color: #f0f2f5;
+}
+
+[data-theme="dark"] .modal-collection-item {
+  color: #e4e6eb;
+}
+
+[data-theme="dark"] .modal-collection-item:hover {
+  background-color: #3a3b3c;
+}
+
+.modal-collection-item--active {
+  background-color: #e7f3ff;
+}
+
+[data-theme="dark"] .modal-collection-item--active {
+  background-color: #1a3a52;
+}
+
+.modal-collection-check {
+  color: #1877f2;
+  font-weight: 700;
+}
+
+.modal-collection-create-btn {
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #1877f2;
+  font-weight: 500;
+  text-align: left;
+  font-size: 14px;
+  transition: background 0.15s;
+}
+
+.modal-collection-create-btn:hover {
+  background-color: #f0f2f5;
+}
+
+[data-theme="dark"] .modal-collection-create-btn:hover {
+  background-color: #3a3b3c;
+}
+
+.modal-collection-create-form {
+  display: flex;
+  gap: 6px;
+  padding: 10px 16px;
+  border-top: 1px solid #e4e6eb;
+}
+
+[data-theme="dark"] .modal-collection-create-form {
+  border-top-color: #3e4042;
+}
+
+.modal-collection-input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+[data-theme="dark"] .modal-collection-input {
+  background: #3a3b3c;
+  border-color: #555;
+  color: #e4e6eb;
+}
+
+.modal-collection-create-confirm,
+.modal-collection-create-cancel {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.modal-collection-create-confirm {
+  background: #1877f2;
+  color: white;
+}
+
+.modal-collection-create-confirm:hover {
+  background: #166fe5;
+}
+
+.modal-collection-create-cancel {
+  background: #e4e6eb;
+  color: #050505;
+}
+
+.modal-collection-create-cancel:hover {
+  background: #d8dadf;
+}
+
+[data-theme="dark"] .modal-collection-create-cancel {
+  background: #3a3b3c;
+  color: #e4e6eb;
+}
+
+[data-theme="dark"] .modal-collection-create-cancel:hover {
+  background: #4a4b4c;
+}
+
+.modal-collection-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #e4e6eb;
+}
+
+[data-theme="dark"] .modal-collection-footer {
+  border-top-color: #3e4042;
+}
+
+.modal-collection-confirm {
+  padding: 8px 16px;
+  background: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.15s;
+}
+
+.modal-collection-confirm:hover {
+  background: #166fe5;
+}
+
+/* =========================================
    VŨ KHÍ TỐI THƯỢNG ĐỂ ÉP KHUNG ẢNH/VIDEO (GIỮ NGUYÊN)
 ========================================= */
 .media-thumb {

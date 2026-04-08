@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   Camera, MapPin, Calendar, MessageCircle, Edit3,
-  Grid3X3, FileText, Users, Image, Film, ChevronDown
+  Grid3X3, FileText, Users, Image, Film, ChevronDown,
+  Eye, Upload
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -17,6 +18,7 @@ import AddFriendButton from '../../components/friendship/AddFriendButton';
 import EditProfileModal from '../../components/profile/EditProfileModal';
 import ProfileSidebar from '../../components/profile/ProfileSidebar';
 import ReelsGrid from '../../components/reels/ReelsGrid';
+import PostDetailModal from '../../components/post/PostDetailModal';
 import { getImageUrl } from '../../utils/formatUrl';
 import './ProfilePage.css';
 
@@ -54,8 +56,31 @@ const ProfilePage = () => {
   const [photosLoading, setPhotosLoading] = useState(false);
 
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAvatarDropdown, setShowAvatarDropdown] = useState(false);
+  const [showCoverDropdown, setShowCoverDropdown] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [viewAvatarPost, setViewAvatarPost] = useState(null);
+  const avatarInputRef = useRef(null);
+  const coverInputRef = useRef(null);
+  const avatarDropdownRef = useRef(null);
+  const coverDropdownRef = useRef(null);
 
   const isOwnProfile = currentUser?.id === userId;
+
+  // Đóng dropdown khi click ngoài
+  useEffect(() => {
+    const handler = (e) => {
+      if (avatarDropdownRef.current && !avatarDropdownRef.current.contains(e.target)) {
+        setShowAvatarDropdown(false);
+      }
+      if (coverDropdownRef.current && !coverDropdownRef.current.contains(e.target)) {
+        setShowCoverDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -152,6 +177,75 @@ const ProfilePage = () => {
     toast.success('Đã cập nhật trang cá nhân!');
   };
 
+  const handleAvatarFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    setShowAvatarDropdown(false);
+
+    const confirmed = window.confirm('Bạn có muốn đặt ảnh này làm ảnh đại diện không?');
+    if (!confirmed) return;
+
+    setAvatarUploading(true);
+    try {
+      // 1. Cập nhật avatar
+      const formProfile = new FormData();
+      formProfile.append('Avatar', file);
+      const res = await userService.updateProfileForm(formProfile);
+      const updated = res.data?.data || res.data;
+      setProfileUser((prev) => ({ ...prev, avatarUrl: updated.avatarUrl }));
+
+      // 2. Tự động đăng bài với ảnh đại diện mới (PostType = ProfilePicture = 4, Privacy = Friends = 2)
+      const formPost = new FormData();
+      formPost.append('Content', 'đã cập nhật ảnh đại diện.');
+      formPost.append('Privacy', '2');
+      formPost.append('PostType', '4');
+      formPost.append('Images', file);
+      await postService.createPost(formPost);
+
+      toast.success('Đã cập nhật ảnh đại diện và đăng bài viết!');
+      fetchPosts(1);
+    } catch {
+      toast.error('Cập nhật ảnh đại diện thất bại');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const handleCoverFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    setShowCoverDropdown(false);
+
+    const confirmed = window.confirm('Bạn có muốn đặt ảnh này làm ảnh bìa không?');
+    if (!confirmed) return;
+
+    setCoverUploading(true);
+    try {
+      const formProfile = new FormData();
+      formProfile.append('Cover', file);
+      const res = await userService.updateProfileForm(formProfile);
+      const updated = res.data?.data || res.data;
+      setProfileUser((prev) => ({ ...prev, coverUrl: updated.coverUrl }));
+
+      // Đăng bài ảnh bìa mới (PostType = CoverPhoto = 5)
+      const formPost = new FormData();
+      formPost.append('Content', 'đã cập nhật ảnh bìa.');
+      formPost.append('Privacy', '2');
+      formPost.append('PostType', '5');
+      formPost.append('Images', file);
+      await postService.createPost(formPost);
+
+      toast.success('Đã cập nhật ảnh bìa và đăng bài viết!');
+      fetchPosts(1);
+    } catch {
+      toast.error('Cập nhật ảnh bìa thất bại');
+    } finally {
+      setCoverUploading(false);
+    }
+  };
+
   const joinDate = profileUser?.createdAt
     ? format(new Date(profileUser.createdAt), "MMMM 'năm' yyyy", { locale: vi })
     : null;
@@ -212,35 +306,108 @@ const ProfilePage = () => {
           <div className="pp-cover-placeholder" />
         )}
         {isOwnProfile && (
-          <button
-            className="pp-cover-edit-btn"
-            onClick={() => setShowEditModal(true)}
-            title="Thay ảnh bìa"
-          >
-            <Camera size={14} />
-            Chỉnh sửa ảnh bìa
-          </button>
+          <div className="pp-cover-action-wrap" ref={coverDropdownRef}>
+            <button
+              className="pp-cover-edit-btn"
+              onClick={() => setShowCoverDropdown((v) => !v)}
+              title="Chỉnh sửa ảnh bìa"
+              disabled={coverUploading}
+            >
+              <Camera size={14} />
+              {coverUploading ? 'Đang tải...' : 'Chỉnh sửa ảnh bìa'}
+            </button>
+            {showCoverDropdown && (
+              <div className="pp-cover-dropdown">
+                <button
+                  className="pp-dropdown-item"
+                  onClick={() => { setShowCoverDropdown(false); setShowEditModal(true); }}
+                >
+                  <Edit3 size={15} />
+                  Chỉnh sửa trang cá nhân
+                </button>
+                <button
+                  className="pp-dropdown-item"
+                  onClick={() => coverInputRef.current?.click()}
+                >
+                  <Upload size={15} />
+                  Chọn ảnh bìa mới
+                </button>
+              </div>
+            )}
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={handleCoverFileChange}
+            />
+          </div>
         )}
       </div>
 
       {/* Header Bar */}
       <div className="pp-header-bar">
         <div className="pp-avatar-section">
-          <div className="pp-avatar-wrap">
+          <div className="pp-avatar-wrap" ref={avatarDropdownRef}>
             <Avatar
               src={profileUser.avatarUrl}
               className="pp-avatar"
               alt={profileUser.fullName}
             />
             {isOwnProfile && (
-              <button
-                className="pp-avatar-edit-btn"
-                onClick={() => setShowEditModal(true)}
-                title="Thay ảnh đại diện"
-              >
-                <Camera size={14} />
-              </button>
+              <>
+                <button
+                  className="pp-avatar-edit-btn"
+                  onClick={() => setShowAvatarDropdown((v) => !v)}
+                  title="Cập nhật ảnh đại diện"
+                  disabled={avatarUploading}
+                >
+                  <Camera size={14} />
+                </button>
+                {showAvatarDropdown && (
+                  <div className="pp-avatar-dropdown">
+                    <button
+                      className="pp-dropdown-item"
+                      onClick={() => {
+                        setShowAvatarDropdown(false);
+                        // Tạo post tạm để view avatar
+                        if (profileUser.avatarUrl) {
+                          setViewAvatarPost({
+                            id: 'avatar-view',
+                            author: profileUser,
+                            content: '',
+                            createdAt: new Date().toISOString(),
+                            privacy: 1,
+                            medias: [{
+                              id: 'av-media',
+                              url: profileUser.avatarUrl,
+                              mediaType: 0,
+                            }],
+                          });
+                        }
+                      }}
+                    >
+                      <Eye size={15} />
+                      Xem ảnh đại diện
+                    </button>
+                    <button
+                      className="pp-dropdown-item"
+                      onClick={() => avatarInputRef.current?.click()}
+                    >
+                      <Upload size={15} />
+                      Chọn ảnh đại diện
+                    </button>
+                  </div>
+                )}
+              </>
             )}
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={handleAvatarFileChange}
+            />
           </div>
         </div>
 
@@ -485,9 +652,16 @@ const ProfilePage = () => {
 
       {showEditModal && (
         <EditProfileModal
-          profileUser={profileUser}
+          user={profileUser}
           onClose={() => setShowEditModal(false)}
           onUpdated={handleProfileUpdated}
+        />
+      )}
+
+      {viewAvatarPost && (
+        <PostDetailModal
+          post={viewAvatarPost}
+          onClose={() => setViewAvatarPost(null)}
         />
       )}
     </div>

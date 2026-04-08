@@ -93,7 +93,7 @@ const getPostThumbnail = (post) => {
   return null;
 };
 
-const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection }) => {
+const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, onViewDetail, savedCollection }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const menuRef = useRef(null);
@@ -101,22 +101,34 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection })
   const thumbnail = getPostThumbnail(post);
   const contentText = post.content || '(Bài viết không có nội dung văn bản)';
 
-  const handleCopyLink = () => {
+  const handleCopyLink = (e) => {
+    e.stopPropagation();
     const url = `${window.location.origin}/posts/${post.id}`;
     navigator.clipboard.writeText(url).then(() => {
       toast.success('Đã sao chép liên kết');
     });
   };
 
-  const handleUnsaveFromMenu = () => {
+  const handleUnsaveFromMenu = (e) => {
+    e.stopPropagation();
     setShowMenu(false);
     onUnsave(post.id);
   };
 
+  const handleMenuToggle = (e) => {
+    e.stopPropagation();
+    setShowMenu((v) => !v);
+  };
+
+  const handleCollectionModalOpen = (e) => {
+    e.stopPropagation();
+    setShowCollectionModal(true);
+  };
+
   return (
     <div className="csp-card">
-      {/* Ảnh thumbnail bên trái */}
-      <div className="csp-thumbnail">
+      {/* Ảnh thumbnail bên trái - clickable để xem chi tiết */}
+      <div className="csp-thumbnail" onClick={() => onViewDetail?.()}>
         {thumbnail ? (
           <img src={thumbnail} alt="Post media" className="csp-thumbnail-img" />
         ) : (
@@ -125,7 +137,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection })
       </div>
 
       {/* Nội dung bên phải */}
-      <div className="csp-content">
+      <div className="csp-content" onClick={() => onViewDetail?.()}>
         {/* Tên tác giả */}
         <p className="csp-author">{post.author?.fullName || 'Người dùng'}</p>
 
@@ -136,7 +148,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection })
 
         {/* Mục đã lưu vào */}
         <p className="csp-collection-tag">
-          📁 {post.savedCollection || 'Tất cả bài viết đã lưu'}
+          📁 {savedCollection || post.savedCollection || 'Tất cả bài viết đã lưu'}
         </p>
 
         {/* Actions row */}
@@ -144,7 +156,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection })
           {/* Thêm vào bộ sưu tập */}
           <button
             className="csp-action-btn"
-            onClick={() => setShowCollectionModal(true)}
+            onClick={handleCollectionModalOpen}
             title="Thêm vào bộ sưu tập"
           >
             <FolderPlus size={16} />
@@ -165,7 +177,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection })
           <div className="csp-menu-wrap" ref={menuRef}>
             <button
               className="csp-action-btn csp-action-btn--icon"
-              onClick={() => setShowMenu((v) => !v)}
+              onClick={handleMenuToggle}
               title="Tùy chọn"
             >
               <MoreHorizontal size={16} />
@@ -187,7 +199,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection })
         <CollectionModal
           postId={post.id}
           collections={collections}
-          onClose={() => setShowCollectionModal(false)}
+          onClose={(e) => { e?.stopPropagation?.(); setShowCollectionModal(false); }}
           onSaveToCollection={onSaveToCollection}
         />
       )}

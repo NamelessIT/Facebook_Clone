@@ -1,0 +1,230 @@
+.pdm-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.pdm-dialog {
+  display: flex;
+  max-width: 1100px;
+  width: 100%;
+  max-height: 90vh;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background-color: #fff;
+}
+
+.pdm-dialog--no-media {
+  max-width: 560px;
+  flex-direction: column;
+}
+
+.pdm-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #e4e6eb;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  color: #050505;
+  transition: background-color 0.15s;
+}
+
+.pdm-close:hover {
+  background-color: #d8dadf;
+}
+
+/* ── Panel trái: media ── */
+.pdm-media-panel {
+  flex: 1 1 60%;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  position: relative;
+}
+
+.pdm-media-el {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+}
+
+.pdm-media-count {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* ── Panel phải: nội dung ── */
+.pdm-content-panel {
+  flex: 0 0 380px;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.pdm-dialog--no-media .pdm-content-panel {
+  flex: 1;
+  padding: 24px;
+  padding-top: 48px;
+}
+
+.pdm-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.pdm-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+}
+
+.pdm-author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.pdm-author-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #050505;
+  text-decoration: none;
+}
+
+.pdm-author-name:hover {
+  text-decoration: underline;
+}
+
+.pdm-meta {
+  font-size: 13px;
+  color: #65676b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pdm-privacy-icon {
+  color: #65676b;
+}
+
+.pdm-text {
+  font-size: 15px;
+  color: #050505;
+  line-height: 1.5;
+  margin: 0 0 16px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.pdm-text--empty {
+  color: #65676b;
+  font-style: italic;
+}
+
+.pdm-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid #e4e6eb;
+  border-bottom: 1px solid #e4e6eb;
+  margin-bottom: 4px;
+}
+
+.pdm-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #65676b;
+}
+
+.pdm-actions {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.pdm-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #65676b;
+  transition: background-color 0.15s;
+}
+
+.pdm-action-btn:hover {
+  background-color: #f0f2f5;
+}
+
+/* Dark mode */
+[data-theme="dark"] .pdm-dialog {
+  background-color: #242526;
+}
+
+[data-theme="dark"] .pdm-content-panel {
+  background-color: #242526;
+}
+
+[data-theme="dark"] .pdm-close {
+  background-color: #3a3b3c;
+  color: #e4e6eb;
+}
+
+[data-theme="dark"] .pdm-close:hover {
+  background-color: #4e4f50;
+}
+
+[data-theme="dark"] .pdm-author-name {
+  color: #e4e6eb;
+}
+
+[data-theme="dark"] .pdm-text {
+  color: #e4e6eb;
+}
+
+[data-theme="dark"] .pdm-stats {
+  border-color: #3e4042;
+}
+
+[data-theme="dark"] .pdm-action-btn {
+  color: #b0b3b9;
+}
+
+[data-theme="dark"] .pdm-action-btn:hover {
+  background-color: #3a3b3c;
+}

@@ -47,6 +47,7 @@ public class UsersController : ControllerBase
     [HttpPut("profile")]
     [DisableRequestSizeLimit]
     [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> UpdateMyProfileForm([FromForm] UpdateProfileFormRequest request)
     {
         try
@@ -86,7 +87,8 @@ public class UsersController : ControllerBase
     [HttpPut("cover")]
     [DisableRequestSizeLimit]
     [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
-    public async Task<IActionResult> UpdateCoverPhoto([FromForm] IFormFile cover)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UpdateCoverPhoto(IFormFile cover)
     {
         try
         {

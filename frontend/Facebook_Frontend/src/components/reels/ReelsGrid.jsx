@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Play, Film } from 'lucide-react';
 import reelService from '../../services/reelService';
+import { getVideoUrl } from '../../utils/formatUrl';
 import ReelsPlayer from './ReelsPlayer';
 import './ReelsGrid.css';
 
@@ -77,15 +78,20 @@ const ReelsGrid = ({ userId }) => {
             {/* Thumbnail */}
             {reel.thumbnailUrl ? (
               <img
-                src={reel.thumbnailUrl}
+                src={getVideoUrl(reel.thumbnailUrl)}
                 alt={reel.title || 'Reel'}
                 className="rg-thumbnail"
                 loading="lazy"
               />
             ) : (
-              <div className="rg-thumbnail-placeholder">
-                <Film size={32} />
-              </div>
+              <video
+                src={getVideoUrl(reel.videoUrl)}
+                className="rg-thumbnail"
+                muted
+                playsInline
+                preload="metadata"
+                onLoadedMetadata={(e) => { e.currentTarget.currentTime = 0.01; }}
+              />
             )}
 
             {/* Play icon */}

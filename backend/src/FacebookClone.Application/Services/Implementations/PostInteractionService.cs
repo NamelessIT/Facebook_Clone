@@ -1,3 +1,4 @@
+using AutoMapper;
 using FacebookClone.Application.DTOs.Post;
 using FacebookClone.Application.Services.Interfaces;
 using FacebookClone.Domain.Entities;
@@ -11,11 +12,13 @@ public class PostInteractionService : IPostInteractionService
 {
     private readonly IPostInteractionRepository _repo;
     private readonly ILogger<PostInteractionService> _logger;
+    private readonly IMapper _mapper;
 
-    public PostInteractionService(IPostInteractionRepository repo, ILogger<PostInteractionService> logger)
+    public PostInteractionService(IPostInteractionRepository repo, ILogger<PostInteractionService> logger, IMapper mapper)
     {
         _repo = repo;
         _logger = logger;
+        _mapper = mapper;
     }
 
     public async Task<PostInteractionResponse> AddInteractionAsync(Guid userId, Guid postId, string type)
@@ -76,7 +79,7 @@ public class PostInteractionService : IPostInteractionService
     public async Task<(IEnumerable<object> Items, int Total)> GetUserSavedPostsAsync(Guid userId, int page, int pageSize)
     {
         var (interactions, total) = await _repo.GetSavedByUserAsync(userId, page, pageSize);
-        var items = interactions.Select(x => (object)new { Post = x.Post, SavedAt = x.CreatedAt });
+        var items = interactions.Select(x => (object)new { Post = _mapper.Map<PostResponseDto>(x.Post), SavedAt = x.CreatedAt });
         return (items, total);
     }
 

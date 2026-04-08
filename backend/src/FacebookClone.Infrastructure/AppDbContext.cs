@@ -25,9 +25,8 @@ public class AppDbContext : DbContext
     public DbSet<GroupMember> GroupMembers { get; set; }
     public DbSet<MediaAttachment> MediaAttachments { get; set; }
     public DbSet<PostInteraction> PostInteractions { get; set; }
-    // (sau này seed thêm thì thêm tiếp)
-    // public DbSet<Friendship> Friendships => Set<Friendship>();
-    // public DbSet<Reaction> Reactions => Set<Reaction>();
+    public DbSet<SavedCollection> SavedCollections { get; set; }
+    public DbSet<SavedCollectionPost> SavedCollectionPosts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,6 +41,9 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(pi => pi.PostId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SavedCollectionPost>()
+            .HasKey(scp => new { scp.CollectionId, scp.PostId });
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }

@@ -57,6 +57,68 @@
   background: rgba(255, 255, 255, 1);
 }
 
+.pp-cover-action-wrap {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+}
+
+.pp-cover-dropdown,
+.pp-avatar-dropdown {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #e4e6eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.pp-cover-dropdown {
+  bottom: calc(100% + 8px);
+  right: 0;
+}
+
+.pp-avatar-dropdown {
+  top: calc(100% + 6px);
+  left: 0;
+}
+
+.pp-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #050505;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.pp-dropdown-item:hover {
+  background-color: #f0f2f5;
+}
+
+[data-theme="dark"] .pp-cover-dropdown,
+[data-theme="dark"] .pp-avatar-dropdown {
+  background: #242526;
+  border-color: #3e4042;
+}
+
+[data-theme="dark"] .pp-dropdown-item {
+  color: #e4e6eb;
+}
+
+[data-theme="dark"] .pp-dropdown-item:hover {
+  background-color: #3a3b3c;
+}
+
 /* ---- HEADER BAR ---- */
 .pp-header-bar {
   background: #fff;
@@ -105,6 +167,7 @@
   justify-content: center;
   cursor: pointer;
   transition: background 0.2s;
+  z-index: 10;
 }
 
 .pp-avatar-edit-btn:hover {

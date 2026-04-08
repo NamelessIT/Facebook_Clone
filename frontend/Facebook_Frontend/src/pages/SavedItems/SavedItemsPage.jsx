@@ -1,52 +1,77 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Bookmark, BookmarkX } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CardSavedPost from '../../components/post/CardSavedPost';
+import PostDetailModal from '../../components/post/PostDetailModal';
 import savedItemsService from '../../services/savedItemsService';
 import './SavedItemsPage.css';
 
 const PAGE_SIZE = 10;
 
-const DEFAULT_COLLECTIONS = [
-  { id: 'all', name: 'Tất cả bài viết đã lưu' },
-  { id: 'photos', name: 'Ảnh' },
-  { id: 'videos', name: 'Video' },
-];
-
 const SavedItemsPage = () => {
+  const location = useLocation();
   const [posts, setPosts] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [userCollections, setUserCollections] = useState(() => {
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [userCollections, setUserCollections] = useState([]);
+
+  const searchParams = new URLSearchParams(location.search);
+  const activeColId = searchParams.get('col');
+
+  // Fetch collections từ API
+  const fetchCollections = useCallback(async () => {
     try {
-      return JSON.parse(localStorage.getItem('saved_collections') || '[]');
+      const res = await savedItemsService.getCollections();
+      setUserCollections(res.data?.data ?? []);
     } catch {
-      return [];
+      setUserCollections([]);
     }
-  });
+  }, []);
 
-  const allCollections = [...DEFAULT_COLLECTIONS, ...userCollections];
-
-  const fetchSavedPosts = useCallback(async (currentPage) => {
+  // Fetch saved posts hoặc collection posts
+  const fetchPosts = useCallback(async (currentPage) => {
     setLoading(true);
     try {
-      const res = await savedItemsService.getSavedPosts(currentPage, PAGE_SIZE);
-      const { data, pagination: pg } = res.data;
-      setPosts(data ?? []);
-      setPagination(pg ?? { page: 1, totalPages: 1, total: 0 });
+      if (activeColId) {
+        const res = await savedItemsService.getCollectionPosts(activeColId, currentPage, PAGE_SIZE);
+        const { data, pagination: pg } = res.data;
+        const unwrapped = (data ?? []).map((item) => item.post || item);
+        setPosts(unwrapped);
+        setPagination(pg ?? { page: 1, totalPages: 1, total: 0 });
+      } else {
+        const res = await savedItemsService.getSavedPosts(currentPage, PAGE_SIZE);
+        const { data, pagination: pg } = res.data;
+        const unwrapped = (data ?? []).map((item) => item.post || item);
+        setPosts(unwrapped);
+        setPagination(pg ?? { page: 1, totalPages: 1, total: 0 });
+      }
     } catch {
       toast.error('Không thể tải danh sách đã lưu');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [activeColId]);
 
   useEffect(() => {
-    fetchSavedPosts(page);
-  }, [page, fetchSavedPosts]);
+    fetchCollections();
+  }, [fetchCollections]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [activeColId]);
+
+  useEffect(() => {
+    fetchPosts(page);
+  }, [page, fetchPosts]);
 
   const handleUnsave = async (postId) => {
+    if (!postId) {
+      toast.error('Không thể xác định bài viết');
+      return;
+    }
     try {
       await savedItemsService.unsavePost(postId);
       toast.success('Đã bỏ lưu bài viết');
@@ -56,18 +81,31 @@ const SavedItemsPage = () => {
     }
   };
 
-  const handleSaveToCollection = (postId, colId, newName) => {
-    if (newName) {
-      const newCol = { id: Date.now().toString(), name: newName };
-      const updated = [...userCollections, newCol];
-      setUserCollections(updated);
-      localStorage.setItem('saved_collections', JSON.stringify(updated));
-      toast.success(`Đã tạo bộ sưu tập "${newName}"`);
-    } else {
-      const col = allCollections.find((c) => c.id === colId);
-      toast.success(`Đã thêm vào "${col?.name || 'bộ sưu tập'}"`);
+  const handleSaveToCollection = async (postId, colId, newName) => {
+    try {
+      if (newName) {
+        const res = await savedItemsService.createCollection(newName);
+        const newCol = res.data?.data;
+        if (newCol) {
+          await savedItemsService.addPostToCollection(newCol.id, postId);
+          setUserCollections((prev) => [...prev, newCol]);
+          toast.success(`Đã tạo bộ sưu tập "${newName}" và lưu bài viết`);
+        }
+      } else if (colId) {
+        await savedItemsService.addPostToCollection(colId, postId);
+        const col = userCollections.find((c) => c.id === colId);
+        toast.success(`Đã thêm vào "${col?.name || 'bộ sưu tập'}"`);
+      }
+    } catch {
+      toast.error('Thao tác thất bại');
     }
   };
+
+  const validPosts = posts.filter((p) => p && p.id);
+
+  const activeColName = activeColId
+    ? userCollections.find((c) => c.id === activeColId)?.name || 'Bộ sưu tập'
+    : 'Mục đã lưu';
 
   return (
     <div className="saved-page">
@@ -76,7 +114,7 @@ const SavedItemsPage = () => {
           <Bookmark size={24} />
         </div>
         <div className="saved-header-text">
-          <h1>Đã lưu</h1>
+          <h1>{activeColName}</h1>
           <p>Chỉ mình bạn mới thấy những gì bạn đã lưu</p>
         </div>
       </div>
@@ -87,7 +125,7 @@ const SavedItemsPage = () => {
         </div>
       )}
 
-      {!loading && posts.length === 0 && (
+      {!loading && validPosts.length === 0 && (
         <div className="saved-empty">
           <BookmarkX size={48} className="saved-empty-icon" />
           <p className="saved-empty-title">Chưa có bài viết nào được lưu</p>
@@ -97,15 +135,18 @@ const SavedItemsPage = () => {
         </div>
       )}
 
-      {!loading && posts.map((post) => (
-        <CardSavedPost
-          key={post.id}
-          post={post}
-          collections={allCollections}
-          onUnsave={handleUnsave}
-          onSaveToCollection={handleSaveToCollection}
-        />
-      ))}
+      {!loading && validPosts.map((post) =>
+        post.id ? (
+          <CardSavedPost
+            key={post.id}
+            post={post}
+            collections={userCollections}
+            onUnsave={handleUnsave}
+            onSaveToCollection={handleSaveToCollection}
+            onViewDetail={() => setSelectedPost(post)}
+          />
+        ) : null
+      )}
 
       {!loading && pagination.totalPages > 1 && (
         <div className="saved-pagination">
@@ -125,6 +166,13 @@ const SavedItemsPage = () => {
             Tiếp →
           </button>
         </div>
+      )}
+
+      {selectedPost && (
+        <PostDetailModal
+          post={selectedPost}
+          onClose={() => setSelectedPost(null)}
+        />
       )}
     </div>
   );

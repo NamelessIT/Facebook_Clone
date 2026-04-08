@@ -23,8 +23,13 @@ const notificationService = {
       .withUrl(SIGNALR_HUB_URL, {
         accessTokenFactory: () => localStorage.getItem('accessToken'),
       })
-      .withAutomaticReconnect([0, 2000, 5000, 10000])
+      .withAutomaticReconnect([2000, 5000, 15000, 30000])
+      .configureLogging(signalR.LogLevel.Warning)
       .build();
+
+    connection.onreconnecting(() => {});
+    connection.onreconnected(() => {});
+    connection.onclose(() => { connection = null; });
 
     try {
       await connection.start();

@@ -310,3 +310,13 @@
 .rp-owner-menu button:last-child {
   color: #ef4444;
 }
+
+.rp-menu-danger {
+  color: #ef4444 !important;
+}
+
+.rp-menu-divider {
+  margin: 4px 0;
+  border: none;
+  border-top: 1px solid #e4e6eb;
+}

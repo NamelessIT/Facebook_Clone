@@ -3,7 +3,6 @@ import axiosClient from './axiosClient';
 const reelService = {
   uploadReel: (formData, onUploadProgress) =>
     axiosClient.post('/reels', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress,
     }),
 

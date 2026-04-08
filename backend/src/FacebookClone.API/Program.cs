@@ -117,6 +117,8 @@ try
     builder.Services.AddScoped<ISearchService, SearchService>();
     builder.Services.AddScoped<IPostInteractionRepository, PostInteractionRepository>();
     builder.Services.AddScoped<IPostInteractionService, PostInteractionService>();
+    builder.Services.AddScoped<ISavedCollectionRepository, SavedCollectionRepository>();
+    builder.Services.AddScoped<ISavedCollectionService, SavedCollectionService>();
 
     // ---------------------------------------------------------
     // 5. SWAGGER (Swashbuckle) & CORS
@@ -197,11 +199,11 @@ try
 
     // app.UseHttpsRedirection(); //khi deploy lên production sẽ bật lại, còn dev thì tạm thời để yên (đỡ phải cấu hình SSL cho localhost)
 
-// load image,file tĩnh từ wwwroot (nếu có) - Cấu hình này phải đặt trước UseAuthentication nếu có liên quan đến file tĩnh
-    app.UseStaticFiles();
-
-    // Kích hoạt CORS (Đặt trước Auth)
+    // Kích hoạt CORS trước static files để video/image CORS headers được gắn đúng
     app.UseCors("AllowReactApp");
+
+// load image,file tĩnh từ wwwroot (nếu có) - đặt sau UseCors để static files có CORS headers
+    app.UseStaticFiles();
 
     app.UseAuthentication();
     app.UseAuthorization();

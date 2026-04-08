@@ -1,8 +1,7 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { getImageUrl } from "../../utils/formatUrl";
-import { Home, Tv, Store, Users, MessageCircle, Grid, Clock, Bookmark, Film } from "lucide-react";
+import { Home, Tv, Store, Users, MessageCircle, Grid, Clock, Bookmark, Film, Folder, ChevronLeft } from "lucide-react";
 import "./MainLayout.css";
 import Avatar from '../common/Avatar';
 import SearchBar from '../common/SearchBar';
@@ -10,16 +9,20 @@ import NotificationBell from '../Notifications/NotificationBell';
 import UserDropdown from './UserDropdown';
 import ChatFloatingPanel from '../Chat/ChatFloatingPanel';
 import friendshipService from '../../services/friendshipService';
+import savedItemsService from '../../services/savedItemsService';
 
 const MainLayout = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [contacts, setContacts] = useState([]);
   const [chatPanelOpen, setChatPanelOpen] = useState(false);
   const [chatInitialFriend, setChatInitialFriend] = useState(null);
+  const [savedCollections, setSavedCollections] = useState([]);
 
-  // Load real contacts from API
+  const isOnSaved = location.pathname.startsWith('/saved');
+
+  // Load contacts
   useEffect(() => {
     let cancelled = false;
     friendshipService.getFriends(1, 20)
@@ -27,6 +30,75 @@ const MainLayout = () => {
       .catch(() => {});
     return () => { cancelled = true; };
   }, []);
+
+  // Fetch collections từ API khi vào /saved
+  useEffect(() => {
+    if (isOnSaved) {
+      savedItemsService.getCollections()
+        .then((res) => setSavedCollections(res.data?.data ?? []))
+        .catch(() => setSavedCollections([]));
+    }
+  }, [isOnSaved, location.search]);
+
+  const searchParams = new URLSearchParams(location.search);
+  const activeCol = searchParams.get('col');
+
+  const renderLeftSidebar = () => {
+    if (isOnSaved) {
+      return (
+        <aside className="sidebar sidebar--saved">
+          <div className="saved-sb-header">
+            <button className="saved-sb-back" onClick={() => navigate('/')} title="Về trang chủ">
+              <ChevronLeft size={20} />
+            </button>
+            <h2 className="saved-sb-title">Đã lưu</h2>
+          </div>
+
+          <Link
+            to="/saved"
+            className={`saved-sb-item${!activeCol ? ' saved-sb-item--active' : ''}`}
+          >
+            <span className="saved-sb-icon"><Bookmark size={20} /></span>
+            <span>Mục đã lưu</span>
+          </Link>
+
+          {savedCollections.length > 0 && (
+            <div className="saved-sb-section">
+              <p className="saved-sb-section-label">Bộ sưu tập</p>
+              {savedCollections.map((col) => (
+                <Link
+                  key={col.id}
+                  to={`/saved?col=${col.id}`}
+                  className={`saved-sb-item${activeCol === col.id ? ' saved-sb-item--active' : ''}`}
+                >
+                  <span className="saved-sb-icon"><Folder size={20} /></span>
+                  <span>{col.name}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </aside>
+      );
+    }
+
+    return (
+      <aside className="sidebar">
+        <Link to={`/profile/${user?.id}`} className="menu-item mt-4" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Avatar src={user?.avatarUrl} className="w-9 h-9" />
+          <span className="font-semibold">{user?.fullName}</span>
+        </Link>
+        <div className="menu-item"><Users size={28} className="text-blue-500 mr-2" /> Bạn bè</div>
+        <div className="menu-item"><Clock size={28} className="text-blue-500 mr-2" /> Kỷ niệm</div>
+        <Link
+          to="/saved"
+          className={`menu-item${location.pathname.startsWith('/saved') ? ' active' : ''}`}
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          <Bookmark size={28} className="text-purple-500 mr-2" /> Đã lưu
+        </Link>
+      </aside>
+    );
+  };
 
   return (
     <div className="main-layout">
@@ -63,22 +135,8 @@ const MainLayout = () => {
       {/* 2. BODY KHUNG 3 CỘT */}
       <div className="body-container">
         
-        {/* Cột Trái: Menu */}
-        <aside className="sidebar">
-          <Link to={`/profile/${user?.id}`} className="menu-item mt-4" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Avatar src={user?.avatarUrl} className="w-9 h-9" />
-            <span className="font-semibold">{user?.fullName}</span>
-          </Link>
-          <div className="menu-item"><Users size={28} className="text-blue-500 mr-2" /> Bạn bè</div>
-          <div className="menu-item"><Clock size={28} className="text-blue-500 mr-2" /> Kỷ niệm</div>
-          <Link
-            to="/saved"
-            className={`menu-item${location.pathname.startsWith('/saved') ? ' active' : ''}`}
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            <Bookmark size={28} className="text-purple-500 mr-2" /> Đã lưu
-          </Link>
-        </aside>
+        {/* Cột Trái: Menu hoặc Saved Sidebar */}
+        {renderLeftSidebar()}
 
         {/* Cột Giữa: Bảng Tin */}
         <main className="feed-container">

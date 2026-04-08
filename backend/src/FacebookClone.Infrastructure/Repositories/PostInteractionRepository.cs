@@ -50,6 +50,9 @@ public class PostInteractionRepository : IPostInteractionRepository
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Include(x => x.Post)
+            .ThenInclude(p => p.User)
+            .Include(x => x.Post)
+            .ThenInclude(p => p.Medias)
             .AsNoTracking()
             .ToListAsync();
 

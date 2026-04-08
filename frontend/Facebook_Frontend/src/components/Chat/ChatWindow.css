@@ -108,13 +108,14 @@
 }
 
 .message-row--own {
-  align-self: flex-end;
-  flex-direction: row-reverse;
-  margin-left: auto;
+  align-self: flex-start;
+  margin-left: 0;
 }
 
 .message-row--other {
-  align-self: flex-start;
+  align-self: flex-end;
+  flex-direction: row-reverse;
+  margin-left: auto;
 }
 
 .message-bubble {
@@ -147,11 +148,11 @@
 }
 
 .message-time--own {
-  text-align: right;
+  text-align: left;
 }
 
 .message-time--other {
-  text-align: left;
+  text-align: right;
 }
 
 /* ========== TYPING INDICATOR ========== */

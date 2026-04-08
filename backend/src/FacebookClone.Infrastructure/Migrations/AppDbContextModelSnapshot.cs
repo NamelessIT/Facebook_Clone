@@ -523,6 +523,51 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
+            modelBuilder.Entity("FacebookClone.Domain.Entities.SavedCollection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SavedCollections", (string)null);
+                });
+
+            modelBuilder.Entity("FacebookClone.Domain.Entities.SavedCollectionPost", b =>
+                {
+                    b.Property<Guid>("CollectionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("CollectionId", "PostId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("SavedCollectionPosts");
+                });
+
             modelBuilder.Entity("FacebookClone.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -866,6 +911,36 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FacebookClone.Domain.Entities.SavedCollection", b =>
+                {
+                    b.HasOne("FacebookClone.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FacebookClone.Domain.Entities.SavedCollectionPost", b =>
+                {
+                    b.HasOne("FacebookClone.Domain.Entities.SavedCollection", "Collection")
+                        .WithMany("Posts")
+                        .HasForeignKey("CollectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FacebookClone.Domain.Entities.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Collection");
+
+                    b.Navigation("Post");
+                });
+
             modelBuilder.Entity("FacebookClone.Domain.Entities.Comment", b =>
                 {
                     b.Navigation("Medias");
@@ -899,6 +974,11 @@ namespace FacebookClone.Infrastructure.Migrations
             modelBuilder.Entity("FacebookClone.Domain.Entities.Reel", b =>
                 {
                     b.Navigation("Likes");
+                });
+
+            modelBuilder.Entity("FacebookClone.Domain.Entities.SavedCollection", b =>
+                {
+                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("FacebookClone.Domain.Entities.User", b =>

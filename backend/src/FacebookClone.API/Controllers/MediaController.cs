@@ -18,6 +18,7 @@ public class MediaController : ControllerBase
     }
 
     [HttpPost("upload-image")]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> UploadImage(IFormFile file)
     {
         try
@@ -34,6 +35,7 @@ public class MediaController : ControllerBase
     [HttpPost("upload-video")]
     [DisableRequestSizeLimit] // 👈 Vô hiệu hóa giới hạn 30MB mặc định của Kestrel
     [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)] // 👈 Cho phép Form gửi file siêu to
+    [Consumes("multipart/form-data")]
     // [RequestSizeLimit(52428800)] // Bật dòng này nếu .NET chặn file lớn (50MB)
     public async Task<IActionResult> UploadVideo(IFormFile file)
     {

@@ -17,6 +17,12 @@ const userService = {
     return await axiosClient.put('/users/cover', formData);
   },
 
+  updateProfileForm: async (formData) => {
+    return await axiosClient.put('/users/profile', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+
   getUserById: async (id) => {
     const url = `/users/${id}`;
     return await axiosClient.get(url);

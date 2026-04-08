@@ -69,6 +69,7 @@ public class PostsController : ControllerBase
     [HttpPost]
     [DisableRequestSizeLimit]
     [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> CreatePost([FromForm] CreatePostRequest request)
     {
         try {
@@ -82,6 +83,7 @@ public class PostsController : ControllerBase
     [ServiceFilter(typeof(PostOwnerFilter))]
     [DisableRequestSizeLimit]
     [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> UpdatePost(Guid id, [FromForm] UpdatePostRequest request)
     {
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

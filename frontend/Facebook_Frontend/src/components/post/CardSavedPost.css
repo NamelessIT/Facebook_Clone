@@ -10,10 +10,12 @@
   padding: 12px;
   margin-bottom: 8px;
   transition: box-shadow 0.15s;
+  cursor: pointer;
 }
 
 .csp-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border-color: #c8cacd;
 }
 
 [data-theme="dark"] .csp-card {
@@ -25,7 +27,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* ---- THUMBNAIL (trái) ---- */
+/* ---- THUMBNAIL (trái) - clickable untuk xem chi tiết ---- */
 .csp-thumbnail {
   flex-shrink: 0;
   width: 120px;
@@ -33,6 +35,12 @@
   border-radius: 6px;
   overflow: hidden;
   background: #f0f2f5;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.csp-thumbnail:hover {
+  opacity: 0.8;
 }
 
 [data-theme="dark"] .csp-thumbnail {
@@ -57,13 +65,14 @@
   background: #3d3d3d;
 }
 
-/* ---- CONTENT (phải) ---- */
+/* ---- CONTENT (phải) - clickable để xem chi tiết ---- */
 .csp-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-width: 0;
+  cursor: pointer;
 }
 
 .csp-author {

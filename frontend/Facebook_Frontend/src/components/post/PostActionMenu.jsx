@@ -11,6 +11,7 @@ const PostActionMenu = ({ postId, onPostHide, onNotInterested }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -47,8 +48,15 @@ const PostActionMenu = ({ postId, onPostHide, onNotInterested }) => {
 
   const handleSave = () =>
     withLoading(async () => {
-      await postInteractionService.savePost(postId);
-      toast.success('Đã lưu bài viết');
+      if (isSaved) {
+        await postInteractionService.unsavePost(postId);
+        setIsSaved(false);
+        toast.success('Đã bỏ lưu bài viết');
+      } else {
+        await postInteractionService.savePost(postId);
+        setIsSaved(true);
+        toast.success('Đã lưu bài viết');
+      }
     });
 
   const handleCopyLink = () => {
@@ -88,7 +96,7 @@ const PostActionMenu = ({ postId, onPostHide, onNotInterested }) => {
             </button>
             <button className="pam-item" onClick={handleSave} disabled={loading}>
               <Bookmark size={16} />
-              <span>Lưu bài viết</span>
+              <span>{isSaved ? 'Bỏ lưu bài viết' : 'Lưu bài viết'}</span>
             </button>
             <button className="pam-item" onClick={handleCopyLink} disabled={loading}>
               <Link2 size={16} />

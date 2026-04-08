@@ -9,13 +9,13 @@ const MAX_SIZE_MB = 100;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
 const PRIVACY_OPTIONS = [
-  { value: 0, label: 'Công khai' },
-  { value: 1, label: 'Bạn bè' },
-  { value: 2, label: 'Riêng tư' },
+  { value: 1, label: 'Công khai' },
+  { value: 2, label: 'Bạn bè' },
+  { value: 3, label: 'Riêng tư' },
 ];
 
 const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
-  const [form, setForm] = useState({ title: '', description: '', privacy: 0 });
+  const [form, setForm] = useState({ title: '', description: '', privacy: 1 });
   const [videoFile, setVideoFile] = useState(null);
   const [videoPreview, setVideoPreview] = useState(null);
   const [videoDuration, setVideoDuration] = useState(0);
@@ -85,7 +85,7 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
     }
 
     const formData = new FormData();
-    formData.append('video', videoFile);
+    formData.append('videoFile', videoFile);
     formData.append('title', form.title.trim());
     formData.append('description', form.description.trim());
     formData.append('privacy', form.privacy);
@@ -103,7 +103,7 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
       const created = res.data?.data || res.data;
       toast.success('Đăng Reel thành công!');
       handleRemoveVideo();
-      setForm({ title: '', description: '', privacy: 0 });
+      setForm({ title: '', description: '', privacy: 1 });
       onSuccess?.(created);
       onClose();
     } catch {
