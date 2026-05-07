@@ -10,10 +10,18 @@ import SettingsPage from "./pages/Settings/SettingsPage";
 import ChatListPage from "./pages/Messages/ChatListPage";
 import ReelsPage from "./pages/Reels/ReelsPage";
 import SavedItemsPage from "./pages/SavedItems/SavedItemsPage";
+import AdminPage from "./pages/Admin/AdminPage";
 
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? children : <Navigate to="/login" />;
+};
+
+const AdminRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (!user?.isAdmin) return <Navigate to="/" />;
+  return children;
 };
 
 function App() {
@@ -45,6 +53,16 @@ function App() {
             <Route path="reels" element={<ReelsPage />} />
             <Route path="saved" element={<SavedItemsPage />} />
           </Route>
+
+          {/* Admin — standalone layout, no MainLayout */}
+          <Route
+            path="/admin/*"
+            element={
+              <AdminRoute>
+                <AdminPage />
+              </AdminRoute>
+            }
+          />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

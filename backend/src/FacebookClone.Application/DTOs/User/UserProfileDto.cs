@@ -12,4 +12,16 @@ public class UserProfileDto
     public string? Location { get; set; }
     public bool IsOnline { get; set; }
     public DateTime CreatedAt { get; set; }
+
+    // Privacy
+    public bool PrivateProfile { get; set; }
+    public bool HideFriendsList { get; set; }
+    public bool OnlyFriendsCanMessage { get; set; }
+
+    // Preferences
+    public bool EmailNotifications { get; set; }
+    public bool ShowOnlineStatus { get; set; }
+    public string Language { get; set; } = "vi";
+    public string Theme { get; set; } = "light";
+    public bool IsAdmin { get; set; }
 }

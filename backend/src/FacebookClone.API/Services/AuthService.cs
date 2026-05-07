@@ -35,6 +35,13 @@ public class AuthService : IAuthService
                 statusCode: 401
             );
 
+        if (user.IsBanned)
+            throw new AppException(
+                $"Your account has been banned. Reason: {user.BanReason ?? "Violation of terms of service."}",
+                errorCode: "AUTH_ACCOUNT_BANNED",
+                statusCode: 403
+            );
+
 
         using var tx = await _context.Database.BeginTransactionAsync();
 

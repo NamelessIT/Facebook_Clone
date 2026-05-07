@@ -39,6 +39,13 @@ public class User
     public string Language { get; set; } = "vi";
     public string Theme { get; set; } = "light";
 
+    public bool IsAdmin { get; set; } = false;
+
+    // --- Ban Management ---
+    public bool IsBanned { get; set; } = false;
+    public string? BanReason { get; set; }
+    public DateTime? BannedAt { get; set; }
+
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
 import userService from "../../services/userService";
 import toast from "react-hot-toast";
 
@@ -8,20 +9,14 @@ const LANGUAGE_OPTIONS = [
   { value: "en", label: "English" },
 ];
 
-const THEME_OPTIONS = [
-  { value: "light", label: "Sáng" },
-  { value: "dark", label: "Tối" },
-  { value: "system", label: "Theo hệ thống" },
-];
-
 const PreferencesSettings = () => {
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const [form, setForm] = useState({
     emailNotifications: true,
     showOnlineStatus: true,
     language: "vi",
-    theme: "light",
   });
   const [loading, setLoading] = useState(false);
 
@@ -31,8 +26,12 @@ const PreferencesSettings = () => {
         emailNotifications: user.emailNotifications ?? true,
         showOnlineStatus: user.showOnlineStatus ?? true,
         language: user.language || "vi",
-        theme: user.theme || "light",
       });
+      // Sync theme từ server về ThemeContext nếu chưa có localStorage
+      if (user.theme && !localStorage.getItem('app_theme_mode')) {
+        const mapped = user.theme === 'system' ? 'auto' : user.theme;
+        toggleTheme(mapped);
+      }
     }
   }, [user]);
 
@@ -40,14 +39,12 @@ const PreferencesSettings = () => {
     setForm((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
-  const handleSelect = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
-
   const handleSave = async () => {
     setLoading(true);
     try {
-      await userService.updatePreferences(form);
+      // Map ThemeContext value sang server value
+      const serverTheme = theme === 'auto' ? 'system' : theme;
+      await userService.updatePreferences({ ...form, theme: serverTheme });
       toast.success("Cập nhật tùy chọn thành công!");
     } catch (error) {
       toast.error(error.response?.data?.message || "Cập nhật thất bại!");
@@ -90,27 +87,18 @@ const PreferencesSettings = () => {
           <select
             className="settings-select"
             value={form.language}
-            onChange={(e) => handleSelect("language", e.target.value)}
+            onChange={(e) => setForm((prev) => ({ ...prev, language: e.target.value }))}
           >
             {LANGUAGE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
         </div>
-
-        <div className="settings-field">
-          <label className="settings-label">Giao diện</label>
-          <select
-            className="settings-select"
-            value={form.theme}
-            onChange={(e) => handleSelect("theme", e.target.value)}
-          >
-            {THEME_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
-        </div>
       </div>
+
+      <p className="settings-toggle-desc" style={{ marginTop: 8 }}>
+        Để thay đổi giao diện sáng/tối, vui lòng vào tab <strong>Giao diện</strong>.
+      </p>
 
       <button className="settings-save-btn" onClick={handleSave} disabled={loading}>
         {loading ? "Đang lưu..." : "Lưu thay đổi"}

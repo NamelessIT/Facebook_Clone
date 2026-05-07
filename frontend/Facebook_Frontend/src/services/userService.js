@@ -34,11 +34,11 @@ const userService = {
   },
 
   updatePrivacy: async (data) => {
-    return await axiosClient.put('/users/privacy', data);
+    return await axiosClient.put('/users/me/privacy', data);
   },
 
   updatePreferences: async (data) => {
-    return await axiosClient.put('/users/preferences', data);
+    return await axiosClient.put('/users/me/preferences', data);
   },
 };
 

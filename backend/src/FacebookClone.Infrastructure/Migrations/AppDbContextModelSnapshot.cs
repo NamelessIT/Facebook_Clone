@@ -602,6 +602,22 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.Property<bool>("HideFriendsList")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsAdmin")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsBanned")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("BanReason")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("BannedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")

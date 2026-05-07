@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FacebookClone.API.Services;
+using FacebookClone.API.Middlewares;
 using FacebookClone.API.Extensions;
 using FacebookClone.API.Filters;
 using FacebookClone.API.Hubs;
@@ -90,6 +91,9 @@ try
         cfg.AddProfile<UserProfile>();
         cfg.AddProfile<PostProfile>(); 
     });
+
+    // Security service (Singleton — in-memory state across requests)
+    builder.Services.AddSingleton<ISecurityService, SecurityService>();
 
     builder.Services.AddScoped<INotificationHubService, NotificationHubService>();
     builder.Services.AddScoped<PostOwnerFilter>();
@@ -179,7 +183,10 @@ try
     // ---------------------------------------------------------
     
     // Global Error Handling & Custom Middleware (Log, Audit...)
-    app.UseGlobalMiddlewares(); 
+    app.UseGlobalMiddlewares();
+
+    // Security middleware: rate limiting, IP blocking, payload inspection
+    app.UseMiddleware<SecurityMiddleware>();
 
     if (app.Environment.IsDevelopment())
     {
