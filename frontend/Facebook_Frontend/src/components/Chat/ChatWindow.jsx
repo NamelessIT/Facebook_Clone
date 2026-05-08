@@ -8,8 +8,6 @@ import Avatar from '../common/Avatar';
 import MessageInput from './MessageInput';
 import './ChatWindow.css';
 
-const TYPING_TIMEOUT_MS = 3000;
-
 const formatMessageTime = (dateStr) => {
   const date = new Date(dateStr);
   return format(date, 'HH:mm');
@@ -36,10 +34,7 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
   const [hasMore, setHasMore] = useState(false);
   const [page, setPage] = useState(1);
   const [activeConvId, setActiveConvId] = useState(conversationId);
-  const [isOnline, setIsOnline] = useState(false);
-  const [typingUser, setTypingUser] = useState(null);
   const messagesEndRef = useRef(null);
-  const typingTimeoutRef = useRef(null);
   const isInitialLoad = useRef(true);
 
   // Scroll to bottom
@@ -112,38 +107,6 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
   }, [messages, scrollToBottom]);
 
   // Query initial online status when friend changes
-  useEffect(() => {
-    const friendId = friend?.userId || friend?.id;
-    if (!friendId) return;
-
-    const queryOnlineStatus = async () => {
-      try {
-        const userService = (await import('../../services/userService')).default;
-        const res = await userService.getUserById(friendId);
-        const userData = res.data?.data;
-        
-        // Determine if online based on lastSeenAt
-        // If lastSeenAt is recent (within last few minutes), consider online
-        // Otherwise offline
-        if (userData?.lastSeenAt) {
-          const lastSeen = new Date(userData.lastSeenAt);
-          const now = new Date();
-          const minutesAgo = (now - lastSeen) / (1000 * 60);
-          
-          // If last seen within 5 minutes, consider online (or rely on isOnline field if exists)
-          setIsOnline(userData.isOnline !== undefined ? userData.isOnline : minutesAgo < 5);
-        } else {
-          setIsOnline(false);
-        }
-      } catch {
-        // Silently fail - will be updated via SignalR events
-        setIsOnline(false);
-      }
-    };
-
-    queryOnlineStatus();
-  }, [friend?.userId, friend?.id]);
-
   // Load older messages
   const loadMore = async () => {
     if (!activeConvId || loading) return;
@@ -185,32 +148,10 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
       }
     };
 
-    const handleUserOnline = (userId) => {
-      if (userId === (friend?.userId || friend?.id)) setIsOnline(true);
-    };
-
-    const handleUserOffline = (userId) => {
-      if (userId === (friend?.userId || friend?.id)) setIsOnline(false);
-    };
-
-    const handleTyping = (userId) => {
-      if (userId !== (friend?.userId || friend?.id)) return;
-      setTypingUser(friend?.profile?.fullName || friend?.fullName || 'Người dùng');
-      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-      typingTimeoutRef.current = setTimeout(() => setTypingUser(null), TYPING_TIMEOUT_MS);
-    };
-
     chatService.onReceiveMessage(handleReceiveMessage);
-    chatService.onUserOnline(handleUserOnline);
-    chatService.onUserOffline(handleUserOffline);
-    chatService.onTypingIndicator(handleTyping);
 
     return () => {
       chatService.offReceiveMessage(handleReceiveMessage);
-      chatService.offUserOnline(handleUserOnline);
-      chatService.offUserOffline(handleUserOffline);
-      chatService.offTypingIndicator(handleTyping);
-      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
   }, [activeConvId, friend, onConversationCreated]);
 
@@ -245,10 +186,6 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
         <Avatar src={friend.profile?.avatarUrl || friend.avatarUrl} className="w-10 h-10" />
         <div className="chat-header-info">
           <h4 className="chat-header-name">{friend.profile?.fullName || friend.fullName}</h4>
-          <p className="chat-header-status">
-            {isOnline && <span className="online-dot" />}
-            {isOnline ? 'Đang hoạt động' : 'Ngoại tuyến'}
-          </p>
         </div>
       </div>
 
@@ -295,18 +232,6 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
             );
           })}
           <div ref={messagesEndRef} />
-        </div>
-      )}
-
-      {/* Typing indicator */}
-      {typingUser && (
-        <div className="typing-indicator">
-          <div className="typing-dots">
-            <span className="typing-dot" />
-            <span className="typing-dot" />
-            <span className="typing-dot" />
-          </div>
-          {typingUser} đang nhập...
         </div>
       )}
 
