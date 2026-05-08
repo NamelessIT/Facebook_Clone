@@ -9,3 +9,7 @@ CLAUDE.md
 /backend/src/FacebookClone.API/wwwroot
 agent_workspace.md
 /backend/SECURITY.md
+
+# .NET build artifacts (should not be tracked)
+**/bin/
+**/obj/
