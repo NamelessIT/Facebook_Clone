@@ -1,18 +1,27 @@
-import { useState, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Send, Loader } from 'lucide-react';
 import toast from 'react-hot-toast';
 import chatService from '../../services/chatService';
 import './MessageInput.css';
 
 const MAX_LENGTH = 1000;
+const TYPING_DEBOUNCE_MS = 300;
 
 const MessageInput = ({ conversationId, receiverId, onMessageSent }) => {
   const [content, setContent] = useState('');
   const [sending, setSending] = useState(false);
+  const typingTimerRef = useRef(null);
 
-  const handleChange = useCallback((value) => {
+  const handleTyping = useCallback((value) => {
     setContent(value);
-  }, []);
+
+    if (!receiverId) return;
+
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    typingTimerRef.current = setTimeout(() => {
+      chatService.sendTypingNotification(receiverId).catch(() => {});
+    }, TYPING_DEBOUNCE_MS);
+  }, [receiverId]);
 
   const handleSend = async () => {
     const trimmed = content.trim();
@@ -51,7 +60,7 @@ const MessageInput = ({ conversationId, receiverId, onMessageSent }) => {
           className="message-input-field"
           placeholder="Aa"
           value={content}
-          onChange={(e) => handleChange(e.target.value)}
+          onChange={(e) => handleTyping(e.target.value)}
           onKeyDown={handleKeyDown}
           maxLength={MAX_LENGTH}
           rows={1}

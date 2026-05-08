@@ -41,6 +41,8 @@ public class ChatHub : Hub
                 await _userRepository.UpdateAsync(user);
             }
 
+            // Thông báo cho bạn bè rằng user đã online
+            await Clients.Others.SendAsync("UserOnline", userId);
             _logger.LogInformation("[ChatHub] User {UserId} connected. ConnectionId={ConnId}", userId, Context.ConnectionId);
         }
         catch (Exception ex)
@@ -64,6 +66,7 @@ public class ChatHub : Hub
                 await _userRepository.UpdateAsync(user);
             }
 
+            await Clients.Others.SendAsync("UserOffline", userId);
             _logger.LogInformation("[ChatHub] User {UserId} disconnected. ConnectionId={ConnId}", userId, Context.ConnectionId);
         }
         catch (Exception ex)
@@ -118,10 +121,23 @@ public class ChatHub : Hub
     /// Client gọi khi user đang gõ để thông báo cho người nhận.
     /// </summary>
     /// <param name="receiverId">UserId của người nhận</param>
-    public Task TypingNotification(string receiverId)
+    /// <summary>
+    /// Client gọi khi user đang gõ để thông báo cho người nhận.
+    /// </summary>
+    /// <param name="receiverId">UserId của người nhận</param>
+    public async Task TypingNotification(string receiverId)
     {
-        // Typing indicator disabled
-        return Task.CompletedTask;
+        try
+        {
+            if (!Guid.TryParse(receiverId, out var receiverGuid)) return;
+
+            var senderId = GetCurrentUserId();
+            await Clients.User(receiverGuid.ToString()).SendAsync("TypingIndicator", senderId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[ChatHub] TypingNotification error");
+        }
     }
 
     /// <summary>
