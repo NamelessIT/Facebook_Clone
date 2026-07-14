@@ -14,13 +14,15 @@ public class FriendshipService : IFriendshipService
     private readonly IUserRepository _userRepo;
     private readonly IMapper _mapper;
     private readonly INotificationService _notiService;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public FriendshipService(IFriendshipRepository friendshipRepo, IUserRepository userRepo, IMapper mapper, INotificationService notiService)
+    public FriendshipService(IFriendshipRepository friendshipRepo, IUserRepository userRepo, IMapper mapper, INotificationService notiService, IUnitOfWork unitOfWork)
     {
         _friendshipRepo = friendshipRepo;
         _userRepo = userRepo;
         _mapper = mapper;
         _notiService = notiService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<string> SendFriendRequestAsync(Guid currentUserId, Guid receiverId)
@@ -49,9 +51,13 @@ public class FriendshipService : IFriendshipService
             UpdatedAt = DateTime.UtcNow
         };
 
-        await _friendshipRepo.AddFriendshipAsync(friendship);
-        // 👇 THÊM DÒNG NÀY: Báo cho người nhận biết có lời mời
-        await _notiService.CreateNotificationAsync(receiverId, currentUserId, NotificationType.FriendRequest, currentUserId);
+        // Atomic: friendship + notification commit together, or neither.
+        await _unitOfWork.ExecuteInTransactionAsync(async () =>
+        {
+            await _friendshipRepo.AddFriendshipAsync(friendship);
+            // 👇 Báo cho người nhận biết có lời mời
+            await _notiService.CreateNotificationAsync(receiverId, currentUserId, NotificationType.FriendRequest, currentUserId);
+        });
         return "Đã gửi lời mời kết bạn.";
     }
 

@@ -154,6 +154,7 @@ try
     builder.Services.AddScoped<ISavedCollectionService, SavedCollectionService>();
     builder.Services.AddScoped<ISecurityBlockRepository, SecurityBlockRepository>();
     builder.Services.AddScoped<ISecurityBlockService, SecurityBlockService>();
+    builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
     // ---------------------------------------------------------
     // 5. SWAGGER (Swashbuckle) & CORS
