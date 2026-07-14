@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using FacebookClone.API.Extensions;
 using System.Threading.Tasks;
 using System;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +14,7 @@ namespace FacebookClone.API.Controllers
 {
 [ApiController]
 [Route("api/v1/auth")]
+[EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _auth;

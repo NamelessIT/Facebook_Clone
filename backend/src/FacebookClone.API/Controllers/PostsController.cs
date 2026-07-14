@@ -4,8 +4,10 @@ using FacebookClone.Application.DTOs.Interaction;
 using FacebookClone.Application.Services.Interfaces;
 using FacebookClone.Domain.Enums;
 using FacebookClone.Domain.Interfaces;
+using FacebookClone.API.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 namespace FacebookClone.API.Controllers;
@@ -13,6 +15,7 @@ namespace FacebookClone.API.Controllers;
 [Route("api/v1/[controller]")]
 [ApiController]
 [Authorize]
+[EnableRateLimiting(RateLimitingExtensions.WritePolicy)]
 public class PostsController : ControllerBase
 {
     private readonly IPostService _postService;
@@ -32,6 +35,7 @@ public class PostsController : ControllerBase
 
     // 1. LAY BANG TIN
     [HttpGet]
+    [DisableRateLimiting] // reads fall back to the global limiter, not the strict write policy
     public async Task<IActionResult> GetNewsFeed([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
         var currentUserId = GetCurrentUserId();
@@ -41,6 +45,7 @@ public class PostsController : ControllerBase
 
     // 1b. LAY DANH SACH BAI VIET THEO USER
     [HttpGet("user/{userId}")]
+    [DisableRateLimiting]
     public async Task<IActionResult> GetUserPosts(Guid userId,
         [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
@@ -169,6 +174,7 @@ public class PostsController : ControllerBase
     }
 
     [HttpGet("{postId}/comments")]
+    [DisableRateLimiting]
     public async Task<IActionResult> GetComments(Guid postId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
         var interactionService = HttpContext.RequestServices.GetRequiredService<IInteractionService>();

@@ -92,6 +92,9 @@ try
     // ---------------------------------------------------------
     builder.Services.AddControllers();
 
+    // Rate limiting: global + per-module policies (config "RateLimits")
+    builder.Services.AddAppRateLimiting(builder.Configuration);
+
     builder.Services.AddSignalR(); // 👈 Kích hoạt dịch vụ SignalR
 
     // ✅ FIX LỖI AUTOMAPPER: Dùng cú pháp Config Action để tránh lỗi CS1503
@@ -247,6 +250,9 @@ try
 
     app.UseAuthentication();
     app.UseAuthorization();
+
+    // Rate limiter must run after auth so policies can partition by userId
+    app.UseRateLimiter();
 
     app.MapControllers();
     app.MapHub<NotificationHub>("/hubs/notification"); // 👈 Mở cổng cho Frontend kết nối WebSockets

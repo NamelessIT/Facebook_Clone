@@ -1,12 +1,15 @@
 using FacebookClone.Application.Services.Interfaces;
+using FacebookClone.API.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace FacebookClone.API.Controllers;
 
 [Route("api/v1/search")]
 [ApiController]
 [Authorize]
+[EnableRateLimiting(RateLimitingExtensions.SearchPolicy)]
 public class SearchController : ControllerBase
 {
     private readonly ISearchService _searchService;
