@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FacebookClone.API.Services;
 using FacebookClone.API.Common;
+using FacebookClone.Domain.Enums;
 using FacebookClone.Infrastructure;
 
 namespace FacebookClone.API.Controllers;
@@ -13,6 +14,7 @@ namespace FacebookClone.API.Controllers;
 public class AdminController(
     AppDbContext db,
     ISecurityService security,
+    ISecurityBlockService blockService,
     ILogger<AdminController> logger) : ControllerBase
 {
     // -----------------------------------------------------------------------
@@ -258,6 +260,48 @@ public class AdminController(
         if (RequireAdmin() is { } err) return err;
         return Ok(new { success = true, data = security.GetStats() });
     }
+
+    // -----------------------------------------------------------------------
+    // Security: Persistent block/allow lists (survive restart)
+    // -----------------------------------------------------------------------
+
+    // GET /api/v1/admin/security/block-list?kind=1 (1=Blacklist, 2=Whitelist; omit for all)
+    [HttpGet("security/block-list")]
+    public async Task<IActionResult> GetBlockList([FromQuery] BlockListKind? kind = null)
+    {
+        if (RequireAdmin() is { } err) return err;
+        var items = await blockService.ListAsync(kind, HttpContext.RequestAborted);
+        return Ok(new { success = true, data = items });
+    }
+
+    [HttpPost("security/block-list")]
+    public async Task<IActionResult> AddBlockEntry([FromBody] BlockListEntryRequest req)
+    {
+        if (RequireAdmin() is { } err) return err;
+
+        if (string.IsNullOrWhiteSpace(req.Value))
+            return BadRequest(new { success = false, message = "Value is required." });
+
+        DateTime? expiresAt = req.DurationHours.HasValue
+            ? DateTime.UtcNow.AddHours(req.DurationHours.Value)
+            : null;
+
+        var entry = await blockService.AddAsync(
+            req.ListKind, req.TargetType, req.Value, req.Reason,
+            UserContext.GetUserId(User), expiresAt, HttpContext.RequestAborted);
+
+        logger.LogWarning("Admin added {Kind} entry {Type}={Value}", req.ListKind, req.TargetType, req.Value);
+        return Ok(new { success = true, data = entry, message = "Entry added." });
+    }
+
+    [HttpDelete("security/block-list/{id}")]
+    public async Task<IActionResult> RemoveBlockEntry(Guid id)
+    {
+        if (RequireAdmin() is { } err) return err;
+        var ok = await blockService.RemoveAsync(id, HttpContext.RequestAborted);
+        if (!ok) return NotFound(new { success = false, message = "Entry not found or already inactive." });
+        return Ok(new { success = true, message = "Entry removed." });
+    }
 }
 
 // -----------------------------------------------------------------------
@@ -266,3 +310,9 @@ public class AdminController(
 
 public record BanRequest(string Reason);
 public record BlockIpRequest(string Ip, string? Reason, double? DurationHours);
+public record BlockListEntryRequest(
+    BlockListKind ListKind,
+    BlockTargetType TargetType,
+    string Value,
+    string? Reason,
+    double? DurationHours);

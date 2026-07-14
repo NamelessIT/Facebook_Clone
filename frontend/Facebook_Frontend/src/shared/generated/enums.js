@@ -10,6 +10,8 @@ export const MessageType = Object.freeze({ Text: 1, Image: 2, Video: 3, File: 4 
 export const MediaType = Object.freeze({ Image: 0, Video: 1 });
 export const GroupPrivacy = Object.freeze({ Public: 1, Private: 2 });
 export const GroupRole = Object.freeze({ Admin: 1, Member: 2 });
+export const BlockTargetType = Object.freeze({ Ip: 1, User: 2, Email: 3 });
+export const BlockListKind = Object.freeze({ Blacklist: 1, Whitelist: 2 });
 
 export const PostInteractionType = Object.freeze({ INTERESTED: "INTERESTED", NOT_INTERESTED: "NOT_INTERESTED", SAVED: "SAVED", REPORTED: "REPORTED" });
 

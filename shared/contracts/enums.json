@@ -12,7 +12,9 @@
     "MessageType": { "Text": 1, "Image": 2, "Video": 3, "File": 4 },
     "MediaType": { "Image": 0, "Video": 1 },
     "GroupPrivacy": { "Public": 1, "Private": 2 },
-    "GroupRole": { "Admin": 1, "Member": 2 }
+    "GroupRole": { "Admin": 1, "Member": 2 },
+    "BlockTargetType": { "Ip": 1, "User": 2, "Email": 3 },
+    "BlockListKind": { "Blacklist": 1, "Whitelist": 2 }
   },
   "stringConstants": {
     "PostInteractionType": {

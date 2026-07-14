@@ -77,3 +77,16 @@ public enum GroupRole
     Member = 2
 }
 
+public enum BlockTargetType
+{
+    Ip = 1,
+    User = 2,
+    Email = 3
+}
+
+public enum BlockListKind
+{
+    Blacklist = 1,
+    Whitelist = 2
+}
+

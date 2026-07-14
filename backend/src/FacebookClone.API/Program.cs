@@ -152,6 +152,8 @@ try
     builder.Services.AddScoped<IPostInteractionService, PostInteractionService>();
     builder.Services.AddScoped<ISavedCollectionRepository, SavedCollectionRepository>();
     builder.Services.AddScoped<ISavedCollectionService, SavedCollectionService>();
+    builder.Services.AddScoped<ISecurityBlockRepository, SecurityBlockRepository>();
+    builder.Services.AddScoped<ISecurityBlockService, SecurityBlockService>();
 
     // ---------------------------------------------------------
     // 5. SWAGGER (Swashbuckle) & CORS
@@ -287,6 +289,10 @@ try
     app.UseStaticFiles();
 
     app.UseAuthentication();
+
+    // Persistent block/allow list enforcement (after auth so user/email claims exist)
+    app.UseMiddleware<PersistentBlockMiddleware>();
+
     app.UseAuthorization();
 
     // Rate limiter must run after auth so policies can partition by userId

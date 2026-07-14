@@ -27,6 +27,7 @@ public class AppDbContext : DbContext
     public DbSet<PostInteraction> PostInteractions { get; set; }
     public DbSet<SavedCollection> SavedCollections { get; set; }
     public DbSet<SavedCollectionPost> SavedCollectionPosts { get; set; }
+    public DbSet<SecurityBlockEntry> SecurityBlockEntries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -47,7 +47,8 @@ _Endpoint-by-endpoint security review. Updated during Phase 5 of the upgrade pla
 | Control | Status |
 |---------|--------|
 | Global + per-module rate limits (429 + Retry-After) | ✅ Phase 2 |
-| IP block / suspicious payload inspection | ✅ `SecurityMiddleware` (in-memory) — persist in Phase 7 |
+| IP block / suspicious payload inspection | ✅ `SecurityMiddleware` (in-memory) |
+| Persistent block/allow lists (IP/user/email) | ✅ code (`SecurityBlockEntry` + `PersistentBlockMiddleware` + admin API, Redis-cached). ⚠️ **Requires a migration** — run `dotnet ef migrations add AddSecurityBlockList` (see MIGRATIONS-TODO). |
 
 ## Secrets
 
