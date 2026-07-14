@@ -4,22 +4,13 @@ import Avatar from "../common/Avatar";
 import { useAuth } from "../../contexts/AuthContext";
 import postService from "../../services/postService";
 import toast from "react-hot-toast";
+import { PostPrivacy, PostType } from "../../shared/generated/enums";
 import "./SharePostModal.css";
-
-const POST_PRIVACY = {
-  PUBLIC: 1,
-  FRIENDS: 2,
-  PRIVATE: 3,
-};
-
-const POST_TYPE = {
-  SHARE: 2,
-};
 
 const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
   const { user } = useAuth();
   const [content, setContent] = useState("");
-  const [privacy, setPrivacy] = useState(POST_PRIVACY.PUBLIC);
+  const [privacy, setPrivacy] = useState(PostPrivacy.Public);
   const [loading, setLoading] = useState(false);
 
   if (!isOpen || !post) return null;
@@ -30,7 +21,7 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
       const formData = new FormData();
       formData.append("Content", content);
       formData.append("Privacy", privacy);
-      formData.append("PostType", POST_TYPE.SHARE);
+      formData.append("PostType", PostType.Share);
 
       await postService.sharePost(formData);
       toast.success("Đã chia sẻ bài viết!");
@@ -66,9 +57,9 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
                 value={privacy}
                 onChange={(e) => setPrivacy(Number(e.target.value))}
               >
-                <option value={POST_PRIVACY.PUBLIC}>Công khai</option>
-                <option value={POST_PRIVACY.FRIENDS}>Bạn bè</option>
-                <option value={POST_PRIVACY.PRIVATE}>Chỉ mình tôi</option>
+                <option value={PostPrivacy.Public}>Công khai</option>
+                <option value={PostPrivacy.Friends}>Bạn bè</option>
+                <option value={PostPrivacy.Private}>Chỉ mình tôi</option>
               </select>
             </div>
           </div>

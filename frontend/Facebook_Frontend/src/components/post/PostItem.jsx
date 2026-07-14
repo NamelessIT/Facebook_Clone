@@ -15,22 +15,23 @@ import { getImageUrl } from "../../utils/formatUrl";
 import postService from "../../services/postService";
 import savedItemsService from "../../services/savedItemsService";
 import toast from "react-hot-toast";
+import { PostPrivacy, PostType, ReactionType } from "../../shared/generated/enums";
 import "./PostItem.css";
 
-// Danh sách Cảm xúc chuẩn Facebook
+// Danh sách Cảm xúc chuẩn Facebook (id lấy từ shared ReactionType, chỉ giữ phần UI ở đây)
 const REACTIONS = [
-  { id: 1, icon: '👍', name: 'Thích', colorClass: 'reacted-like' },
-  { id: 2, icon: '❤️', name: 'Yêu thích', colorClass: 'reacted-love' },
-  { id: 3, icon: '😂', name: 'Haha', colorClass: 'reacted-haha' },
-  { id: 4, icon: '😮', name: 'Wow', colorClass: 'reacted-wow' },
-  { id: 5, icon: '😢', name: 'Buồn', colorClass: 'reacted-sad' },
-  { id: 6, icon: '😡', name: 'Phẫn nộ', colorClass: 'reacted-angry' },
+  { id: ReactionType.Like, icon: '👍', name: 'Thích', colorClass: 'reacted-like' },
+  { id: ReactionType.Love, icon: '❤️', name: 'Yêu thích', colorClass: 'reacted-love' },
+  { id: ReactionType.Haha, icon: '😂', name: 'Haha', colorClass: 'reacted-haha' },
+  { id: ReactionType.Wow, icon: '😮', name: 'Wow', colorClass: 'reacted-wow' },
+  { id: ReactionType.Sad, icon: '😢', name: 'Buồn', colorClass: 'reacted-sad' },
+  { id: ReactionType.Angry, icon: '😡', name: 'Phẫn nộ', colorClass: 'reacted-angry' },
 ];
 
 const PRIVACY_MAP = {
-  1: { icon: Globe, label: "Công khai" },
-  2: { icon: Users, label: "Bạn bè" },
-  3: { icon: Lock, label: "Chỉ mình tôi" },
+  [PostPrivacy.Public]: { icon: Globe, label: "Công khai" },
+  [PostPrivacy.Friends]: { icon: Users, label: "Bạn bè" },
+  [PostPrivacy.Private]: { icon: Lock, label: "Chỉ mình tôi" },
 };
 
 const PostItem = ({ post, onPostUpdated, onPostHide }) => {
@@ -40,8 +41,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 
   // Permission check: chỉ hiển thị Edit/Delete nếu user là chủ post
   const isOwner = user?.id === post.author?.id;
-  // PostType: Normal=1, Share=2, Group=3, ProfilePicture=4, CoverPhoto=5
-  const isAutoPost = post.postType === 4 || post.postType === 5;
+  const isAutoPost = post.postType === PostType.ProfilePicture || post.postType === PostType.CoverPhoto;
 
   // --- STATE MENU 3 CHẤM ---
   const [showMenu, setShowMenu] = useState(false);

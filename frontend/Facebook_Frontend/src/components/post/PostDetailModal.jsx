@@ -3,12 +3,13 @@ import { X, Globe, Users, Lock, ThumbsUp, MessageSquare, Share2 } from 'lucide-r
 import { Link } from 'react-router-dom';
 import Avatar from '../common/Avatar';
 import { getImageUrl } from '../../utils/formatUrl';
+import { PostPrivacy } from '../../shared/generated/enums';
 import './PostDetailModal.css';
 
 const PRIVACY_MAP = {
-  1: { icon: Globe, label: 'Công khai' },
-  2: { icon: Users, label: 'Bạn bè' },
-  3: { icon: Lock, label: 'Chỉ mình tôi' },
+  [PostPrivacy.Public]: { icon: Globe, label: 'Công khai' },
+  [PostPrivacy.Friends]: { icon: Users, label: 'Bạn bè' },
+  [PostPrivacy.Private]: { icon: Lock, label: 'Chỉ mình tôi' },
 };
 
 const PostDetailModal = ({ post, onClose }) => {

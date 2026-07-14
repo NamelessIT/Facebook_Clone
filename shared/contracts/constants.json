@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "description": "Shared non-enum constants (frontend-facing). Edit here, then run scripts/generate_shared_contracts.py",
+  "api": {
+    "prefix": "/api/v1"
+  },
+  "hubs": {
+    "chat": "/hubs/chat",
+    "notification": "/hubs/notification"
+  },
+  "storageKeys": {
+    "accessToken": "accessToken",
+    "refreshToken": "refreshToken",
+    "themeMode": "app_theme_mode"
+  },
+  "limits": {
+    "feedPageSize": 10,
+    "commentsPageSize": 20,
+    "searchDebounceMs": 300,
+    "maxImageUploadMb": 10,
+    "maxVideoUploadMb": 100
+  }
+}

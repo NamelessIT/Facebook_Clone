@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "description": "Canonical business enums + string-constant sets. SINGLE SOURCE OF TRUTH for backend (C#) and frontend (JS). Edit here, then run: python scripts/generate_shared_contracts.py",
+  "csharpNamespace": "FacebookClone.Domain.Enums",
+  "enums": {
+    "PostPrivacy": { "Public": 1, "Friends": 2, "Private": 3 },
+    "PostType": { "Normal": 1, "Share": 2, "Group": 3, "ProfilePicture": 4, "CoverPhoto": 5 },
+    "ReactionType": { "Like": 1, "Love": 2, "Haha": 3, "Wow": 4, "Sad": 5, "Angry": 6 },
+    "FriendshipStatus": { "Pending": 1, "Accepted": 2, "Rejected": 3, "Blocked": 4 },
+    "NotificationType": { "Like": 1, "Comment": 2, "FriendRequest": 3, "Message": 4, "FriendAccepted": 5 },
+    "ConversationType": { "Private": 1, "Group": 2 },
+    "MessageType": { "Text": 1, "Image": 2, "Video": 3, "File": 4 },
+    "MediaType": { "Image": 0, "Video": 1 },
+    "GroupPrivacy": { "Public": 1, "Private": 2 },
+    "GroupRole": { "Admin": 1, "Member": 2 }
+  },
+  "stringConstants": {
+    "PostInteractionType": {
+      "INTERESTED": "INTERESTED",
+      "NOT_INTERESTED": "NOT_INTERESTED",
+      "SAVED": "SAVED",
+      "REPORTED": "REPORTED"
+    }
+  }
+}
