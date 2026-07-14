@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../config/env';
 
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:5286/api/v1', // Đảm bảo port đúng với Backend của bạn
+  baseURL: API_BASE_URL, // Cấu hình qua VITE_API_BASE_URL / VITE_API_ORIGIN
   headers: {
     'Content-Type': 'application/json',
   },
@@ -91,7 +92,7 @@ axiosClient.interceptors.response.use(
 
       try {
         // Gọi API Refresh (Dùng axios gốc thay vì axiosClient để không bị kẹt vào interceptor)
-        const response = await axios.post('http://localhost:5286/api/v1/auth/refresh-token', {
+        const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
           accessToken: accessToken,
           refreshToken: refreshToken
         });

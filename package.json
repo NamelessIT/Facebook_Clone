@@ -1,0 +1,26 @@
+{
+  "name": "facebook-clone",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Facebook Clone - fullstack (ASP.NET Core + React/Vite). Root scripts run BE + FE together.",
+  "scripts": {
+    "dev": "concurrently -k -n BE,FE -c blue,magenta \"npm run dev:be\" \"npm run dev:fe\"",
+    "dev:fe": "npm --prefix frontend/Facebook_Frontend run dev",
+    "dev:be": "dotnet watch --project backend/src/FacebookClone.API/FacebookClone.API.csproj run",
+    "build": "npm run build:be && npm run build:fe",
+    "build:fe": "npm --prefix frontend/Facebook_Frontend run build",
+    "build:be": "dotnet build backend/FacebookClone.sln -c Release",
+    "lint": "npm run lint:fe",
+    "lint:fe": "npm --prefix frontend/Facebook_Frontend run lint",
+    "test": "npm run test:be && npm run test:fe",
+    "test:be": "dotnet test backend/FacebookClone.sln",
+    "test:fe": "npm --prefix frontend/Facebook_Frontend run test --if-present",
+    "seed": "dotnet run --project backend/src/FacebookClone.API/FacebookClone.API.csproj -- --seed",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "install:fe": "npm --prefix frontend/Facebook_Frontend install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

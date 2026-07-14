@@ -10,6 +10,38 @@ Một dự án **Facebook Clone** được xây dựng từ đầu với mục t
 
 ---
 
+# ⚡ Quick Start (một lệnh chạy cả BE + FE)
+
+```bash
+# 1. Cấu hình môi trường (lần đầu)
+cp .env.example .env                                   # backend + docker (DB, JWT)
+cp frontend/Facebook_Frontend/.env.example frontend/Facebook_Frontend/.env
+
+# 2. Cài dependencies
+npm install                 # root (concurrently)
+npm run install:fe          # frontend
+
+# 3. Bật database (PostgreSQL qua Docker)
+npm run db:up
+
+# 4. Chạy backend + frontend cùng lúc
+npm run dev
+```
+
+- Backend: `http://localhost:5286` (Swagger: `/swagger`)
+- Frontend: `http://localhost:5173`
+- **Database tự động**: khi backend khởi động sẽ **kết nối → tạo DB nếu chưa có → apply migrations → seed data**
+  (bật/tắt trong `.env`: `Database__AutoMigrate`, `Database__AutoSeed`).
+
+**Root scripts** (`package.json`): `dev`, `dev:be`, `dev:fe`, `build`, `lint`, `test`, `seed`, `db:up`, `db:down`.
+
+**Cấu hình kết nối** nằm trong `.env` (không commit) — xem `.env.example`. Frontend đọc API URL từ
+`VITE_API_ORIGIN` (xem `src/config/env.js`), không hardcode port trong code nữa.
+
+Tài khoản demo (seed): `alice@fbclone.com` / `bob@fbclone.com` / `carol@fbclone.com` / `huy@gmail.com` — mật khẩu `123456`.
+
+---
+
 # 🖥 FRONTEND
 
 ## 1. Công nghệ sử dụng

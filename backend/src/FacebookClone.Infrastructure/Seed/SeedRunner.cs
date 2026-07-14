@@ -12,10 +12,16 @@ public static async Task RunAsync(AppDbContext context)
     {
         Console.WriteLine("Seeding data...");
 
+        // Thứ tự quan trọng: User → Post → (Friendship, Interaction, Chat, Notification)
+        // vì các seeder sau tham chiếu tới User/Post đã được lưu.
         var seeders = new ISeeder[]
         {
             new UserSeeder(),
-            new PostSeeder()
+            new PostSeeder(),
+            new FriendshipSeeder(),
+            new InteractionSeeder(),
+            new ChatSeeder(),
+            new NotificationSeeder()
         };
 
         foreach (var seeder in seeders)

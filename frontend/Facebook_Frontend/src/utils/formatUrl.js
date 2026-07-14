@@ -1,8 +1,10 @@
+import { API_ORIGIN_URL } from '../config/env';
+
 export const getVideoUrl = (path) => {
   if (!path) return null;
   if (path.startsWith('http')) return path;
   const normalized = path.startsWith('/') ? path : `/${path}`;
-  return `http://localhost:5286${normalized}`;
+  return `${API_ORIGIN_URL}${normalized}`;
 };
 
 export const getImageUrl = (path, type = 'avatars') => {
@@ -21,5 +23,5 @@ export const getImageUrl = (path, type = 'avatars') => {
     finalPath = `/${path}`;
   }
 
-  return `http://localhost:5286${finalPath}`;
+  return `${API_ORIGIN_URL}${finalPath}`;
 };

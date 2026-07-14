@@ -68,6 +68,7 @@ public class PostSeeder : ISeeder
         }
 
         await context.Posts.AddRangeAsync(posts);
+        await context.SaveChangesAsync();
     }
 
 }

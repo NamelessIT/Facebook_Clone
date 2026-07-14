@@ -1,7 +1,8 @@
 import * as signalR from '@microsoft/signalr';
 import axiosClient from './axiosClient';
+import { CHAT_HUB_URL } from '../config/env';
 
-const SIGNALR_HUB_URL = 'http://localhost:5286/hubs/chat';
+const SIGNALR_HUB_URL = CHAT_HUB_URL;
 
 let connection = null;
 let isConnecting = false;

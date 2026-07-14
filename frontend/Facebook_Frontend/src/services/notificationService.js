@@ -1,7 +1,8 @@
 import * as signalR from '@microsoft/signalr';
 import axiosClient from './axiosClient';
+import { NOTIFICATION_HUB_URL } from '../config/env';
 
-const SIGNALR_HUB_URL = 'http://localhost:5286/hubs/notification';
+const SIGNALR_HUB_URL = NOTIFICATION_HUB_URL;
 
 let connection = null;
 let isConnecting = false;

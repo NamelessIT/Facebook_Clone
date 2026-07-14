@@ -7,9 +7,11 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     public AppDbContext CreateDbContext(string[] args)
     {
-        // 🔥 Connection string CHỈ dùng cho EF CLI
+        // 🔥 Connection string CHỈ dùng cho EF CLI (design-time).
+        // Ưu tiên biến môi trường (được .env nạp ở runtime) để trùng với app.
         var connectionString =
-            "Host=localhost;Port=5432;Database=facebook_clone;Username=fb_admin;Password=fb_password";
+            Environment.GetEnvironmentVariable("ConnectionStrings__Default")
+            ?? "Host=localhost;Port=5432;Database=facebook_clone;Username=fb_admin;Password=fb_password";
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
         optionsBuilder.UseNpgsql(connectionString);

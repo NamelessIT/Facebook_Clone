@@ -1,1261 +1,303 @@
-# 📘 DỰ ÁN: FACEBOOK_CLONE (FULLSTACK – CÁ NHÂN)
-
-## 1. Mục tiêu dự án
-
-Xây dựng một website mô phỏng Facebook với **đầy đủ các chức năng cốt lõi**, kiến trúc rõ ràng, code sạch, dễ mở rộng, có thể chạy thật trên môi trường production (Docker + Cloud).
-
-* Người phát triển: **1 người**
-* Định hướng: **Fullstack – Production-ready**
-
----
-
-## 2. Chia Git như thế nào? (RẤT QUAN TRỌNG)
-
-### ✅ Khuyến nghị: **1 Git – 2 folder**
-
-```text
-facebook_clone/
-├── backend/
-│   ├── services/
-│   ├── gateway/
-│   ├── docker/
-│   └── docker-compose.yml
-│
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   └── vite.config.js
-│
-├── docs/
-│   ├── api-spec/
-│   ├── db-design/
-│   └── architecture.md
-│
-└── README.md
-```
-
-## 4. Kiến trúc tổng thể
-
-### 4.1 Kiến trúc backend (Microservice nhẹ)
-
-```text
-[Frontend React]
-      |
-[API Gateway]
-      |
--------------------------------------------------
-| Auth Service | User Service | Post Service    |
-| Chat Service | Media Service| Notification   |
--------------------------------------------------
-      |
-   [Database]
-```
-
-### Tạo các project (CÓ LỆNH HẾT):
-```
-🔹 API (Web API – startup project)
-dotnet new webapi -n FacebookClone.API
-
-🔹 Domain (Entity)
-dotnet new classlib -n FacebookClone.Domain
-
-🔹 Infrastructure (EF Core)
-dotnet new classlib -n FacebookClone.Infrastructure
-
-🔹 Application (Service – để sau)
-dotnet new classlib -n FacebookClone.Application
-```
-
-### Thêm project vào solution
-```
-Quay về thư mục backend:
-
-cd ..
-dotnet sln add src/FacebookClone.API
-dotnet sln add src/FacebookClone.Domain
-dotnet sln add src/FacebookClone.Infrastructure
-dotnet sln add src/FacebookClone.Application
-```
-
-### Thiết lập reference giữa các project
-```
-dotnet add src/FacebookClone.API reference src/FacebookClone.Application
-dotnet add src/FacebookClone.Application reference src/FacebookClone.Domain
-dotnet add src/FacebookClone.Infrastructure reference src/FacebookClone.Domain
-dotnet add src/FacebookClone.API reference src/FacebookClone.Infrastructure
-```
-
-### Cài package EF Core (Infrastructure)
-```
-cd src/FacebookClone.Infrastructure
-
-dotnet add package Microsoft.EntityFrameworkCore
-dotnet add package Microsoft.EntityFrameworkCore.Design
-dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
-```
-
-### Cài DotNetEnv (API)
-```
-cd ../FacebookClone.API
-dotnet add package DotNetEnv
-```
-
-### Cài EF CLI(1 lần)
-```
-dotnet tool install --global dotnet-ef
-```
-
-### Tạo migration
-```
-👉 Chạy ở thư mục backend
-
-dotnet ef migrations add InitialCreate \
-  --project src/FacebookClone.Infrastructure \
-  --startup-project src/FacebookClone.API
-```
-
-### Apply migration
-```
-dotnet ef database update \
-  --project src/FacebookClone.Infrastructure \
-  --startup-project src/FacebookClone.API
-```
-
-### 4.2 Các service chính
-
-1. **Auth Service**
-
-   * Login / Register
-   * JWT + Refresh Token
-   * OAuth (Google – optional)
-   🔐 JWT Design 적용
-
-# Áp dụng cho:
-- AuthService (generate token)
-- API Gateway (verify token)
-- UserService / PostService / ChatService (read claim)
-
-# Claims sử dụng:
-- sub → userId
-- email
-- name
-- exp, iat
-
-# KHÔNG lưu JWT trong database.
-
-# File liên quan:
-- Application/Auth/Jwt/IJwtTokenGenerator.cs
-- Application/Auth/Jwt/JwtTokenGenerator.cs
-- API/Program.cs (JWT middleware)
-
-
-2. **User Service**
-
-   * Hồ sơ cá nhân
-   * Trạng thái online
-   * Cập nhật thông tin
-
-3. **Post Service**
-
-   * Đăng bài
-   * Like, Share, Save
-   * Comment
-   * Cảm xúc nhanh (reaction)
-
-4. **Chat Service (Real-time)**
-
-   * 1-1 chat
-   * Group chat
-   * Online / typing
-   * WebSocket / SignalR
-
-5. **Media Service**
-
-   * Upload ảnh
-   * Video (Reels)
-   * Thumbnail
-   * Storage (Cloudinary / S3)
-
-6. **Notification Service**
-
-   * Like / comment / friend request
-   * Realtime + lưu DB
-
----
-
-## 📄 Swagger (OpenAPI)
-
-Áp dụng cho:
-- TẤT CẢ backend services
-
-Mục đích:
-- API contract giữa Backend ↔ Frontend
-- Test API nhanh
-- Tránh mismatch request/response
-
-Triển khai tại:
-- FacebookClone.API
-- File: Program.cs
-
-Quy ước:
-- Mọi API phải xuất hiện trong Swagger
-- Prefix: /api/v1
-- Authentication: Bearer JWT
-
-
-## 5. Công nghệ sử dụng
-
-### 5.1 Frontend
-
-* **ReactJS + Vite**
-* TypeScript
-* React Query / TanStack Query
-* Zustand / Redux Toolkit
-* TailwindCSS (hoặc SCSS module)
-* Axios
-* Socket.IO client
-
-#### Cấu trúc frontend
-
-```text
-src/
-├── components/
-│   ├── common/
-│   ├── post/
-│   ├── chat/
-│   └── ui/
-├── pages/
-├── hooks/
-├── services/
-├── store/
-├── theme/
-└── utils/
-```
-
-### 🎨 Màu sắc & theme (RẤT QUAN TRỌNG)
-
-* Primary: `#1877F2` (Facebook blue)
-* Background: `#F0F2F5`
-* Text: `#050505`
-* Border: `#CED0D4`
-
-👉 Dùng **theme config**
-
-```ts
-export const theme = {
-  colors: {
-    primary: "#1877F2",
-    bg: "#F0F2F5",
-    text: "#050505",
-  }
-};
-```
-
----
-
-### 5.2 Backend (.NET)
-
-* ASP.NET Core Web API
-* Entity Framework Core
-* Dapper (query phức tạp)
-* SignalR (chat realtime)
-* JWT Authentication
-* FluentValidation
-* AutoMapper
-
-### 5.3 Database
-
-* PostgreSQL (khuyến nghị)
-* Redis (cache + online status)
-* Elasticsearch (search – optional)
-
----
-
-### 5.4 DevOps
-
-* Docker
-* Docker Compose
-* Nginx (reverse proxy)
-* CI/CD (GitHub Actions – optional)
-* Deploy:
-
-  * VPS / AWS / DigitalOcean
-
----
-
-## 6. Danh sách chức năng (ĐẦY ĐỦ)
-
-### 👤 Người dùng
-
-* Đăng ký / đăng nhập
-* Trang cá nhân
-* Avatar, cover
-* Trạng thái hiện tại
-
-### 📰 Bài viết
-
-* Đăng bài (text, ảnh, video)
-* Like / reaction
-* Comment
-* Share
-* Save bài
-* Quyền riêng tư
-
-### 🎥 Reels / Short Video
-
-* Upload video ngắn
-* Scroll auto-play
-* Like / comment
-* Lưu video
-
-### 💬 Chat realtime
-
-* Chat 1-1
-* Chat nhóm
-* Seen / typing
-* Online status
-
-📌 WebSocket / SignalR KHÔNG áp dụng cho AuthService
-Chỉ dùng cho:
-- ChatService
-- NotificationService
-
-
-### 👥 Bạn bè
-
-* Gửi lời mời
-* Chấp nhận / từ chối
-* Hủy kết bạn
-* Gợi ý bạn bè
-
-### 🧠 Cảm xúc nhanh
-
-* Đang cảm thấy: vui, buồn, mệt, yêu…
-
-### 🔍 Tìm kiếm
-
-* Người dùng
-* Bài viết
-* Group
-
-### 👨‍👩‍👧‍👦 Group
-
-* Tạo group
-* Post trong group
-* Phân quyền admin
-
-### 🔔 Thông báo
-
-* Realtime
-* Lưu lịch sử
-
----
-
-## 7. Phân chia thời gian (3 tháng)
-
-### 🟢 Tháng 1 – Nền tảng
-
-* Setup repo
-* Auth + User
-* UI layout
-* Post cơ bản
-* Database design
-
-### 🟡 Tháng 2 – Core features
-
-* Like / comment / share
-* Friend system
-* Chat realtime
-* Notification
-
-### 🔵 Tháng 3 – Nâng cao & deploy
-
-* Reels
-* Group
-* Search
-* Docker
-* Deploy production
-* Fix bug + tối ưu
-
----
-
-## 8. Lưu ý quan trọng (đừng bỏ qua)
-
-* ❗ Không làm tất cả cùng lúc
-* ❗ Ưu tiên **core flow**
-* ❗ Viết README rõ
-* ❗ Commit nhỏ – rõ ràng
-* ❗ Tối ưu UX trước fancy feature
-
----
-
-
-## 9. Chi tiết kế hoạch (QUAN TRỌNG):
-
-# 📅 KẾ HOẠCH CHI TIẾT 3 THÁNG – FACEBOOK_CLONE
-
----
-
-# 🟢 THÁNG 1 – NỀN TẢNG (CORE FOUNDATION)
-
-## 1️⃣ Setup Repository & Kiến trúc
-
-### 📂 Cấu trúc repo
-
-```text
-facebook_clone/
-├── backend/
-│   ├── services/
-│   │   ├── AuthService
-│   │   ├── UserService
-│   │   └── PostService
-│   ├── ApiGateway
-│   ├── SharedKernel
-│   └── docker-compose.yml
-│
-├── frontend/
-│   ├── src/
-│   └── vite.config.ts
-│
-└── docs/
-```
-
-### 📌 Quy ước chung
-
-* API: `/api/v1/...`
-* ID: `uuid`
-* Auth: `Authorization: Bearer <token>`
-* Response chuẩn:
-
-```json
-{
-  "success": true,
-  "data": {},
-  "message": ""
-}
-```
-
----
-
-## 2️⃣ Auth + User Service
-
-### 🔐 Auth Service
-
-#### Chức năng
-
-* Đăng ký
-* Đăng nhập
-* Refresh token
-* Logout
-
-#### API chuẩn
-
-```http
-POST   /api/v1/auth/register
-POST   /api/v1/auth/login
-POST   /api/v1/auth/refresh-token
-POST   /api/v1/auth/logout
-```
-
-#### Flow login
-
-1. User gửi email + password
-2. AuthService:
-
-   * Validate
-   * Hash password
-   * Generate access + refresh token
-3. Trả token cho frontend
-4. Frontend lưu access token (memory) + refresh token (httpOnly cookie)
-
----
-
-### 👤 User Service
-
-#### Chức năng
-
-* Profile
-* Update info
-* Status hiện tại
-
-#### API
-
-```http
-GET    /api/v1/users/me
-GET    /api/v1/users/{userId}
-PUT    /api/v1/users/me
-PATCH  /api/v1/users/status
-```
-
-#### Status ví dụ
-
-```json
-{
-  "status": "Feeling happy 😊"
-}
-```
-
----
-
-## 3️⃣ UI Layout (Frontend)
-
-### Layout chính
-
-* Header
-* Left Sidebar
-* Feed
-* Right Sidebar
-
-### Component core
-
-```text
-Layout/
-├── MainLayout
-├── Header
-├── SidebarLeft
-├── SidebarRight
-└── FeedLayout
-```
-
-### Lưu ý
-
-* Chưa cần đẹp
-* Ưu tiên **component tái sử dụng**
-* Tạo `theme.ts` ngay từ đầu
-
----
-
-## 4️⃣ Post cơ bản
-
-### 📝 Post Service
-
-#### Chức năng
-
-* Tạo post
-* Lấy feed
-* Xóa post
-
-#### API
-
-```http
-POST   /api/v1/posts
-GET    /api/v1/posts/feed
-GET    /api/v1/posts/{postId}
-DELETE /api/v1/posts/{postId}
-```
-
-#### Tạo post
-
-```json
-{
-  "content": "Hello Facebook Clone",
-  "mediaUrls": [],
-  "privacy": "PUBLIC"
-}
-```
-
----
-
-## 5️⃣ Database design (v1)
-```
-### Core tables
-
-📐 ERD – THIẾT KẾ CHI TIẾT (DẠNG BẢNG)
-1️⃣ users (BẢNG GỐC)
-users
------
-id (uuid, PK)
-email (varchar, unique)
-password_hash (varchar)
-full_name (varchar)
-avatar_url (text)
-cover_url (text)
-bio (text)
-status (varchar)
-is_online (boolean)
-created_at (timestamp)
-updated_at (timestamp)
-is_deleted (boolean)   // soft delete
-
-🔹 Trung tâm của toàn bộ hệ thống
-🔹 1 user → nhiều post, comment, message
-
-2️⃣ posts
-posts
------
-id (uuid, PK)
-user_id (uuid, FK → users.id)
-content (text)
-privacy (enum: PUBLIC, FRIENDS, PRIVATE)
-post_type (enum: NORMAL, SHARE, GROUP)
-group_id (uuid, nullable)
-shared_post_id (uuid, nullable, FK → posts.id)
-created_at
-updated_at
-is_deleted (boolean)
-
-
-🔹 Một post có thể share post khác
-🔹 shared_post_id tạo self-referencing relationship
-
-3️⃣ comments
-comments
---------
-id (uuid, PK)
-post_id (uuid, FK → posts.id)
-user_id (uuid, FK → users.id)
-parent_comment_id (uuid, nullable, FK → comments.id)
-content (text)
-created_at
-is_deleted (boolean)
-
-
-🔹 Comment lồng nhau (reply)
-🔹 parent_comment_id là weak relationship
-
-4️⃣ reactions (LIKE / LOVE / HAHA …)
-
-👉 BẢNG TRUNG GIAN QUAN TRỌNG
-
-reactions
----------
-id (uuid, PK)
-user_id (uuid, FK → users.id)
-post_id (uuid, FK → posts.id)
-reaction_type (enum: LIKE, LOVE, HAHA, WOW, SAD, ANGRY)
-created_at
-
-UNIQUE (user_id, post_id)
-
-
-🔹 1 user chỉ reaction 1 lần / post
-🔹 Thay reaction = update record
-
-5️⃣ friendships (BẢNG QUAN HỆ N-N)
-friendships
------------
-id (uuid, PK)
-requester_id (uuid, FK → users.id)
-receiver_id (uuid, FK → users.id)
-status (enum: PENDING, ACCEPTED, REJECTED, BLOCKED)
-created_at
-updated_at
-
-UNIQUE (requester_id, receiver_id)
-CHECK (requester_id != receiver_id)
-
-
-🔹 Đây là bảng yếu (junction table)
-🔹 Đại diện cho mối quan hệ phức tạp user ↔ user
-
-6️⃣ conversations (CHAT)
-conversations
--------------
-id (uuid, PK)
-type (enum: PRIVATE, GROUP)
-created_at
-created_by (uuid, FK → users.id)
-
-7️⃣ conversation_members (BẢNG TRUNG GIAN CHAT)
-conversation_members
---------------------
-conversation_id (uuid, FK → conversations.id)
-user_id (uuid, FK → users.id)
-joined_at
-
-PRIMARY KEY (conversation_id, user_id)
-
-
-🔹 Cho phép:
-
-1–1 chat
-
-Group chat
-
-8️⃣ messages
-messages
---------
-id (uuid, PK)
-conversation_id (uuid, FK → conversations.id)
-sender_id (uuid, FK → users.id)
-content (text)
-message_type (enum: TEXT, IMAGE, VIDEO, FILE)
-created_at
-is_deleted (boolean)
-
-📌 Cho phép:
-“Delete for me”
-“Delete for everyone”
-
-9️⃣ notifications
-notifications
--------------
-id (uuid, PK)
-user_id (uuid, FK → users.id)
-type (enum: LIKE, COMMENT, FRIEND_REQUEST, MESSAGE)
-reference_id (uuid)
-is_read (boolean)
-created_at
-actor_id (uuid, FK → users.id)  // ai gây ra notification
-
-
-🔹 reference_id trỏ tới post/comment/message tùy loại
-📌 Ví dụ:
-A like post của B → notification của B
-→ actor_id = A
-
-🔟 reels (VIDEO NGẮN)
-reels
------
-id (uuid, PK)
-user_id (uuid, FK → users.id)
-video_url (text)
-caption (text)
-created_at
-is_deleted (boolean)
-
-
-1️⃣1️⃣ reel_likes (BẢNG YẾU)
-reel_likes
-----------
-reel_id (uuid, FK → reels.id)
-user_id (uuid, FK → users.id)
-created_at
-
-PRIMARY KEY (reel_id, user_id)
-
-1️⃣2️⃣ groups
-groups
-------
-id (uuid, PK)
-name (varchar)
-description (text)
-owner_id (uuid, FK → users.id)
-created_at
-privacy (PUBLIC, PRIVATE)
-
-
-1️⃣3️⃣ group_members (BẢNG TRUNG GIAN)
-group_members
--------------
-group_id (uuid, FK → groups.id)
-user_id (uuid, FK → users.id)
-role (enum: ADMIN, MEMBER)
-joined_at
-
-PRIMARY KEY (group_id, user_id)
-
-
-refresh_tokens
---------------
-id (uuid, PK)
-user_id (uuid, FK → users.id)
-token (varchar, unique)
-expires_at (timestamp)
-is_revoked (boolean)
-created_at (timestamp)
-revoked_at (timestamp, nullable)
-
-📌 Refresh Token Strategy
-
-Sử dụng cho:
-- AuthService
-
-Flow sử dụng:
-- Login → tạo refresh token
-- Refresh-token → revoke token cũ, tạo token mới
-- Logout → revoke token
-
-File liên quan:
-- Domain/Entities/RefreshToken.cs
-- Infrastructure/Configurations/RefreshTokenConfiguration.cs
-- Infrastructure/AppDbContext.cs
-- Application/Auth (AuthService logic)
-
-Đảm bảo:
-- Idempotent
-- Transaction
-
-### 🔁 Transaction & Idempotent Design
-
-Áp dụng cho các API:
-- POST /auth/login
-- POST /auth/refresh-token
-- POST /auth/logout
-- POST /posts/{postId}/like
-- POST /friends/request/{userId}
-
-Nguyên tắc:
-- Một request gọi nhiều lần → kết quả không thay đổi
-- Dùng database transaction cho các bước quan trọng
-
-Áp dụng tại:
-- Application layer (Service)
-- Infrastructure layer (DbContext transaction)
-
-```
-
-### Entities
-```
-public class Comment
-{
-    public Guid Id { get; set; }
-
-    public Guid PostId { get; set; }
-    public Post Post { get; set; } = null!;
-
-    public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
-
-    public Guid? ParentCommentId { get; set; }
-    public Comment? ParentComment { get; set; }
-
-    public string Content { get; set; } = null!;
-
-    public DateTime CreatedAt { get; set; }
-
-    public bool IsDeleted { get; set; }
-
-    /* Navigation */
-    public ICollection<Comment> Replies { get; set; } = new List<Comment>();
-}
-public class Conversation
-{
-    public Guid Id { get; set; }
-
-    public ConversationType Type { get; set; }
-
-    public Guid CreatedBy { get; set; }
-    public User Creator { get; set; } = null!;
-
-    public DateTime CreatedAt { get; set; }
-
-    /* Navigation */
-    public ICollection<ConversationMember> Members { get; set; } = new List<ConversationMember>();
-    public ICollection<Message> Messages { get; set; } = new List<Message>();
-}
-public class ConversationMember
-{
-    public Guid ConversationId { get; set; }
-    public Conversation Conversation { get; set; } = null!;
-
-    public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
-
-    public DateTime JoinedAt { get; set; }
-}
-public class Friendship
-{
-    public Guid Id { get; set; }
-
-    public Guid RequesterId { get; set; }
-    public User Requester { get; set; } = null!;
-
-    public Guid ReceiverId { get; set; }
-    public User Receiver { get; set; } = null!;
-
-    public FriendshipStatus Status { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-}
-public class Group
-{
-    public Guid Id { get; set; }
-
-    public string Name { get; set; } = null!;
-    public string? Description { get; set; }
-
-    public Guid OwnerId { get; set; }
-    public User Owner { get; set; } = null!;
-
-    public GroupPrivacy Privacy { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
-    /* Navigation */
-    public ICollection<GroupMember> Members { get; set; } = new List<GroupMember>();
-}
-public class GroupMember
-{
-    public Guid GroupId { get; set; }
-    public Group Group { get; set; } = null!;
-
-    public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
-
-    public GroupRole Role { get; set; }
-
-    public DateTime JoinedAt { get; set; }
-}
-public class Message
-{
-    public Guid Id { get; set; }
-
-    public Guid ConversationId { get; set; }
-    public Conversation Conversation { get; set; } = null!;
-
-    public Guid SenderId { get; set; }
-    public User Sender { get; set; } = null!;
-
-    public string Content { get; set; } = null!;
-
-    public MessageType MessageType { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
-    public bool IsDeleted { get; set; }
-}
-public class Notification
-{
-    public Guid Id { get; set; }
-
-    public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
-
-    public NotificationType Type { get; set; }
-
-    public Guid ReferenceId { get; set; }
-
-    public bool IsRead { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
-    public Guid ActorId { get; set; }
-    public User Actor { get; set; } = null!;
-}
-public class Post
-{
-    public Guid Id { get; set; }
-
-    public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
-
-    public string Content { get; set; } = null!;
-
-    public PostPrivacy Privacy { get; set; }
-    public PostType PostType { get; set; }
-
-    public Guid? GroupId { get; set; }
-
-    public Guid? SharedPostId { get; set; }
-    public Post? SharedPost { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-
-    public bool IsDeleted { get; set; }
-
-    /* Navigation */
-    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
-    public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
-}
-public class Reaction
-{
-    public Guid Id { get; set; }
-
-    public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
-
-    public Guid PostId { get; set; }
-    public Post Post { get; set; } = null!;
-
-    public ReactionType ReactionType { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-}
-public class Reel
-{
-    public Guid Id { get; set; }
-
-    public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
-
-    public string VideoUrl { get; set; } = null!;
-    public string? Caption { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
-    public bool IsDeleted { get; set; }
-
-    /* Navigation */
-    public ICollection<ReelLike> Likes { get; set; } = new List<ReelLike>();
-}
-public class ReelLike
-{
-    public Guid ReelId { get; set; }
-    public Reel Reel { get; set; } = null!;
-
-    public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
-
-    public DateTime CreatedAt { get; set; }
-}
-public class User
-{
-    public Guid Id { get; set; }
-
-    public string Email { get; set; } = null!;
-    public string PasswordHash { get; set; } = null!;
-    public string FullName { get; set; } = null!;
-
-    public string? AvatarUrl { get; set; }
-    public string? CoverUrl { get; set; }
-    public string? Bio { get; set; }
-    public string? Status { get; set; }
-
-    public bool IsOnline { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-
-    public bool IsDeleted { get; set; }
-
-    /* Navigation */
-    public ICollection<Post> Posts { get; set; } = new List<Post>();
-    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
-    public ICollection<Message> Messages { get; set; } = new List<Message>();
-}
-
-public class RefreshToken
-{
-    public Guid Id { get; set; }
-
-    public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
-
-    public string Token { get; set; } = null!;
-
-    public DateTime ExpiresAt { get; set; }
-
-    public bool IsRevoked { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime? RevokedAt { get; set; }
-}
-
-```
-
-# 🟡 THÁNG 2 – CORE FEATURES
-
----
-
-## 6️⃣ Like / Comment / Share
-
-### ❤️ Like
-
-```http
-POST   /api/v1/posts/{postId}/like
-DELETE /api/v1/posts/{postId}/like
-```
-
-* 1 user = 1 like / post
-
----
-
-### 💬 Comment
-
-```http
-POST   /api/v1/posts/{postId}/comments
-GET    /api/v1/posts/{postId}/comments
-```
-
----
-
-### 🔁 Share
-
-```http
-POST   /api/v1/posts/{postId}/share
-```
-
-* Tạo post mới
-* Link tới post gốc
-
----
-
-## 7️⃣ Friend System
-
-### API
-
-```http
-POST   /api/v1/friends/request/{userId}
-POST   /api/v1/friends/accept/{requestId}
-POST   /api/v1/friends/reject/{requestId}
-DELETE /api/v1/friends/{userId}
-GET    /api/v1/friends/list
-GET    /api/v1/friends/requests
-```
-
-### Flow
-
-1. Gửi request
-2. Chờ accept
-3. Tạo friendship
-
----
-
-## 8️⃣ Chat Realtime (SignalR)
-
-### Hub
-
-```text
-/chatHub
-```
-
-### API
-
-```http
-GET /api/v1/chats
-GET /api/v1/chats/{conversationId}
-```
-
-### Event
-
-```text
-sendMessage
-receiveMessage
-typing
-onlineStatus
-```
-
----
-
-## 9️⃣ Notification
-
-### API
-
-```http
-GET /api/v1/notifications
-PATCH /api/v1/notifications/{id}/read
-```
-
-### Trigger từ:
-
-* Like
-* Comment
-* Friend request
-* Message
-
----
-
-# 🔵 THÁNG 3 – NÂNG CAO & DEPLOY
-
----
-
-## 🔟 Reels (Short Video)
-
-### API
-
-```http
-POST /api/v1/reels
-GET  /api/v1/reels/feed
-POST /api/v1/reels/{id}/like
-```
-
-### Lưu ý
-
-* Auto play
-* Giới hạn thời lượng
-
----
-
----
-
-### 🎥 Media (Video)
-
-**API**
-
-```http
-POST /api/v1/media/upload/init
-POST /api/v1/media/upload/chunk
-POST /api/v1/media/upload/complete
-```
-
-🎥 Chunking Strategy (Media / Video)
-
-Áp dụng cho:
-- MediaService
-- Reels
-- Video Post
-
-Frontend:
-- Chia video thành chunk (5–10MB)
-- Upload tuần tự hoặc song song
-
-Backend:
-- Lưu chunk tạm
-- Kiểm tra thứ tự chunk
-- Merge khi upload hoàn tất
-
-Mục tiêu:
-- Tránh timeout
-- Resume upload
-- UX tốt với file lớn
-
-
----
-
-## 1️⃣1️⃣ Group
-
-### API
-
-```http
-POST   /api/v1/groups
-GET    /api/v1/groups/{id}
-POST   /api/v1/groups/{id}/join
-POST   /api/v1/groups/{id}/post
-```
-
----
-
-## 1️⃣2️⃣ Search
-
-### API
-
-```http
-GET /api/v1/search?q=keyword&type=post,user,group
-```
-
----
-
-## 1️⃣3️⃣ Docker
-
-* Frontend
-* Backend services
-* Database
-* Nginx
-
----
-
-## 1️⃣4️⃣ Deploy & Optimize
-
-API Gateway :
-Routing request đến đúng microservice
-Authentication/Authorization
-Rate limiting
-Logging
-Aggregation (kết hợp dữ liệu từ nhiều service)
-
-* Domain
-* HTTPS
-* Rate limit
-* Cache Redis
-* Fix UX
-
----
-
-## 🧩 Design – Service Mapping
-
-| Design | Auth | User | Post | Chat | Media |
-|------|------|------|------|------|------|
-| JWT | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Refresh Token | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Transaction | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Idempotent | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Swagger | ✅ | ✅ | ✅ | ✅ | ✅ |
-| WebSocket | ❌ | ❌ | ❌ | ✅ | ❌ |
-| Chunking | ❌ | ❌ | ❌ | ❌ | ✅ |
-
-
-
+# KẾ HOẠCH NÂNG CẤP HỆ THỐNG SAU KHI RÀ SOÁT CODEBASE
+
+Cập nhật theo hiện trạng repo ngày 2026-07-14:
+
+- Backend đang là ASP.NET Core solution tại `backend/FacebookClone.sln`, gồm `API`, `Application`, `Domain`, `Infrastructure`.
+- Frontend đang là React/Vite tại `frontend/Facebook_Frontend`.
+- Root hiện chưa có `package.json`; frontend mới có scripts `dev`, `build`, `lint`, `preview`.
+- `docker-compose.yml` mới có PostgreSQL, chưa có Redis, backend, frontend, reverse proxy.
+- Backend đã có `SecurityMiddleware` và `SecurityService` với in-memory rate limit/IP block/payload inspection, nhưng cần chuẩn hóa thành cấu hình production-ready, có module policy, có persistent/distributed store.
+- Backend đã có enum trong `backend/src/FacebookClone.Domain/Enums`, nhưng frontend vẫn có nhiều constant/enum rải rác trong component/service.
+- Chưa thấy test project backend, chưa có Vitest/Playwright cho frontend, chưa có CI pipeline.
+- Lệnh `npx gitnexus analyze` cần được chạy trong môi trường có phép tải/thực thi package npm bên thứ ba. Trong phiên này `npx.ps1` bị PowerShell execution policy chặn, `npx.cmd` cần network/npm cache và bị sandbox từ chối vì rủi ro thực thi package ngoài.
+
+## Mục tiêu
+
+Biến repo thành một fullstack app có thể chạy, test, audit, build và deploy bằng một quy trình thống nhất; đồng thời gom các constant/enum, tăng bảo mật API, thêm rate limit/cache/transaction, và giảm lỗi do user thao tác lặp trên UI.
+
+## Phase 0 - Audit và baseline
+
+1. Chạy audit codebase:
+   - Chạy `rg --files`, thống kê module, controller, service, repository, component, service frontend.
+   - Chạy `npx gitnexus analyze` tại root trong môi trường được approve network/third-party execution.
+   - Lưu kết quả vào `docs/audit/gitnexus-report.md` hoặc `docs/audit/codebase-baseline.md`.
+
+2. Tạo root `package.json` để chạy cả FE và BE bằng một lệnh:
+   - Thêm scripts root:
+     - `dev`: chạy frontend Vite và backend `dotnet watch run` song song.
+     - `dev:fe`: `npm --prefix frontend/Facebook_Frontend run dev`.
+     - `dev:be`: `dotnet watch --project backend/src/FacebookClone.API/FacebookClone.API.csproj run`.
+     - `build`: build frontend + backend.
+     - `lint`: lint frontend + format/analyzers backend nếu có.
+     - `test`: test frontend + backend.
+   - Dùng `concurrently` hoặc `npm-run-all` để không phải mở 2 terminal.
+   - Không hardcode port trong nhiều nơi; đưa API base URL về env/shared config.
+
+3. Chuẩn hóa cấu hình:
+   - Thêm `.env.example` cho root/frontend/backend.
+   - Tách config dev/staging/prod: API URL, hub URL, JWT, CORS, Redis, PostgreSQL, upload path, rate limit.
+   - Cập nhật README cách chạy một lệnh từ root.
+
+Tiêu chí hoàn tất Phase 0:
+
+- Từ root chạy được `npm run dev` để lên cả backend và frontend.
+- Có report audit và danh sách risk hiện trạng.
+- Root scripts không phá scripts hiện có của frontend.
+
+## Phase 1 - Gom constant/enum thành source chung
+
+1. Kiểm kê toàn bộ constant/enum cần gom:
+   - Backend: `Domain/Enums`, `SecurityEventType`, rate limit numbers, CORS policy names, route prefixes, cache keys, notification types, media types, privacy/post/reaction/group/friendship/chat enums.
+   - Frontend: `POST_PRIVACY`, `POST_TYPE`, `REACTIONS`, `PRIVACY_MAP`, `EVENT_TYPE_LABELS`, hub URLs, API base URL, localStorage keys, pagination limits, timeout values, upload limits, route names, error messages lặp lại.
+
+2. Tạo folder source-of-truth:
+   - Đề xuất: `shared/contracts`.
+   - Chứa các file JSON/YAML có version: `enums.json`, `api-routes.json`, `limits.json`, `storage-keys.json`, `cache-keys.json`, `security-policies.json`.
+   - Đây là nguồn chính; frontend/backend không tự định nghĩa lại enum/constant quan trọng.
+
+3. Sinh code cho từng runtime:
+   - Frontend import từ `frontend/Facebook_Frontend/src/shared/generated`.
+   - Backend import từ project mới `backend/src/FacebookClone.Shared` hoặc folder shared được reference bởi Domain/Application/API.
+   - Viết script `scripts/generate_shared_contracts.py` để generate JS/C# từ `shared/contracts`.
+   - CI fail nếu generated files lệch với contract.
+
+4. Refactor theo module, tránh làm một lần quá rộng:
+   - Lần 1: API URL, hub URL, localStorage keys, route prefixes.
+   - Lần 2: privacy/post/reaction/media/friendship/group/chat enums.
+   - Lần 3: security/rate limit/cache constants.
+   - Lần 4: UI labels/maps có liên quan đến enum.
+
+Tiêu chí hoàn tất Phase 1:
+
+- Không còn enum business trùng lặp giữa FE và BE.
+- Sửa enum/limit trong `shared/contracts` và generate lại là FE/BE cùng cập nhật.
+- Có test/check drift cho generated constants.
+
+## Phase 2 - Rate limit middleware toàn hệ thống và theo module
+
+1. Chuẩn hóa rate limit backend:
+   - Dùng ASP.NET Core Rate Limiting middleware cho global policy.
+   - Giữ custom `SecurityService` cho audit/security events, nhưng không để toàn bộ rate limit production chỉ nằm trong memory.
+   - Định danh key theo IP + userId nếu đã authenticate.
+
+2. Thêm policy theo module:
+   - Auth: login/register/refresh-token stricter.
+   - Post/Reels/Media: giới hạn create/upload/edit/delete.
+   - Search: throttle cao hơn vì dễ bị spam.
+   - Chat/Notification hubs: giới hạn connect/reconnect/message.
+   - Admin: stricter + audit event bắt buộc.
+
+3. Đưa limit về config:
+   - `appsettings.json` có section `RateLimits`.
+   - Hỗ trợ override bằng env cho staging/prod.
+   - Trả response 429 chuẩn: `Retry-After`, correlation id, message ngắn gọn.
+
+4. Redis/distributed rate limit:
+   - Khi Redis bật, rate limit dùng distributed counter/token bucket.
+   - Khi Redis mất, fallback policy rõ ràng và log cảnh báo.
+
+Tiêu chí hoàn tất Phase 2:
+
+- Mọi controller quan trọng có policy hoặc nằm dưới global policy.
+- Load test nhỏ có thể chứng minh 429 xuất hiện đúng ngưỡng.
+- Admin xem/reset được rate limit/block list nếu được phân quyền.
+
+## Phase 3 - Test, CI và deploy script
+
+1. Backend test:
+   - Tạo test projects: `FacebookClone.UnitTests`, `FacebookClone.IntegrationTests`.
+   - Unit test service: Auth, Post, Friendship, Notification, Chat, Security.
+   - Integration test API với test database/container hoặc SQLite/Postgres test.
+   - Test transaction/idempotency cho flow quan trọng.
+
+2. Frontend test:
+   - Thêm Vitest + React Testing Library.
+   - Test services/axios interceptor/refresh token.
+   - Test component chính: Login, PostItem, Create/Edit Post, Friend button, Notification bell, Chat input.
+   - Thêm Playwright cho smoke E2E: login, tạo post, reaction/comment, friend request, chat/notification nếu có mock.
+
+3. CI pipeline:
+   - GitHub Actions: restore/install, lint, build, unit test, integration test, frontend test, e2e smoke nếu có service.
+   - Cache npm/NuGet.
+   - Upload coverage/log artifacts.
+   - Fail fast nếu shared generated contracts bị lệch.
+
+4. Python deploy script chạy được bằng Git Bash:
+   - Tạo `scripts/deploy.py`.
+   - Chạy được bằng `python scripts/deploy.py` và `python3 scripts/deploy.py`.
+   - Terminal log có step/status/duration.
+   - Quy trình: check env -> install/restore -> generate shared contracts -> lint -> test -> build -> docker compose build/up -> migration -> health check -> deploy nếu config đủ.
+   - Có dry-run: `--dry-run`.
+   - Không deploy nếu thiếu env/secrets bắt buộc.
+
+Tiêu chí hoàn tất Phase 3:
+
+- `npm run test` tại root test được FE + BE.
+- CI xanh trên PR.
+- Deploy script dừng an toàn khi cấu hình chưa đủ và log rõ lý do dừng.
+
+## Phase 4 - Kiểm tra button, debounce/throttle/rate-limit trên UI
+
+1. Lập danh sách toàn bộ button/action:
+   - Tìm `button`, `onClick`, submit form, keyboard submit, upload, reaction, save, share, delete, admin action, chat send.
+   - Phân loại: read action, write action, destructive action, upload action, repeated action.
+
+2. Tạo shared hooks/util:
+   - `useDebouncedAction` cho submit/search.
+   - `useThrottledAction` cho reaction/scroll/load more.
+   - `useSingleFlightAction` cho POST/PUT/PATCH/DELETE để chặn double submit.
+   - Standard loading/disabled state cho button.
+
+3. Áp dụng theo module:
+   - Auth: login/register không double submit.
+   - Post: create/edit/delete/share/save/reaction/comment có loading/idempotency.
+   - Friendship: request/accept/reject/unfriend có lock.
+   - Chat: send message throttle/single-flight và optimistic state an toàn.
+   - Admin: ban/unban/block IP/reset rate limit có confirm và loading.
+   - Upload/Reels: giới hạn click, cancel/retry rõ ràng.
+
+4. Kết hợp backend:
+   - Thêm idempotency key cho write action quan trọng.
+   - Nếu backend trả 429, frontend hiện thông báo và tôn trọng `Retry-After`.
+
+Tiêu chí hoàn tất Phase 4:
+
+- Không có write button quan trọng nào gọi API trùng khi user click liên tục.
+- Playwright có test double-click/smoke cho các flow chính.
+
+## Phase 5 - Bảo vệ data và request API
+
+1. Authentication/authorization:
+   - Đảm bảo mọi endpoint private có `[Authorize]`.
+   - Admin endpoint có role/policy riêng.
+   - Object-level authorization: post owner, profile privacy, collection owner, conversation member.
+
+2. Token/session:
+   - Ưu tiên refresh token trong httpOnly secure cookie khi deploy.
+   - Rotate refresh token và revoke token cũ trong transaction.
+   - Giảm lưu token trong `localStorage` nếu có thể; nếu chưa đổi ngay, ghi risk và roadmap.
+
+3. Request validation:
+   - Thêm FluentValidation hoặc validation filters cho DTO.
+   - Giới hạn payload size, file type, file size, extension, content-type.
+   - Sanitize output/input nhạy cảm, tránh XSS/SQL injection/path traversal.
+
+4. Security headers/CORS:
+   - CORS theo whitelist env, không hardcode môi trường prod.
+   - Thêm HSTS/HTTPS redirection prod, CSP cân bằng với Vite assets, X-Content-Type-Options, Referrer-Policy.
+   - Correlation id/audit log không log secret/token/password.
+
+5. Secrets:
+   - Không để JWT secret/DB password prod trong repo.
+   - Thêm secret scan trong CI nếu có thể.
+
+Tiêu chí hoàn tất Phase 5:
+
+- Security review endpoint-by-endpoint có file checklist.
+- Test authorization bắt được user truy cập data không phải của mình.
+
+## Phase 6 - Redis/cache/session/SSE notification
+
+1. Redis infrastructure:
+   - Thêm Redis vào `docker-compose.yml`.
+   - Thêm config `Redis:ConnectionString`.
+   - Backend đăng ký `IDistributedCache`/Redis cache và health check.
+
+2. Cache strategy:
+   - Cache read-heavy: profile public, feed page, search results ngắn hạn, notification count, friend suggestions, saved collections metadata.
+   - Cache invalidation khi post/comment/reaction/friendship/profile thay đổi.
+   - Dùng cache key từ shared constants.
+
+3. Session/online state:
+   - Lưu online/presence/session lightweight vào Redis.
+   - Nếu scale nhiều instance, dùng Redis backplane cho SignalR nếu tiếp tục dùng SignalR.
+
+4. SSE cho thông báo user đăng bài:
+   - Tạo endpoint SSE, ví dụ `GET /api/v1/notifications/stream` hoặc `GET /api/v1/posts/events`.
+   - Gửi heartbeat theo chu kỳ.
+   - Dùng cancellation token để đóng kết nối khi user disconnect.
+   - Có timeout/reconnect policy; frontend dùng `EventSource` và backoff.
+   - Khi user đăng bài/comment/reaction tạo event notification, push qua SSE/SignalR tùy loại client.
+   - Nếu user mất kết nối giữa chừng, event quan trọng vẫn lưu DB và client sync lại bằng REST sau reconnect.
+
+Tiêu chí hoàn tất Phase 6:
+
+- Redis chạy trong dev compose.
+- Cache có metric hit/miss/log.
+- SSE disconnect không làm leak task/connection.
+
+## Phase 7 - Blacklist/whitelist và chặn user/IP
+
+1. Persistent security list:
+   - Tạo bảng/cấu hình cho IP blacklist, IP whitelist, user blacklist, email/domain blacklist nếu cần.
+   - Cache list trong Redis, có invalidation khi admin cập nhật.
+   - Không chỉ lưu in-memory trong singleton.
+
+2. Middleware enforcement:
+   - Whitelist được check trước rate limit với policy rõ ràng.
+   - Blacklist trả 403 và ghi audit event.
+   - Hỗ trợ block theo IP, userId, email, device/session nếu có đủ dữ liệu.
+
+3. Admin UI/API:
+   - Quản lý block/unblock, duration, reason, automatic/manual flag.
+   - Tìm kiếm/filter event.
+   - Log ai đã chặn/mở chặn.
+
+Tiêu chí hoàn tất Phase 7:
+
+- Restart backend không mất blacklist/whitelist.
+- Admin có thể chặn 1 user bất kỳ và user đó bị chặn ở API/hub cần thiết.
+
+## Phase 8 - Transaction/idempotency cho quy trình quan trọng
+
+1. Tạo transaction boundary:
+   - Thêm Unit of Work hoặc dùng `AppDbContext.Database.BeginTransactionAsync` tại Application service cho flow nhiều write.
+   - Không để repository tự `SaveChangesAsync` qua nhiều bước mà không có transaction khi workflow cần atomicity.
+
+2. Flow bắt buộc có transaction:
+   - Auth: login/refresh-token/logout token rotation.
+   - Post: create post + media + notification.
+   - Comment/reaction/share/save collection.
+   - Friend request/accept/reject/unfriend.
+   - Chat: create conversation + members + first message.
+   - Reels/upload complete.
+   - Admin ban/unban/block/unblock.
+
+3. Idempotency:
+   - Thêm idempotency key cho write API để user click lại/request retry không tạo duplicate.
+   - Unique constraint cho business rule: reaction 1 user/post, friendship pair, saved collection item, reel like.
+   - Xử lý concurrency conflict thân thiện.
+
+4. Outbox cho side effects:
+   - Notification/email/realtime event nên ghi outbox trong transaction, publish sau commit.
+   - Nếu publish fail, retry background job.
+
+Tiêu chí hoàn tất Phase 8:
+
+- Integration test chứng minh rollback khi một bước fail.
+- Double submit/retry không tạo duplicate data.
+
+## Thứ tự ưu tiên để làm
+
+1. Phase 0: audit + root scripts + config baseline.
+2. Phase 1: shared constants/enums vì đây là nền cho các phase sau.
+3. Phase 2 + Phase 5: rate limit và security API.
+4. Phase 3: test/CI/deploy script để khóa chặt chất lượng.
+5. Phase 4: debounce/throttle UI.
+6. Phase 6: Redis/cache/SSE.
+7. Phase 7: blacklist/whitelist persistent.
+8. Phase 8: transaction/idempotency cho các workflow còn lại, ưu tiên flow có rủi ro duplicate/mất data.
+
+## Checklist xác nhận cuối cùng
+
+- Root có `package.json` và `npm run dev` chạy cả FE/BE.
+- `npx gitnexus analyze` đã được chạy trong môi trường an toàn và có report.
+- Constant/enum quan trọng nằm trong `shared/contracts`, FE/BE dùng generated source.
+- Rate limit có global + module policy, có 429/Retry-After, có admin reset/block.
+- Test/CI bao phủ build/lint/unit/integration/e2e smoke.
+- Deploy script Python chạy được bằng `python` và `python3` trên Git Bash.
+- Button write action có debounce/throttle/single-flight/loading state.
+- API có authz/object-level checks, validation, headers, CORS, secret hygiene.
+- Redis/cache/session/SSE được cấu hình và có fallback/log.
+- Blacklist/whitelist persistent, admin quản lý được user/IP.
+- Workflow quan trọng có transaction, idempotency và test rollback.

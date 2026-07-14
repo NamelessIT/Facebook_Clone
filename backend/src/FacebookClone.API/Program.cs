@@ -20,6 +20,14 @@ using Serilog;
 using Microsoft.OpenApi.Models; // Dùng cho Swagger
 
 // ---------------------------------------------------------
+// 0. NẠP FILE .env (nếu có) TRƯỚC MỌI THỨ
+// DotNetEnv sẽ đưa các biến "Section__Key" vào Environment,
+// ASP.NET Core Configuration tự đọc chúng và override appsettings.json.
+// TraversePath: tìm .env từ thư mục hiện tại đi ngược lên (repo root).
+// ---------------------------------------------------------
+DotNetEnv.Env.TraversePath().Load();
+
+// ---------------------------------------------------------
 // 1. CẤU HÌNH SERILOG (Ghi log ngay từ khi khởi động)
 // ---------------------------------------------------------
 Log.Logger = new LoggerConfiguration()
@@ -195,13 +203,38 @@ try
         app.UseSwaggerUI();
     }
 
-    // Seed Data Command
-    if (args.Contains("--seed"))
+    // ---------------------------------------------------------
+    // 6.1 DATABASE BOOTSTRAP: kết nối → tạo DB (nếu chưa có) →
+    //     apply migrations (tạo/sửa/xóa table) → seed data.
+    // Bật/tắt qua .env: Database__AutoMigrate / Database__AutoSeed.
+    // Chạy "dotnet run -- --seed" để chỉ seed rồi thoát.
+    // ---------------------------------------------------------
+    var seedOnly = args.Contains("--seed");
+    var autoMigrate = app.Configuration.GetValue("Database:AutoMigrate", true);
+    var autoSeed = app.Configuration.GetValue("Database:AutoSeed", true);
+
+    if (seedOnly || autoMigrate || autoSeed)
     {
         using var scope = app.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        await SeedRunner.RunAsync(dbContext);
-        return; 
+
+        if (seedOnly || autoMigrate)
+        {
+            Log.Information("Applying database migrations (creates database if missing)...");
+            await dbContext.Database.MigrateAsync();
+            Log.Information("Database schema is up to date.");
+        }
+
+        if (seedOnly || autoSeed)
+        {
+            await SeedRunner.RunAsync(dbContext);
+        }
+
+        if (seedOnly)
+        {
+            Log.Information("Seed-only run finished. Exiting.");
+            return;
+        }
     }
 
     // app.UseHttpsRedirection(); //khi deploy lên production sẽ bật lại, còn dev thì tạm thời để yên (đỡ phải cấu hình SSL cho localhost)
