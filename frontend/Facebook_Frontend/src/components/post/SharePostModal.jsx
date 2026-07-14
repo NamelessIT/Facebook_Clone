@@ -5,18 +5,16 @@ import { useAuth } from "../../contexts/AuthContext";
 import postService from "../../services/postService";
 import toast from "react-hot-toast";
 import { PostPrivacy, PostType } from "../../shared/generated/enums";
+import useSingleFlightAction from "../../hooks/useSingleFlightAction";
 import "./SharePostModal.css";
 
 const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
   const { user } = useAuth();
   const [content, setContent] = useState("");
   const [privacy, setPrivacy] = useState(PostPrivacy.Public);
-  const [loading, setLoading] = useState(false);
 
-  if (!isOpen || !post) return null;
-
-  const handleShare = async () => {
-    setLoading(true);
+  // Single-flight guard: blocks double-submit even on very fast double clicks.
+  const { run: handleShare, isRunning: loading } = useSingleFlightAction(async () => {
     try {
       const formData = new FormData();
       formData.append("Content", content);
@@ -30,10 +28,10 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
       onShared?.();
     } catch (error) {
       toast.error(error.response?.data?.message || "Chia sẻ thất bại!");
-    } finally {
-      setLoading(false);
     }
-  };
+  });
+
+  if (!isOpen || !post) return null;
 
   return (
     <div className="share-modal-overlay" onMouseDown={onClose}>
