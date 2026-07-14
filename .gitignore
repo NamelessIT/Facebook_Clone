@@ -15,3 +15,7 @@ agent_workspace.md
 # .NET build artifacts (should not be tracked)
 **/bin/
 **/obj/
+
+# Python
+__pycache__/
+*.pyc
