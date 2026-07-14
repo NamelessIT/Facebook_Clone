@@ -1,18 +1,37 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:16
     container_name: fb_postgres
     restart: always
     environment:
-      POSTGRES_DB: facebook_clone
-      POSTGRES_USER: fb_admin
-      POSTGRES_PASSWORD: fb_password
+      POSTGRES_DB: ${POSTGRES_DB:-facebook_clone}
+      POSTGRES_USER: ${POSTGRES_USER:-fb_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fb_password}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-fb_admin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: fb_redis
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pg_data:
+  redis_data:

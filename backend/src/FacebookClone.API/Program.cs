@@ -95,6 +95,24 @@ try
     // Rate limiting: global + per-module policies (config "RateLimits")
     builder.Services.AddAppRateLimiting(builder.Configuration);
 
+    // Distributed cache: Redis when "Redis:ConnectionString" is set, else in-memory.
+    var redisConn = builder.Configuration["Redis:ConnectionString"];
+    if (!string.IsNullOrWhiteSpace(redisConn))
+    {
+        builder.Services.AddStackExchangeRedisCache(o =>
+        {
+            o.Configuration = redisConn;
+            o.InstanceName = "fbclone:";
+        });
+        Log.Information("Distributed cache: Redis ({Conn})", redisConn);
+    }
+    else
+    {
+        builder.Services.AddDistributedMemoryCache();
+        Log.Information("Distributed cache: in-memory (Redis not configured)");
+    }
+    builder.Services.AddScoped<ICacheService, CacheService>();
+
     builder.Services.AddSignalR(); // 👈 Kích hoạt dịch vụ SignalR
 
     // ✅ FIX LỖI AUTOMAPPER: Dùng cú pháp Config Action để tránh lỗi CS1503

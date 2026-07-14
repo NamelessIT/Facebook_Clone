@@ -24,6 +24,8 @@
 
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
 
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0" />
+
     <ProjectReference Include="..\FacebookClone.Application\FacebookClone.Application.csproj" />
     <ProjectReference Include="..\FacebookClone.Infrastructure\FacebookClone.Infrastructure.csproj" />
   </ItemGroup>

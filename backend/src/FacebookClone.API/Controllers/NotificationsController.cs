@@ -1,4 +1,5 @@
 ﻿using FacebookClone.Application.Services.Interfaces;
+using FacebookClone.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -11,10 +12,12 @@ namespace FacebookClone.API.Controllers;
 public class NotificationsController : ControllerBase
 {
     private readonly INotificationService _notificationService;
+    private readonly ICacheService _cache;
 
-    public NotificationsController(INotificationService notificationService)
+    public NotificationsController(INotificationService notificationService, ICacheService cache)
     {
         _notificationService = notificationService;
+        _cache = cache;
     }
 
     private Guid GetCurrentUserId()
@@ -22,6 +25,8 @@ public class NotificationsController : ControllerBase
         var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return Guid.Parse(idClaim!);
     }
+
+    private static string UnreadCacheKey(Guid userId) => $"notif:unread:{userId}";
 
     // GET /api/v1/notifications?pageNumber=1&pageSize=10
     // Lay danh sach notifications co phan trang
@@ -57,7 +62,13 @@ public class NotificationsController : ControllerBase
     {
         try
         {
-            var count = await _notificationService.GetUnreadCountAsync(GetCurrentUserId());
+            var userId = GetCurrentUserId();
+            // Cached briefly (badge tolerates ~10s staleness); invalidated on read/delete.
+            var count = await _cache.GetOrSetAsync(
+                UnreadCacheKey(userId),
+                TimeSpan.FromSeconds(10),
+                () => _notificationService.GetUnreadCountAsync(userId),
+                HttpContext.RequestAborted);
             return Ok(new { success = true, data = new { unreadCount = count } });
         }
         catch (Exception ex)
@@ -73,7 +84,9 @@ public class NotificationsController : ControllerBase
     {
         try
         {
-            await _notificationService.MarkAsReadAsync(GetCurrentUserId(), id);
+            var userId = GetCurrentUserId();
+            await _notificationService.MarkAsReadAsync(userId, id);
+            await _cache.RemoveAsync(UnreadCacheKey(userId));
             return Ok(new { success = true, message = "Da danh dau da doc." });
         }
         catch (UnauthorizedAccessException ex)
@@ -93,7 +106,9 @@ public class NotificationsController : ControllerBase
     {
         try
         {
-            await _notificationService.MarkAllAsReadAsync(GetCurrentUserId());
+            var userId = GetCurrentUserId();
+            await _notificationService.MarkAllAsReadAsync(userId);
+            await _cache.RemoveAsync(UnreadCacheKey(userId));
             return Ok(new { success = true, message = "Da danh dau tat ca la da doc." });
         }
         catch (Exception ex)
@@ -109,7 +124,9 @@ public class NotificationsController : ControllerBase
     {
         try
         {
-            await _notificationService.DeleteNotificationAsync(GetCurrentUserId(), id);
+            var userId = GetCurrentUserId();
+            await _notificationService.DeleteNotificationAsync(userId, id);
+            await _cache.RemoveAsync(UnreadCacheKey(userId));
             return Ok(new { success = true, message = "Da xoa thong bao." });
         }
         catch (UnauthorizedAccessException ex)
@@ -119,6 +136,52 @@ public class NotificationsController : ControllerBase
         catch (Exception ex)
         {
             return BadRequest(new { success = false, message = ex.Message });
+        }
+    }
+
+    // GET /api/v1/notifications/stream (Server-Sent Events)
+    // Streams the unread-count to the client with a periodic heartbeat.
+    // Closes cleanly when the client disconnects (RequestAborted cancellation).
+    [HttpGet("stream")]
+    public async Task StreamNotifications(CancellationToken clientToken)
+    {
+        var userId = GetCurrentUserId();
+        var response = Response;
+        response.Headers.ContentType = "text/event-stream";
+        response.Headers.CacheControl = "no-cache";
+        response.Headers["X-Accel-Buffering"] = "no"; // disable proxy buffering
+
+        // Combine the action token with the connection-abort token.
+        using var linked = CancellationTokenSource.CreateLinkedTokenSource(clientToken, HttpContext.RequestAborted);
+        var ct = linked.Token;
+
+        var interval = TimeSpan.FromSeconds(15);
+        int? lastCount = null;
+
+        try
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                var count = await _notificationService.GetUnreadCountAsync(userId);
+
+                // Only push when the value changes; always send a heartbeat comment.
+                if (count != lastCount)
+                {
+                    await response.WriteAsync($"event: unread-count\ndata: {{\"unreadCount\":{count}}}\n\n", ct);
+                    lastCount = count;
+                }
+                else
+                {
+                    await response.WriteAsync(": keep-alive\n\n", ct);
+                }
+                await response.Body.FlushAsync(ct);
+
+                await Task.Delay(interval, ct);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Client disconnected — expected, exit quietly (no leaked loop).
         }
     }
 }
