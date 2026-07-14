@@ -108,6 +108,30 @@ def check_env(dry_run: bool) -> None:
             log("  (dry-run: continuing despite missing env)", C_WARN)
 
 
+def bump_version(dry_run: bool) -> str:
+    """Increment the patch version in root package.json (v1.0.0 -> v1.0.1) so each
+    deploy is easy to identify. Returns the (new) version string."""
+    import json as _json
+    pkg_path = ROOT / "package.json"
+    pkg = _json.loads(pkg_path.read_text(encoding="utf-8"))
+    current = pkg.get("version", "0.0.0")
+    try:
+        major, minor, patch = (int(x) for x in current.split("."))
+    except ValueError:
+        major, minor, patch = 1, 0, 0
+    new_version = f"{major}.{minor}.{patch + 1}"
+
+    if dry_run:
+        log(f"    would bump version: {current} -> {new_version}", C_WARN)
+        return current
+
+    pkg["version"] = new_version
+    # Preserve 2-space indentation + trailing newline.
+    pkg_path.write_text(_json.dumps(pkg, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    log(f"    version: {current} -> v{new_version}", C_OK)
+    return new_version
+
+
 def health_check(url: str, attempts: int = 20, delay: float = 3.0) -> bool:
     for i in range(attempts):
         try:
@@ -124,6 +148,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--skip-tests", action="store_true")
+    parser.add_argument("--no-bump", action="store_true", help="do not auto-increment the deploy version")
     parser.add_argument("--health-url", default="http://localhost:5286/swagger/index.html")
     args = parser.parse_args()
     dry = args.dry_run
@@ -137,6 +162,11 @@ def main() -> int:
 
     with Step("Check required env/secrets", dry):
         check_env(dry)
+
+    version = None
+    if not args.no_bump:
+        with Step("Bump deploy version", dry):
+            version = bump_version(dry)
 
     with Step("Generate shared contracts (drift check)", dry):
         run([sys.executable, str(ROOT / "scripts" / "generate_shared_contracts.py"), "--check"], dry_run=False)
@@ -171,7 +201,8 @@ def main() -> int:
             log(f"Health check failed: {args.health_url}", C_ERR)
             return 4
 
-    log("Deploy pipeline finished." if not dry else "Dry run finished.", C_OK)
+    tag = f" (v{version})" if version else ""
+    log(f"Deploy pipeline finished.{tag}" if not dry else "Dry run finished.", C_OK)
     return 0
 
 
