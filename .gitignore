@@ -19,3 +19,5 @@ agent_workspace.md
 # Python
 __pycache__/
 *.pyc
+
+/node_modules/
