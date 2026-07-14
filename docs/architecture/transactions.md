@@ -35,7 +35,7 @@ await _unitOfWork.ExecuteInTransactionAsync(async () =>
 - Logout is idempotent (safe to retry).
 - Business uniqueness that enforces idempotency (reaction 1/user/post, friendship
   pair, saved-collection item, reel like) should be backed by **unique constraints**.
-  Adding/verifying these requires an EF migration — see `docs/MIGRATIONS-TODO.md`.
+  Adding/verifying these requires an EF migration (`dotnet ef migrations add ...`).
 - Optional next step: an idempotency-key header for POST write endpoints so client
   retries/double-clicks don't create duplicates (complements the FE single-flight
   hook from Phase 4).
