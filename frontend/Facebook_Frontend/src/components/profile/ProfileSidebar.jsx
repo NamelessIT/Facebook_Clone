@@ -5,7 +5,6 @@ import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import Avatar from '../common/Avatar';
 import friendshipService from '../../services/friendshipService';
-import { getImageUrl } from '../../utils/formatUrl';
 import './ProfileSidebar.css';
 
 const ProfileSidebar = ({ profileUser }) => {

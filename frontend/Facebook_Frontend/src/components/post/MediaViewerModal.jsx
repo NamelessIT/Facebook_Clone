@@ -9,6 +9,7 @@ const MediaViewerModal = ({ isOpen, onClose, medias, initialIndex }) => {
 
   // Cập nhật index khi props thay đổi
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentIndex(initialIndex || 0);
   }, [initialIndex, isOpen]);
 

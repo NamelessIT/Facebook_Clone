@@ -32,7 +32,7 @@ const LoginPage = () => {
       const { accessToken, refreshToken } = response.data.data;
       await login(accessToken, refreshToken);
       navigate("/");
-    } catch (err) {
+    } catch {
       setError("Đăng nhập thất bại! Kiểm tra lại thông tin.");
     }
   };

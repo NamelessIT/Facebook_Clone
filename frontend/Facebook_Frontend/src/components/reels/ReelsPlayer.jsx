@@ -13,7 +13,7 @@ import EditReelModal from './EditReelModal';
 import { getVideoUrl } from '../../utils/formatUrl';
 import './ReelsPlayer.css';
 
-const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUpdated }) => {
+const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUpdated, onNotInterested }) => {
   const { user: currentUser } = useAuth();
   const videoRef = useRef(null);
 

@@ -51,7 +51,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
   const [showEditModal, setShowEditModal] = useState(false);
 
   // --- STATE DELETE POST ---
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [, setDeleteLoading] = useState(false);
   const [isDeletionPending, setIsDeletionPending] = useState(false);
   const [deletionTimeRemaining, setDeletionTimeRemaining] = useState(10);
   const [showReportFromUndo, setShowReportFromUndo] = useState(false);
@@ -69,7 +69,6 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
   // --- STATE COLLECTION MODAL ---
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [userCollections, setUserCollections] = useState([]);
-  const [selectedCollections, setSelectedCollections] = useState([]);
 
   // Đóng menu khi click ngoài
   useEffect(() => {
@@ -500,7 +499,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 };
 
 // Modal chọn bộ sưu tập để lưu vào
-const PostCollectionModal = ({ postId, onClose, onSaveToCollection, userCollections }) => {
+const PostCollectionModal = ({ onClose, onSaveToCollection, userCollections }) => {
   const [selected, setSelected] = useState(null);
   const [newName, setNewName] = useState('');
   const [showCreate, setShowCreate] = useState(false);
