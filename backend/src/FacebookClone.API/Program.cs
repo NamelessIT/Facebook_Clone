@@ -171,18 +171,35 @@ try
         });
     });
 
-    // Cấu hình CORS (Cho phép React gọi API)
+    // Cấu hình CORS — whitelist từ config "Cors:AllowedOrigins" (env-overridable),
+    // fallback về Vite dev origin nếu chưa cấu hình.
+    var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+    if (allowedOrigins is null || allowedOrigins.Length == 0)
+    {
+        allowedOrigins = new[] { "http://localhost:5173" };
+    }
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("AllowReactApp",
             policy =>
             {
-                policy.WithOrigins("http://localhost:5173") // URL của Vite React
+                policy.WithOrigins(allowedOrigins)
                       .AllowAnyHeader()
                       .AllowAnyMethod()
                       .AllowCredentials();
             });
     });
+
+    // Secret hygiene: fail fast in Production if the placeholder JWT secret is still in use.
+    if (builder.Environment.IsProduction())
+    {
+        var secret = jwtConfig["Secret"];
+        if (string.IsNullOrWhiteSpace(secret) || secret.Contains("CHANGE_LATER"))
+        {
+            throw new InvalidOperationException(
+                "Jwt:Secret is not configured for Production. Set it via env (Jwt__Secret) / secrets store.");
+        }
+    }
 
     // =========================================================
     // BUILD APPLICATION
@@ -193,6 +210,9 @@ try
     // 6. MIDDLEWARES PIPELINE
     // ---------------------------------------------------------
     
+    // Security headers on every response (before anything writes a body)
+    app.UseMiddleware<SecurityHeadersMiddleware>();
+
     // Global Error Handling & Custom Middleware (Log, Audit...)
     app.UseGlobalMiddlewares();
 
