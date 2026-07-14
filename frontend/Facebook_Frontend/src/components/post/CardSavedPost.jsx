@@ -2,7 +2,6 @@ import { useState, useRef } from 'react';
 import { MoreHorizontal, Link2, FolderPlus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getImageUrl } from '../../utils/formatUrl';
-import postInteractionService from '../../services/postInteractionService';
 import './CardSavedPost.css';
 
 // Modal chọn bộ sưu tập để lưu vào

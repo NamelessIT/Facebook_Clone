@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Search, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useAuth } from '../../contexts/AuthContext';
 import friendshipService from '../../services/friendshipService';
 import chatService from '../../services/chatService';
 import Avatar from '../../components/common/Avatar';
@@ -12,7 +11,6 @@ import './ChatListPage.css';
 const ChatListPage = () => {
   const { friendId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -7,7 +7,7 @@ import postInteractionService from '../../services/postInteractionService';
 import ReportPostModal from './ReportPostModal';
 import './PostActionMenu.css';
 
-const PostActionMenu = ({ postId, onPostHide, onNotInterested }) => {
+const PostActionMenu = ({ postId, onNotInterested }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [loading, setLoading] = useState(false);

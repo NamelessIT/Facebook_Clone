@@ -5,7 +5,7 @@ import Avatar from "../../components/common/Avatar";
 import toast from "react-hot-toast";
 
 const ProfileSettings = () => {
-  const { user, login } = useAuth();
+  const { user } = useAuth();
 
   const [form, setForm] = useState({
     firstName: user?.firstName || "",

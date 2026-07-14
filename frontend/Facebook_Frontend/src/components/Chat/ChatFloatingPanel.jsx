@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { X, ChevronLeft, Search, Users, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import friendshipService from '../../services/friendshipService';
 import chatService from '../../services/chatService';
 import Avatar from '../common/Avatar';
