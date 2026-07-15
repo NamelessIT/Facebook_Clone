@@ -11,8 +11,10 @@
 
 .pdm-dialog {
   display: flex;
-  max-width: 1100px;
-  width: 100%;
+  /* Fixed size so every post opens the SAME large modal, regardless of
+     how much text/media it has (content scrolls inside instead of resizing). */
+  width: min(1100px, 96vw);
+  height: 88vh;
   max-height: 90vh;
   border-radius: 12px;
   overflow: hidden;
@@ -21,7 +23,9 @@
 }
 
 .pdm-dialog--no-media {
-  max-width: 560px;
+  /* Narrower than the media variant, but still a consistent fixed height
+     (88vh inherited) so text-only posts don't produce a tiny modal. */
+  width: min(680px, 96vw);
   flex-direction: column;
 }
 
@@ -146,6 +150,113 @@
   font-style: italic;
 }
 
+.pdm-shared-preview {
+  width: 100%;
+  margin: 0 0 16px;
+  padding: 0;
+  border: 1px solid #ced0d4;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.pdm-shared-preview:hover {
+  background: #f7f8fa;
+  border-color: #b8bbc2;
+}
+
+.pdm-shared-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px 6px;
+}
+
+.pdm-shared-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.pdm-shared-author-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdm-shared-author {
+  color: #050505;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.pdm-shared-time {
+  color: #65676b;
+  font-size: 12px;
+}
+
+.pdm-shared-text {
+  padding: 4px 12px 12px;
+  color: #050505;
+  font-size: 15px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.pdm-shared-media {
+  display: grid;
+  gap: 2px;
+  border-top: 1px solid #e4e6eb;
+  background: #000;
+}
+
+.pdm-shared-media--1 {
+  grid-template-columns: 1fr;
+  height: 220px;
+}
+
+.pdm-shared-media--2,
+.pdm-shared-media--3 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  height: 220px;
+}
+
+.pdm-shared-media--3 .pdm-shared-media-item:first-child {
+  grid-row: span 2;
+}
+
+.pdm-shared-media-item {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+.pdm-shared-media-item img,
+.pdm-shared-media-item video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.pdm-shared-media-more {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
 .pdm-stats {
   display: flex;
   align-items: center;
@@ -170,6 +281,16 @@
   padding: 4px 0;
 }
 
+.pdm-reaction-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+}
+
+.pdm-reaction-container .pdm-action-btn {
+  width: 100%;
+}
+
 .pdm-action-btn {
   flex: 1;
   display: flex;
@@ -189,6 +310,73 @@
 
 .pdm-action-btn:hover {
   background-color: #f0f2f5;
+}
+
+.pdm-action-btn--active {
+  color: #1877f2;
+}
+
+.pdm-current-reaction-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.pdm-action-btn.reacted-like { color: #0866ff; }
+.pdm-action-btn.reacted-love { color: #f33e58; }
+.pdm-action-btn.reacted-haha,
+.pdm-action-btn.reacted-wow,
+.pdm-action-btn.reacted-sad { color: #f7b125; }
+.pdm-action-btn.reacted-angry { color: #e9710f; }
+
+.pdm-reaction-popover {
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  z-index: 20;
+  display: flex;
+  gap: 8px;
+  padding: 5px 8px;
+  border: 1px solid #ced0d4;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 0.15s, visibility 0.15s, transform 0.15s;
+}
+
+.pdm-reaction-container:hover .pdm-reaction-popover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-8px);
+}
+
+.pdm-reaction-option {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.pdm-reaction-option:hover {
+  transform: scale(1.35) translateY(-4px);
+}
+
+.pdm-top-reactions {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-size: 15px;
+}
+
+.pdm-content-panel .comment-section {
+  margin-top: 8px;
+  border-top: 1px solid #e4e6eb;
+  padding-top: 8px;
 }
 
 /* Dark mode */
@@ -217,6 +405,28 @@
   color: #e4e6eb;
 }
 
+[data-theme="dark"] .pdm-shared-preview {
+  background: #242526;
+  border-color: #3e4042;
+}
+
+[data-theme="dark"] .pdm-shared-preview:hover {
+  background: #2f3031;
+}
+
+[data-theme="dark"] .pdm-shared-author,
+[data-theme="dark"] .pdm-shared-text {
+  color: #e4e6eb;
+}
+
+[data-theme="dark"] .pdm-shared-time {
+  color: #b0b3b9;
+}
+
+[data-theme="dark"] .pdm-shared-media {
+  border-top-color: #3e4042;
+}
+
 [data-theme="dark"] .pdm-stats {
   border-color: #3e4042;
 }
@@ -227,4 +437,117 @@
 
 [data-theme="dark"] .pdm-action-btn:hover {
   background-color: #3a3b3c;
+}
+
+[data-theme="dark"] .pdm-action-btn.reacted-like { color: #2d88ff; }
+[data-theme="dark"] .pdm-action-btn.reacted-love { color: #f33e58; }
+[data-theme="dark"] .pdm-action-btn.reacted-haha,
+[data-theme="dark"] .pdm-action-btn.reacted-wow,
+[data-theme="dark"] .pdm-action-btn.reacted-sad { color: #f7b125; }
+[data-theme="dark"] .pdm-action-btn.reacted-angry { color: #e9710f; }
+
+[data-theme="dark"] .pdm-action-btn--active {
+  color: #2d88ff;
+}
+
+[data-theme="dark"] .pdm-reaction-popover {
+  background: #242526;
+  border-color: #3e4042;
+}
+
+[data-theme="dark"] .pdm-content-panel .comment-section {
+  border-top-color: #3e4042;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+/* Tablet: keep two panels but give the media more room */
+@media (max-width: 900px) {
+  .pdm-dialog {
+    width: 96vw;
+    height: 90vh;
+  }
+  .pdm-content-panel {
+    flex: 0 0 320px;
+  }
+}
+
+/* Mobile: full-screen, stack media on top of the content */
+@media (max-width: 768px) {
+  .pdm-overlay {
+    padding: 0;
+  }
+
+  .pdm-dialog,
+  .pdm-dialog--no-media {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh; /* exclude mobile browser chrome */
+    max-height: 100vh;
+    max-height: 100dvh;
+    border-radius: 0;
+    flex-direction: column;
+  }
+
+  .pdm-media-panel {
+    flex: 0 0 auto;
+    min-height: 180px;
+    max-height: 45vh;
+  }
+
+  .pdm-media-el {
+    max-height: 45vh;
+  }
+
+  .pdm-content-panel {
+    flex: 1 1 auto;
+    padding: 12px;
+  }
+
+  .pdm-dialog--no-media .pdm-content-panel {
+    padding: 16px;
+    padding-top: 52px; /* clear the close button */
+  }
+
+  /* Bigger, easier-to-tap close button */
+  .pdm-close {
+    top: 8px;
+    right: 8px;
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Reaction popover: center it so it can't overflow off-screen edges */
+  .pdm-reaction-popover {
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+  }
+  .pdm-reaction-container:hover .pdm-reaction-popover {
+    transform: translateX(-50%) translateY(-8px);
+  }
+}
+
+/* Small phones: tighten spacing + typography */
+@media (max-width: 480px) {
+  .pdm-media-panel {
+    max-height: 40vh;
+  }
+  .pdm-media-el {
+    max-height: 40vh;
+  }
+  .pdm-author-name {
+    font-size: 14px;
+  }
+  .pdm-text {
+    font-size: 14px;
+  }
+  .pdm-action-btn {
+    font-size: 13px;
+    padding: 8px 4px;
+  }
+  .pdm-reaction-option {
+    font-size: 24px;
+  }
 }
