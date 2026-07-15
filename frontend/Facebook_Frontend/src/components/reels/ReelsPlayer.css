@@ -320,3 +320,9 @@
   border: none;
   border-top: 1px solid #e4e6eb;
 }
+
+/* Dark mode (confirm dialog; the player itself is already dark) */
+[data-theme="dark"] .rp-confirm-box { background: #242526; }
+[data-theme="dark"] .rp-confirm-box h4 { color: #e4e6eb; }
+[data-theme="dark"] .rp-confirm-box p { color: #b0b3b9; }
+[data-theme="dark"] .rp-btn--secondary { background: #3a3b3c; color: #e4e6eb; }

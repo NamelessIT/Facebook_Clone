@@ -150,3 +150,17 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Dark mode */
+[data-theme="dark"] .erm-dialog { background: #242526; }
+[data-theme="dark"] .erm-header { border-bottom-color: #3e4042; }
+[data-theme="dark"] .erm-header-title,
+[data-theme="dark"] .erm-label { color: #e4e6eb; }
+[data-theme="dark"] .erm-close { background: #3a3b3c; color: #b0b3b9; }
+[data-theme="dark"] .erm-close:hover { background: #4e4f50; }
+[data-theme="dark"] .erm-input,
+[data-theme="dark"] .erm-select,
+[data-theme="dark"] .erm-textarea { color: #e4e6eb; background: #3a3b3c; border-color: #3e4042; }
+[data-theme="dark"] .erm-char-count { color: #b0b3b9; }
+[data-theme="dark"] .erm-btn--secondary { background: #3a3b3c; color: #e4e6eb; }
+[data-theme="dark"] .erm-btn--secondary:hover:not(:disabled) { background: #4e4f50; }

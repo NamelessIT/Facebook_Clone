@@ -4,7 +4,7 @@ import Avatar from "../common/Avatar";
 import { useAuth } from "../../contexts/AuthContext";
 import postService from "../../services/postService";
 import toast from "react-hot-toast";
-import { PostPrivacy, PostType } from "../../shared/generated/enums";
+import { PostPrivacy } from "../../shared/generated/enums";
 import useSingleFlightAction from "../../hooks/useSingleFlightAction";
 import "./SharePostModal.css";
 
@@ -16,12 +16,10 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
   // Single-flight guard: blocks double-submit even on very fast double clicks.
   const { run: handleShare, isRunning: loading } = useSingleFlightAction(async () => {
     try {
-      const formData = new FormData();
-      formData.append("Content", content);
-      formData.append("Privacy", privacy);
-      formData.append("PostType", PostType.Share);
-
-      await postService.sharePost(formData);
+      await postService.sharePost(post.id, {
+        caption: content,
+        privacy,
+      });
       toast.success("Đã chia sẻ bài viết!");
       setContent("");
       onClose();

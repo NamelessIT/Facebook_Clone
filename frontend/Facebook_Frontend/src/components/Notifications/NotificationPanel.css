@@ -208,3 +208,20 @@
 .notification-load-more-btn:hover {
   background: #f0f2f5;
 }
+
+/* Dark mode */
+[data-theme="dark"] .notification-panel { background: #242526; }
+[data-theme="dark"] .notification-panel-header { border-bottom-color: #3e4042; }
+[data-theme="dark"] .notification-panel-header h3 { color: #e4e6eb; }
+[data-theme="dark"] .notification-mark-all-btn:hover { background: #3a3b3c; }
+[data-theme="dark"] .notification-item { background: #242526; }
+[data-theme="dark"] .notification-item:hover { background: #3a3b3c; }
+[data-theme="dark"] .notification-item--unread { background: #263a5e; }
+[data-theme="dark"] .notification-item--unread:hover { background: #2e4570; }
+[data-theme="dark"] .notification-item-icon { border-color: #242526; }
+[data-theme="dark"] .notification-item-text { color: #e4e6eb; }
+[data-theme="dark"] .notification-item-time { color: #b0b3b9; }
+[data-theme="dark"] .notification-empty,
+[data-theme="dark"] .notification-loading { color: #b0b3b9; }
+[data-theme="dark"] .notification-load-more { border-top-color: #3e4042; }
+[data-theme="dark"] .notification-load-more-btn:hover { background: #3a3b3c; }

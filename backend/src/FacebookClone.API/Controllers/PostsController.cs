@@ -43,6 +43,25 @@ public class PostsController : ControllerBase
         return Ok(new { success = true, data = posts });
     }
 
+    [HttpGet("{id:guid}")]
+    [DisableRateLimiting]
+    public async Task<IActionResult> GetPostById(Guid id)
+    {
+        try
+        {
+            var post = await _postService.GetPostByIdAsync(GetCurrentUserId(), id);
+            return Ok(new { success = true, message = "Lay bai viet thanh cong.", data = post });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { success = false, message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new { success = false, message = ex.Message });
+        }
+    }
+
     // 1b. LAY DANH SACH BAI VIET THEO USER
     [HttpGet("user/{userId}")]
     [DisableRateLimiting]

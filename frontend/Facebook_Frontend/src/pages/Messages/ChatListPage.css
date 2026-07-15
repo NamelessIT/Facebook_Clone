@@ -195,3 +195,22 @@
     min-width: 280px;
   }
 }
+
+/* Dark mode */
+[data-theme="dark"] .chat-page { background: #242526; }
+[data-theme="dark"] .chat-sidebar { background: #242526; border-right-color: #3e4042; }
+[data-theme="dark"] .chat-sidebar-header h2 { color: #e4e6eb; }
+[data-theme="dark"] .chat-search-form { background: #3a3b3c; }
+[data-theme="dark"] .chat-search-icon { color: #b0b3b9; }
+[data-theme="dark"] .chat-search-input { color: #e4e6eb; }
+[data-theme="dark"] .chat-search-input::placeholder { color: #b0b3b9; }
+[data-theme="dark"] .chat-contact-item:hover { background: #3a3b3c; }
+[data-theme="dark"] .chat-contact-item--active { background: #263a5e; }
+[data-theme="dark"] .chat-contact-item--active:hover { background: #2e4570; }
+[data-theme="dark"] .chat-contact-online { border-color: #242526; }
+[data-theme="dark"] .chat-contact-name { color: #e4e6eb; }
+[data-theme="dark"] .chat-contact-preview { color: #b0b3b9; }
+[data-theme="dark"] .chat-sidebar-empty,
+[data-theme="dark"] .chat-sidebar-loading { color: #b0b3b9; }
+[data-theme="dark"] .chat-divider { background: #3a3b3c; }
+[data-theme="dark"] .chat-divider:hover { background: #4e4f50; }

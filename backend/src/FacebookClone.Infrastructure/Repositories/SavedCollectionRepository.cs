@@ -77,6 +77,14 @@ public class SavedCollectionRepository : ISavedCollectionRepository
             .AnyAsync(x => x.CollectionId == collectionId && x.PostId == postId);
     }
 
+    public async Task<IReadOnlyList<Guid>> GetCollectionIdsContainingPostAsync(Guid userId, Guid postId)
+    {
+        return await _context.SavedCollectionPosts
+            .Where(x => x.PostId == postId && x.Collection.UserId == userId)
+            .Select(x => x.CollectionId)
+            .ToListAsync();
+    }
+
     public async Task<(IEnumerable<SavedCollectionPost> Items, int Total)> GetPostsAsync(
         Guid collectionId, int page, int pageSize)
     {

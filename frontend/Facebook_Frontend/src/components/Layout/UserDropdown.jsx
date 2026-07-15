@@ -1,18 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
 import { Settings, Moon, Sun, HelpCircle, LogOut } from "lucide-react";
 import Avatar from "../common/Avatar";
 import "./UserDropdown.css";
 
-const DARK_MODE_KEY = "fb_dark_mode";
-
 const UserDropdown = () => {
   const { user, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem(DARK_MODE_KEY) === "true";
-  });
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -28,10 +25,7 @@ const UserDropdown = () => {
   }, [isOpen]);
 
   const toggleDarkMode = () => {
-    const next = !darkMode;
-    setDarkMode(next);
-    localStorage.setItem(DARK_MODE_KEY, String(next));
-    document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
+    toggleTheme(isDark ? "light" : "dark");
   };
 
   const handleLogout = () => {
@@ -75,10 +69,10 @@ const UserDropdown = () => {
 
           <button className="user-dropdown-item" onClick={toggleDarkMode}>
             <div className="user-dropdown-item-icon">
-              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </div>
             <span>Chế độ tối</span>
-            <div className={`user-dropdown-toggle ${darkMode ? "active" : ""}`}>
+            <div className={`user-dropdown-toggle ${isDark ? "active" : ""}`}>
               <div className="user-dropdown-toggle-knob" />
             </div>
           </button>

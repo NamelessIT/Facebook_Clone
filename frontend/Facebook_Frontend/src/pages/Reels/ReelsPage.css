@@ -59,3 +59,8 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   min-height: 300px;
 }
+
+/* Dark mode */
+[data-theme="dark"] .reels-page-header { border-bottom-color: #3e4042; }
+[data-theme="dark"] .reels-page-title { color: #e4e6eb; }
+[data-theme="dark"] .reels-page-body { background: #18191a; }

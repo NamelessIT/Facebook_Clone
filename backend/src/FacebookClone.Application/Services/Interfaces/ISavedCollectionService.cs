@@ -9,5 +9,6 @@ public interface ISavedCollectionService
     Task DeleteCollectionAsync(Guid userId, Guid collectionId);
     Task AddPostToCollectionAsync(Guid userId, Guid collectionId, Guid postId);
     Task RemovePostFromCollectionAsync(Guid userId, Guid collectionId, Guid postId);
+    Task<IReadOnlyList<Guid>> GetCollectionIdsContainingPostAsync(Guid userId, Guid postId);
     Task<(IEnumerable<object> Items, int Total)> GetCollectionPostsAsync(Guid userId, Guid collectionId, int page, int pageSize);
 }

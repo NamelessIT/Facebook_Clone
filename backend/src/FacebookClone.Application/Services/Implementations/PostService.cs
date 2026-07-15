@@ -14,19 +14,32 @@ public class PostService : IPostService
     private readonly IMapper _mapper;
     private readonly IFileService _fileService;
     private readonly IFriendshipRepository _friendshipRepository;
+    private readonly IPostInteractionRepository _postInteractionRepository;
 
-    public PostService(IPostRepository postRepository, IMapper mapper, IUserRepository userRepository, IFileService fileService, IFriendshipRepository friendshipRepository)
+    public PostService(
+        IPostRepository postRepository,
+        IMapper mapper,
+        IUserRepository userRepository,
+        IFileService fileService,
+        IFriendshipRepository friendshipRepository,
+        IPostInteractionRepository postInteractionRepository)
     {
         _postRepository = postRepository;
         _mapper = mapper;
         _userRepository = userRepository;
         _fileService = fileService;
         _friendshipRepository = friendshipRepository;
+        _postInteractionRepository = postInteractionRepository;
     }
 
     public async Task<PostResponseDto> CreatePostAsync(Guid userId, CreatePostRequest request)
     {
         // 👇 THÊM ĐOẠN NÀY ĐỂ CHẶN BÀI RỖNG
+        if (request.PostType == PostType.Share)
+        {
+            throw new Exception("Bai viet chia se phai duoc tao qua endpoint /posts/{id}/share.");
+        }
+
         bool hasContent = !string.IsNullOrWhiteSpace(request.Content);
         bool hasImages = request.Images != null && request.Images.Any();
         bool hasVideos = request.Videos != null && request.Videos.Any();
@@ -104,6 +117,7 @@ public class PostService : IPostService
             // Tính MyReaction cho user hiện tại
             var userReaction = originalPost.Reactions.FirstOrDefault(r => r.UserId == currentUserId);
             dto.MyReaction = userReaction != null ? (int)userReaction.ReactionType : null;
+            dto.IsSaved = await _postInteractionRepository.ExistsAsync(currentUserId, dto.Id, PostInteractionType.SAVED);
 
             // 👇 BÍ QUYẾT MỚI LÀ ĐÂY: Lọc Top 3 loại cảm xúc được thả nhiều nhất trên bài này
             dto.TopReactions = originalPost.Reactions
@@ -118,6 +132,13 @@ public class PostService : IPostService
                 .Select(r => r.User != null ? r.User.FullName : "Người dùng") // 👈 Bọc an toàn chống null
                 .Take(5) 
                 .ToList();
+        }
+
+        foreach (var dto in postDtos)
+        {
+            var originalPost = posts.First(p => p.Id == dto.Id);
+            if (dto.SharedPost != null && originalPost.SharedPost != null)
+                await EnrichPostDtoAsync(dto.SharedPost, originalPost.SharedPost, currentUserId);
         }
 
         return postDtos;
@@ -233,6 +254,42 @@ public class PostService : IPostService
         return _mapper.Map<PostResponseDto>(created);
     }
 
+    public async Task<PostResponseDto> GetPostByIdAsync(Guid currentUserId, Guid postId)
+    {
+        var post = await _postRepository.GetByIdAsync(postId);
+        if (post == null)
+            throw new Exception("Bai viet khong ton tai hoac da bi xoa.");
+
+        if (post.UserId != currentUserId && post.Privacy != PostPrivacy.Public)
+        {
+            var friendship = await _friendshipRepository.GetFriendshipAsync(currentUserId, post.UserId);
+            var canViewFriendsPost = post.Privacy == PostPrivacy.Friends &&
+                friendship?.Status == FriendshipStatus.Accepted;
+
+            if (!canViewFriendsPost)
+                throw new UnauthorizedAccessException("Ban khong co quyen xem bai viet nay.");
+        }
+
+        var dto = _mapper.Map<PostResponseDto>(post);
+        var userReaction = post.Reactions.FirstOrDefault(r => r.UserId == currentUserId);
+        dto.MyReaction = userReaction != null ? (int)userReaction.ReactionType : null;
+        dto.IsSaved = await _postInteractionRepository.ExistsAsync(currentUserId, dto.Id, PostInteractionType.SAVED);
+        dto.TopReactions = post.Reactions
+            .GroupBy(r => (int)r.ReactionType)
+            .OrderByDescending(g => g.Count())
+            .Select(g => g.Key)
+            .Take(3).ToList();
+        dto.ReactorNames = post.Reactions
+            .OrderByDescending(r => r.CreatedAt)
+            .Select(r => r.User != null ? r.User.FullName : "Nguoi dung")
+            .Take(5).ToList();
+
+        if (dto.SharedPost != null && post.SharedPost != null)
+            await EnrichPostDtoAsync(dto.SharedPost, post.SharedPost, currentUserId);
+
+        return dto;
+    }
+
     public async Task<(IEnumerable<PostResponseDto> Items, int Total)> GetUserPostsAsync(
         Guid currentUserId, Guid targetUserId, int pageNumber, int pageSize)
     {
@@ -261,6 +318,7 @@ public class PostService : IPostService
             var originalPost = posts.First(p => p.Id == dto.Id);
             var userReaction = originalPost.Reactions.FirstOrDefault(r => r.UserId == currentUserId);
             dto.MyReaction = userReaction != null ? (int)userReaction.ReactionType : null;
+            dto.IsSaved = await _postInteractionRepository.ExistsAsync(currentUserId, dto.Id, PostInteractionType.SAVED);
             dto.TopReactions = originalPost.Reactions
                 .GroupBy(r => (int)r.ReactionType)
                 .OrderByDescending(g => g.Count())
@@ -272,6 +330,31 @@ public class PostService : IPostService
                 .Take(5).ToList();
         }
 
+        foreach (var dto in dtos)
+        {
+            var originalPost = posts.First(p => p.Id == dto.Id);
+            if (dto.SharedPost != null && originalPost.SharedPost != null)
+                await EnrichPostDtoAsync(dto.SharedPost, originalPost.SharedPost, currentUserId);
+        }
+
         return (dtos, total);
+    }
+
+    private async Task EnrichPostDtoAsync(PostResponseDto dto, Post post, Guid currentUserId)
+    {
+        var userReaction = post.Reactions.FirstOrDefault(r => r.UserId == currentUserId);
+        dto.MyReaction = userReaction != null ? (int)userReaction.ReactionType : null;
+        dto.IsSaved = await _postInteractionRepository.ExistsAsync(currentUserId, dto.Id, PostInteractionType.SAVED);
+        dto.TopReactions = post.Reactions
+            .GroupBy(r => (int)r.ReactionType)
+            .OrderByDescending(g => g.Count())
+            .Select(g => g.Key)
+            .Take(3)
+            .ToList();
+        dto.ReactorNames = post.Reactions
+            .OrderByDescending(r => r.CreatedAt)
+            .Select(r => r.User != null ? r.User.FullName : "Nguoi dung")
+            .Take(5)
+            .ToList();
     }
 }

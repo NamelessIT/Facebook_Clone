@@ -4,6 +4,10 @@ const postService = {
   getFeed: async (pageNumber = 1, pageSize = 10) => {
     return await axiosClient.get(`/posts?pageNumber=${pageNumber}&pageSize=${pageSize}`);
   },
+
+  getById: async (postId) => {
+    return await axiosClient.get(`/posts/${postId}`);
+  },
   
   createPost: async (formData) => {
     return await axiosClient.post('/posts', formData);
@@ -37,8 +41,8 @@ const postService = {
     return await axiosClient.post(`/posts/comments/${commentId}/reactions`, { reactionType });
   },
 
-  sharePost: async (data) => {
-    return await axiosClient.post('/posts', data);
+  sharePost: async (postId, data) => {
+    return await axiosClient.post(`/posts/${postId}/share`, data);
   },
 
   getUserPosts: async (userId, pageNumber = 1, pageSize = 10) => {

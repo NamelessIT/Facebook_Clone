@@ -1,11 +1,12 @@
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ThumbsUp, MessageSquare, Share2, MoreHorizontal, Edit3, Trash2, X, Globe, Users, Lock, Bookmark, FolderPlus } from "lucide-react";
+import { ThumbsUp, MessageSquare, Share2, MoreHorizontal, Edit3, Trash2, X, Globe, Users, Lock, Bookmark, BookmarkCheck } from "lucide-react";
 import Avatar from "../common/Avatar";
 import MediaViewerModal from "./MediaViewerModal";
 import CommentSection from "./CommentSection";
 import SharePostModal from "./SharePostModal";
+import PostDetailModal from "./PostDetailModal";
 import EditPostModal from "./EditPostModal";
 import PostActionMenu from "./PostActionMenu";
 import DeleteUndoUI from "./DeleteUndoUI";
@@ -34,10 +35,19 @@ const PRIVACY_MAP = {
   [PostPrivacy.Private]: { icon: Lock, label: "Chỉ mình tôi" },
 };
 
+const POST_REACTION_CHANGED_EVENT = 'fbclone:post-reaction-changed';
+
+const emitPostReactionChanged = (postId, nextState) => {
+  window.dispatchEvent(new CustomEvent(POST_REACTION_CHANGED_EVENT, {
+    detail: { postId, ...nextState },
+  }));
+};
+
 const PostItem = ({ post, onPostUpdated, onPostHide }) => {
   const { user } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
   const [viewerData, setViewerData] = useState({ isOpen: false, index: 0 });
+  const [detailPost, setDetailPost] = useState(null);
 
   // Permission check: chỉ hiển thị Edit/Delete nếu user là chủ post
   const isOwner = user?.id === post.author?.id;
@@ -69,6 +79,12 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
   // --- STATE COLLECTION MODAL ---
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [userCollections, setUserCollections] = useState([]);
+  const [isSaved, setIsSaved] = useState(Boolean(post.isSaved));
+  const [savedCollectionIds, setSavedCollectionIds] = useState([]);
+
+  useEffect(() => {
+    setIsSaved(Boolean(post.isSaved));
+  }, [post.isSaved]);
 
   // Đóng menu khi click ngoài
   useEffect(() => {
@@ -141,11 +157,15 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
   const handleSavePost = async () => {
     try {
       await savedItemsService.savePost(post.id);
-      // Fetch collections từ API để hiện modal
-      try {
-        const res = await savedItemsService.getCollections();
-        setUserCollections(res.data?.data ?? []);
-      } catch { /* ignore */ }
+      setIsSaved(true);
+
+      const [collectionsRes, stateRes] = await Promise.all([
+        savedItemsService.getCollections(),
+        savedItemsService.getPostCollectionState(post.id),
+      ]);
+
+      setUserCollections(collectionsRes.data?.data ?? []);
+      setSavedCollectionIds(stateRes.data?.data?.collectionIds ?? []);
       setShowCollectionModal(true);
       toast.success('Đã lưu bài viết');
     } catch {
@@ -153,8 +173,8 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
     }
   };
 
-  const handleSaveToCollection = async (colId, newName) => {
-    if (!colId && !newName) {
+  const handleSaveToCollection = async ({ nextCollectionIds, newName } = {}) => {
+    if (!nextCollectionIds && !newName) {
       setShowCollectionModal(false);
       return;
     }
@@ -166,12 +186,24 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
         if (newCol) {
           await savedItemsService.addPostToCollection(newCol.id, post.id);
           setUserCollections((prev) => [...prev, newCol]);
+          setSavedCollectionIds((prev) => [...new Set([...prev, newCol.id])]);
+          setIsSaved(true);
           toast.success(`Đã tạo bộ sưu tập "${newName}" và lưu bài viết`);
         }
-      } else if (colId) {
-        await savedItemsService.addPostToCollection(colId, post.id);
-        const col = userCollections.find((c) => c.id === colId);
-        toast.success(`Đã lưu vào bộ sưu tập "${col?.name || 'bộ sưu tập'}"`);
+      } else if (nextCollectionIds) {
+        const previous = new Set(savedCollectionIds);
+        const next = new Set(nextCollectionIds);
+        const toAdd = [...next].filter((id) => !previous.has(id));
+        const toRemove = [...previous].filter((id) => !next.has(id));
+
+        await Promise.all([
+          ...toAdd.map((id) => savedItemsService.addPostToCollection(id, post.id)),
+          ...toRemove.map((id) => savedItemsService.removePostFromCollection(id, post.id)),
+        ]);
+
+        setSavedCollectionIds([...next]);
+        setIsSaved(true);
+        toast.success('Đã cập nhật bộ sưu tập');
       }
     } catch {
       toast.error('Thao tác thất bại');
@@ -188,6 +220,29 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 
   const [reactorNames, setReactorNames] = useState(post.reactorNames || []);
 
+  useEffect(() => {
+    setMyReaction(post.myReaction || null);
+    setReactionCount(post.reactionsCount || 0);
+    setTopReactions(post.topReactions || []);
+    setReactorNames(post.reactorNames || []);
+    setLocalCommentsCount(post.commentsCount || 0);
+  }, [post.id, post.myReaction, post.reactionsCount, post.topReactions, post.reactorNames, post.commentsCount]);
+
+  useEffect(() => {
+    const handlePostReactionChanged = (event) => {
+      const { postId, myReaction: nextReaction, reactionCount: nextCount, topReactions: nextTop, reactorNames: nextNames } = event.detail || {};
+      if (postId !== post.id) return;
+
+      setMyReaction(nextReaction || null);
+      setReactionCount(nextCount || 0);
+      setTopReactions(nextTop || []);
+      setReactorNames(nextNames || []);
+    };
+
+    window.addEventListener(POST_REACTION_CHANGED_EVENT, handlePostReactionChanged);
+    return () => window.removeEventListener(POST_REACTION_CHANGED_EVENT, handlePostReactionChanged);
+  }, [post.id]);
+
   const textLimit = 120;
   const isLongText = post.content && post.content.length > textLimit;
   const displayText = isExpanded ? post.content : post.content?.substring(0, textLimit);
@@ -203,36 +258,49 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 
     let newTop = [...topReactions];
     let newNames = [...reactorNames];
+    let nextReaction = reactionId;
+    let nextCount = prevCount;
 
-    if (myReaction === reactionId) {
+    if (Number(myReaction) === Number(reactionId)) {
       // TRƯỜNG HỢP HỦY:
+      nextReaction = null;
+      nextCount = Math.max(0, prevCount - 1);
       setMyReaction(null);
-      setReactionCount(prevCount - 1);
-      if (prevCount - 1 === 0) newTop = [];
-      else newTop = newTop.filter(id => id !== reactionId); // Xóa icon vừa hủy khỏi danh sách
+      setReactionCount(nextCount);
+      if (prevCount - 1 <= 0) newTop = [];
+      else newTop = newTop.filter(id => Number(id) !== Number(reactionId)); // Xóa icon vừa hủy khỏi danh sách
 
       // Rút tên của mình ra khỏi danh sách hiển thị
-      newNames = newNames.filter(name => name !== user?.fullName);
+      const currentName = user?.fullName || user?.email;
+      if (currentName) newNames = newNames.filter(name => name !== currentName);
     } else {
       // TRƯỜNG HỢP THẢ MỚI HOẶC ĐỔI CẢM XÚC:
       setMyReaction(reactionId);
       if (!prevReaction){  
-        setReactionCount(prevCount + 1);
-        newNames.unshift(user?.fullName);
-        newNames = newNames.slice(0, 5);
+        nextCount = prevCount + 1;
+        setReactionCount(nextCount);
+        const currentName = user?.fullName || user?.email || 'Ban';
+        newNames = [currentName, ...newNames.filter(name => name !== currentName)].slice(0, 5);
       }
 
       // Nếu đang Đổi cảm xúc (từ cũ sang mới), ta phải xóa cái cũ đi trước
-      if (prevReaction) newTop = newTop.filter(id => id !== prevReaction);
+      if (prevReaction) newTop = newTop.filter(id => Number(id) !== Number(prevReaction));
       
       // Thêm cảm xúc mới lên đầu danh sách (nếu chưa có)
-      if (!newTop.includes(reactionId)) {
+      if (!newTop.some(id => Number(id) === Number(reactionId))) {
         newTop.unshift(reactionId);
       }
     }
     
-    setTopReactions(newTop.slice(0, 3)); // Luôn giữ tối đa 3 icon
+    const nextTop = newTop.slice(0, 3);
+    setTopReactions(nextTop); // Luôn giữ tối đa 3 icon
     setReactorNames(newNames); // 👇 CẬP NHẬT STATE TÊN
+    emitPostReactionChanged(post.id, {
+      myReaction: nextReaction,
+      reactionCount: nextCount,
+      topReactions: nextTop,
+      reactorNames: newNames,
+    });
 
     // 2. Gọi API ngầm ở background
     try {
@@ -243,11 +311,17 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
       setReactionCount(prevCount);
       setTopReactions(prevTop);
       setReactorNames(prevNames); // Trả lại mảng tên cũ
+      emitPostReactionChanged(post.id, {
+        myReaction: prevReaction,
+        reactionCount: prevCount,
+        topReactions: prevTop,
+        reactorNames: prevNames,
+      });
     }
   };
 
   // Xác định icon và text hiện tại của nút Thích
-  const currentReactionData = myReaction ? REACTIONS.find(r => r.id === Number(myReaction)) : null;  const ActionIcon = currentReactionData ? null : ThumbsUp;
+  const currentReactionData = myReaction ? REACTIONS.find(r => r.id === Number(myReaction)) : null;
   // Lấy dữ liệu ảnh (giữ nguyên logic cũ)
   const renderMediaGallery = () => {
     if (!post.medias || post.medias.length === 0) return null;
@@ -270,6 +344,91 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
           <MediaThumb media={m[2]} onClick={() => openViewer(2)} />
           {count > 3 && <div onClick={() => openViewer(2)} className="media-overlay-more"><span className="more-count">+{count - 3}</span></div>}
         </div>
+      </div>
+    );
+  };
+
+  const openPostDetail = (targetPost = post) => {
+    setDetailPost(targetPost);
+  };
+
+  const handleModalReactionChanged = (postId, nextState) => {
+    if (postId === post.id) {
+      setMyReaction(nextState.myReaction);
+      setReactionCount(nextState.reactionCount);
+      setTopReactions(nextState.topReactions || []);
+      setReactorNames(nextState.reactorNames || []);
+    }
+
+    setDetailPost((current) => {
+      if (!current || current.id !== postId) return current;
+      return {
+        ...current,
+        myReaction: nextState.myReaction,
+        reactionsCount: nextState.reactionCount,
+        topReactions: nextState.topReactions || [],
+        reactorNames: nextState.reactorNames || [],
+      };
+    });
+  };
+
+  const handleModalCommentChanged = (postId, nextCount) => {
+    if (postId === post.id) {
+      setLocalCommentsCount(nextCount);
+    }
+
+    setDetailPost((current) => {
+      if (!current || current.id !== postId) return current;
+      return {
+        ...current,
+        commentsCount: nextCount,
+      };
+    });
+  };
+
+  const renderSharedPostPreview = (sharedPost) => {
+    if (!sharedPost) return null;
+
+    const sharedMedias = sharedPost.medias || [];
+
+    return (
+      <div className="shared-post-preview">
+        <div className="shared-post-header">
+          <Avatar src={sharedPost.author?.avatarUrl} className="w-9 h-9" />
+          <div className="shared-post-author-info">
+            <Link
+              to={`/profile/${sharedPost.author?.id}`}
+              className="shared-post-author"
+              onClick={(event) => event.stopPropagation()}
+            >
+              {sharedPost.author?.fullName || 'Nguoi dung'}
+            </Link>
+            <span className="shared-post-time">
+              {new Date(sharedPost.createdAt).toLocaleString('vi-VN')}
+            </span>
+          </div>
+        </div>
+
+        {sharedPost.content && (
+          <div className="shared-post-content">{sharedPost.content}</div>
+        )}
+
+        {sharedMedias.length > 0 && (
+          <div className={`shared-post-media shared-post-media--${Math.min(sharedMedias.length, 3)}`}>
+            {sharedMedias.slice(0, 3).map((media, index) => (
+              <div key={media.id || media.url} className="shared-post-media-item">
+                {media.mediaType === 1 ? (
+                  <video src={getImageUrl(media.url, 'videos')} />
+                ) : (
+                  <img src={getImageUrl(media.url, 'posts')} alt="" />
+                )}
+                {index === 2 && sharedMedias.length > 3 && (
+                  <div className="shared-post-media-more">+{sharedMedias.length - 3}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   };
@@ -347,7 +506,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
       {post.content && (
         <div 
           className={`post-text-content ${isExpanded ? 'cursor-pointer' : ''}`}
-          onClick={() => { if (isExpanded) setIsExpanded(false); }}
+          onClick={() => openPostDetail(post)}
         >
           {displayText}
           {isLongText && !isExpanded && (
@@ -358,6 +517,10 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
           )}
         </div>
       )}
+
+      <div onClick={() => post.sharedPost && openPostDetail(post.sharedPost)}>
+        {renderSharedPostPreview(post.sharedPost)}
+      </div>
 
       {renderMediaGallery()}
 
@@ -375,11 +538,11 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
             <div className="flex -space-x-1 items-center z-10">
               {topReactions.length > 0 ? (
                 topReactions.map((rId, index) => {
-                  const rData = REACTIONS.find(r => r.id === rId);
+                  const rData = REACTIONS.find(r => r.id === Number(rId));
                   if (!rData) return null;
                   
                   // Icon Like (ID: 1) phải render nền xanh đặc biệt
-                  if (rData.id === 1) {
+                  if (rData.id === ReactionType.Like) {
                     return (
                       <span key={rData.id} className="bg-[#1877f2] flex items-center justify-center w-[20px] h-[20px] rounded-full border-2 border-white" style={{ zIndex: 3 - index }}>
                         <ThumbsUp size={11} fill="white" strokeWidth={0} />
@@ -402,7 +565,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
               )}
             </div>
 
-            <span className="text-[#65676b] ml-1">{reactionCount}</span>
+            <span className="post-reaction-count">{reactionCount}</span>
           </div>
         ) : (
           <div></div> 
@@ -422,7 +585,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
           <div className="reaction-container">
             <button 
               // 👇 Nếu có myReaction rồi thì gửi chính myReaction đó đi để HỦY. Chưa có thì gửi 1 (Like).
-              onClick={() => handleReact(myReaction || 1)} 
+              onClick={() => handleReact(myReaction || ReactionType.Like)} 
               className={`action-btn ${currentReactionData?.colorClass || ''}`}
             >
               {currentReactionData ? (
@@ -453,7 +616,10 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 
         <button className="action-btn" onClick={() => setShowComments(!showComments)}><MessageSquare size={20} /> Bình luận</button>
         <button className="action-btn" onClick={() => setShowShareModal(true)}><Share2 size={20} /> Chia sẻ</button>
-        <button className="action-btn" onClick={handleSavePost}><Bookmark size={20} /> Lưu</button>
+        <button className={`action-btn save-action-btn ${isSaved ? 'saved' : ''}`} onClick={handleSavePost}>
+          {isSaved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
+          Lưu
+        </button>
       </div>
 
       <MediaViewerModal isOpen={viewerData.isOpen} onClose={() => setViewerData({ isOpen: false, index: 0 })} medias={post.medias} initialIndex={viewerData.index}/>
@@ -493,27 +659,52 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
       )}
 
       {/* COLLECTION MODAL */}
-      {showCollectionModal && <PostCollectionModal postId={post.id} onClose={() => setShowCollectionModal(false)} onSaveToCollection={handleSaveToCollection} userCollections={userCollections} />}
+      {showCollectionModal && (
+        <PostCollectionModal
+          onClose={() => setShowCollectionModal(false)}
+          onSaveToCollection={handleSaveToCollection}
+          userCollections={userCollections}
+          savedCollectionIds={savedCollectionIds}
+        />
+      )}
+
+      {detailPost && (
+        <PostDetailModal
+          key={detailPost.id}
+          post={detailPost}
+          onClose={() => setDetailPost(null)}
+          onSelectPost={setDetailPost}
+          onReactionChanged={handleModalReactionChanged}
+          onCommentChanged={handleModalCommentChanged}
+        />
+      )}
     </div>
   );
 };
 
 // Modal chọn bộ sưu tập để lưu vào
-const PostCollectionModal = ({ onClose, onSaveToCollection, userCollections }) => {
-  const [selected, setSelected] = useState(null);
+const PostCollectionModal = ({ onClose, onSaveToCollection, userCollections, savedCollectionIds }) => {
+  const [selectedIds, setSelectedIds] = useState(() => new Set(savedCollectionIds ?? []));
   const [newName, setNewName] = useState('');
   const [showCreate, setShowCreate] = useState(false);
 
+  const toggleCollection = (collectionId) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(collectionId)) next.delete(collectionId);
+      else next.add(collectionId);
+      return next;
+    });
+  };
+
   const handleConfirm = () => {
-    if (selected) {
-      onSaveToCollection(selected);
-    }
+    onSaveToCollection({ nextCollectionIds: [...selectedIds] });
     onClose();
   };
 
   const handleCreate = () => {
     if (!newName.trim()) return;
-    onSaveToCollection(null, newName.trim());
+    onSaveToCollection({ newName: newName.trim() });
     setNewName('');
     setShowCreate(false);
     onClose();
@@ -527,18 +718,18 @@ const PostCollectionModal = ({ onClose, onSaveToCollection, userCollections }) =
           <button className="modal-collection-close" onClick={onClose}><X size={18} /></button>
         </div>
         <div className="modal-collection-body">
-          <button className={`modal-collection-item ${!selected ? 'modal-collection-item--active' : ''}`} onClick={() => setSelected(null)}>
+          <button className="modal-collection-item modal-collection-item--active" type="button">
             <span>📌 Tất cả bài viết đã lưu</span>
-            {!selected && <span className="modal-collection-check">✓</span>}
+            <span className="modal-collection-check">✓</span>
           </button>
           {userCollections.map((col) => (
             <button
               key={col.id}
-              className={`modal-collection-item ${selected === col.id ? 'modal-collection-item--active' : ''}`}
-              onClick={() => setSelected(col.id)}
+              className={`modal-collection-item ${selectedIds.has(col.id) ? 'modal-collection-item--active' : ''}`}
+              onClick={() => toggleCollection(col.id)}
             >
               <span>📁 {col.name}</span>
-              {selected === col.id && <span className="modal-collection-check">✓</span>}
+              {selectedIds.has(col.id) && <span className="modal-collection-check">✓</span>}
             </button>
           ))}
           {!showCreate ? (

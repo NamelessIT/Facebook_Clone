@@ -239,3 +239,23 @@
   opacity: 0.65;
   cursor: not-allowed;
 }
+
+/* Dark mode */
+[data-theme="dark"] .edit-profile-modal { background: #242526; }
+[data-theme="dark"] .edit-profile-header { border-bottom-color: #3e4042; }
+[data-theme="dark"] .edit-profile-header h3,
+[data-theme="dark"] .edit-profile-section h4 { color: #e4e6eb; }
+[data-theme="dark"] .edit-profile-close { background: #3a3b3c; color: #b0b3b9; }
+[data-theme="dark"] .edit-profile-close:hover { background: #4e4f50; }
+[data-theme="dark"] .edit-avatar-img { border-color: #3a3b3c; }
+[data-theme="dark"] .edit-profile-cover-preview { background: #3a3b3c; }
+[data-theme="dark"] .edit-cover-placeholder { color: #b0b3b9; }
+[data-theme="dark"] .edit-profile-field label,
+[data-theme="dark"] .edit-field-counter { color: #b0b3b9; }
+[data-theme="dark"] .edit-profile-field input,
+[data-theme="dark"] .edit-profile-field textarea { color: #e4e6eb; background: #3a3b3c; border-color: #3e4042; }
+[data-theme="dark"] .edit-profile-field input:focus,
+[data-theme="dark"] .edit-profile-field textarea:focus { background: #3a3b3c; border-color: #1877f2; }
+[data-theme="dark"] .edit-profile-footer { border-top-color: #3e4042; }
+[data-theme="dark"] .edit-profile-cancel { background: #3a3b3c; color: #e4e6eb; }
+[data-theme="dark"] .edit-profile-cancel:hover { background: #4e4f50; }

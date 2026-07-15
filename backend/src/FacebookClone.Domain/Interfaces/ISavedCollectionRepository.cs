@@ -13,5 +13,6 @@ public interface ISavedCollectionRepository
     Task AddPostAsync(SavedCollectionPost item);
     Task RemovePostAsync(Guid collectionId, Guid postId);
     Task<bool> PostExistsInCollectionAsync(Guid collectionId, Guid postId);
+    Task<IReadOnlyList<Guid>> GetCollectionIdsContainingPostAsync(Guid userId, Guid postId);
     Task<(IEnumerable<SavedCollectionPost> Items, int Total)> GetPostsAsync(Guid collectionId, int page, int pageSize);
 }

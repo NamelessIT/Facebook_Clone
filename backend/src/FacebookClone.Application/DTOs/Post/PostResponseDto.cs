@@ -17,6 +17,7 @@ public class PostResponseDto
     public int CommentsCount { get; set; }
 
     public int? MyReaction { get; set; }
+    public bool IsSaved { get; set; }
     public List<int> TopReactions { get; set; } = new List<int>();
     public List<string> ReactorNames { get; set; } = new List<string>();
     // 👇 THÊM DÒNG NÀY ĐỂ TRẢ VỀ DANH SÁCH FILE ĐÍNH KÈM

@@ -197,7 +197,7 @@ try
     var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
     if (allowedOrigins is null || allowedOrigins.Length == 0)
     {
-        allowedOrigins = new[] { "http://localhost:5173" };
+        allowedOrigins = new[] { "http://localhost:5173", "http://127.0.0.1:5173" };
     }
     builder.Services.AddCors(options =>
     {
@@ -236,6 +236,10 @@ try
 
     // Global Error Handling & Custom Middleware (Log, Audit...)
     app.UseGlobalMiddlewares();
+
+    // CORS must run before middlewares that can short-circuit responses
+    // (rate limit, IP block), otherwise browsers report them as network errors.
+    app.UseCors("AllowReactApp");
 
     // Security middleware: rate limiting, IP blocking, payload inspection
     app.UseMiddleware<SecurityMiddleware>();
@@ -282,9 +286,6 @@ try
     }
 
     // app.UseHttpsRedirection(); //khi deploy lên production sẽ bật lại, còn dev thì tạm thời để yên (đỡ phải cấu hình SSL cho localhost)
-
-    // Kích hoạt CORS trước static files để video/image CORS headers được gắn đúng
-    app.UseCors("AllowReactApp");
 
 // load image,file tĩnh từ wwwroot (nếu có) - đặt sau UseCors để static files có CORS headers
     app.UseStaticFiles();

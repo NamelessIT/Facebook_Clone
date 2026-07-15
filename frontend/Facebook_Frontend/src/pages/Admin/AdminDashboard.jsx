@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Users, FileText, ShieldOff, Activity, TrendingUp, AlertTriangle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Activity, AlertTriangle, FileText, Film, KeyRound, MessageSquare, ShieldOff, TrendingUp, Users, UsersRound } from 'lucide-react';
 import adminService from '../../services/adminService';
 
 const AdminDashboard = () => {
@@ -8,7 +8,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     adminService.getDashboard()
-      .then(r => setData(r.data.data))
+      .then((response) => setData(response.data.data))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -16,13 +16,16 @@ const AdminDashboard = () => {
   if (loading) return <div className="admin-loading">Đang tải...</div>;
   if (!data) return <div className="admin-empty">Không thể tải dữ liệu.</div>;
 
-  const { users, content, security } = data;
-
+  const { users, content, security, rbac } = data;
   const stats = [
-    { label: 'Tổng người dùng', value: users.total, sub: `+${users.newLast7Days} tuần này`, Icon: Users, variant: '' },
+    { label: 'Người dùng', value: users.total, sub: `+${users.newLast7Days} trong 7 ngày`, Icon: Users },
     { label: 'Đang online', value: users.activeNow, sub: 'Hiện tại', Icon: Activity, variant: 'success' },
     { label: 'Đã bị ban', value: users.banned, sub: 'Tài khoản', Icon: ShieldOff, variant: 'danger' },
-    { label: 'Tổng bài viết', value: content.totalPosts, sub: `${content.postsToday} hôm nay`, Icon: FileText, variant: '' },
+    { label: 'Bài viết', value: content.totalPosts, sub: `${content.postsToday} hôm nay`, Icon: FileText },
+    { label: 'Reels', value: content.totalReels, sub: `${content.deletedReels ?? 0} đã xóa`, Icon: Film },
+    { label: 'Bình luận', value: content.totalComments, sub: 'Toàn hệ thống', Icon: MessageSquare },
+    { label: 'Nhóm', value: content.totalGroups, sub: 'Community modules', Icon: UsersRound },
+    { label: 'RBAC', value: rbac?.roleCount ?? 0, sub: `${rbac?.permissionCount ?? 0} permissions`, Icon: KeyRound, variant: 'success' },
     { label: 'IP bị chặn', value: security.blockedIps, sub: 'Đang active', Icon: AlertTriangle, variant: 'danger' },
     { label: 'Sự kiện 24h', value: security.eventsLast24h, sub: `${security.rateLimitHitsLast1h} rate limit/1h`, Icon: TrendingUp, variant: 'warn' },
   ];
@@ -44,7 +47,6 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {/* Top Attacker IPs */}
       {Object.keys(security.topAttackerIps || {}).length > 0 && (
         <div className="admin-section">
           <div className="admin-table-wrap">
@@ -62,9 +64,9 @@ const AdminDashboard = () => {
               <tbody>
                 {Object.entries(security.topAttackerIps)
                   .sort(([, a], [, b]) => b - a)
-                  .map(([ip, count], i) => (
+                  .map(([ip, count], index) => (
                     <tr key={ip}>
-                      <td>{i + 1}</td>
+                      <td>{index + 1}</td>
                       <td><code style={{ color: '#e74c3c' }}>{ip}</code></td>
                       <td>{count}</td>
                     </tr>
@@ -76,7 +78,7 @@ const AdminDashboard = () => {
       )}
 
       <div style={{ fontSize: 12, color: '#555', marginTop: 20 }}>
-        Dữ liệu bảo mật được lưu in-memory, reset khi restart server.
+        Một số dữ liệu bảo mật runtime vẫn là in-memory và sẽ reset khi restart server.
       </div>
     </div>
   );

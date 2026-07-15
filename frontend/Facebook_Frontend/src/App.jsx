@@ -10,6 +10,7 @@ import SettingsPage from "./pages/Settings/SettingsPage";
 import ChatListPage from "./pages/Messages/ChatListPage";
 import ReelsPage from "./pages/Reels/ReelsPage";
 import SavedItemsPage from "./pages/SavedItems/SavedItemsPage";
+import PostDetailPage from "./pages/PostDetail/PostDetailPage";
 import AdminPage from "./pages/Admin/AdminPage";
 
 const PrivateRoute = ({ children }) => {
@@ -52,6 +53,7 @@ function App() {
             <Route path="messages/:friendId" element={<ChatListPage />} />
             <Route path="reels" element={<ReelsPage />} />
             <Route path="saved" element={<SavedItemsPage />} />
+            <Route path="posts/:postId" element={<PostDetailPage />} />
           </Route>
 
           {/* Admin — standalone layout, no MainLayout */}

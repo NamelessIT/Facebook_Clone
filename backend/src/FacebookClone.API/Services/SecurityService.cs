@@ -92,9 +92,9 @@ public class SecurityService : ISecurityService
     // Paths that have stricter limits (e.g. auth endpoints)
     private static readonly Dictionary<string, int> StrictPaths = new()
     {
-        { "/api/v1/auth/login",        10 },
-        { "/api/v1/auth/register",     20 },
-        { "/api/v1/auth/refresh-token", 30 },
+        { "/api/v1/auth/login",        60 },
+        { "/api/v1/auth/register",     30 },
+        { "/api/v1/auth/refresh-token", 90 },
     };
 
     // Suspicious payload patterns (SQL Injection, XSS, path traversal)

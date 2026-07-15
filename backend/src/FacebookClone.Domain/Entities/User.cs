@@ -55,6 +55,7 @@ public class User
     public ICollection<Post> Posts { get; set; } = new List<Post>();
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     public ICollection<Message> Messages { get; set; } = new List<Message>();
+    public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
     // --- THÊM PHẦN NÀY ĐỂ SỬA LỖI FriendshipConfiguration ---
     // Danh sách lời mời kết bạn ĐÃ GỬI

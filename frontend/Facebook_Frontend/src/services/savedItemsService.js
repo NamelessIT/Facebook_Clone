@@ -18,6 +18,10 @@ const savedItemsService = {
     return await axiosClient.get('/collections');
   },
 
+  getPostCollectionState: async (postId) => {
+    return await axiosClient.get(`/collections/posts/${postId}/state`);
+  },
+
   createCollection: async (name) => {
     return await axiosClient.post('/collections', { name });
   },

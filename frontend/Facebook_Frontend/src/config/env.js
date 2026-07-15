@@ -6,7 +6,7 @@
 //   Vite exposes only vars prefixed with VITE_ via import.meta.env.
 // ============================================================
 
-const API_ORIGIN = import.meta.env.VITE_API_ORIGIN || 'http://localhost:5286';
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN || 'http://127.0.0.1:5286';
 
 // Origin (scheme + host + port), no trailing slash. Used for static files.
 export const API_ORIGIN_URL = API_ORIGIN;

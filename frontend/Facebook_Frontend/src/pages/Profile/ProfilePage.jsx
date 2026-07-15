@@ -660,8 +660,10 @@ const ProfilePage = () => {
 
       {viewAvatarPost && (
         <PostDetailModal
+          key={viewAvatarPost.id}
           post={viewAvatarPost}
           onClose={() => setViewAvatarPost(null)}
+          onSelectPost={setViewAvatarPost}
         />
       )}
     </div>

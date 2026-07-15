@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import userService from "../services/userService";
+import { clearAuthClientState } from "../services/axiosClient";
 
 const AuthContext = createContext();
 
@@ -7,34 +8,39 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Hàm login: Lưu token và fetch profile
-  const login = async (accessToken, refreshToken) => {
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-    await fetchProfile();
-  };
-
-  // Hàm logout
-  const logout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+  const logout = useCallback(() => {
+    clearAuthClientState();
     setUser(null);
-  };
+  }, []);
 
-  // Hàm lấy thông tin user từ Token
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async ({ throwOnError = false } = {}) => {
     try {
       const response = await userService.getMe();
-      setUser(response.data); // data chứa { firstName, lastName, ... }
+      setUser(response.data);
+      return response.data;
     } catch (error) {
-      console.error("Lỗi lấy profile:", error);
-      logout(); // Nếu lỗi (token hết hạn) thì logout luôn
+      console.error("Fetch profile failed:", error);
+      logout();
+      if (throwOnError) throw error;
+      return null;
     } finally {
       setLoading(false);
     }
+  }, [logout]);
+
+  const login = async (accessToken, refreshToken) => {
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+
+    try {
+      return await fetchProfile({ throwOnError: true });
+    } catch (error) {
+      clearAuthClientState();
+      setUser(null);
+      throw error;
+    }
   };
 
-  // Tự động chạy khi F5 trang web
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -42,7 +48,7 @@ export const AuthProvider = ({ children }) => {
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [fetchProfile]);
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: !!user }}>
@@ -51,6 +57,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook custom để dùng nhanh
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);

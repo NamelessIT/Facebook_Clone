@@ -100,6 +100,11 @@ public class SavedCollectionService : ISavedCollectionService
         _logger.LogInformation("Post removed from collection: collectionId={CollectionId}, postId={PostId}", collectionId, postId);
     }
 
+    public async Task<IReadOnlyList<Guid>> GetCollectionIdsContainingPostAsync(Guid userId, Guid postId)
+    {
+        return await _repo.GetCollectionIdsContainingPostAsync(userId, postId);
+    }
+
     public async Task<(IEnumerable<object> Items, int Total)> GetCollectionPostsAsync(
         Guid userId, Guid collectionId, int page, int pageSize)
     {
@@ -108,7 +113,12 @@ public class SavedCollectionService : ISavedCollectionService
             throw new InvalidOperationException("Không tìm thấy bộ sưu tập");
 
         var (items, total) = await _repo.GetPostsAsync(collectionId, page, pageSize);
-        var result = items.Select(x => (object)new { Post = _mapper.Map<PostResponseDto>(x.Post), AddedAt = x.CreatedAt });
+        var result = items.Select(x =>
+        {
+            var post = _mapper.Map<PostResponseDto>(x.Post);
+            post.IsSaved = true;
+            return (object)new { Post = post, AddedAt = x.CreatedAt };
+        });
         return (result, total);
     }
 }

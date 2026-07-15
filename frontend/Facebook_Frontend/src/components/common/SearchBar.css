@@ -92,3 +92,16 @@
   font-weight: 600;
   font-size: 15px;
 }
+
+/* Dark mode */
+[data-theme="dark"] .search-bar-form { background: #3a3b3c; }
+[data-theme="dark"] .search-bar-icon,
+[data-theme="dark"] .search-bar-clear { color: #b0b3b9; }
+[data-theme="dark"] .search-bar-input { color: #e4e6eb; }
+[data-theme="dark"] .search-bar-input::placeholder { color: #b0b3b9; }
+[data-theme="dark"] .search-bar-clear:hover { background: #4e4f50; }
+[data-theme="dark"] .search-bar-dropdown { background: #242526; }
+[data-theme="dark"] .search-bar-loading { color: #b0b3b9; }
+[data-theme="dark"] .search-bar-suggestion:hover { background: #3a3b3c; }
+[data-theme="dark"] .search-bar-suggestion-name { color: #e4e6eb; }
+[data-theme="dark"] .search-bar-view-all { border-top-color: #3e4042; }

@@ -33,7 +33,7 @@ public class PostRepository : IPostRepository
             .Include(p => p.Comments)
             .Include(p => p.SharedPost!).ThenInclude(sp => sp.User)
             .Include(p => p.SharedPost!).ThenInclude(sp => sp.Medias)
-            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Reactions)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Reactions).ThenInclude(r => r.User)
             .Include(p => p.SharedPost!).ThenInclude(sp => sp.Comments)
             .Where(p => !p.IsDeleted && (
                 p.Privacy == PostPrivacy.Public ||
@@ -53,10 +53,11 @@ public class PostRepository : IPostRepository
             .Include(p => p.User)
             .Include(p => p.Medias)
             .Include(p => p.Reactions)
+                .ThenInclude(r => r.User)
             .Include(p => p.Comments)
             .Include(p => p.SharedPost!).ThenInclude(sp => sp.User)
             .Include(p => p.SharedPost!).ThenInclude(sp => sp.Medias)
-            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Reactions)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Reactions).ThenInclude(r => r.User)
             .Include(p => p.SharedPost!).ThenInclude(sp => sp.Comments)
             .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
     }
@@ -102,7 +103,7 @@ public class PostRepository : IPostRepository
             .Include(p => p.Comments)
             .Include(p => p.SharedPost!).ThenInclude(sp => sp.User)
             .Include(p => p.SharedPost!).ThenInclude(sp => sp.Medias)
-            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Reactions)
+            .Include(p => p.SharedPost!).ThenInclude(sp => sp.Reactions).ThenInclude(r => r.User)
             .Include(p => p.SharedPost!).ThenInclude(sp => sp.Comments)
             .Where(p => !p.IsDeleted && p.UserId == userId && privacyList.Contains(p.Privacy));
 

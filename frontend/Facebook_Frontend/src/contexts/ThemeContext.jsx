@@ -1,6 +1,35 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useState } from 'react';
+import { STORAGE_KEYS } from '../shared/generated/constants';
 
 const ThemeContext = createContext(null);
+const LEGACY_DARK_MODE_KEY = 'fb_dark_mode';
+const VALID_THEMES = ['light', 'dark', 'auto'];
+
+function getStoredTheme() {
+  try {
+    const legacyDarkMode = localStorage.getItem(LEGACY_DARK_MODE_KEY);
+    if (legacyDarkMode === 'true') return 'dark';
+    if (legacyDarkMode === 'false') return 'light';
+
+    const storedTheme = localStorage.getItem(STORAGE_KEYS.themeMode);
+    if (VALID_THEMES.includes(storedTheme)) {
+      return storedTheme;
+    }
+  } catch {
+    // localStorage unavailable (private mode, storage full)
+  }
+
+  return 'light';
+}
+
+function persistTheme(theme) {
+  try {
+    localStorage.setItem(STORAGE_KEYS.themeMode, theme);
+    localStorage.removeItem(LEGACY_DARK_MODE_KEY);
+  } catch {
+    // localStorage unavailable (private mode, storage full)
+  }
+}
 
 function applyTheme(theme) {
   const root = document.documentElement;
@@ -13,22 +42,12 @@ function applyTheme(theme) {
 }
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => {
-    try {
-      return localStorage.getItem('app_theme_mode') || 'light';
-    } catch {
-      return 'light';
-    }
-  });
+  const [theme, setTheme] = useState(getStoredTheme);
 
   // useLayoutEffect fires synchronously before browser paint — no flash on reload
   useLayoutEffect(() => {
     applyTheme(theme);
-    try {
-      localStorage.setItem('app_theme_mode', theme);
-    } catch {
-      // localStorage unavailable (private mode, storage full)
-    }
+    persistTheme(theme);
   }, [theme]);
 
   // Keep 'auto' in sync when the OS preference changes
@@ -41,7 +60,7 @@ export function ThemeProvider({ children }) {
   }, [theme]);
 
   const toggleTheme = (newTheme) => {
-    if (['light', 'dark', 'auto'].includes(newTheme)) {
+    if (VALID_THEMES.includes(newTheme)) {
       setTheme(newTheme);
     }
   };

@@ -45,7 +45,8 @@ public class SecurityMiddleware(RequestDelegate next, ISecurityService security,
             await ctx.Response.WriteAsJsonAsync(new
             {
                 success = false,
-                message = "Too many requests. Please slow down."
+                message = "Too many requests. Please wait a few seconds and try again.",
+                retryAfter = 10
             });
             return;
         }

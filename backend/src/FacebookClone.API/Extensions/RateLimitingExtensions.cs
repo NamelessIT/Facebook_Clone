@@ -23,8 +23,8 @@ public static class RateLimitingExtensions
         // Defaults (per window) if config missing.
         var globalLimit = section.GetValue("Global:PermitLimit", 100);
         var globalWindow = section.GetValue("Global:WindowSeconds", 60);
-        var authLimit = section.GetValue("Auth:PermitLimit", 10);
-        var authWindow = section.GetValue("Auth:WindowSeconds", 60);
+        var authLimit = section.GetValue("Auth:PermitLimit", 20);
+        var authWindow = section.GetValue("Auth:WindowSeconds", 10);
         var writeLimit = section.GetValue("Write:PermitLimit", 30);
         var writeWindow = section.GetValue("Write:WindowSeconds", 60);
         var searchLimit = section.GetValue("Search:PermitLimit", 20);

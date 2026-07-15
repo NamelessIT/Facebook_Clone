@@ -1,17 +1,32 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { X } from "lucide-react";
 import api from "../../services/axiosClient";
 import { useAuth } from "../../contexts/AuthContext";
-import { X } from "lucide-react"; // Import icon nút X
-import "./Login.css"; 
+import "./Login.css";
+
+const getApiErrorMessage = (error, fallback) => {
+  if (!error.response) {
+    return "Không kết nối được API. Kiểm tra backend có đang chạy ở localhost:5286 không.";
+  }
+
+  const status = error.response.status;
+  const data = error.response.data;
+  const serverMessage = data?.message || data?.title || data?.error || data?.errorCode;
+
+  if (status === 401) return serverMessage || "Email hoặc mật khẩu không đúng.";
+  if (status === 403) return serverMessage || "Tài khoản không có quyền truy cập hoặc đã bị chặn.";
+  if (status >= 500) return serverMessage || "Backend đang lỗi 500. Xem terminal backend để biết chi tiết.";
+  return serverMessage || fallback;
+};
 
 const LoginPage = () => {
-  // State Đăng nhập
   const [email, setEmail] = useState("alice@fbclone.com");
   const [password, setPassword] = useState("123456");
   const [error, setError] = useState("");
-  
-  // State Đăng ký
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [regFirstName, setRegFirstName] = useState("");
   const [regLastName, setRegLastName] = useState("");
@@ -23,52 +38,84 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // --- XỬ LÝ ĐĂNG NHẬP ---
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
+  const handleLoginSubmit = async (event) => {
+    event.preventDefault();
     setError("");
-    try {
-      const response = await api.post("/auth/login", { email, password });
-      const { accessToken, refreshToken } = response.data.data;
-      await login(accessToken, refreshToken);
-      navigate("/");
-    } catch {
-      setError("Đăng nhập thất bại! Kiểm tra lại thông tin.");
-    }
-  };
 
-  // --- XỬ LÝ ĐĂNG KÝ ---
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    setRegError("");
-    
-    if (!regFirstName || !regLastName || !regEmail || !regPassword) {
-      setRegError("Vui lòng điền đầy đủ thông tin.");
+    if (!email.trim() || !password) {
+      const message = "Vui lòng nhập email và mật khẩu.";
+      setError(message);
+      toast.error(message);
       return;
     }
 
-    setIsRegistering(true);
+    const loadingToast = toast.loading("Đang đăng nhập...");
+    setIsLoggingIn(true);
+
     try {
-      // Gọi API Đăng ký (Đường dẫn có thể khác tùy backend của bạn, thường là /auth/register)
-      await api.post("/auth/register", {
-        firstName: regFirstName,
-        lastName: regLastName,
-        email: regEmail,
-        password: regPassword
+      const response = await api.post("/auth/login", {
+        email: email.trim(),
+        password,
       });
-      
-      alert("Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.");
-      
-      // Tự động điền email vừa đăng ký vào ô Đăng nhập cho tiện
-      setEmail(regEmail);
-      setPassword(regPassword); // (Có thể bỏ dòng này nếu muốn user tự gõ lại mk)
-      
-      // Đóng modal và reset form
-      setIsRegisterOpen(false);
-      setRegFirstName(""); setRegLastName(""); setRegEmail(""); setRegPassword("");
+
+      const { accessToken, refreshToken } = response.data.data;
+      await login(accessToken, refreshToken);
+
+      toast.success("Đăng nhập thành công.", { id: loadingToast });
+      navigate("/");
     } catch (err) {
-      console.error("Lỗi đăng ký:", err.response?.data);
-      setRegError(err.response?.data?.message || "Đăng ký thất bại. Email có thể đã tồn tại.");
+      const message = getApiErrorMessage(err, "Đăng nhập thất bại. Kiểm tra lại thông tin.");
+      setError(message);
+      toast.error(message, { id: loadingToast, duration: 6000 });
+      console.error("Login failed:", {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message,
+      });
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleRegisterSubmit = async (event) => {
+    event.preventDefault();
+    setRegError("");
+
+    if (!regFirstName.trim() || !regLastName.trim() || !regEmail.trim() || !regPassword) {
+      const message = "Vui lòng điền đầy đủ thông tin.";
+      setRegError(message);
+      toast.error(message);
+      return;
+    }
+
+    const loadingToast = toast.loading("Đang tạo tài khoản...");
+    setIsRegistering(true);
+
+    try {
+      await api.post("/auth/register", {
+        firstName: regFirstName.trim(),
+        lastName: regLastName.trim(),
+        email: regEmail.trim(),
+        password: regPassword,
+      });
+
+      toast.success("Đăng ký thành công. Bạn có thể đăng nhập ngay.", { id: loadingToast });
+      setEmail(regEmail.trim());
+      setPassword(regPassword);
+      setIsRegisterOpen(false);
+      setRegFirstName("");
+      setRegLastName("");
+      setRegEmail("");
+      setRegPassword("");
+    } catch (err) {
+      const message = getApiErrorMessage(err, "Đăng ký thất bại. Email có thể đã tồn tại.");
+      setRegError(message);
+      toast.error(message, { id: loadingToast, duration: 6000 });
+      console.error("Register failed:", {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message,
+      });
     } finally {
       setIsRegistering(false);
     }
@@ -76,47 +123,56 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
-      
-      {/* =========================================
-          MODAL ĐĂNG KÝ (NỔI LÊN TRÊN CÙNG)
-      ========================================= */}
       {isRegisterOpen && (
         <div className="register-overlay" onMouseDown={() => setIsRegisterOpen(false)}>
-          <div className="register-modal" onMouseDown={e => e.stopPropagation()}>
-            
+          <div className="register-modal" onMouseDown={(event) => event.stopPropagation()}>
             <div className="register-header">
               <h2>Đăng ký</h2>
               <p>Nhanh chóng và dễ dàng.</p>
-              <button onClick={() => setIsRegisterOpen(false)} className="close-register-btn">
+              <button onClick={() => setIsRegisterOpen(false)} className="close-register-btn" type="button">
                 <X size={24} />
               </button>
             </div>
 
             <div className="register-body">
-              {regError && <div style={{color: 'red', marginBottom: '10px', textAlign: 'center'}}>{regError}</div>}
-              
+              {regError && <div className="login-error">{regError}</div>}
+
               <form onSubmit={handleRegisterSubmit}>
                 <div className="name-row">
-                  <input 
-                    type="text" placeholder="Họ" className="reg-input" style={{marginBottom: 0}}
-                    value={regLastName} onChange={e => setRegLastName(e.target.value)}
+                  <input
+                    type="text"
+                    placeholder="Họ"
+                    className="reg-input"
+                    style={{ marginBottom: 0 }}
+                    value={regLastName}
+                    onChange={(event) => setRegLastName(event.target.value)}
                   />
-                  <input 
-                    type="text" placeholder="Tên" className="reg-input" style={{marginBottom: 0}}
-                    value={regFirstName} onChange={e => setRegFirstName(e.target.value)}
+                  <input
+                    type="text"
+                    placeholder="Tên"
+                    className="reg-input"
+                    style={{ marginBottom: 0 }}
+                    value={regFirstName}
+                    onChange={(event) => setRegFirstName(event.target.value)}
                   />
                 </div>
-                
-                <input 
-                  type="email" placeholder="Email hoặc số di động" className="reg-input"
-                  value={regEmail} onChange={e => setRegEmail(e.target.value)}
+
+                <input
+                  type="email"
+                  placeholder="Email hoặc số di động"
+                  className="reg-input"
+                  value={regEmail}
+                  onChange={(event) => setRegEmail(event.target.value)}
                 />
-                <input 
-                  type="password" placeholder="Mật khẩu mới" className="reg-input"
-                  value={regPassword} onChange={e => setRegPassword(e.target.value)}
+                <input
+                  type="password"
+                  placeholder="Mật khẩu mới"
+                  className="reg-input"
+                  value={regPassword}
+                  onChange={(event) => setRegPassword(event.target.value)}
                 />
 
-                <p style={{fontSize: '11px', color: '#777', marginTop: '10px', marginBottom: '10px'}}>
+                <p className="register-policy-text">
                   Bằng cách nhấp vào Đăng ký, bạn đồng ý với Điều khoản, Chính sách quyền riêng tư và Chính sách cookie của chúng tôi.
                 </p>
 
@@ -125,65 +181,58 @@ const LoginPage = () => {
                 </button>
               </form>
             </div>
-            
           </div>
         </div>
       )}
 
-      {/* =========================================
-          GIAO DIỆN LOGIN CHÍNH
-      ========================================= */}
       <div className="login-content">
-        
-        {/* Nửa Trái */}
         <div className="login-left">
-          <img 
-            src="https://static.xx.fbcdn.net/rsrc.php/y1/r/4lCu2zih0ca.svg" 
-            alt="Facebook" 
-            className="fb-logo" 
+          <img
+            src="https://static.xx.fbcdn.net/rsrc.php/y1/r/4lCu2zih0ca.svg"
+            alt="Facebook"
+            className="fb-logo"
           />
           <h2 className="login-slogan">
             Facebook giúp bạn kết nối và chia sẻ với mọi người trong cuộc sống của bạn.
           </h2>
         </div>
 
-        {/* Nửa Phải */}
         <div className="login-right">
           <div className="login-card">
-            {error && <div style={{color: 'red', marginBottom: '10px'}}>{error}</div>}
-            
+            {error && <div className="login-error">{error}</div>}
+
             <form onSubmit={handleLoginSubmit}>
               <input
                 type="email"
                 placeholder="Email hoặc số điện thoại"
                 className="login-input"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(event) => setEmail(event.target.value)}
               />
               <input
                 type="password"
                 placeholder="Mật khẩu"
                 className="login-input"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(event) => setPassword(event.target.value)}
               />
-              <button type="submit" className="btn-login">Đăng nhập</button>
+              <button type="submit" className="btn-login" disabled={isLoggingIn}>
+                {isLoggingIn ? "Đang đăng nhập..." : "Đăng nhập"}
+              </button>
             </form>
-            
+
             <a href="#" className="forgot-link">Quên mật khẩu?</a>
-            <div className="divider"></div>
-            
-            {/* 👇 KÍCH HOẠT NÚT MỞ MODAL ĐĂNG KÝ 👇 */}
-            <button onClick={() => setIsRegisterOpen(true)} className="btn-create">
+            <div className="divider" />
+
+            <button onClick={() => setIsRegisterOpen(true)} className="btn-create" type="button">
               Tạo tài khoản mới
             </button>
           </div>
-          
+
           <p className="create-page-text">
             <b>Tạo Trang</b> dành cho người nổi tiếng, thương hiệu hoặc doanh nghiệp.
           </p>
         </div>
-
       </div>
     </div>
   );

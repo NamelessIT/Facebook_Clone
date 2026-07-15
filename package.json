@@ -4,7 +4,7 @@
   "private": true,
   "description": "Facebook Clone - fullstack (ASP.NET Core + React/Vite). Root scripts run BE + FE together.",
   "scripts": {
-    "dev": "concurrently -k -n BE,FE -c blue,magenta \"npm run dev:be\" \"npm run dev:fe\"",
+    "dev": "node scripts/dev.cjs",
     "dev:fe": "npm --prefix frontend/Facebook_Frontend run dev",
     "dev:be": "dotnet watch --project backend/src/FacebookClone.API/FacebookClone.API.csproj run",
     "build": "npm run build:be && npm run build:fe",

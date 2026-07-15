@@ -27,6 +27,22 @@ public class SavedCollectionController : ControllerBase
         return Ok(new { success = true, message = "Danh sach bo suu tap", data = collections });
     }
 
+    [HttpGet("posts/{postId:guid}/state")]
+    public async Task<IActionResult> GetPostCollectionState(Guid postId)
+    {
+        var collectionIds = await _service.GetCollectionIdsContainingPostAsync(CurrentUserId, postId);
+        return Ok(new
+        {
+            success = true,
+            message = "Trang thai bai viet trong bo suu tap",
+            data = new
+            {
+                isInAnyCollection = collectionIds.Count > 0,
+                collectionIds
+            }
+        });
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateCollection([FromBody] CreateCollectionRequest request)
     {

@@ -79,7 +79,12 @@ public class PostInteractionService : IPostInteractionService
     public async Task<(IEnumerable<object> Items, int Total)> GetUserSavedPostsAsync(Guid userId, int page, int pageSize)
     {
         var (interactions, total) = await _repo.GetSavedByUserAsync(userId, page, pageSize);
-        var items = interactions.Select(x => (object)new { Post = _mapper.Map<PostResponseDto>(x.Post), SavedAt = x.CreatedAt });
+        var items = interactions.Select(x =>
+        {
+            var post = _mapper.Map<PostResponseDto>(x.Post);
+            post.IsSaved = true;
+            return (object)new { Post = post, SavedAt = x.CreatedAt };
+        });
         return (items, total);
     }
 

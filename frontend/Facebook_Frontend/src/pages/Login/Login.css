@@ -1,6 +1,7 @@
 /* src/pages/Login/Login.css */
 .login-container {
   background-color: #f0f2f5;
+  color: #1c1e21;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -49,8 +50,22 @@
   text-align: center;
 }
 
+.login-error {
+  background-color: #fff1f0;
+  border: 1px solid #ffccc7;
+  border-radius: 6px;
+  color: #cf1322;
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 12px;
+  padding: 9px 10px;
+  text-align: left;
+}
+
 .login-input {
   width: 100%;
+  background-color: #fff;
+  color: #1c1e21;
   padding: 14px 16px;
   margin-bottom: 12px;
   font-size: 17px;
@@ -58,6 +73,17 @@
   border-radius: 6px;
   outline: none;
   box-sizing: border-box;
+}
+
+.login-input::placeholder {
+  color: #8a8d91;
+}
+
+.login-input:-webkit-autofill,
+.login-input:-webkit-autofill:hover,
+.login-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #1c1e21;
+  box-shadow: 0 0 0 1000px #fff inset;
 }
 
 .login-input:focus {
@@ -79,6 +105,10 @@
 }
 
 .btn-login:hover { background-color: #166fe5; }
+.btn-login:disabled {
+  background-color: #8bbbf5;
+  cursor: not-allowed;
+}
 
 .forgot-link {
   display: block;
@@ -139,6 +169,7 @@
 
 .register-modal {
   background-color: #fff;
+  color: #1c1e21;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.2);
   width: 100%;
@@ -193,6 +224,7 @@
 .reg-input {
   width: 100%;
   background-color: #f5f6f7;
+  color: #1c1e21;
   border: 1px solid #ccd0d5;
   border-radius: 5px;
   padding: 10px;
@@ -200,7 +232,23 @@
   margin-bottom: 10px;
   outline: none;
 }
+.reg-input::placeholder {
+  color: #8a8d91;
+}
+.reg-input:-webkit-autofill,
+.reg-input:-webkit-autofill:hover,
+.reg-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #1c1e21;
+  box-shadow: 0 0 0 1000px #f5f6f7 inset;
+}
 .reg-input:focus { border-color: #1877f2; }
+
+.register-policy-text {
+  color: #777;
+  font-size: 11px;
+  line-height: 1.35;
+  margin: 10px 0;
+}
 
 .btn-register-submit {
   width: 194px;
@@ -218,3 +266,16 @@
 }
 .btn-register-submit:hover { background-color: #36a420; }
 .btn-register-submit:disabled { background-color: #94d394; cursor: not-allowed; }
+
+/* Dark mode */
+[data-theme="dark"] .login-container { background-color: #18191a; color: #e4e6eb; }
+[data-theme="dark"] .login-slogan { color: #e4e6eb; }
+[data-theme="dark"] .login-card { background-color: #242526; }
+[data-theme="dark"] .login-input { background-color: #3a3b3c; color: #e4e6eb; border-color: #3e4042; }
+[data-theme="dark"] .login-input::placeholder { color: #b0b3b9; }
+[data-theme="dark"] .login-input:-webkit-autofill,
+[data-theme="dark"] .login-input:-webkit-autofill:hover,
+[data-theme="dark"] .login-input:-webkit-autofill:focus { -webkit-text-fill-color: #e4e6eb; }
+[data-theme="dark"] .login-input:focus { background-color: #3a3b3c; }
+[data-theme="dark"] .divider { border-bottom-color: #3e4042; }
+[data-theme="dark"] .create-page-text { color: #b0b3b9; }

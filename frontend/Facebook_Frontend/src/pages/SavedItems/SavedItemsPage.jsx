@@ -81,7 +81,7 @@ const SavedItemsPage = () => {
     }
   };
 
-  const handleSaveToCollection = async (postId, colId, newName) => {
+  const handleSaveToCollection = async (postId, { nextCollectionIds, newName } = {}) => {
     try {
       if (newName) {
         const res = await savedItemsService.createCollection(newName);
@@ -91,10 +91,22 @@ const SavedItemsPage = () => {
           setUserCollections((prev) => [...prev, newCol]);
           toast.success(`Đã tạo bộ sưu tập "${newName}" và lưu bài viết`);
         }
-      } else if (colId) {
-        await savedItemsService.addPostToCollection(colId, postId);
-        const col = userCollections.find((c) => c.id === colId);
-        toast.success(`Đã thêm vào "${col?.name || 'bộ sưu tập'}"`);
+      } else if (nextCollectionIds) {
+        const state = await savedItemsService.getPostCollectionState(postId);
+        const previous = new Set(state.data?.data?.collectionIds ?? []);
+        const next = new Set(nextCollectionIds);
+        const toAdd = [...next].filter((id) => !previous.has(id));
+        const toRemove = [...previous].filter((id) => !next.has(id));
+
+        await Promise.all([
+          ...toAdd.map((id) => savedItemsService.addPostToCollection(id, postId)),
+          ...toRemove.map((id) => savedItemsService.removePostFromCollection(id, postId)),
+        ]);
+
+        toast.success('Đã cập nhật bộ sưu tập');
+        if (activeColId && toRemove.includes(activeColId)) {
+          setPosts((prev) => prev.filter((p) => p.id !== postId));
+        }
       }
     } catch {
       toast.error('Thao tác thất bại');
@@ -170,8 +182,10 @@ const SavedItemsPage = () => {
 
       {selectedPost && (
         <PostDetailModal
+          key={selectedPost.id}
           post={selectedPost}
           onClose={() => setSelectedPost(null)}
+          onSelectPost={setSelectedPost}
         />
       )}
     </div>

@@ -74,3 +74,5 @@
 @media (min-width: 768px) {
   .media-viewer-right { display: block; }
 }
+/* Dark mode */
+[data-theme="dark"] .media-viewer-right { background-color: #242526; }

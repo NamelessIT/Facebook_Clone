@@ -2,28 +2,32 @@ import { useState, useRef } from 'react';
 import { MoreHorizontal, Link2, FolderPlus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getImageUrl } from '../../utils/formatUrl';
+import savedItemsService from '../../services/savedItemsService';
 import './CardSavedPost.css';
 
 // Modal chọn bộ sưu tập để lưu vào
-const CollectionModal = ({ postId, collections, onClose, onSaveToCollection }) => {
-  const [selected, setSelected] = useState(null);
+const CollectionModal = ({ postId, collections, selectedCollectionIds, onClose, onSaveToCollection }) => {
+  const [selectedIds, setSelectedIds] = useState(() => new Set(selectedCollectionIds ?? []));
   const [newName, setNewName] = useState('');
   const [showCreate, setShowCreate] = useState(false);
 
   const handleToggle = (colId) => {
-    setSelected((prev) => (prev === colId ? null : colId));
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(colId)) next.delete(colId);
+      else next.add(colId);
+      return next;
+    });
   };
 
   const handleConfirm = () => {
-    if (selected) {
-      onSaveToCollection(postId, selected);
-    }
+    onSaveToCollection(postId, { nextCollectionIds: [...selectedIds] });
     onClose();
   };
 
   const handleCreate = () => {
     if (!newName.trim()) return;
-    onSaveToCollection(postId, null, newName.trim());
+    onSaveToCollection(postId, { newName: newName.trim() });
     setNewName('');
     setShowCreate(false);
     onClose();
@@ -40,12 +44,12 @@ const CollectionModal = ({ postId, collections, onClose, onSaveToCollection }) =
           {collections.map((col) => (
             <button
               key={col.id}
-              className={`csp-col-item ${selected === col.id ? 'csp-col-item--active' : ''}`}
+              className={`csp-col-item ${selectedIds.has(col.id) ? 'csp-col-item--active' : ''}`}
               onClick={() => handleToggle(col.id)}
             >
               <span className="csp-col-icon">📁</span>
               <span>{col.name}</span>
-              {selected === col.id && <span className="csp-col-check">✓</span>}
+              {selectedIds.has(col.id) && <span className="csp-col-check">✓</span>}
             </button>
           ))}
           {!showCreate ? (
@@ -68,7 +72,7 @@ const CollectionModal = ({ postId, collections, onClose, onSaveToCollection }) =
           )}
         </div>
         <div className="csp-modal-footer">
-          <button className="csp-modal-confirm" onClick={handleConfirm} disabled={!selected}>
+          <button className="csp-modal-confirm" onClick={handleConfirm}>
             Xong
           </button>
         </div>
@@ -95,6 +99,7 @@ const getPostThumbnail = (post) => {
 const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, onViewDetail, savedCollection }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState([]);
   const menuRef = useRef(null);
 
   const thumbnail = getPostThumbnail(post);
@@ -119,9 +124,15 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, o
     setShowMenu((v) => !v);
   };
 
-  const handleCollectionModalOpen = (e) => {
+  const handleCollectionModalOpen = async (e) => {
     e.stopPropagation();
-    setShowCollectionModal(true);
+    try {
+      const res = await savedItemsService.getPostCollectionState(post.id);
+      setSelectedCollectionIds(res.data?.data?.collectionIds ?? []);
+      setShowCollectionModal(true);
+    } catch {
+      toast.error('Không thể tải trạng thái bộ sưu tập');
+    }
   };
 
   return (
@@ -198,6 +209,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, o
         <CollectionModal
           postId={post.id}
           collections={collections}
+          selectedCollectionIds={selectedCollectionIds}
           onClose={(e) => { e?.stopPropagation?.(); setShowCollectionModal(false); }}
           onSaveToCollection={onSaveToCollection}
         />
