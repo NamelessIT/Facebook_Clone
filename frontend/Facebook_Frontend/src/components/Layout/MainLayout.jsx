@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { Home, Tv, Store, Users, MessageCircle, Grid, Clock, Bookmark, Film, Folder, ChevronLeft, ShieldAlert } from "lucide-react";
+import { Home, Tv, Store, Users, MessageCircle, Grid, Clock, Bookmark, Film, Folder, ChevronLeft, ShieldAlert, Search } from "lucide-react";
 import "./MainLayout.css";
 import Avatar from '../common/Avatar';
 import SearchBar from '../common/SearchBar';
@@ -19,6 +19,17 @@ const MainLayout = () => {
   const [chatPanelOpen, setChatPanelOpen] = useState(false);
   const [chatInitialFriend, setChatInitialFriend] = useState(null);
   const [savedCollections, setSavedCollections] = useState([]);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+  // Focus the input when the mobile search sheet opens
+  useEffect(() => {
+    if (!mobileSearchOpen) return;
+    const t = setTimeout(
+      () => document.querySelector('.mobile-search-field .search-bar-input')?.focus(),
+      50
+    );
+    return () => clearTimeout(t);
+  }, [mobileSearchOpen]);
 
   const isOnSaved = location.pathname.startsWith('/saved');
 
@@ -109,7 +120,12 @@ const MainLayout = () => {
           <Link to="/">
             <img src="../../assets/images/Facebook-Logo.png" className="nav-logo" alt="logo" />
           </Link>
-          <SearchBar />
+          {/* Full search bar (desktop) */}
+          <span className="nav-search-desktop"><SearchBar /></span>
+          {/* Collapsed search icon (mobile) → opens the search sheet */}
+          <button className="nav-search-mobile-btn" onClick={() => setMobileSearchOpen(true)} title="Tìm kiếm" aria-label="Tìm kiếm">
+            <Search size={20} />
+          </button>
         </div>
 
         {/* Giữa */}
@@ -128,8 +144,8 @@ const MainLayout = () => {
               <ShieldAlert size={20} />
             </Link>
           )}
-          <div className="icon-btn"><Grid size={20} /></div>
-          <div className="icon-btn" onClick={() => setChatPanelOpen((prev) => !prev)} title="Messenger">
+          <div className="icon-btn nav-grid-btn"><Grid size={20} /></div>
+          <div className="icon-btn nav-msg-btn" onClick={() => setChatPanelOpen((prev) => !prev)} title="Messenger">
             <MessageCircle size={20} />
           </div>
           <NotificationBell />
@@ -174,6 +190,18 @@ const MainLayout = () => {
         </aside>
 
       </div>
+
+      {/* Mobile search sheet (mở khi bấm icon kính lúp trên header mobile) */}
+      {mobileSearchOpen && (
+        <div className="mobile-search-overlay" onMouseDown={() => setMobileSearchOpen(false)}>
+          <div className="mobile-search-sheet" onMouseDown={(e) => e.stopPropagation()}>
+            <button className="mobile-search-back" onClick={() => setMobileSearchOpen(false)} title="Đóng" aria-label="Đóng">
+              <ChevronLeft size={22} />
+            </button>
+            <div className="mobile-search-field"><SearchBar onNavigate={() => setMobileSearchOpen(false)} /></div>
+          </div>
+        </div>
+      )}
 
       {/* Mobile bottom navigation (hiện trên màn hình nhỏ, thay cho nav-center bị ẩn) */}
       <nav className="mobile-nav">

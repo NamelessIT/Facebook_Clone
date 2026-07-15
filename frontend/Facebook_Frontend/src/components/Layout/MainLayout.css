@@ -323,6 +323,7 @@ body[data-theme="dark"],
    Mobile (<=768px): fix horizontal overflow + shrink search
    ============================================================ */
 .mobile-nav { display: none; }
+.nav-search-mobile-btn { display: none; }
 
 @media (max-width: 768px) {
   /* Never allow the page to scroll sideways */
@@ -331,6 +332,25 @@ body[data-theme="dark"],
   .navbar {
     padding: 0 8px;
     gap: 6px;
+  }
+
+  /* Collapse search to an icon; declutter the header */
+  .nav-search-desktop { display: none; }
+  .nav-grid-btn,
+  .nav-msg-btn { display: none; }
+
+  .nav-search-mobile-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f0f2f5;
+    border: none;
+    cursor: pointer;
+    color: #050505;
+    flex-shrink: 0;
   }
 
   /* Flexible widths instead of the fixed 300px that caused overflow */
@@ -396,4 +416,63 @@ body[data-theme="dark"],
 [data-theme="dark"] .mobile-nav a,
 [data-theme="dark"] .mobile-nav .mobile-nav-item {
   color: #b0b3b9;
+}
+
+[data-theme="dark"] .nav-search-mobile-btn {
+  background: #3d3d3d;
+  color: #e4e6eb;
+}
+
+/* ── Mobile search sheet ── */
+.mobile-search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 300;
+}
+
+.mobile-search-sheet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.mobile-search-back {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #f0f2f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #050505;
+  flex-shrink: 0;
+}
+
+.mobile-search-back:hover { background: #e4e6eb; }
+
+.mobile-search-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-search-field .search-bar-container { width: 100%; }
+.mobile-search-field .search-bar-form { min-width: 0; width: 100%; }
+
+[data-theme="dark"] .mobile-search-sheet {
+  background: #262626;
+}
+
+[data-theme="dark"] .mobile-search-back {
+  background: #3d3d3d;
+  color: #e4e6eb;
 }

@@ -5,7 +5,7 @@ import userService from "../../services/userService";
 import Avatar from "../common/Avatar";
 import "./SearchBar.css";
 
-const SearchBar = () => {
+const SearchBar = ({ onNavigate }) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -57,6 +57,7 @@ const SearchBar = () => {
     if (!query.trim()) return;
     setShowDropdown(false);
     navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+    onNavigate?.();
   };
 
   const handleClear = () => {
@@ -94,6 +95,7 @@ const SearchBar = () => {
               onClick={() => {
                 setShowDropdown(false);
                 navigate(`/search?q=${encodeURIComponent(user.fullName || query)}`);
+                onNavigate?.();
               }}
             >
               <Avatar src={user.avatarUrl} className="w-8 h-8" />
