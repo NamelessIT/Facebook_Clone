@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { Home, Tv, Store, Users, MessageCircle, Grid, Clock, Bookmark, Film, Folder, ChevronLeft } from "lucide-react";
+import { Home, Tv, Store, Users, MessageCircle, Grid, Clock, Bookmark, Film, Folder, ChevronLeft, ShieldAlert } from "lucide-react";
 import "./MainLayout.css";
 import Avatar from '../common/Avatar';
 import SearchBar from '../common/SearchBar';
@@ -123,6 +123,11 @@ const MainLayout = () => {
 
         {/* Góc Phải */}
         <div className="nav-right">
+          {user?.isAdmin && (
+            <Link to="/admin" className="icon-btn admin-entry-btn" title="Admin">
+              <ShieldAlert size={20} />
+            </Link>
+          )}
           <div className="icon-btn"><Grid size={20} /></div>
           <div className="icon-btn" onClick={() => setChatPanelOpen((prev) => !prev)} title="Messenger">
             <MessageCircle size={20} />
@@ -169,6 +174,15 @@ const MainLayout = () => {
         </aside>
 
       </div>
+
+      {/* Mobile bottom navigation (hiện trên màn hình nhỏ, thay cho nav-center bị ẩn) */}
+      <nav className="mobile-nav">
+        <Link to="/" className={location.pathname === '/' ? 'active' : ''} title="Trang chủ"><Home size={24} /></Link>
+        <Link to="/friends" className={location.pathname.startsWith('/friends') ? 'active' : ''} title="Bạn bè"><Users size={24} /></Link>
+        <Link to="/reels" className={location.pathname.startsWith('/reels') ? 'active' : ''} title="Reels"><Film size={24} /></Link>
+        <div className="mobile-nav-item" onClick={() => setChatPanelOpen((prev) => !prev)} title="Tin nhắn"><MessageCircle size={24} /></div>
+        <Link to={`/profile/${user?.id}`} className={location.pathname.startsWith('/profile') ? 'active' : ''} title="Trang cá nhân"><Avatar src={user?.avatarUrl} className="w-6 h-6" /></Link>
+      </nav>
 
       {/* Floating Chat Panel */}
       {chatPanelOpen && (
