@@ -78,15 +78,13 @@ const ChatFloatingPanel = ({ initialFriend = null, onClose }) => {
             : 'Tin nhắn'}
         </span>
 
-        {!selectedFriend && (
-          <button
-            className="cfp-btn"
-            onClick={() => navigate('/messages')}
-            title="Mở Messenger đầy đủ"
-          >
-            <ExternalLink size={16} />
-          </button>
-        )}
+        <button
+          className="cfp-btn"
+          onClick={() => { onClose?.(); navigate('/messages'); }}
+          title="Mở giao diện chat đầy đủ"
+        >
+          <ExternalLink size={16} />
+        </button>
         <button className="cfp-btn" onClick={onClose} title="Đóng">
           <X size={18} />
         </button>

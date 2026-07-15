@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Search, Users } from 'lucide-react';
+import { Search, Users, ChevronLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import friendshipService from '../../services/friendshipService';
 import chatService from '../../services/chatService';
@@ -107,7 +107,12 @@ const ChatListPage = () => {
       {/* Left Panel — Friend/Conversation List */}
       <div className="chat-sidebar" style={{ width: `${sidebarWidth}%` }}>
         <div className="chat-sidebar-header">
-          <h2>Chat</h2>
+          <div className="chat-sidebar-title-row">
+            <button className="chat-back-btn" onClick={() => navigate('/')} title="Quay lại">
+              <ChevronLeft size={22} />
+            </button>
+            <h2>Chat</h2>
+          </div>
           <div className="chat-search-form">
             <Search size={16} className="chat-search-icon" />
             <input

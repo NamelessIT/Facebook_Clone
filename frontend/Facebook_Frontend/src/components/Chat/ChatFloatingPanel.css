@@ -160,3 +160,14 @@
 [data-theme="dark"] .cfp-contact { color: #e4e6eb; }
 [data-theme="dark"] .cfp-contact:hover { background: #3a3b3c; }
 [data-theme="dark"] .cfp-state { color: #b0b3b9; }
+
+/* Mobile: full-width bottom sheet (no left overflow) */
+@media (max-width: 768px) {
+  .cfp {
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: 75vh;
+    height: 75dvh;
+  }
+}
