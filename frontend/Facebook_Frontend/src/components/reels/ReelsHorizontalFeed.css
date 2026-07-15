@@ -189,6 +189,10 @@
   max-width: 110px;
 }
 
+[data-theme="dark"] .rhf-card-label {
+  color: #e4e6eb;
+}
+
 /* ---- SKELETON ---- */
 .rhf-skeleton-track {
   display: flex;

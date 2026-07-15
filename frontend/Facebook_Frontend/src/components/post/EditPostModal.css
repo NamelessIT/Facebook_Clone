@@ -271,3 +271,103 @@
   opacity: 0.65;
   cursor: not-allowed;
 }
+
+/* Shared post preview (read-only) */
+.edit-post-shared {
+  margin: 8px 16px;
+  border: 1px solid #ced0d4;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.edit-post-shared-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 4px;
+}
+
+.edit-post-shared-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.edit-post-shared-author {
+  font-weight: 600;
+  font-size: 14px;
+  color: #050505;
+}
+
+.edit-post-shared-time {
+  font-size: 12px;
+  color: #65676b;
+}
+
+.edit-post-shared-text {
+  padding: 4px 12px 10px;
+  font-size: 14px;
+  color: #050505;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.edit-post-shared-media {
+  background: #000;
+  max-height: 220px;
+  overflow: hidden;
+}
+
+.edit-post-shared-media img,
+.edit-post-shared-media video {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  display: block;
+}
+
+/* ============================================================
+   Dark mode — text + controls that were missing overrides
+   ============================================================ */
+[data-theme="dark"] .edit-post-close {
+  background: #3a3b3c;
+  color: #b0b3b9;
+}
+[data-theme="dark"] .edit-post-close:hover { background: #4e4f50; }
+
+[data-theme="dark"] .edit-post-author-name { color: #e4e6eb; }
+
+[data-theme="dark"] .edit-post-privacy-select {
+  background: #3a3b3c;
+  color: #e4e6eb;
+}
+
+[data-theme="dark"] .edit-post-textarea {
+  color: #e4e6eb;
+  background: transparent;
+}
+[data-theme="dark"] .edit-post-textarea::placeholder { color: #b0b3b9; }
+
+[data-theme="dark"] .edit-post-char-count { color: #b0b3b9; }
+[data-theme="dark"] .edit-post-media-title { color: #b0b3b9; }
+[data-theme="dark"] .edit-post-media-item { background: #3a3b3c; }
+
+[data-theme="dark"] .edit-post-add-media { border-top-color: #3d3d3d; }
+[data-theme="dark"] .edit-post-add-media button {
+  border-color: #3d3d3d;
+  color: #e4e6eb;
+}
+[data-theme="dark"] .edit-post-add-media button:hover { background: #3a3b3c; }
+
+[data-theme="dark"] .edit-post-footer { border-top-color: #3d3d3d; }
+[data-theme="dark"] .edit-post-btn-cancel {
+  background: #3a3b3c;
+  color: #e4e6eb;
+}
+[data-theme="dark"] .edit-post-btn-cancel:hover { background: #4e4f50; }
+
+/* Dark mode — shared preview */
+[data-theme="dark"] .edit-post-shared { border-color: #3e4042; }
+[data-theme="dark"] .edit-post-shared-author,
+[data-theme="dark"] .edit-post-shared-text { color: #e4e6eb; }
+[data-theme="dark"] .edit-post-shared-time { color: #b0b3b9; }

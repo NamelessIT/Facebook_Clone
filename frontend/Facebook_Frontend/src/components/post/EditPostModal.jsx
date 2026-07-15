@@ -152,6 +152,37 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
           )}
         </div>
 
+        {/* Bài viết được chia sẻ (chỉ xem, không sửa) */}
+        {post.sharedPost && (
+          <div className="edit-post-shared">
+            <div className="edit-post-shared-header">
+              <Avatar src={post.sharedPost.author?.avatarUrl} className="w-8 h-8" />
+              <div className="edit-post-shared-info">
+                <span className="edit-post-shared-author">
+                  {post.sharedPost.author?.fullName || 'Người dùng'}
+                </span>
+                {post.sharedPost.createdAt && (
+                  <span className="edit-post-shared-time">
+                    {new Date(post.sharedPost.createdAt).toLocaleString('vi-VN')}
+                  </span>
+                )}
+              </div>
+            </div>
+            {post.sharedPost.content && (
+              <div className="edit-post-shared-text">{post.sharedPost.content}</div>
+            )}
+            {post.sharedPost.medias?.length > 0 && (
+              <div className="edit-post-shared-media">
+                {post.sharedPost.medias[0].mediaType === 1 ? (
+                  <video src={getImageUrl(post.sharedPost.medias[0].url, 'videos')} />
+                ) : (
+                  <img src={getImageUrl(post.sharedPost.medias[0].url, 'posts')} alt="" />
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Existing medias - read-only in privacyOnly mode */}
         {existingMedias.length > 0 && (
           <div className="edit-post-media-section">
