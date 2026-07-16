@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FacebookClone.Application.Services.Interfaces;
 using FacebookClone.Application.DTOs.User;
+using FacebookClone.Infrastructure;
 using System.Security.Claims;
 
 namespace FacebookClone.API.Controllers;
@@ -12,11 +13,13 @@ public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IFileService _fileService;
+    private readonly AppDbContext _db;
 
-    public UsersController(IUserService userService, IFileService fileService)
+    public UsersController(IUserService userService, IFileService fileService, AppDbContext db)
     {
         _userService = userService;
         _fileService = fileService;
+        _db = db;
     }
 
     // Helper để lấy ID từ Token hiện tại
@@ -34,6 +37,22 @@ public class UsersController : ControllerBase
         var userId = GetCurrentUserId();
         var profile = await _userService.GetProfileAsync(userId);
         return Ok(profile);
+    }
+
+    [HttpPost("me/heartbeat")]
+    public async Task<IActionResult> Heartbeat()
+    {
+        var userId = GetCurrentUserId();
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null || user.IsDeleted)
+            return Unauthorized(new { success = false, message = "Token khong hop le" });
+
+        var now = DateTime.UtcNow;
+        user.IsOnline = true;
+        user.UpdatedAt = now;
+        await _db.SaveChangesAsync();
+
+        return Ok(new { success = true, data = new { isOnline = true, lastActiveAt = now } });
     }
 
     [HttpPut("me")]

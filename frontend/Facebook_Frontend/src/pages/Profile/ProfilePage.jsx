@@ -5,8 +5,6 @@ import {
   Grid3X3, FileText, Users, Image, Film, ChevronDown,
   Eye, Upload
 } from 'lucide-react';
-import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
 import userService from '../../services/userService';
@@ -21,6 +19,9 @@ import ReelsGrid from '../../components/reels/ReelsGrid';
 import PostDetailModal from '../../components/post/PostDetailModal';
 import { getImageUrl } from '../../utils/formatUrl';
 import './ProfilePage.css';
+import { useConfirm } from '../../contexts/useConfirm';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { useLocalization } from '../../contexts/useLocalization';
 
 const TABS = {
   ALL: 'all',
@@ -31,6 +32,8 @@ const TABS = {
 };
 
 const ProfilePage = () => {
+  const { locale } = useLocalization();
+  const confirm = useConfirm();
   const { userId } = useParams();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
@@ -92,7 +95,7 @@ const ProfilePage = () => {
           : await userService.getUserById(userId);
         setProfileUser(res.data?.data || res.data);
       } catch {
-        setError('Không tìm thấy người dùng này.');
+        setError(translateCatalogKey('ui.pages.profile.profilepage.khong-tim-thay-nguoi-dung-nay.50812b5e'));
       } finally {
         setLoading(false);
       }
@@ -174,7 +177,7 @@ const ProfilePage = () => {
 
   const handleProfileUpdated = (updatedData) => {
     setProfileUser((prev) => ({ ...prev, ...updatedData }));
-    toast.success('Đã cập nhật trang cá nhân!');
+    toast.success(translateCatalogKey('ui.pages.profile.profilepage.a-cap-nhat-trang-ca-nhan.9a658df8'));
   };
 
   const handleAvatarFileChange = async (e) => {
@@ -183,7 +186,7 @@ const ProfilePage = () => {
     e.target.value = '';
     setShowAvatarDropdown(false);
 
-    const confirmed = window.confirm('Bạn có muốn đặt ảnh này làm ảnh đại diện không?');
+    const confirmed = await confirm({ title: translateCatalogKey('ui.pages.profile.profilepage.oi-anh-ai-dien.895a5650'), message: translateCatalogKey('ui.pages.profile.profilepage.anh-a-chon-se-tro-thanh-anh-ai-dien-.80eaed62'), danger: false, confirmText: translateCatalogKey('ui.pages.profile.profilepage.at-lam-anh-ai-dien.785cb9d6') });
     if (!confirmed) return;
 
     setAvatarUploading(true);
@@ -203,10 +206,10 @@ const ProfilePage = () => {
       formPost.append('Images', file);
       await postService.createPost(formPost);
 
-      toast.success('Đã cập nhật ảnh đại diện và đăng bài viết!');
+      toast.success(translateCatalogKey('ui.pages.profile.profilepage.a-cap-nhat-anh-ai-dien-va-ang-bai-vi.333e8524'));
       fetchPosts(1);
     } catch {
-      toast.error('Cập nhật ảnh đại diện thất bại');
+      toast.error(translateCatalogKey('ui.pages.profile.profilepage.cap-nhat-anh-ai-dien-that-bai.3eeaf866'));
     } finally {
       setAvatarUploading(false);
     }
@@ -218,7 +221,7 @@ const ProfilePage = () => {
     e.target.value = '';
     setShowCoverDropdown(false);
 
-    const confirmed = window.confirm('Bạn có muốn đặt ảnh này làm ảnh bìa không?');
+    const confirmed = await confirm({ title: translateCatalogKey('ui.pages.profile.profilepage.oi-anh-bia.d48acc1f'), message: translateCatalogKey('ui.pages.profile.profilepage.anh-a-chon-se-tro-thanh-anh-bia-moi-.65ee0e28'), danger: false, confirmText: translateCatalogKey('ui.pages.profile.profilepage.at-lam-anh-bia.232f67ec') });
     if (!confirmed) return;
 
     setCoverUploading(true);
@@ -237,17 +240,17 @@ const ProfilePage = () => {
       formPost.append('Images', file);
       await postService.createPost(formPost);
 
-      toast.success('Đã cập nhật ảnh bìa và đăng bài viết!');
+      toast.success(translateCatalogKey('ui.pages.profile.profilepage.a-cap-nhat-anh-bia-va-ang-bai-viet.44f6e757'));
       fetchPosts(1);
     } catch {
-      toast.error('Cập nhật ảnh bìa thất bại');
+      toast.error(translateCatalogKey('ui.pages.profile.profilepage.cap-nhat-anh-bia-that-bai.5d4e9dab'));
     } finally {
       setCoverUploading(false);
     }
   };
 
   const joinDate = profileUser?.createdAt
-    ? format(new Date(profileUser.createdAt), "MMMM 'năm' yyyy", { locale: vi })
+    ? new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(new Date(profileUser.createdAt))
     : null;
 
   if (loading) {
@@ -271,10 +274,10 @@ const ProfilePage = () => {
     return (
       <div className="pp-page">
         <div className="pp-error-card">
-          <h3>Không tìm thấy người dùng</h3>
+          <h3>{translateCatalogKey('ui.pages.profile.profilepage.khong-tim-thay-nguoi-dung.910f8966')}</h3>
           <p>{error}</p>
           <button className="pp-btn pp-btn--primary" onClick={() => navigate('/')}>
-            Về trang chủ
+            {translateCatalogKey('ui.components.layout.mainlayout.ve-trang-chu.a7f97907')}
           </button>
         </div>
       </div>
@@ -284,12 +287,12 @@ const ProfilePage = () => {
   if (!profileUser) return null;
 
   const tabConfig = [
-    { key: TABS.ALL, label: 'Tất cả', icon: <Grid3X3 size={16} /> },
-    { key: TABS.ABOUT, label: 'Giới thiệu', icon: <FileText size={16} /> },
-    { key: TABS.FRIENDS, label: 'Bạn bè', icon: <Users size={16} /> },
-    { key: TABS.PHOTOS, label: 'Ảnh', icon: <Image size={16} /> },
+    { key: TABS.ALL, label: translateCatalogKey('ui.pages.admin.adminusers.tat-ca.bb1e6fd0'), icon: <Grid3X3 size={16} /> },
+    { key: TABS.ABOUT, label: translateCatalogKey('ui.components.profile.profilesidebar.gioi-thieu.78a71f6d'), icon: <FileText size={16} /> },
+    { key: TABS.FRIENDS, label: translateCatalogKey('privacy.friends'), icon: <Users size={16} /> },
+    { key: TABS.PHOTOS, label: translateCatalogKey('ui.pages.profile.profilepage.anh.1c547f82'), icon: <Image size={16} /> },
     { key: TABS.REELS, label: 'Reels', icon: <Film size={16} /> },
-    { key: 'more', label: 'Xem thêm', icon: <ChevronDown size={16} /> },
+    { key: 'more', label: translateCatalogKey('post.seeMore'), icon: <ChevronDown size={16} /> },
   ];
 
   return (
@@ -299,7 +302,7 @@ const ProfilePage = () => {
         {profileUser.coverUrl ? (
           <img
             src={getImageUrl(profileUser.coverUrl, 'covers')}
-            alt="Cover"
+            alt={translateCatalogKey('ui.components.profile.editprofilemodal.cover.7ebe1ce8')}
             className="pp-cover-img"
           />
         ) : (
@@ -310,11 +313,11 @@ const ProfilePage = () => {
             <button
               className="pp-cover-edit-btn"
               onClick={() => setShowCoverDropdown((v) => !v)}
-              title="Chỉnh sửa ảnh bìa"
+              title={translateCatalogKey('ui.pages.profile.profilepage.chinh-sua-anh-bia.cb9e433d')}
               disabled={coverUploading}
             >
               <Camera size={14} />
-              {coverUploading ? 'Đang tải...' : 'Chỉnh sửa ảnh bìa'}
+              {coverUploading ? translateCatalogKey('common.loading') : translateCatalogKey('ui.pages.profile.profilepage.chinh-sua-anh-bia.cb9e433d')}
             </button>
             {showCoverDropdown && (
               <div className="pp-cover-dropdown">
@@ -323,14 +326,14 @@ const ProfilePage = () => {
                   onClick={() => { setShowCoverDropdown(false); setShowEditModal(true); }}
                 >
                   <Edit3 size={15} />
-                  Chỉnh sửa trang cá nhân
+                  {translateCatalogKey('ui.components.profile.editprofilemodal.chinh-sua-trang-ca-nhan.f8a69cb6')}
                 </button>
                 <button
                   className="pp-dropdown-item"
                   onClick={() => coverInputRef.current?.click()}
                 >
                   <Upload size={15} />
-                  Chọn ảnh bìa mới
+                  {translateCatalogKey('ui.pages.profile.profilepage.chon-anh-bia-moi.687226e2')}
                 </button>
               </div>
             )}
@@ -359,7 +362,7 @@ const ProfilePage = () => {
                 <button
                   className="pp-avatar-edit-btn"
                   onClick={() => setShowAvatarDropdown((v) => !v)}
-                  title="Cập nhật ảnh đại diện"
+                  title={translateCatalogKey('ui.pages.profile.profilepage.cap-nhat-anh-ai-dien.8606228a')}
                   disabled={avatarUploading}
                 >
                   <Camera size={14} />
@@ -388,14 +391,14 @@ const ProfilePage = () => {
                       }}
                     >
                       <Eye size={15} />
-                      Xem ảnh đại diện
+                      {translateCatalogKey('ui.pages.profile.profilepage.xem-anh-ai-dien.41eef135')}
                     </button>
                     <button
                       className="pp-dropdown-item"
                       onClick={() => avatarInputRef.current?.click()}
                     >
                       <Upload size={15} />
-                      Chọn ảnh đại diện
+                      {translateCatalogKey('ui.pages.profile.profilepage.chon-anh-ai-dien.3d94b9c0')}
                     </button>
                   </div>
                 )}
@@ -416,9 +419,9 @@ const ProfilePage = () => {
             <div className="pp-header-text">
               <h1 className="pp-name">{profileUser.fullName}</h1>
               <div className="pp-stats">
-                {postsTotal > 0 && <span>{postsTotal} Bài viết</span>}
-                {friendsTotal > 0 && <span>{friendsTotal} Bạn bè</span>}
-                {photos.length > 0 && <span>{photos.length} Ảnh</span>}
+                {postsTotal > 0 && <span>{postsTotal} {translateCatalogKey('admin.posts.title')}</span>}
+                {friendsTotal > 0 && <span>{friendsTotal} {translateCatalogKey('privacy.friends')}</span>}
+                {photos.length > 0 && <span>{photos.length} {translateCatalogKey('ui.pages.profile.profilepage.anh.1c547f82')}</span>}
               </div>
               {profileUser.bio && <p className="pp-bio">{profileUser.bio}</p>}
               <div className="pp-meta">
@@ -431,7 +434,7 @@ const ProfilePage = () => {
                 {joinDate && (
                   <span className="pp-meta-item">
                     <Calendar size={14} />
-                    Tham gia {joinDate}
+                    {translateCatalogKey('ui.pages.profile.profilepage.tham-gia.35317159')} {joinDate}
                   </span>
                 )}
               </div>
@@ -444,7 +447,7 @@ const ProfilePage = () => {
                   onClick={() => setShowEditModal(true)}
                 >
                   <Edit3 size={16} />
-                  Chỉnh sửa trang cá nhân
+                  {translateCatalogKey('ui.components.profile.editprofilemodal.chinh-sua-trang-ca-nhan.f8a69cb6')}
                 </button>
               ) : (
                 <>
@@ -454,7 +457,7 @@ const ProfilePage = () => {
                     onClick={() => navigate(`/messages/${userId}`)}
                   >
                     <MessageCircle size={16} />
-                    Nhắn tin
+                    {translateCatalogKey('friends.message')}
                   </button>
                 </>
               )}
@@ -495,9 +498,9 @@ const ProfilePage = () => {
           {activeTab === TABS.ALL && (
             <div className="pp-posts-list">
               {postsLoading && posts.length === 0 ? (
-                <div className="pp-loading">Đang tải bài viết...</div>
+                <div className="pp-loading">{translateCatalogKey('ui.pages.profile.profilepage.ang-tai-bai-viet.fd915b7b')}</div>
               ) : posts.length === 0 ? (
-                <div className="pp-empty">Chưa có bài viết nào</div>
+                <div className="pp-empty">{translateCatalogKey('ui.pages.profile.profilepage.chua-co-bai-viet-nao.8827d867')}</div>
               ) : (
                 <>
                   {posts.map((post) => (
@@ -514,15 +517,15 @@ const ProfilePage = () => {
                         disabled={postsPage <= 1}
                         onClick={() => setPostsPage((p) => p - 1)}
                       >
-                        Trước
+                        {translateCatalogKey('common.previous')}
                       </button>
-                      <span>Trang {postsPage} / {postsTotalPages}</span>
+                      <span>{translateCatalogKey('ui.components.friendship.friendlist.trang.6d3a285d')} {postsPage} / {postsTotalPages}</span>
                       <button
                         className="pp-page-btn"
                         disabled={postsPage >= postsTotalPages}
                         onClick={() => setPostsPage((p) => p + 1)}
                       >
-                        Tiếp
+                        {translateCatalogKey('common.next')}
                       </button>
                     </div>
                   )}
@@ -534,23 +537,23 @@ const ProfilePage = () => {
           {/* ABOUT */}
           {activeTab === TABS.ABOUT && (
             <div className="pp-card">
-              <h3 className="pp-card-title">Giới thiệu</h3>
+              <h3 className="pp-card-title">{translateCatalogKey('ui.components.profile.profilesidebar.gioi-thieu.78a71f6d')}</h3>
               {profileUser.bio ? (
                 <p className="pp-about-bio">{profileUser.bio}</p>
               ) : (
-                <p className="pp-empty">Chưa có tiểu sử</p>
+                <p className="pp-empty">{translateCatalogKey('ui.pages.profile.profilepage.chua-co-tieu-su.5c254f1f')}</p>
               )}
               <ul className="pp-about-list">
                 {profileUser.location && (
                   <li>
                     <MapPin size={16} />
-                    Sống tại <strong>{profileUser.location}</strong>
+                    {translateCatalogKey('ui.components.profile.profilesidebar.song-tai.3e16cd92')} <strong>{profileUser.location}</strong>
                   </li>
                 )}
                 {joinDate && (
                   <li>
                     <Calendar size={16} />
-                    Tham gia vào <strong>{joinDate}</strong>
+                    {translateCatalogKey('ui.components.profile.profilesidebar.tham-gia-vao.8a721551')} <strong>{joinDate}</strong>
                   </li>
                 )}
               </ul>
@@ -560,11 +563,11 @@ const ProfilePage = () => {
           {/* FRIENDS */}
           {activeTab === TABS.FRIENDS && (
             <div className="pp-card">
-              <h3 className="pp-card-title">Bạn bè ({friendsTotal})</h3>
+              <h3 className="pp-card-title">{translateCatalogKey('ui.pages.profile.profilepage.ban-be.7f9214aa')}{friendsTotal})</h3>
               {friendsLoading ? (
-                <div className="pp-loading">Đang tải...</div>
+                <div className="pp-loading">{translateCatalogKey('common.loading')}</div>
               ) : friends.length === 0 ? (
-                <div className="pp-empty">Chưa có bạn bè nào</div>
+                <div className="pp-empty">{translateCatalogKey('ui.components.friendship.friendlist.chua-co-ban-be-nao.add109a1')}</div>
               ) : (
                 <>
                   <div className="pp-friends-grid">
@@ -593,15 +596,15 @@ const ProfilePage = () => {
                         disabled={friendsPage <= 1}
                         onClick={() => setFriendsPage((p) => p - 1)}
                       >
-                        Trước
+                        {translateCatalogKey('common.previous')}
                       </button>
-                      <span>Trang {friendsPage} / {friendsTotalPages}</span>
+                      <span>{translateCatalogKey('ui.components.friendship.friendlist.trang.6d3a285d')} {friendsPage} / {friendsTotalPages}</span>
                       <button
                         className="pp-page-btn"
                         disabled={friendsPage >= friendsTotalPages}
                         onClick={() => setFriendsPage((p) => p + 1)}
                       >
-                        Tiếp
+                        {translateCatalogKey('common.next')}
                       </button>
                     </div>
                   )}
@@ -613,11 +616,11 @@ const ProfilePage = () => {
           {/* PHOTOS */}
           {activeTab === TABS.PHOTOS && (
             <div className="pp-card">
-              <h3 className="pp-card-title">Ảnh ({photos.length})</h3>
+              <h3 className="pp-card-title">{translateCatalogKey('ui.pages.profile.profilepage.anh.8f7e31b5')}{photos.length})</h3>
               {photosLoading ? (
-                <div className="pp-loading">Đang tải...</div>
+                <div className="pp-loading">{translateCatalogKey('common.loading')}</div>
               ) : photos.length === 0 ? (
-                <div className="pp-empty">Chưa có ảnh nào</div>
+                <div className="pp-empty">{translateCatalogKey('ui.pages.profile.profilepage.chua-co-anh-nao.43cdecea')}</div>
               ) : (
                 <div className="pp-photos-grid">
                   {photos.map((photo) => (
@@ -630,7 +633,7 @@ const ProfilePage = () => {
                     >
                       <img
                         src={getImageUrl(photo.url, 'posts')}
-                        alt="photo"
+                        alt={translateCatalogKey('ui.pages.profile.profilepage.photo.66b736ba')}
                         className="pp-photo-img"
                         loading="lazy"
                       />

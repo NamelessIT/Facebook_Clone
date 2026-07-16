@@ -3,7 +3,9 @@ import { Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import userService from "../../services/userService";
 import Avatar from "../common/Avatar";
+import { LIMITS } from "../../shared/generated/constants";
 import "./SearchBar.css";
+import { useLocalization } from "../../contexts/useLocalization";
 
 const SearchBar = ({ onNavigate }) => {
   const [query, setQuery] = useState("");
@@ -11,6 +13,7 @@ const SearchBar = ({ onNavigate }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useLocalization();
   const containerRef = useRef(null);
   const debounceRef = useRef(null);
 
@@ -45,7 +48,7 @@ const SearchBar = ({ onNavigate }) => {
       } finally {
         setLoading(false);
       }
-    }, 400);
+    }, LIMITS.searchDebounceMs);
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -73,7 +76,7 @@ const SearchBar = ({ onNavigate }) => {
         <input
           type="text"
           className="search-bar-input"
-          placeholder="Tìm kiếm trên Facebook"
+          placeholder={t('nav.searchPlaceholder')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
@@ -87,7 +90,7 @@ const SearchBar = ({ onNavigate }) => {
 
       {showDropdown && (
         <div className="search-bar-dropdown">
-          {loading && <div className="search-bar-loading">Đang tìm...</div>}
+          {loading && <div className="search-bar-loading">{t('common.loading')}</div>}
           {suggestions.map((user) => (
             <div
               key={user.id}
@@ -107,7 +110,7 @@ const SearchBar = ({ onNavigate }) => {
             onClick={handleSubmit}
           >
             <Search size={16} />
-            <span>Tìm kiếm &quot;{query}&quot;</span>
+            <span>{t('common.search')} &quot;{query}&quot;</span>
           </div>
         </div>
       )}

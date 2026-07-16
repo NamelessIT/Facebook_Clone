@@ -3,6 +3,7 @@ import { createPortal } from "react-dom"; // 👈 1. IMPORT CÁI NÀY
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { getImageUrl } from "../../utils/formatUrl";
 import "./MediaViewerModal.css";
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const MediaViewerModal = ({ isOpen, onClose, medias, initialIndex }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex || 0);
@@ -46,7 +47,7 @@ const MediaViewerModal = ({ isOpen, onClose, medias, initialIndex }) => {
           {isVideo ? (
             <video src={getImageUrl(currentMedia.url, 'videos')} controls autoPlay className="media-content-full" />
           ) : (
-            <img src={getImageUrl(currentMedia.url, 'posts')} alt="Media" className="media-content-full" />
+            <img src={getImageUrl(currentMedia.url, 'posts')} alt={translateCatalogKey('ui.components.post.editpostmodal.media.8b5254ae')} className="media-content-full" />
           )}
         </div>
 
@@ -59,7 +60,7 @@ const MediaViewerModal = ({ isOpen, onClose, medias, initialIndex }) => {
 
       <div className="media-viewer-right" onClick={(e) => e.stopPropagation()}>
         <div className="p-4 border-b text-center font-semibold text-gray-500">
-          Khu vực hiển thị Bình luận (Sắp ra mắt)
+          {translateCatalogKey('ui.components.post.mediaviewermodal.khu-vuc-hien-thi-binh-luan-sap-ra-ma.5c0ead92')}
         </div>
       </div>
     </div>,

@@ -4,9 +4,11 @@ import Avatar from '../common/Avatar';
 import { getImageUrl } from '../../utils/formatUrl';
 import userService from '../../services/userService';
 import toast from 'react-hot-toast';
+import { LIMITS } from '../../shared/generated/constants';
 import './EditProfileModal.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
-const MAX_BIO_LENGTH = 200;
+const MAX_BIO_LENGTH = LIMITS.profileBioMaxLength;
 
 const EditProfileModal = ({ user, onClose, onUpdated }) => {
   // Handle fullName parsing if firstName/lastName not available
@@ -34,9 +36,11 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
 
   const validate = () => {
     const newErrors = {};
-    if (!firstNameState.trim()) newErrors.firstName = 'Tên không được để trống';
-    if (!lastNameState.trim()) newErrors.lastName = 'Họ không được để trống';
-    if (bio.length > MAX_BIO_LENGTH) newErrors.bio = `Tiểu sử tối đa ${MAX_BIO_LENGTH} ký tự`;
+    if (!firstNameState.trim()) newErrors.firstName = translateCatalogKey('profile.validation.firstNameRequired');
+    if (!lastNameState.trim()) newErrors.lastName = translateCatalogKey('profile.validation.lastNameRequired');
+    if (bio.length > MAX_BIO_LENGTH) {
+      newErrors.bio = translateCatalogKey('profile.validation.bioMaxLength', { count: MAX_BIO_LENGTH });
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -70,7 +74,7 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
 
       await userService.updateProfile(formData);
 
-      toast.success('Cập nhật trang cá nhân thành công!');
+      toast.success(translateCatalogKey('ui.components.profile.editprofilemodal.cap-nhat-trang-ca-nhan-thanh-cong.8ea089f1'));
       onUpdated?.({
         firstName: firstNameState.trim(),
         lastName: lastNameState.trim(),
@@ -82,7 +86,7 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
       });
       onClose();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Cập nhật thất bại!');
+      toast.error(error.response?.data?.message || translateCatalogKey('settings.updateFailed'));
     } finally {
       setSaving(false);
     }
@@ -93,7 +97,7 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
       <div className="edit-profile-modal" onMouseDown={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="edit-profile-header">
-          <h3>Chỉnh sửa trang cá nhân</h3>
+          <h3>{translateCatalogKey('ui.components.profile.editprofilemodal.chinh-sua-trang-ca-nhan.f8a69cb6')}</h3>
           <button className="edit-profile-close" onClick={onClose}>
             <X size={20} />
           </button>
@@ -104,12 +108,12 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
           {/* Avatar section */}
           <div className="edit-profile-section">
             <div className="edit-profile-section-header">
-              <h4>Ảnh đại diện</h4>
+              <h4>{translateCatalogKey('ui.components.profile.editprofilemodal.anh-ai-dien.61f86663')}</h4>
               <button
                 className="edit-profile-change-btn"
                 onClick={() => avatarInputRef.current?.click()}
               >
-                Thay đổi
+                {translateCatalogKey('ui.components.profile.editprofilemodal.thay-oi.256b481a')}
               </button>
               <input
                 ref={avatarInputRef}
@@ -121,7 +125,7 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
             </div>
             <div className="edit-profile-avatar-preview">
               {avatarPreview ? (
-                <img src={avatarPreview} alt="Preview" className="edit-avatar-img" />
+                <img src={avatarPreview} alt={translateCatalogKey('ui.components.profile.editprofilemodal.preview.d501aad8')} className="edit-avatar-img" />
               ) : (
                 <Avatar src={user?.avatarUrl} className="edit-avatar-img" />
               )}
@@ -131,12 +135,12 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
           {/* Cover section */}
           <div className="edit-profile-section">
             <div className="edit-profile-section-header">
-              <h4>Ảnh bìa</h4>
+              <h4>{translateCatalogKey('ui.components.profile.editprofilemodal.anh-bia.a7de18b3')}</h4>
               <button
                 className="edit-profile-change-btn"
                 onClick={() => coverInputRef.current?.click()}
               >
-                Thay đổi
+                {translateCatalogKey('ui.components.profile.editprofilemodal.thay-oi.256b481a')}
               </button>
               <input
                 ref={coverInputRef}
@@ -148,17 +152,17 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
             </div>
             <div className="edit-profile-cover-preview">
               {coverPreview ? (
-                <img src={coverPreview} alt="Cover preview" className="edit-cover-img" />
+                <img src={coverPreview} alt={translateCatalogKey('ui.components.profile.editprofilemodal.cover-preview.1b1479be')} className="edit-cover-img" />
               ) : user?.coverUrl ? (
                 <img
                   src={getImageUrl(user.coverUrl, 'covers')}
-                  alt="Cover"
+                  alt={translateCatalogKey('ui.components.profile.editprofilemodal.cover.7ebe1ce8')}
                   className="edit-cover-img"
                 />
               ) : (
                 <div className="edit-cover-placeholder">
                   <Camera size={24} />
-                  <span>Thêm ảnh bìa</span>
+                  <span>{translateCatalogKey('ui.components.profile.editprofilemodal.them-anh-bia.14be138e')}</span>
                 </div>
               )}
             </div>
@@ -166,35 +170,35 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
 
           {/* Form fields */}
           <div className="edit-profile-section">
-            <h4>Thông tin cá nhân</h4>
+            <h4>{translateCatalogKey('ui.components.profile.editprofilemodal.thong-tin-ca-nhan.e548f1a7')}</h4>
             <div className="edit-profile-field">
-              <label>Họ</label>
+              <label>{translateCatalogKey('ui.components.profile.editprofilemodal.ho.10d03a7e')}</label>
               <input
                 type="text"
                 value={lastNameState}
                 onChange={(e) => { setLastNameState(e.target.value); setErrors((p) => ({ ...p, lastName: '' })); }}
-                placeholder="Nhập họ"
+                placeholder={translateCatalogKey('ui.components.profile.editprofilemodal.nhap-ho.5801f915')}
                 className={errors.lastName ? 'edit-input--error' : ''}
               />
               {errors.lastName && <span className="edit-field-error">{errors.lastName}</span>}
             </div>
             <div className="edit-profile-field">
-              <label>Tên</label>
+              <label>{translateCatalogKey('ui.components.profile.editprofilemodal.ten.918728cd')}</label>
               <input
                 type="text"
                 value={firstNameState}
                 onChange={(e) => { setFirstNameState(e.target.value); setErrors((p) => ({ ...p, firstName: '' })); }}
-                placeholder="Nhập tên"
+                placeholder={translateCatalogKey('ui.components.profile.editprofilemodal.nhap-ten.3ea322e8')}
                 className={errors.firstName ? 'edit-input--error' : ''}
               />
               {errors.firstName && <span className="edit-field-error">{errors.firstName}</span>}
             </div>
             <div className="edit-profile-field">
-              <label>Tiểu sử</label>
+              <label>{translateCatalogKey('ui.components.profile.editprofilemodal.tieu-su.1e5eed2f')}</label>
               <textarea
                 value={bio}
                 onChange={(e) => { setBio(e.target.value); setErrors((p) => ({ ...p, bio: '' })); }}
-                placeholder="Mô tả về bạn"
+                placeholder={translateCatalogKey('ui.components.profile.editprofilemodal.mo-ta-ve-ban.ad70a81f')}
                 rows={3}
                 maxLength={MAX_BIO_LENGTH}
                 className={errors.bio ? 'edit-input--error' : ''}
@@ -203,12 +207,12 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
               {errors.bio && <span className="edit-field-error">{errors.bio}</span>}
             </div>
             <div className="edit-profile-field">
-              <label>Nơi sống</label>
+              <label>{translateCatalogKey('ui.components.profile.editprofilemodal.noi-song.288dc34f')}</label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="Nhập nơi sống"
+                placeholder={translateCatalogKey('ui.components.profile.editprofilemodal.nhap-noi-song.e1c62ad1')}
               />
             </div>
           </div>
@@ -217,14 +221,14 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
         {/* Footer */}
         <div className="edit-profile-footer">
           <button className="edit-profile-cancel" onClick={onClose}>
-            Hủy
+            {translateCatalogKey('common.cancel')}
           </button>
           <button
             className="edit-profile-save"
             onClick={handleSave}
             disabled={saving}
           >
-            {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
+            {saving ? translateCatalogKey('settings.saving') : translateCatalogKey('settings.saveChanges')}
           </button>
         </div>
       </div>

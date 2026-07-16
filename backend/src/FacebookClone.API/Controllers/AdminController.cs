@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FacebookClone.API.Services;
 using FacebookClone.API.Common;
+using FacebookClone.Domain.Constants;
+using FacebookClone.Domain.Entities;
 using FacebookClone.Domain.Enums;
 using FacebookClone.Infrastructure;
 
@@ -15,6 +17,7 @@ public class AdminController(
     AppDbContext db,
     ISecurityService security,
     ISecurityBlockService blockService,
+    IInternalTranslationService translationService,
     ILogger<AdminController> logger) : ControllerBase
 {
     // -----------------------------------------------------------------------
@@ -87,8 +90,9 @@ public class AdminController(
         if (RequireAdmin() is { } err) return err;
 
         var now = DateTime.UtcNow;
+        var onlineCutoff = now.AddMinutes(-SharedConstants.Timers.UserOnlineTtlMinutes);
         var totalUsers = await db.Users.CountAsync(u => !u.IsDeleted);
-        var activeToday = await db.Users.CountAsync(u => !u.IsDeleted && u.IsOnline);
+        var activeToday = await db.Users.CountAsync(u => !u.IsDeleted && u.IsOnline && u.UpdatedAt >= onlineCutoff);
         var newUsersLast7d = await db.Users.CountAsync(u => !u.IsDeleted && u.CreatedAt >= now.AddDays(-7));
         var totalPosts = await db.Posts.CountAsync(p => !p.IsDeleted);
         var postsToday = await db.Posts.CountAsync(p => !p.IsDeleted && p.CreatedAt >= now.Date);
@@ -151,8 +155,14 @@ public class AdminController(
 
         if (filter == "banned") query = query.Where(u => u.IsBanned);
         else if (filter == "admin") query = query.Where(u => u.IsAdmin);
+        else if (filter == "online")
+        {
+            var onlineCutoff = DateTime.UtcNow.AddMinutes(-SharedConstants.Timers.UserOnlineTtlMinutes);
+            query = query.Where(u => u.IsOnline && u.UpdatedAt >= onlineCutoff);
+        }
 
         var total = await query.CountAsync();
+        var onlineThreshold = DateTime.UtcNow.AddMinutes(-SharedConstants.Timers.UserOnlineTtlMinutes);
         var items = await query
             .OrderByDescending(u => u.CreatedAt)
             .Skip((page - 1) * pageSize)
@@ -160,7 +170,10 @@ public class AdminController(
             .Select(u => new
             {
                 u.Id, u.FirstName, u.LastName, u.Email,
-                u.AvatarUrl, u.IsOnline, u.IsAdmin, u.IsBanned,
+                u.AvatarUrl,
+                IsOnline = u.IsOnline && u.UpdatedAt >= onlineThreshold,
+                LastActiveAt = u.UpdatedAt,
+                u.IsAdmin, u.IsBanned,
                 u.BanReason, u.BannedAt, u.CreatedAt,
                 Roles = u.UserRoles
                     .Select(ur => new { ur.Role.Id, ur.Role.Name, ur.Role.DisplayName, ur.Role.Level })
@@ -443,6 +456,37 @@ public class AdminController(
         return value.Trim().ToLowerInvariant().Replace(' ', '_');
     }
 
+    private async Task<IActionResult?> ValidateLocalizationEntryRequest(LocalizationEntryUpsertRequest req)
+    {
+        if (string.IsNullOrWhiteSpace(req.Key) ||
+            string.IsNullOrWhiteSpace(req.SourceLocale) ||
+            string.IsNullOrWhiteSpace(req.TargetLocale) ||
+            string.IsNullOrWhiteSpace(req.SourceText))
+        {
+            return BadRequest(new { success = false, message = "Key, source locale, target locale and source text are required." });
+        }
+
+        var targetLocale = NormalizeLocale(req.TargetLocale);
+        var languageExists = await db.LocaleLanguages.AnyAsync(x => x.Code == targetLocale && x.IsEnabled);
+        if (!languageExists)
+        {
+            return BadRequest(new { success = false, message = $"Target locale '{targetLocale}' is not enabled." });
+        }
+
+        var value = req.Value ?? string.Empty;
+        if (req.SourceText.Length > 4000 || value.Length > 4000)
+        {
+            return BadRequest(new { success = false, message = "Source text and value must be 4000 characters or fewer." });
+        }
+
+        return null;
+    }
+
+    private static string NormalizeLocale(string value)
+    {
+        return value.Trim().ToLowerInvariant();
+    }
+
     // -----------------------------------------------------------------------
     // Content Management
     // -----------------------------------------------------------------------
@@ -656,6 +700,348 @@ public class AdminController(
     }
 
     // -----------------------------------------------------------------------
+    // Localization
+    // -----------------------------------------------------------------------
+
+    [HttpGet("localization")]
+    public async Task<IActionResult> GetLocalization(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? locale = null,
+        [FromQuery] string? search = null)
+    {
+        if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("localization.view")) return Forbid();
+
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 1000);
+
+        var languages = await db.LocaleLanguages
+            .AsNoTracking()
+            .OrderByDescending(x => x.IsDefault)
+            .ThenBy(x => x.Code)
+            .Select(x => new
+            {
+                x.Id,
+                x.Code,
+                x.DisplayName,
+                x.NativeName,
+                x.IsEnabled,
+                x.IsDefault,
+                x.UpdatedAt
+            })
+            .ToListAsync();
+
+        var query = db.LocalizationEntries.AsNoTracking().AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(locale))
+        {
+            var normalizedLocale = NormalizeLocale(locale);
+            query = query.Where(x => x.TargetLocale == normalizedLocale);
+        }
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var s = search.ToLower();
+            query = query.Where(x =>
+                x.Key.ToLower().Contains(s) ||
+                x.SourceText.ToLower().Contains(s) ||
+                x.Value.ToLower().Contains(s));
+        }
+
+        var total = await query.CountAsync();
+        var entries = await query
+            .OrderBy(x => x.TargetLocale)
+            .ThenBy(x => x.Key)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new
+            {
+                x.Id,
+                x.Key,
+                x.SourceLocale,
+                x.TargetLocale,
+                x.SourceText,
+                x.Value,
+                x.Context,
+                x.IsMachineTranslated,
+                x.LastError,
+                x.UpdatedAt
+            })
+            .ToListAsync();
+
+        return Ok(new
+        {
+            success = true,
+            data = new { languages, entries },
+            pagination = new { page, pageSize, total, totalPages = (int)Math.Ceiling((double)total / pageSize) }
+        });
+    }
+
+    [HttpPost("localization/languages")]
+    public async Task<IActionResult> CreateLocaleLanguage([FromBody] LocaleLanguageUpsertRequest req)
+    {
+        if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("localization.manage")) return Forbid();
+
+        var code = NormalizeLocale(req.Code);
+        if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(req.DisplayName))
+            return BadRequest(new { success = false, message = "Locale code and display name are required." });
+
+        if (await db.LocaleLanguages.AnyAsync(x => x.Code == code))
+            return BadRequest(new { success = false, message = "Locale code already exists." });
+
+        var now = DateTime.UtcNow;
+        if (req.IsDefault)
+        {
+            await db.LocaleLanguages.ExecuteUpdateAsync(s => s.SetProperty(x => x.IsDefault, false));
+        }
+
+        var language = new LocaleLanguage
+        {
+            Id = Guid.NewGuid(),
+            Code = code,
+            DisplayName = req.DisplayName.Trim(),
+            NativeName = string.IsNullOrWhiteSpace(req.NativeName) ? req.DisplayName.Trim() : req.NativeName.Trim(),
+            IsEnabled = req.IsEnabled,
+            IsDefault = req.IsDefault,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        db.LocaleLanguages.Add(language);
+        await db.SaveChangesAsync();
+        return Ok(new { success = true, data = language, message = "Locale language created." });
+    }
+
+    [HttpPut("localization/languages/{id}")]
+    public async Task<IActionResult> UpdateLocaleLanguage(Guid id, [FromBody] LocaleLanguageUpsertRequest req)
+    {
+        if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("localization.manage")) return Forbid();
+
+        var language = await db.LocaleLanguages.FindAsync(id);
+        if (language == null) return NotFound(new { success = false, message = "Locale language not found." });
+
+        var code = NormalizeLocale(req.Code);
+        if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(req.DisplayName))
+            return BadRequest(new { success = false, message = "Locale code and display name are required." });
+
+        if (await db.LocaleLanguages.AnyAsync(x => x.Id != id && x.Code == code))
+            return BadRequest(new { success = false, message = "Locale code already exists." });
+
+        if (req.IsDefault)
+        {
+            await db.LocaleLanguages
+                .Where(x => x.Id != id)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.IsDefault, false));
+        }
+
+        language.Code = code;
+        language.DisplayName = req.DisplayName.Trim();
+        language.NativeName = string.IsNullOrWhiteSpace(req.NativeName) ? req.DisplayName.Trim() : req.NativeName.Trim();
+        language.IsEnabled = req.IsEnabled;
+        language.IsDefault = req.IsDefault;
+        language.UpdatedAt = DateTime.UtcNow;
+
+        await db.SaveChangesAsync();
+        return Ok(new { success = true, data = language, message = "Locale language updated." });
+    }
+
+    [HttpPost("localization/entries")]
+    public async Task<IActionResult> CreateLocalizationEntry([FromBody] LocalizationEntryUpsertRequest req)
+    {
+        if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("localization.manage")) return Forbid();
+
+        var validationError = await ValidateLocalizationEntryRequest(req);
+        if (validationError != null) return validationError;
+
+        var key = req.Key.Trim();
+        var targetLocale = NormalizeLocale(req.TargetLocale);
+        if (await db.LocalizationEntries.AnyAsync(x => x.Key == key && x.TargetLocale == targetLocale))
+            return BadRequest(new { success = false, message = "Translation key already exists for this target locale." });
+
+        var now = DateTime.UtcNow;
+        var entry = new LocalizationEntry
+        {
+            Id = Guid.NewGuid(),
+            Key = key,
+            SourceLocale = NormalizeLocale(req.SourceLocale),
+            TargetLocale = targetLocale,
+            SourceText = req.SourceText.Trim(),
+            Value = (req.Value ?? string.Empty).Trim(),
+            Context = string.IsNullOrWhiteSpace(req.Context) ? null : req.Context.Trim(),
+            IsMachineTranslated = req.IsMachineTranslated,
+            LastError = string.IsNullOrWhiteSpace(req.LastError) ? null : req.LastError.Trim(),
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        db.LocalizationEntries.Add(entry);
+        await db.SaveChangesAsync();
+        return Ok(new { success = true, data = entry, message = "Translation saved." });
+    }
+
+    [HttpPut("localization/entries/{id}")]
+    public async Task<IActionResult> UpdateLocalizationEntry(Guid id, [FromBody] LocalizationEntryUpsertRequest req)
+    {
+        if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("localization.manage")) return Forbid();
+
+        var entry = await db.LocalizationEntries.FindAsync(id);
+        if (entry == null) return NotFound(new { success = false, message = "Translation entry not found." });
+
+        var validationError = await ValidateLocalizationEntryRequest(req);
+        if (validationError != null) return validationError;
+
+        var key = req.Key.Trim();
+        var targetLocale = NormalizeLocale(req.TargetLocale);
+        if (await db.LocalizationEntries.AnyAsync(x => x.Id != id && x.Key == key && x.TargetLocale == targetLocale))
+            return BadRequest(new { success = false, message = "Translation key already exists for this target locale." });
+
+        entry.Key = key;
+        entry.SourceLocale = NormalizeLocale(req.SourceLocale);
+        entry.TargetLocale = targetLocale;
+        entry.SourceText = req.SourceText.Trim();
+        entry.Value = (req.Value ?? string.Empty).Trim();
+        entry.Context = string.IsNullOrWhiteSpace(req.Context) ? null : req.Context.Trim();
+        entry.IsMachineTranslated = req.IsMachineTranslated;
+        entry.LastError = string.IsNullOrWhiteSpace(req.LastError) ? null : req.LastError.Trim();
+        entry.UpdatedAt = DateTime.UtcNow;
+
+        await db.SaveChangesAsync();
+        return Ok(new { success = true, data = entry, message = "Translation updated." });
+    }
+
+    [HttpPost("localization/entries/bulk")]
+    public async Task<IActionResult> UpsertLocalizationEntries([FromBody] BulkLocalizationEntriesRequest req)
+    {
+        if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("localization.manage")) return Forbid();
+        if (req.Entries.Count == 0 || req.Entries.Count > 500)
+            return BadRequest(new { success = false, message = "Bulk request must contain between 1 and 500 entries." });
+
+        var targetLocales = req.Entries
+            .Select(x => NormalizeLocale(x.TargetLocale))
+            .Distinct()
+            .ToList();
+        var enabledLocales = await db.LocaleLanguages
+            .Where(x => x.IsEnabled && targetLocales.Contains(x.Code))
+            .Select(x => x.Code)
+            .ToListAsync();
+
+        if (enabledLocales.Count != targetLocales.Count)
+            return BadRequest(new { success = false, message = "One or more target locales are not enabled." });
+
+        await using var transaction = await db.Database.BeginTransactionAsync(HttpContext.RequestAborted);
+        var now = DateTime.UtcNow;
+        var saved = 0;
+
+        foreach (var item in req.Entries.GroupBy(x => new { x.Key, x.TargetLocale }).Select(x => x.Last()))
+        {
+            if (string.IsNullOrWhiteSpace(item.Key) || string.IsNullOrWhiteSpace(item.SourceText) || string.IsNullOrWhiteSpace(item.Value))
+                continue;
+
+            var key = item.Key.Trim();
+            var targetLocale = NormalizeLocale(item.TargetLocale);
+            var entry = await db.LocalizationEntries
+                .SingleOrDefaultAsync(x => x.Key == key && x.TargetLocale == targetLocale, HttpContext.RequestAborted);
+
+            if (!string.IsNullOrWhiteSpace(entry?.Value))
+                continue;
+
+            var sourceLocale = NormalizeLocale(item.SourceLocale);
+            var sourceText = item.SourceText.Trim();
+            var value = item.Value.Trim();
+            var context = string.IsNullOrWhiteSpace(item.Context) ? null : item.Context.Trim();
+            var isNew = false;
+
+            if (entry == null)
+            {
+                entry = new LocalizationEntry
+                {
+                    Id = Guid.NewGuid(),
+                    Key = key,
+                    TargetLocale = targetLocale,
+                    CreatedAt = now
+                };
+                db.LocalizationEntries.Add(entry);
+                isNew = true;
+            }
+
+            var hasChanges = isNew ||
+                entry.SourceLocale != sourceLocale ||
+                entry.SourceText != sourceText ||
+                entry.Value != value ||
+                entry.Context != context ||
+                entry.IsMachineTranslated != item.IsMachineTranslated ||
+                entry.LastError != null;
+
+            if (!hasChanges) continue;
+
+            entry.SourceLocale = sourceLocale;
+            entry.SourceText = sourceText;
+            entry.Value = value;
+            entry.Context = context;
+            entry.IsMachineTranslated = item.IsMachineTranslated;
+            entry.LastError = null;
+            entry.UpdatedAt = now;
+            saved++;
+        }
+
+        await db.SaveChangesAsync(HttpContext.RequestAborted);
+        await transaction.CommitAsync(HttpContext.RequestAborted);
+        return Ok(new { success = true, data = new { saved }, message = $"Saved {saved} translations." });
+    }
+
+    [HttpDelete("localization/entries/{id}")]
+    public async Task<IActionResult> DeleteLocalizationEntry(Guid id)
+    {
+        if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("localization.manage")) return Forbid();
+
+        var entry = await db.LocalizationEntries.FindAsync(id);
+        if (entry == null) return NotFound(new { success = false, message = "Translation entry not found." });
+
+        db.LocalizationEntries.Remove(entry);
+        await db.SaveChangesAsync();
+        return Ok(new { success = true, message = "Translation deleted." });
+    }
+
+    [HttpPost("localization/translate")]
+    public async Task<IActionResult> TranslateLocalization([FromBody] LocalizationTranslateRequest req)
+    {
+        if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("localization.manage")) return Forbid();
+
+        var result = await translationService.TranslateAsync(
+            new InternalTranslationRequest(req.SourceLocale, req.TargetLocale, req.Text),
+            HttpContext.RequestAborted);
+
+        if (!result.Success)
+        {
+            return UnprocessableEntity(new
+            {
+                success = false,
+                message = "Internal translation failed.",
+                errors = result.Errors,
+                chunks = result.Chunks
+            });
+        }
+
+        return Ok(new
+        {
+            success = true,
+            data = new
+            {
+                translatedText = result.Text,
+                chunks = result.Chunks
+            }
+        });
+    }
+
+    // -----------------------------------------------------------------------
     // Security: Events
     // -----------------------------------------------------------------------
 
@@ -780,6 +1166,26 @@ public record SetUserRolesRequest(List<Guid> RoleIds);
 public record RoleUpsertRequest(string Name, string DisplayName, int Level);
 public record SetRolePermissionsRequest(List<Guid> PermissionIds);
 public record BlockIpRequest(string Ip, string? Reason, double? DurationHours);
+public record LocaleLanguageUpsertRequest(
+    string Code,
+    string DisplayName,
+    string? NativeName,
+    bool IsEnabled,
+    bool IsDefault);
+public record LocalizationEntryUpsertRequest(
+    string Key,
+    string SourceLocale,
+    string TargetLocale,
+    string SourceText,
+    string Value,
+    string? Context,
+    bool IsMachineTranslated,
+    string? LastError);
+public record LocalizationTranslateRequest(
+    string SourceLocale,
+    string TargetLocale,
+    string Text);
+public record BulkLocalizationEntriesRequest(List<LocalizationEntryUpsertRequest> Entries);
 public record BlockListEntryRequest(
     BlockListKind ListKind,
     BlockTargetType TargetType,

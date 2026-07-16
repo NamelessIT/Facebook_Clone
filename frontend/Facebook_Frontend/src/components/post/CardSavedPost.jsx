@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { getImageUrl } from '../../utils/formatUrl';
 import savedItemsService from '../../services/savedItemsService';
 import './CardSavedPost.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 // Modal chọn bộ sưu tập để lưu vào
 const CollectionModal = ({ postId, collections, selectedCollectionIds, onClose, onSaveToCollection }) => {
@@ -37,7 +38,7 @@ const CollectionModal = ({ postId, collections, selectedCollectionIds, onClose, 
     <div className="csp-modal-overlay" onClick={onClose}>
       <div className="csp-modal" onClick={(e) => e.stopPropagation()}>
         <div className="csp-modal-header">
-          <span>Thêm vào bộ sưu tập</span>
+          <span>{translateCatalogKey('ui.components.post.cardsavedpost.them-vao-bo-suu-tap.aa41fc9a')}</span>
           <button className="csp-modal-close" onClick={onClose}><X size={18} /></button>
         </div>
         <div className="csp-modal-body">
@@ -54,7 +55,7 @@ const CollectionModal = ({ postId, collections, selectedCollectionIds, onClose, 
           ))}
           {!showCreate ? (
             <button className="csp-create-btn" onClick={() => setShowCreate(true)}>
-              + Tạo bộ sưu tập mới
+              {translateCatalogKey('ui.components.post.cardsavedpost.tao-bo-suu-tap-moi.b1b7bfc2')}
             </button>
           ) : (
             <div className="csp-create-form">
@@ -62,18 +63,18 @@ const CollectionModal = ({ postId, collections, selectedCollectionIds, onClose, 
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder="Tên bộ sưu tập..."
+                placeholder={translateCatalogKey('ui.components.post.cardsavedpost.ten-bo-suu-tap.3ba1b8a3')}
                 className="csp-create-input"
                 autoFocus
               />
-              <button className="csp-create-confirm" onClick={handleCreate}>Tạo</button>
-              <button className="csp-create-cancel" onClick={() => setShowCreate(false)}>Hủy</button>
+              <button className="csp-create-confirm" onClick={handleCreate}>{translateCatalogKey('ui.components.post.cardsavedpost.tao.a78faee3')}</button>
+              <button className="csp-create-cancel" onClick={() => setShowCreate(false)}>{translateCatalogKey('common.cancel')}</button>
             </div>
           )}
         </div>
         <div className="csp-modal-footer">
           <button className="csp-modal-confirm" onClick={handleConfirm}>
-            Xong
+            {translateCatalogKey('ui.components.post.cardsavedpost.xong.4efb5e51')}
           </button>
         </div>
       </div>
@@ -103,13 +104,13 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, o
   const menuRef = useRef(null);
 
   const thumbnail = getPostThumbnail(post);
-  const contentText = post.content || '(Bài viết không có nội dung văn bản)';
+  const contentText = post.content || translateCatalogKey('post.noTextContent');
 
   const handleCopyLink = (e) => {
     e.stopPropagation();
     const url = `${window.location.origin}/posts/${post.id}`;
     navigator.clipboard.writeText(url).then(() => {
-      toast.success('Đã sao chép liên kết');
+      toast.success(translateCatalogKey('common.linkCopied'));
     });
   };
 
@@ -131,7 +132,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, o
       setSelectedCollectionIds(res.data?.data?.collectionIds ?? []);
       setShowCollectionModal(true);
     } catch {
-      toast.error('Không thể tải trạng thái bộ sưu tập');
+      toast.error(translateCatalogKey('ui.components.post.cardsavedpost.khong-the-tai-trang-thai-bo-suu-tap.b72d487b'));
     }
   };
 
@@ -140,7 +141,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, o
       {/* Ảnh thumbnail bên trái - clickable để xem chi tiết */}
       <div className="csp-thumbnail" onClick={() => onViewDetail?.()}>
         {thumbnail ? (
-          <img src={thumbnail} alt="Post media" className="csp-thumbnail-img" />
+          <img src={thumbnail} alt={translateCatalogKey('ui.components.post.cardsavedpost.post-media.981dca15')} className="csp-thumbnail-img" />
         ) : (
           <div className="csp-thumbnail-empty" />
         )}
@@ -149,7 +150,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, o
       {/* Nội dung bên phải */}
       <div className="csp-content" onClick={() => onViewDetail?.()}>
         {/* Tên tác giả */}
-        <p className="csp-author">{post.author?.fullName || 'Người dùng'}</p>
+        <p className="csp-author">{post.author?.fullName || translateCatalogKey('chat.userFallback')}</p>
 
         {/* Nội dung bài post */}
         <p className="csp-text">
@@ -158,7 +159,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, o
 
         {/* Mục đã lưu vào */}
         <p className="csp-collection-tag">
-          📁 {savedCollection || post.savedCollection || 'Tất cả bài viết đã lưu'}
+          📁 {savedCollection || post.savedCollection || translateCatalogKey('ui.components.post.cardsavedpost.tat-ca-bai-viet-a-luu.eb75678c')}
         </p>
 
         {/* Actions row */}
@@ -167,20 +168,20 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, o
           <button
             className="csp-action-btn"
             onClick={handleCollectionModalOpen}
-            title="Thêm vào bộ sưu tập"
+            title={translateCatalogKey('ui.components.post.cardsavedpost.them-vao-bo-suu-tap.aa41fc9a')}
           >
             <FolderPlus size={16} />
-            <span>Thêm vào bộ sưu tập</span>
+            <span>{translateCatalogKey('ui.components.post.cardsavedpost.them-vao-bo-suu-tap.aa41fc9a')}</span>
           </button>
 
           {/* Chia sẻ / Sao chép link */}
           <button
             className="csp-action-btn"
             onClick={handleCopyLink}
-            title="Sao chép liên kết"
+            title={translateCatalogKey('post.copyLink')}
           >
             <Link2 size={16} />
-            <span>Chia sẻ</span>
+            <span>{translateCatalogKey('post.share')}</span>
           </button>
 
           {/* 3 chấm dropdown */}
@@ -188,7 +189,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, o
             <button
               className="csp-action-btn csp-action-btn--icon"
               onClick={handleMenuToggle}
-              title="Tùy chọn"
+              title={translateCatalogKey('settings.preferences')}
             >
               <MoreHorizontal size={16} />
             </button>
@@ -196,7 +197,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, o
             {showMenu && (
               <div className="csp-dropdown">
                 <button className="csp-dropdown-item csp-dropdown-item--danger" onClick={handleUnsaveFromMenu}>
-                  Bỏ lưu
+                  {translateCatalogKey('ui.components.post.cardsavedpost.bo-luu.731edeee')}
                 </button>
               </div>
             )}

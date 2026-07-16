@@ -5,12 +5,15 @@ import toast from 'react-hot-toast';
 import CardSavedPost from '../../components/post/CardSavedPost';
 import PostDetailModal from '../../components/post/PostDetailModal';
 import savedItemsService from '../../services/savedItemsService';
+import { LIMITS } from '../../shared/generated/constants';
+import { useLocalization } from '../../contexts/useLocalization';
 import './SavedItemsPage.css';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = LIMITS.savedItemsPageSize;
 
 const SavedItemsPage = () => {
   const location = useLocation();
+  const { t } = useLocalization();
   const [posts, setPosts] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   const [loading, setLoading] = useState(false);
@@ -49,11 +52,11 @@ const SavedItemsPage = () => {
         setPagination(pg ?? { page: 1, totalPages: 1, total: 0 });
       }
     } catch {
-      toast.error('Không thể tải danh sách đã lưu');
+      toast.error(t('saved.loadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [activeColId]);
+  }, [activeColId, t]);
 
   useEffect(() => {
     fetchCollections();
@@ -69,15 +72,15 @@ const SavedItemsPage = () => {
 
   const handleUnsave = async (postId) => {
     if (!postId) {
-      toast.error('Không thể xác định bài viết');
+      toast.error(t('saved.invalidPost'));
       return;
     }
     try {
       await savedItemsService.unsavePost(postId);
-      toast.success('Đã bỏ lưu bài viết');
+      toast.success(t('saved.unsaved'));
       setPosts((prev) => prev.filter((p) => p.id !== postId));
     } catch {
-      toast.error('Bỏ lưu thất bại');
+      toast.error(t('saved.unsaveFailed'));
     }
   };
 
@@ -89,7 +92,7 @@ const SavedItemsPage = () => {
         if (newCol) {
           await savedItemsService.addPostToCollection(newCol.id, postId);
           setUserCollections((prev) => [...prev, newCol]);
-          toast.success(`Đã tạo bộ sưu tập "${newName}" và lưu bài viết`);
+          toast.success(t('saved.collectionCreated', undefined, { name: newName }));
         }
       } else if (nextCollectionIds) {
         const state = await savedItemsService.getPostCollectionState(postId);
@@ -103,21 +106,21 @@ const SavedItemsPage = () => {
           ...toRemove.map((id) => savedItemsService.removePostFromCollection(id, postId)),
         ]);
 
-        toast.success('Đã cập nhật bộ sưu tập');
+        toast.success(t('saved.collectionUpdated'));
         if (activeColId && toRemove.includes(activeColId)) {
           setPosts((prev) => prev.filter((p) => p.id !== postId));
         }
       }
     } catch {
-      toast.error('Thao tác thất bại');
+      toast.error(t('common.actionFailed'));
     }
   };
 
   const validPosts = posts.filter((p) => p && p.id);
 
   const activeColName = activeColId
-    ? userCollections.find((c) => c.id === activeColId)?.name || 'Bộ sưu tập'
-    : 'Mục đã lưu';
+    ? userCollections.find((c) => c.id === activeColId)?.name || t('nav.collections')
+    : t('nav.savedItems');
 
   return (
     <div className="saved-page">
@@ -127,22 +130,22 @@ const SavedItemsPage = () => {
         </div>
         <div className="saved-header-text">
           <h1>{activeColName}</h1>
-          <p>Chỉ mình bạn mới thấy những gì bạn đã lưu</p>
+          <p>{t('saved.privateHint')}</p>
         </div>
       </div>
 
       {loading && (
         <div className="saved-loading">
-          <p>Đang tải...</p>
+          <p>{t('common.loading')}</p>
         </div>
       )}
 
       {!loading && validPosts.length === 0 && (
         <div className="saved-empty">
           <BookmarkX size={48} className="saved-empty-icon" />
-          <p className="saved-empty-title">Chưa có bài viết nào được lưu</p>
+          <p className="saved-empty-title">{t('saved.emptyTitle')}</p>
           <p className="saved-empty-desc">
-            Khi bạn lưu các mục, chúng sẽ xuất hiện tại đây.
+            {t('saved.emptyDescription')}
           </p>
         </div>
       )}
@@ -167,15 +170,15 @@ const SavedItemsPage = () => {
             onClick={() => setPage((p) => p - 1)}
             disabled={page <= 1}
           >
-            ← Trước
+            ← {t('common.previous')}
           </button>
-          <span>Trang {page} / {pagination.totalPages}</span>
+          <span>{t('common.pageOf', undefined, { page, total: pagination.totalPages })}</span>
           <button
             className="saved-page-btn"
             onClick={() => setPage((p) => p + 1)}
             disabled={page >= pagination.totalPages}
           >
-            Tiếp →
+            {t('common.next')} →
           </button>
         </div>
       )}

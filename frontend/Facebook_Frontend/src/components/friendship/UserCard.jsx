@@ -3,9 +3,11 @@ import { MessageCircle } from 'lucide-react';
 import Avatar from '../common/Avatar';
 import AddFriendButton from './AddFriendButton';
 import './UserCard.css';
+import { useLocalization } from '../../contexts/useLocalization';
 
 const UserCard = ({ user }) => {
   const navigate = useNavigate();
+  const { t } = useLocalization();
 
   return (
     <div className="user-card">
@@ -22,7 +24,7 @@ const UserCard = ({ user }) => {
           onClick={() => navigate(`/messages/${user.id}`)}
         >
           <MessageCircle size={16} />
-          Nhắn tin
+          {t('friends.message')}
         </button>
       </div>
     </div>

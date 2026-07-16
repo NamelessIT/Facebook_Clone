@@ -6,6 +6,10 @@ const userService = {
     return await axiosClient.get(url);
   },
 
+  heartbeat: async () => {
+    return await axiosClient.post('/users/me/heartbeat');
+  },
+
   updateProfile: async (data) => {
     const url = '/users/profile';
     return await axiosClient.put(url, data);

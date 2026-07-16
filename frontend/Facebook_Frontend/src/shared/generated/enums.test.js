@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { PostPrivacy, PostType, ReactionType } from './enums';
-import { API, STORAGE_KEYS } from './constants';
+import { API, LIMITS, LOCALIZATION, STORAGE_KEYS, TIMERS } from './constants';
 
 // Guards the generated contract values shared with the backend + DB.
 describe('shared generated enums', () => {
@@ -30,5 +30,12 @@ describe('shared generated constants', () => {
   it('api prefix + storage keys', () => {
     expect(API.prefix).toBe('/api/v1');
     expect(STORAGE_KEYS.accessToken).toBe('accessToken');
+  });
+
+  it('timer + localization constants', () => {
+    expect(TIMERS.adminUsersRefreshMs).toBe(300000);
+    expect(TIMERS.presenceHeartbeatMs).toBe(900000);
+    expect(LIMITS.messageMaxLength).toBe(1000);
+    expect(LOCALIZATION.maxTranslationChunkChars).toBe(800);
   });
 });

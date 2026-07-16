@@ -17,22 +17,25 @@ import postService from "../../services/postService";
 import savedItemsService from "../../services/savedItemsService";
 import toast from "react-hot-toast";
 import { PostPrivacy, PostType, ReactionType } from "../../shared/generated/enums";
+import { LIMITS, TIMERS } from "../../shared/generated/constants";
+import { useLocalization } from "../../contexts/useLocalization";
 import "./PostItem.css";
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 // Danh sách Cảm xúc chuẩn Facebook (id lấy từ shared ReactionType, chỉ giữ phần UI ở đây)
 const REACTIONS = [
-  { id: ReactionType.Like, icon: '👍', name: 'Thích', colorClass: 'reacted-like' },
-  { id: ReactionType.Love, icon: '❤️', name: 'Yêu thích', colorClass: 'reacted-love' },
-  { id: ReactionType.Haha, icon: '😂', name: 'Haha', colorClass: 'reacted-haha' },
-  { id: ReactionType.Wow, icon: '😮', name: 'Wow', colorClass: 'reacted-wow' },
-  { id: ReactionType.Sad, icon: '😢', name: 'Buồn', colorClass: 'reacted-sad' },
-  { id: ReactionType.Angry, icon: '😡', name: 'Phẫn nộ', colorClass: 'reacted-angry' },
+  { id: ReactionType.Like, icon: '👍', nameKey: 'post.reaction.like', colorClass: 'reacted-like' },
+  { id: ReactionType.Love, icon: '❤️', nameKey: 'post.reaction.love', colorClass: 'reacted-love' },
+  { id: ReactionType.Haha, icon: '😂', nameKey: 'post.reaction.haha', colorClass: 'reacted-haha' },
+  { id: ReactionType.Wow, icon: '😮', nameKey: 'post.reaction.wow', colorClass: 'reacted-wow' },
+  { id: ReactionType.Sad, icon: '😢', nameKey: 'post.reaction.sad', colorClass: 'reacted-sad' },
+  { id: ReactionType.Angry, icon: '😡', nameKey: 'post.reaction.angry', colorClass: 'reacted-angry' },
 ];
 
 const PRIVACY_MAP = {
-  [PostPrivacy.Public]: { icon: Globe, label: "Công khai" },
-  [PostPrivacy.Friends]: { icon: Users, label: "Bạn bè" },
-  [PostPrivacy.Private]: { icon: Lock, label: "Chỉ mình tôi" },
+  [PostPrivacy.Public]: { icon: Globe, labelKey: "privacy.public" },
+  [PostPrivacy.Friends]: { icon: Users, labelKey: "privacy.friends" },
+  [PostPrivacy.Private]: { icon: Lock, labelKey: "privacy.onlyMe" },
 };
 
 const POST_REACTION_CHANGED_EVENT = 'fbclone:post-reaction-changed';
@@ -45,6 +48,7 @@ const emitPostReactionChanged = (postId, nextState) => {
 
 const PostItem = ({ post, onPostUpdated, onPostHide }) => {
   const { user } = useAuth();
+  const { locale, t } = useLocalization();
   const [isExpanded, setIsExpanded] = useState(false);
   const [viewerData, setViewerData] = useState({ isOpen: false, index: 0 });
   const [detailPost, setDetailPost] = useState(null);
@@ -63,7 +67,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
   // --- STATE DELETE POST ---
   const [, setDeleteLoading] = useState(false);
   const [isDeletionPending, setIsDeletionPending] = useState(false);
-  const [deletionTimeRemaining, setDeletionTimeRemaining] = useState(10);
+  const [deletionTimeRemaining, setDeletionTimeRemaining] = useState(TIMERS.postDeleteUndoSeconds);
   const [showReportFromUndo, setShowReportFromUndo] = useState(false);
 
   // --- STATE NOT INTERESTED ---
@@ -107,7 +111,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
   const handleOpenDelete = () => {
     setShowMenu(false);
     setIsDeletionPending(true);
-    setDeletionTimeRemaining(10);
+    setDeletionTimeRemaining(TIMERS.postDeleteUndoSeconds);
   };
 
   // Timer: countdown rồi tự xóa khi hết 10s
@@ -125,12 +129,12 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
     setDeleteLoading(true);
     try {
       await postService.deletePost(post.id);
-      toast.success('Bài viết đã được xóa');
+      toast.success(t('post.deleted'));
       onPostUpdated?.();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Xóa bài viết thất bại!');
+      toast.error(error.response?.data?.message || t('post.deleteFailed'));
       setIsDeletionPending(false);
-      setDeletionTimeRemaining(10);
+      setDeletionTimeRemaining(TIMERS.postDeleteUndoSeconds);
     } finally {
       setDeleteLoading(false);
     }
@@ -138,8 +142,8 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 
   const handleUndoDelete = () => {
     setIsDeletionPending(false);
-    setDeletionTimeRemaining(10);
-    toast.success('Bài viết đã được khôi phục');
+    setDeletionTimeRemaining(TIMERS.postDeleteUndoSeconds);
+    toast.success(t('post.restored'));
   };
 
   const handleDismissDelete = () => {
@@ -149,7 +153,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 
   const handleReportFromUndo = () => {
     setIsDeletionPending(false);
-    setDeletionTimeRemaining(10);
+    setDeletionTimeRemaining(TIMERS.postDeleteUndoSeconds);
     setShowReportFromUndo(true);
   };
 
@@ -167,9 +171,9 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
       setUserCollections(collectionsRes.data?.data ?? []);
       setSavedCollectionIds(stateRes.data?.data?.collectionIds ?? []);
       setShowCollectionModal(true);
-      toast.success('Đã lưu bài viết');
+      toast.success(translateCatalogKey('ui.components.post.postactionmenu.a-luu-bai-viet.65dd7752'));
     } catch {
-      toast.error('Lưu bài viết thất bại');
+      toast.error(translateCatalogKey('ui.components.post.postitem.luu-bai-viet-that-bai.b085dd6a'));
     }
   };
 
@@ -188,7 +192,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
           setUserCollections((prev) => [...prev, newCol]);
           setSavedCollectionIds((prev) => [...new Set([...prev, newCol.id])]);
           setIsSaved(true);
-          toast.success(`Đã tạo bộ sưu tập "${newName}" và lưu bài viết`);
+          toast.success(translateCatalogKey('ui.components.post.postitem.a-tao-bo-suu-tap-value0-va-luu-bai-v.177b536c', { value0: newName }));
         }
       } else if (nextCollectionIds) {
         const previous = new Set(savedCollectionIds);
@@ -203,10 +207,10 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 
         setSavedCollectionIds([...next]);
         setIsSaved(true);
-        toast.success('Đã cập nhật bộ sưu tập');
+        toast.success(translateCatalogKey('saved.collectionUpdated'));
       }
     } catch {
-      toast.error('Thao tác thất bại');
+      toast.error(translateCatalogKey('ui.components.post.postitem.thao-tac-that-bai.5581e390'));
     }
 
     setShowCollectionModal(false);
@@ -243,7 +247,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
     return () => window.removeEventListener(POST_REACTION_CHANGED_EVENT, handlePostReactionChanged);
   }, [post.id]);
 
-  const textLimit = 120;
+  const textLimit = LIMITS.postPreviewTextLimit;
   const isLongText = post.content && post.content.length > textLimit;
   const displayText = isExpanded ? post.content : post.content?.substring(0, textLimit);
 
@@ -401,10 +405,10 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
               className="shared-post-author"
               onClick={(event) => event.stopPropagation()}
             >
-              {sharedPost.author?.fullName || 'Nguoi dung'}
+              {sharedPost.author?.fullName || translateCatalogKey('ui.components.post.postdetailmodal.nguoi-dung.3b81093d')}
             </Link>
             <span className="shared-post-time">
-              {new Date(sharedPost.createdAt).toLocaleString('vi-VN')}
+              {new Date(sharedPost.createdAt).toLocaleString(locale)}
             </span>
           </div>
         </div>
@@ -465,11 +469,11 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
               <h4 className="author-name">{post.author?.fullName}</h4>
             </Link>
             <span className="post-time hover:underline cursor-pointer">
-              {new Date(post.createdAt).toLocaleString('vi-VN')} • 
+              {new Date(post.createdAt).toLocaleString(locale)} •
               {(() => {
                 const p = PRIVACY_MAP[post.privacy] || PRIVACY_MAP[1];
                 const Icon = p.icon;
-                return <Icon size={12} className="post-privacy-icon" title={p.label} />;
+                return <Icon size={12} className="post-privacy-icon" title={t(p.labelKey)} />;
               })()}
             </span>
           </div>
@@ -482,11 +486,11 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
             {showMenu && (
               <div className="post-dropdown-menu" ref={menuRef}>
                 <button className="post-dropdown-item" onClick={handleOpenEdit}>
-                  <Edit3 size={16} /> {isAutoPost ? 'Chỉnh sửa chế độ hiển thị' : 'Chỉnh sửa bài viết'}
+                  <Edit3 size={16} /> {isAutoPost ? t('post.editPrivacy') : t('post.editPost')}
                 </button>
                 {!isAutoPost && (
                   <button className="post-dropdown-item post-dropdown-danger" onClick={handleOpenDelete}>
-                    <Trash2 size={16} /> Xóa bài viết
+                    <Trash2 size={16} /> {t('post.deletePost')}
                   </button>
                 )}
               </div>
@@ -512,7 +516,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
           {isLongText && !isExpanded && (
             <>
               <span>...</span>
-              <span onClick={(e) => { e.stopPropagation(); setIsExpanded(true); }} className="see-more-btn">Xem thêm</span>
+              <span onClick={(e) => { e.stopPropagation(); setIsExpanded(true); }} className="see-more-btn">{t('post.seeMore')}</span>
             </>
           )}
         </div>
@@ -530,7 +534,9 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
         {reactionCount > 0 ? (
           <div className="flex items-center gap-1.5 cursor-pointer hover:underline"
               title={reactorNames?.length > 0 
-              ? reactorNames.join(", ") + (reactionCount > reactorNames.length ? ` và ${reactionCount - reactorNames.length} người khác...` : "") 
+              ? reactorNames.join(", ") + (reactionCount > reactorNames.length
+                ? t('post.others', undefined, { count: reactionCount - reactorNames.length })
+                : "")
               : ""}
               >
             
@@ -573,8 +579,8 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 
         {/* PHẢI: Bình luận và Chia sẻ */}
         <div className="stats-right">
-          <div className="hover:underline cursor-pointer" onClick={() => setShowComments(!showComments)}>{localCommentsCount || 0} bình luận</div>
-          {(post.sharesCount > 0) && <div className="hover:underline cursor-pointer">{post.sharesCount} chia sẻ</div>}
+          <div className="hover:underline cursor-pointer" onClick={() => setShowComments(!showComments)}>{t('post.commentsWithCount', undefined, { count: localCommentsCount || 0 })}</div>
+          {(post.sharesCount > 0) && <div className="hover:underline cursor-pointer">{t('post.sharesWithCount', undefined, { count: post.sharesCount })}</div>}
         </div>
       </div>
 
@@ -584,16 +590,15 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
           {/* 2. SỬA LẠI SỰ KIỆN CLICK CỦA NÚT THÍCH CHÍNH */}
           <div className="reaction-container">
             <button 
-              // 👇 Nếu có myReaction rồi thì gửi chính myReaction đó đi để HỦY. Chưa có thì gửi 1 (Like).
               onClick={() => handleReact(myReaction || ReactionType.Like)} 
-              className={`action-btn ${currentReactionData?.colorClass || ''}`}
+              className={'action-btn ' + (currentReactionData?.colorClass || '')}
             >
               {currentReactionData ? (
                 <span className="text-[20px] leading-none">{currentReactionData.icon}</span>
               ) : (
                 <ThumbsUp size={20} />
               )}
-              {currentReactionData ? currentReactionData.name : 'Thích'}
+              {currentReactionData ? t(currentReactionData.nameKey) : t('post.like')}
             </button>
 
           {/* Popover chứa 6 cái Emoji nổi lên */}
@@ -606,7 +611,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
                   e.stopPropagation();
                   handleReact(reaction.id);
                 }}
-                title={reaction.name}
+                title={t(reaction.nameKey)}
               >
                 {reaction.icon}
               </span>
@@ -614,11 +619,11 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
           </div>
         </div>
 
-        <button className="action-btn" onClick={() => setShowComments(!showComments)}><MessageSquare size={20} /> Bình luận</button>
-        <button className="action-btn" onClick={() => setShowShareModal(true)}><Share2 size={20} /> Chia sẻ</button>
-        <button className={`action-btn save-action-btn ${isSaved ? 'saved' : ''}`} onClick={handleSavePost}>
+        <button className="action-btn" onClick={() => setShowComments(!showComments)}><MessageSquare size={20} /> {t('post.comment')}</button>
+        <button className="action-btn" onClick={() => setShowShareModal(true)}><Share2 size={20} /> {t('post.share')}</button>
+        <button className={'action-btn save-action-btn ' + (isSaved ? 'saved' : '')} onClick={handleSavePost}>
           {isSaved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
-          Lưu
+          {isSaved ? t('post.saved') : t('post.save')}
         </button>
       </div>
 
@@ -714,18 +719,18 @@ const PostCollectionModal = ({ onClose, onSaveToCollection, userCollections, sav
     <div className="modal-collection-overlay" onClick={onClose}>
       <div className="modal-collection" onClick={(e) => e.stopPropagation()}>
         <div className="modal-collection-header">
-          <span>Lưu vào bộ sưu tập</span>
+          <span>{translateCatalogKey('ui.components.post.postitem.luu-vao-bo-suu-tap.8466d929')}</span>
           <button className="modal-collection-close" onClick={onClose}><X size={18} /></button>
         </div>
         <div className="modal-collection-body">
           <button className="modal-collection-item modal-collection-item--active" type="button">
-            <span>📌 Tất cả bài viết đã lưu</span>
+            <span>{translateCatalogKey('ui.components.post.postitem.tat-ca-bai-viet-a-luu.de756339')}</span>
             <span className="modal-collection-check">✓</span>
           </button>
           {userCollections.map((col) => (
             <button
               key={col.id}
-              className={`modal-collection-item ${selectedIds.has(col.id) ? 'modal-collection-item--active' : ''}`}
+              className={'modal-collection-item ' + (selectedIds.has(col.id) ? 'modal-collection-item--active' : '')}
               onClick={() => toggleCollection(col.id)}
             >
               <span>📁 {col.name}</span>
@@ -734,7 +739,7 @@ const PostCollectionModal = ({ onClose, onSaveToCollection, userCollections, sav
           ))}
           {!showCreate ? (
             <button className="modal-collection-create-btn" onClick={() => setShowCreate(true)}>
-              + Tạo bộ sưu tập mới
+              {translateCatalogKey('ui.components.post.cardsavedpost.tao-bo-suu-tap-moi.b1b7bfc2')}
             </button>
           ) : (
             <div className="modal-collection-create-form">
@@ -742,18 +747,18 @@ const PostCollectionModal = ({ onClose, onSaveToCollection, userCollections, sav
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder="Tên bộ sưu tập..."
+                placeholder={translateCatalogKey('ui.components.post.cardsavedpost.ten-bo-suu-tap.3ba1b8a3')}
                 className="modal-collection-input"
                 autoFocus
               />
-              <button className="modal-collection-create-confirm" onClick={handleCreate}>Tạo</button>
-              <button className="modal-collection-create-cancel" onClick={() => setShowCreate(false)}>Hủy</button>
+              <button className="modal-collection-create-confirm" onClick={handleCreate}>{translateCatalogKey('ui.components.post.cardsavedpost.tao.a78faee3')}</button>
+              <button className="modal-collection-create-cancel" onClick={() => setShowCreate(false)}>{translateCatalogKey('common.cancel')}</button>
             </div>
           )}
         </div>
         <div className="modal-collection-footer">
           <button className="modal-collection-confirm" onClick={handleConfirm}>
-            Xong
+            {translateCatalogKey('ui.components.post.cardsavedpost.xong.4efb5e51')}
           </button>
         </div>
       </div>

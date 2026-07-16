@@ -3,20 +3,17 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import userService from "../../services/userService";
 import toast from "react-hot-toast";
-
-const LANGUAGE_OPTIONS = [
-  { value: "vi", label: "Tiếng Việt" },
-  { value: "en", label: "English" },
-];
+import { useLocalization } from "../../contexts/useLocalization";
 
 const PreferencesSettings = () => {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { languages, locale, setLocale, t } = useLocalization();
 
   const [form, setForm] = useState({
     emailNotifications: true,
     showOnlineStatus: true,
-    language: "vi",
+    language: locale,
   });
   const [loading, setLoading] = useState(false);
 
@@ -45,22 +42,23 @@ const PreferencesSettings = () => {
       // Map ThemeContext value sang server value
       const serverTheme = theme === 'auto' ? 'system' : theme;
       await userService.updatePreferences({ ...form, theme: serverTheme });
-      toast.success("Cập nhật tùy chọn thành công!");
+      await setLocale(form.language);
+      toast.success(t('settings.updated'));
     } catch (error) {
-      toast.error(error.response?.data?.message || "Cập nhật thất bại!");
+      toast.error(error.response?.data?.message || t('settings.updateFailed'));
     } finally {
       setLoading(false);
     }
   };
 
   const toggleItems = [
-    { key: "emailNotifications", label: "Thông báo qua email", description: "Nhận thông báo quan trọng qua email" },
-    { key: "showOnlineStatus", label: "Hiển thị trạng thái online", description: "Cho phép người khác thấy khi bạn đang trực tuyến" },
+    { key: "emailNotifications", label: t('settings.emailNotifications'), description: t('settings.emailNotificationsDesc') },
+    { key: "showOnlineStatus", label: t('settings.onlineStatus'), description: t('settings.onlineStatusDesc') },
   ];
 
   return (
     <div className="settings-section">
-      <h3 className="settings-section-title">Tùy chọn</h3>
+      <h3 className="settings-section-title">{t('settings.preferences')}</h3>
 
       <div className="settings-toggle-list">
         {toggleItems.map((item) => (
@@ -83,25 +81,27 @@ const PreferencesSettings = () => {
 
       <div className="settings-form" style={{ marginTop: 16 }}>
         <div className="settings-field">
-          <label className="settings-label">Ngôn ngữ</label>
+          <label className="settings-label">{t('settings.language')}</label>
           <select
             className="settings-select"
             value={form.language}
             onChange={(e) => setForm((prev) => ({ ...prev, language: e.target.value }))}
           >
-            {LANGUAGE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            {languages.map((language) => (
+              <option key={language.code} value={language.code}>
+                {language.nativeName} ({language.displayName})
+              </option>
             ))}
           </select>
         </div>
       </div>
 
       <p className="settings-toggle-desc" style={{ marginTop: 8 }}>
-        Để thay đổi giao diện sáng/tối, vui lòng vào tab <strong>Giao diện</strong>.
+        {t('settings.themeHint')}
       </p>
 
       <button className="settings-save-btn" onClick={handleSave} disabled={loading}>
-        {loading ? "Đang lưu..." : "Lưu thay đổi"}
+        {loading ? t('settings.saving') : t('settings.saveChanges')}
       </button>
     </div>
   );

@@ -9,6 +9,8 @@ import userService from "../../services/userService";
 import { useAuth } from "../../contexts/AuthContext";
 import toast from "react-hot-toast";
 import "./FriendsPage.css";
+import { useLocalization } from "../../contexts/useLocalization";
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const TABS = {
   FRIENDS: "friends",
@@ -18,6 +20,7 @@ const TABS = {
 
 const FriendsPage = () => {
   const { user } = useAuth();
+  const { t } = useLocalization();
   const [activeTab, setActiveTab] = useState(TABS.REQUESTS);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -35,7 +38,7 @@ const FriendsPage = () => {
       const res = await friendshipService.getFriendRequests();
       setRequests(res.data?.data || []);
     } catch {
-      toast.error("Không thể tải danh sách lời mời");
+      toast.error(t('friends.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -74,10 +77,10 @@ const FriendsPage = () => {
     setProcessingId(request.userId);
     try {
       await friendshipService.acceptFriendRequest(request.userId);
-      toast.success("Đã chấp nhận lời mời kết bạn!");
+      toast.success(translateCatalogKey('ui.components.friendship.addfriendbutton.a-chap-nhan-loi-moi-ket-ban.daba23c8'));
       setRequests((prev) => prev.filter((r) => r.userId !== request.userId));
     } catch (error) {
-      toast.error(error.response?.data?.message || "Có lỗi xảy ra!");
+      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'));
     } finally {
       setProcessingId(null);
     }
@@ -87,10 +90,10 @@ const FriendsPage = () => {
     setProcessingId(request.userId);
     try {
       await friendshipService.rejectFriendRequest(request.userId);
-      toast.success("Đã từ chối lời mời kết bạn");
+      toast.success(translateCatalogKey('ui.pages.friends.index.a-tu-choi-loi-moi-ket-ban.aab667dd'));
       setRequests((prev) => prev.filter((r) => r.userId !== request.userId));
     } catch (error) {
-      toast.error(error.response?.data?.message || "Có lỗi xảy ra!");
+      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'));
     } finally {
       setProcessingId(null);
     }
@@ -99,25 +102,25 @@ const FriendsPage = () => {
   return (
     <div className="friends-page">
       <div className="friends-page-header">
-        <h2>Bạn bè</h2>
+        <h2>{t('friends.title')}</h2>
         <div className="friends-tabs">
           <button
             className={`friends-tab ${activeTab === TABS.REQUESTS ? "friends-tab--active" : ""}`}
             onClick={() => setActiveTab(TABS.REQUESTS)}
           >
-            Lời mời kết bạn
+            {t('friends.requests')}
           </button>
           <button
             className={`friends-tab ${activeTab === TABS.FRIENDS ? "friends-tab--active" : ""}`}
             onClick={() => setActiveTab(TABS.FRIENDS)}
           >
-            Tất cả bạn bè
+            {t('friends.all')}
           </button>
           <button
             className={`friends-tab ${activeTab === TABS.DISCOVER ? "friends-tab--active" : ""}`}
             onClick={() => setActiveTab(TABS.DISCOVER)}
           >
-            Khám phá
+            {t('friends.discover')}
           </button>
         </div>
       </div>
@@ -125,9 +128,9 @@ const FriendsPage = () => {
       {activeTab === TABS.REQUESTS && (
         <div className="friend-requests">
           {loading ? (
-            <div className="friend-requests-loading">Đang tải...</div>
+            <div className="friend-requests-loading">{t('common.loading')}</div>
           ) : requests.length === 0 ? (
-            <div className="friend-requests-empty">Không có lời mời kết bạn nào</div>
+            <div className="friend-requests-empty">{t('friends.noRequests')}</div>
           ) : (
             <div className="friend-requests-grid">
               {requests.map((request) => (
@@ -145,7 +148,7 @@ const FriendsPage = () => {
                       disabled={processingId === request.userId}
                     >
                       <UserCheck size={16} />
-                      Chấp nhận
+                      {t('friends.accept')}
                     </button>
                     <button
                       className="friend-request-btn friend-request-btn--reject"
@@ -153,7 +156,7 @@ const FriendsPage = () => {
                       disabled={processingId === request.userId}
                     >
                       <UserX size={16} />
-                      Từ chối
+                      {t('friends.reject')}
                     </button>
                   </div>
                 </div>
@@ -171,9 +174,9 @@ const FriendsPage = () => {
       {activeTab === TABS.DISCOVER && (
         <div className="friend-discover">
           {discoverLoading && discoverUsers.length === 0 ? (
-            <div className="friend-requests-loading">Đang tải...</div>
+            <div className="friend-requests-loading">{t('common.loading')}</div>
           ) : discoverUsers.length === 0 ? (
-            <div className="friend-requests-empty">Không tìm thấy người dùng nào</div>
+            <div className="friend-requests-empty">{t('friends.noUsers')}</div>
           ) : (
             <>
               <div className="friend-discover-grid">
@@ -188,17 +191,17 @@ const FriendsPage = () => {
                     onClick={() => setDiscoverPage(discoverPage - 1)}
                     className="friend-page-btn"
                   >
-                    Trước
+                    {t('common.previous')}
                   </button>
                   <span className="friend-page-info">
-                    Trang {discoverPage} / {discoverTotalPages}
+                    {translateCatalogKey('ui.components.friendship.friendlist.trang.6d3a285d')} {discoverPage} / {discoverTotalPages}
                   </span>
                   <button
                     disabled={discoverPage >= discoverTotalPages}
                     onClick={() => setDiscoverPage(discoverPage + 1)}
                     className="friend-page-btn"
                   >
-                    Tiếp
+                    {t('common.next')}
                   </button>
                 </div>
               )}

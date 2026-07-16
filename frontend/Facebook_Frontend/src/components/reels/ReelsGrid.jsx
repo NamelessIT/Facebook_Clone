@@ -4,8 +4,11 @@ import reelService from '../../services/reelService';
 import { getVideoUrl } from '../../utils/formatUrl';
 import ReelsPlayer from './ReelsPlayer';
 import './ReelsGrid.css';
+import { useLocalization } from '../../contexts/useLocalization';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const ReelsGrid = ({ userId }) => {
+  const { t } = useLocalization();
   const [reels, setReels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -49,7 +52,7 @@ const ReelsGrid = ({ userId }) => {
   if (loading && reels.length === 0) {
     return (
       <div className="rg-container">
-        <div className="rg-loading">Đang tải Reels...</div>
+        <div className="rg-loading">{t('common.loading')}</div>
       </div>
     );
   }
@@ -59,7 +62,7 @@ const ReelsGrid = ({ userId }) => {
       <div className="rg-container">
         <div className="rg-empty">
           <Film size={40} className="rg-empty-icon" />
-          <p>Chưa có Reel nào</p>
+          <p>{t('reels.noReels')}</p>
         </div>
       </div>
     );
@@ -73,13 +76,13 @@ const ReelsGrid = ({ userId }) => {
             key={reel.id}
             className="rg-card"
             onClick={() => setSelectedIndex(index)}
-            aria-label={reel.title || 'Xem Reel'}
+            aria-label={reel.title || translateCatalogKey('reels.view')}
           >
             {/* Thumbnail */}
             {reel.thumbnailUrl ? (
               <img
                 src={getVideoUrl(reel.thumbnailUrl)}
-                alt={reel.title || 'Reel'}
+                alt={reel.title || translateCatalogKey('ui.components.reels.reelsgrid.reel.06dcbfb1')}
                 className="rg-thumbnail"
                 loading="lazy"
               />
@@ -122,7 +125,7 @@ const ReelsGrid = ({ userId }) => {
             onClick={() => setPage((p) => p + 1)}
             disabled={loading}
           >
-            {loading ? 'Đang tải...' : 'Xem thêm Reels'}
+            {loading ? t('common.loading') : t('reels.loadMore')}
           </button>
         </div>
       )}

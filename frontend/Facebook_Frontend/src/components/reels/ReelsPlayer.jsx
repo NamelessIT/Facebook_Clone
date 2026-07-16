@@ -7,14 +7,17 @@ import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLocalization } from '../../contexts/useLocalization';
 import reelService from '../../services/reelService';
 import Avatar from '../common/Avatar';
 import EditReelModal from './EditReelModal';
 import { getVideoUrl } from '../../utils/formatUrl';
 import './ReelsPlayer.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUpdated, onNotInterested }) => {
   const { user: currentUser } = useAuth();
+  const { t } = useLocalization();
   const videoRef = useRef(null);
 
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -101,7 +104,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
     } catch {
       setLiked(prev);
       setLikeCount((c) => (prev ? c + 1 : c - 1));
-      toast.error('Không thể thực hiện hành động này');
+      toast.error(t('common.actionFailed'));
     }
   };
 
@@ -109,7 +112,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
     setDeleting(true);
     try {
       await reelService.deleteReel(reel.id);
-      toast.success('Đã xoá Reel');
+      toast.success(t('reels.deleted'));
       onReelDeleted?.(reel.id);
       if (reels.length <= 1) {
         onClose();
@@ -118,7 +121,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
         setCurrentIndex(nextIndex);
       }
     } catch {
-      toast.error('Xoá Reel thất bại');
+      toast.error(t('reels.deleteFailed'));
     } finally {
       setDeleting(false);
       setShowDeleteConfirm(false);
@@ -127,12 +130,12 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
 
   const handleMenuInterest = () => {
     setShowMenu(false);
-    toast.success('Đã đánh dấu quan tâm Reel này');
+    toast.success(t('reels.markedInterested'));
   };
 
   const handleMenuNotInterested = () => {
     setShowMenu(false);
-    toast.success('Đã ẩn Reel này');
+    toast.success(t('reels.hidden'));
     onNotInterested?.(reel.id);
     if (reels.length <= 1) {
       onClose();
@@ -144,18 +147,18 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
   const handleMenuSave = () => {
     setShowMenu(false);
     setIsSaved((prev) => !prev);
-    toast.success(isSaved ? 'Đã bỏ lưu Reel' : 'Đã lưu Reel');
+    toast.success(isSaved ? t('reels.unsaved') : t('reels.saved'));
   };
 
   const handleMenuCopyLink = () => {
     navigator.clipboard.writeText(`${window.location.origin}/reels/${reel.id}`);
-    toast.success('Đã sao chép liên kết');
+    toast.success(t('common.linkCopied'));
     setShowMenu(false);
   };
 
   const handleMenuReport = () => {
     setShowMenu(false);
-    toast.success('Cảm ơn bạn đã báo cáo Reel này');
+    toast.success(t('reels.reported'));
   };
 
   if (!reel) return null;
@@ -167,7 +170,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
   return (
     <div className="rp-overlay" onClick={onClose}>
       {/* Close */}
-      <button className="rp-close-btn" onClick={onClose} aria-label="Đóng">
+      <button className="rp-close-btn" onClick={onClose} aria-label={translateCatalogKey('common.close')}>
         <X size={24} />
       </button>
 
@@ -176,7 +179,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
         <button
           className="rp-nav-btn rp-nav-btn--prev"
           onClick={(e) => { e.stopPropagation(); goPrev(); }}
-          aria-label="Reels trước"
+          aria-label={translateCatalogKey('ui.components.reels.reelsplayer.reels-truoc.c6475326')}
         >
           <ChevronLeft size={28} />
         </button>
@@ -203,7 +206,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
         <button
           className="rp-mute-btn"
           onClick={() => setMuted((m) => !m)}
-          aria-label={muted ? 'Bỏ tắt tiếng' : 'Tắt tiếng'}
+          aria-label={muted ? translateCatalogKey('ui.components.reels.reelsplayer.bo-tat-tieng.a1317e24') : translateCatalogKey('ui.components.reels.reelsplayer.tat-tieng.5aa8a225')}
         >
           {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
         </button>
@@ -226,7 +229,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
           <button
             className={`rp-action-btn${liked ? ' rp-action-btn--liked' : ''}`}
             onClick={handleToggleLike}
-            aria-label="Thích"
+            aria-label={translateCatalogKey('post.reaction.like')}
           >
             <Heart size={24} fill={liked ? '#ef4444' : 'none'} />
             <span>{likeCount}</span>
@@ -236,7 +239,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
             <button
               className="rp-action-btn"
               onClick={() => setShowMenu((v) => !v)}
-              aria-label="Tuỳ chọn"
+              aria-label={translateCatalogKey('ui.components.reels.reelsplayer.tuy-chon.4746d483')}
             >
               <MoreVertical size={22} />
             </button>
@@ -245,29 +248,29 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
                 {isOwner ? (
                   <>
                     <button onClick={() => { setShowMenu(false); setShowEditModal(true); }}>
-                      <Edit2 size={15} /> Chỉnh sửa
+                      <Edit2 size={15} /> {t('reels.edit')}
                     </button>
                     <button onClick={() => { setShowMenu(false); setShowDeleteConfirm(true); }}>
-                      <Trash2 size={15} /> Xoá Reel
+                      <Trash2 size={15} /> {t('reels.delete')}
                     </button>
                   </>
                 ) : (
                   <>
                     <button onClick={handleMenuInterest}>
-                      <Star size={15} /> Quan tâm
+                      <Star size={15} /> {t('post.interested')}
                     </button>
                     <button onClick={handleMenuNotInterested}>
-                      <EyeOff size={15} /> Không quan tâm
+                      <EyeOff size={15} /> {t('post.notInterested')}
                     </button>
                     <button onClick={handleMenuSave}>
-                      <Bookmark size={15} /> {isSaved ? 'Bỏ lưu Reel' : 'Lưu Reel'}
+                      <Bookmark size={15} /> {isSaved ? t('reels.unsave') : t('reels.save')}
                     </button>
                     <button onClick={handleMenuCopyLink}>
-                      <Link2 size={15} /> Sao chép liên kết
+                      <Link2 size={15} /> {t('post.copyLink')}
                     </button>
                     <hr className="rp-menu-divider" />
                     <button className="rp-menu-danger" onClick={handleMenuReport}>
-                      <Flag size={15} /> Báo cáo Reel
+                      <Flag size={15} /> {t('reels.report')}
                     </button>
                   </>
                 )}
@@ -282,7 +285,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
         <button
           className="rp-nav-btn rp-nav-btn--next"
           onClick={(e) => { e.stopPropagation(); goNext(); }}
-          aria-label="Reels tiếp theo"
+          aria-label={translateCatalogKey('ui.components.reels.reelsplayer.reels-tiep-theo.df296c1b')}
         >
           <ChevronRight size={28} />
         </button>
@@ -292,21 +295,21 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
       {showDeleteConfirm && (
         <div className="rp-confirm-overlay" onClick={(e) => e.stopPropagation()}>
           <div className="rp-confirm-box">
-            <h4>Xoá Reel?</h4>
-            <p>Hành động này không thể hoàn tác.</p>
+            <h4>{t('reels.deleteTitle')}</h4>
+            <p>{t('reels.irreversible')}</p>
             <div className="rp-confirm-actions">
               <button
                 className="rp-btn rp-btn--secondary"
                 onClick={() => setShowDeleteConfirm(false)}
               >
-                Huỷ
+                {t('common.cancel')}
               </button>
               <button
                 className="rp-btn rp-btn--danger"
                 onClick={handleDelete}
                 disabled={deleting}
               >
-                {deleting ? 'Đang xoá...' : 'Xoá'}
+                {deleting ? t('common.deleting') : t('common.delete')}
               </button>
             </div>
           </div>

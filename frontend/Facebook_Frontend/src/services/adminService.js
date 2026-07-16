@@ -9,7 +9,6 @@ const adminService = {
   getUsers: (params = {}) => axiosClient.get('/admin/users', { params }),
   banUser: (id, reason) => axiosClient.put(`/admin/users/${id}/ban`, { reason }),
   unbanUser: (id) => axiosClient.put(`/admin/users/${id}/unban`),
-  toggleAdmin: (id) => axiosClient.put(`/admin/users/${id}/toggle-admin`),
   setUserRoles: (id, roleIds) => axiosClient.put(`/admin/users/${id}/roles`, { roleIds }),
   deleteUser: (id) => axiosClient.delete(`/admin/users/${id}`),
 
@@ -40,6 +39,16 @@ const adminService = {
   unblockIp: (ip) => axiosClient.delete(`/admin/security/blocked-ips/${encodeURIComponent(ip)}`),
   resetRateLimit: (ip) => axiosClient.delete(`/admin/security/rate-limit/${encodeURIComponent(ip)}`),
   getSecurityStats: () => axiosClient.get('/admin/security/stats'),
+
+  // Localization
+  getLocalization: (params = {}) => axiosClient.get('/admin/localization', { params }),
+  createLocaleLanguage: (data) => axiosClient.post('/admin/localization/languages', data),
+  updateLocaleLanguage: (id, data) => axiosClient.put(`/admin/localization/languages/${id}`, data),
+  createLocalizationEntry: (data) => axiosClient.post('/admin/localization/entries', data),
+  updateLocalizationEntry: (id, data) => axiosClient.put(`/admin/localization/entries/${id}`, data),
+  upsertLocalizationEntries: (entries) => axiosClient.post('/admin/localization/entries/bulk', { entries }),
+  deleteLocalizationEntry: (id) => axiosClient.delete(`/admin/localization/entries/${id}`),
+  translateLocalization: (data) => axiosClient.post('/admin/localization/translate', data),
 };
 
 export default adminService;

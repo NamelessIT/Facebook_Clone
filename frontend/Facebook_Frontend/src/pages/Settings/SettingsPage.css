@@ -1,6 +1,8 @@
 .settings-page {
   display: flex;
-  max-width: 960px;
+  width: 100%;
+  max-width: 1240px;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 20px 16px;
   gap: 24px;
@@ -57,6 +59,7 @@
   border-radius: 8px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   padding: 24px;
+  min-width: 0;
 }
 
 /* Sections */
@@ -271,4 +274,47 @@
 
 [data-theme="dark"] .settings-content {
   background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .settings-section,
+[data-theme="dark"] .settings-section-title,
+[data-theme="dark"] .settings-label,
+[data-theme="dark"] .settings-toggle-label,
+[data-theme="dark"] .settings-toggle-text strong {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .settings-toggle-desc {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .settings-toggle-item {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .settings-input,
+[data-theme="dark"] .settings-textarea,
+[data-theme="dark"] .settings-select {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .settings-input::placeholder,
+[data-theme="dark"] .settings-textarea::placeholder {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .settings-select option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .settings-upload-btn {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .settings-upload-btn:hover {
+  background: #4e4f50;
 }

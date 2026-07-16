@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { getImageUrl } from "../../utils/formatUrl";
-import "./PostMedia.css"; // Gọi CSS
+import "./PostMedia.css";
+import { translateCatalogKey } from '../../shared/localizationRuntime'; // Gọi CSS
 
 const PostMedia = ({ url, isVideo }) => {
   const [hasError, setHasError] = useState(false);
@@ -12,10 +13,10 @@ const PostMedia = ({ url, isVideo }) => {
   if (hasError) {
     return (
       <div className="post-media-container post-media-error">
-        <button className="btn-refresh" onClick={() => setHasError(false)} title="Thử tải lại">
+        <button className="btn-refresh" onClick={() => setHasError(false)} title={translateCatalogKey('ui.components.common.postmedia.thu-tai-lai.ed0a7f86')}>
           <RefreshCw className="text-white w-6 h-6" />
         </button>
-        <span className="error-text">Không tải được nội dung. Vui lòng thử lại.</span>
+        <span className="error-text">{translateCatalogKey('ui.components.common.postmedia.khong-tai-uoc-noi-dung-vui-long-thu-.b369ad62')}</span>
       </div>
     );
   }
@@ -32,7 +33,7 @@ const PostMedia = ({ url, isVideo }) => {
       ) : (
         <img
           src={mediaSrc}
-          alt="Post content"
+          alt={translateCatalogKey('ui.components.common.postmedia.post-content.95aeebef')}
           className="post-media-content"
           onError={() => setHasError(true)}
         />

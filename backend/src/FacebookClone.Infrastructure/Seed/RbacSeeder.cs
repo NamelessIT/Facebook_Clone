@@ -32,6 +32,8 @@ public class RbacSeeder : ISeeder
         ("reels.ban_author", "reels", "ban_author", "Ban a user from a reel moderation action"),
         ("security.view", "security", "view", "View security events"),
         ("security.manage", "security", "manage", "Manage block lists and security actions"),
+        ("localization.view", "localization", "view", "View localization entries"),
+        ("localization.manage", "localization", "manage", "Create and update translations"),
         ("settings.manage", "settings", "manage", "Manage system settings"),
     ];
 
@@ -90,7 +92,7 @@ public class RbacSeeder : ISeeder
         await GrantAsync(context, roles["moderator"], [
             "dashboard.view", "users.view", "posts.view", "posts.manage",
             "posts.delete", "posts.restore", "reels.view", "reels.manage",
-            "reels.delete", "reels.restore", "security.view"
+            "reels.delete", "reels.restore", "security.view", "localization.view"
         ]);
         await GrantAsync(context, roles["user"], []);
 

@@ -5,15 +5,17 @@ import { useAuth } from "../../contexts/AuthContext";
 import { getImageUrl } from "../../utils/formatUrl";
 import postService from "../../services/postService";
 import toast from "react-hot-toast";
+import { LIMITS } from "../../shared/generated/constants";
 import "./EditPostModal.css";
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const PRIVACY_OPTIONS = [
-  { value: 1, label: "Công khai", icon: Globe },
-  { value: 2, label: "Bạn bè", icon: Users },
-  { value: 3, label: "Chỉ mình tôi", icon: Lock },
+  { value: 1, labelKey: "privacy.public", icon: Globe },
+  { value: 2, labelKey: "privacy.friends", icon: Users },
+  { value: 3, labelKey: "privacy.onlyMe", icon: Lock },
 ];
 
-const MAX_CONTENT_LENGTH = 500;
+const MAX_CONTENT_LENGTH = LIMITS.editPostMaxContentLength;
 
 const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) => {
   const { user } = useAuth();
@@ -55,11 +57,11 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
         formData.append("privacy", String(privacy));
 
         await postService.updatePost(post.id, formData);
-        toast.success("Cập nhật chế độ hiển thị thành công!");
+        toast.success(translateCatalogKey('ui.components.post.editpostmodal.cap-nhat-che-o-hien-thi-thanh-cong.7bf3c3f9'));
         onPostUpdated?.();
         onClose();
       } catch (error) {
-        toast.error(error.response?.data?.message || "Cập nhật thất bại!");
+        toast.error(error.response?.data?.message || translateCatalogKey('settings.updateFailed'));
       } finally {
         setSaving(false);
       }
@@ -67,11 +69,11 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
     }
 
     if (!content.trim() && existingMedias.length === 0 && newFiles.length === 0) {
-      toast.error("Bài viết phải có nội dung hoặc media.");
+      toast.error(translateCatalogKey('ui.components.post.editpostmodal.bai-viet-phai-co-noi-dung-hoac-media.12bd04df'));
       return;
     }
     if (content.length > MAX_CONTENT_LENGTH) {
-      toast.error(`Nội dung tối đa ${MAX_CONTENT_LENGTH} ký tự.`);
+      toast.error(translateCatalogKey('ui.components.post.editpostmodal.noi-dung-toi-a-value0-ky-tu.85f78484', { value0: MAX_CONTENT_LENGTH }));
       return;
     }
 
@@ -89,11 +91,11 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
       });
 
       await postService.updatePost(post.id, formData);
-      toast.success("Cập nhật bài viết thành công!");
+      toast.success(translateCatalogKey('ui.components.post.editpostmodal.cap-nhat-bai-viet-thanh-cong.65c30107'));
       onPostUpdated?.();
       onClose();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Cập nhật thất bại!");
+      toast.error(error.response?.data?.message || translateCatalogKey('settings.updateFailed'));
     } finally {
       setSaving(false);
     }
@@ -104,7 +106,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
       <div className="edit-post-modal" onMouseDown={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="edit-post-header">
-          <h3>{privacyOnly ? 'Chỉnh sửa chế độ hiển thị' : 'Chỉnh sửa bài viết'}</h3>
+          <h3>{privacyOnly ? translateCatalogKey('post.editPrivacy') : translateCatalogKey('post.editPost')}</h3>
           <button className="edit-post-close" onClick={onClose}>
             <X size={20} />
           </button>
@@ -122,7 +124,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
             >
               {PRIVACY_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
-                  {opt.label}
+                  {translateCatalogKey(opt.labelKey)}
                 </option>
               ))}
             </select>
@@ -135,7 +137,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
             className="edit-post-textarea"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Bạn đang nghĩ gì?"
+            placeholder={translateCatalogKey('ui.components.post.editpostmodal.ban-ang-nghi-gi.3127ac88')}
             rows={4}
             disabled={privacyOnly}
           />
@@ -147,7 +149,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
           </div>
           {privacyOnly && (
             <p style={{ fontSize: '13px', color: '#65676b', marginTop: '6px', fontStyle: 'italic' }}>
-              🔒 Bài viết này tự động được tạo. Bạn chỉ có thể chỉnh sửa chế độ hiển thị.
+              {translateCatalogKey('ui.components.post.editpostmodal.bai-viet-nay-tu-ong-uoc-tao-ban-chi-.914407b3')}
             </p>
           )}
         </div>
@@ -159,11 +161,11 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
               <Avatar src={post.sharedPost.author?.avatarUrl} className="w-8 h-8" />
               <div className="edit-post-shared-info">
                 <span className="edit-post-shared-author">
-                  {post.sharedPost.author?.fullName || 'Người dùng'}
+                  {post.sharedPost.author?.fullName || translateCatalogKey('chat.userFallback')}
                 </span>
                 {post.sharedPost.createdAt && (
                   <span className="edit-post-shared-time">
-                    {new Date(post.sharedPost.createdAt).toLocaleString('vi-VN')}
+                    {new Date(post.sharedPost.createdAt).toLocaleString("vi-VN")}
                   </span>
                 )}
               </div>
@@ -186,7 +188,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
         {/* Existing medias - read-only in privacyOnly mode */}
         {existingMedias.length > 0 && (
           <div className="edit-post-media-section">
-            <h4 className="edit-post-media-title">Media {privacyOnly ? '(không thể chỉnh sửa)' : 'hiện tại'}</h4>
+            <h4 className="edit-post-media-title">{translateCatalogKey('ui.components.post.editpostmodal.media.8b5254ae')} {privacyOnly ? translateCatalogKey('ui.components.post.editpostmodal.khong-the-chinh-sua.4258ff4f') : translateCatalogKey('ui.components.post.editpostmodal.hien-tai.3e7ba270')}</h4>
             <div className="edit-post-media-grid">
               {existingMedias.map((media) => (
                 <div key={media.id} className="edit-post-media-item">
@@ -199,7 +201,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
                     <button
                       className="edit-post-media-remove"
                       onClick={() => handleRemoveExistingMedia(media.id)}
-                      title="Xóa"
+                      title={translateCatalogKey('common.delete')}
                     >
                       <Trash2 size={14} />
                     </button>
@@ -213,7 +215,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
         {/* New files preview - hidden in privacyOnly mode */}
         {!privacyOnly && newFiles.length > 0 && (
           <div className="edit-post-media-section">
-            <h4 className="edit-post-media-title">Media mới</h4>
+            <h4 className="edit-post-media-title">{translateCatalogKey('ui.components.post.editpostmodal.media-moi.deb28f64')}</h4>
             <div className="edit-post-media-grid">
               {newFiles.map((f, idx) => (
                 <div key={idx} className="edit-post-media-item">
@@ -225,7 +227,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
                   <button
                     className="edit-post-media-remove"
                     onClick={() => handleRemoveNewFile(idx)}
-                    title="Xóa"
+                    title={translateCatalogKey('common.delete')}
                   >
                     <X size={14} />
                   </button>
@@ -239,7 +241,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
         {!privacyOnly && (
           <div className="edit-post-add-media">
             <button onClick={() => fileInputRef.current?.click()}>
-              <ImagePlus size={20} /> Thêm ảnh/video
+              <ImagePlus size={20} /> {translateCatalogKey('ui.components.post.editpostmodal.them-anh-video.be243192')}
             </button>
             <input
               ref={fileInputRef}
@@ -255,14 +257,14 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
         {/* Footer */}
         <div className="edit-post-footer">
           <button className="edit-post-btn-cancel" onClick={onClose}>
-            Hủy
+            {translateCatalogKey('common.cancel')}
           </button>
           <button
             className="edit-post-btn-save"
             onClick={handleSave}
             disabled={saving}
           >
-            {saving ? "Đang lưu..." : "Lưu"}
+            {saving ? translateCatalogKey('settings.saving') : translateCatalogKey('post.save')}
           </button>
         </div>
       </div>

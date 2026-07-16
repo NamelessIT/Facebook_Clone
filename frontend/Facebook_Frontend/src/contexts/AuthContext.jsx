@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import userService from "../services/userService";
-import { clearAuthClientState } from "../services/axiosClient";
+import axiosClient, { clearAuthClientState } from "../services/axiosClient";
+import { STORAGE_KEYS, TIMERS } from "../shared/generated/constants";
 
 const AuthContext = createContext();
 
@@ -8,7 +9,11 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    const refreshToken = localStorage.getItem(STORAGE_KEYS.refreshToken);
+    if (refreshToken) {
+      await axiosClient.post("/auth/logout", { refreshToken }).catch(() => {});
+    }
     clearAuthClientState();
     setUser(null);
   }, []);
@@ -29,8 +34,8 @@ export const AuthProvider = ({ children }) => {
   }, [logout]);
 
   const login = async (accessToken, refreshToken) => {
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem(STORAGE_KEYS.accessToken, accessToken);
+    localStorage.setItem(STORAGE_KEYS.refreshToken, refreshToken);
 
     try {
       return await fetchProfile({ throwOnError: true });
@@ -42,13 +47,25 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem(STORAGE_KEYS.accessToken);
     if (token) {
       fetchProfile();
     } else {
       setLoading(false);
     }
   }, [fetchProfile]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const sendHeartbeat = () => {
+      userService.heartbeat().catch(() => {});
+    };
+
+    sendHeartbeat();
+    const timerId = window.setInterval(sendHeartbeat, TIMERS.presenceHeartbeatMs);
+    return () => window.clearInterval(timerId);
+  }, [user?.id]);
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: !!user }}>

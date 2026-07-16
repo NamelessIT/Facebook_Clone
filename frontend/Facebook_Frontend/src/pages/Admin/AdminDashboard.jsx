@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Activity, AlertTriangle, FileText, Film, KeyRound, MessageSquare, ShieldOff, TrendingUp, Users, UsersRound } from 'lucide-react';
 import adminService from '../../services/adminService';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const AdminDashboard = () => {
   const [data, setData] = useState(null);
@@ -13,26 +14,26 @@ const AdminDashboard = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="admin-loading">Đang tải...</div>;
-  if (!data) return <div className="admin-empty">Không thể tải dữ liệu.</div>;
+  if (loading) return <div className="admin-loading">{translateCatalogKey('common.loading')}</div>;
+  if (!data) return <div className="admin-empty">{translateCatalogKey('ui.pages.admin.admindashboard.khong-the-tai-du-lieu.fe4fcb3f')}</div>;
 
   const { users, content, security, rbac } = data;
   const stats = [
-    { label: 'Người dùng', value: users.total, sub: `+${users.newLast7Days} trong 7 ngày`, Icon: Users },
-    { label: 'Đang online', value: users.activeNow, sub: 'Hiện tại', Icon: Activity, variant: 'success' },
-    { label: 'Đã bị ban', value: users.banned, sub: 'Tài khoản', Icon: ShieldOff, variant: 'danger' },
-    { label: 'Bài viết', value: content.totalPosts, sub: `${content.postsToday} hôm nay`, Icon: FileText },
-    { label: 'Reels', value: content.totalReels, sub: `${content.deletedReels ?? 0} đã xóa`, Icon: Film },
-    { label: 'Bình luận', value: content.totalComments, sub: 'Toàn hệ thống', Icon: MessageSquare },
-    { label: 'Nhóm', value: content.totalGroups, sub: 'Community modules', Icon: UsersRound },
-    { label: 'RBAC', value: rbac?.roleCount ?? 0, sub: `${rbac?.permissionCount ?? 0} permissions`, Icon: KeyRound, variant: 'success' },
-    { label: 'IP bị chặn', value: security.blockedIps, sub: 'Đang active', Icon: AlertTriangle, variant: 'danger' },
-    { label: 'Sự kiện 24h', value: security.eventsLast24h, sub: `${security.rateLimitHitsLast1h} rate limit/1h`, Icon: TrendingUp, variant: 'warn' },
+    { label: translateCatalogKey('chat.userFallback'), value: users.total, sub: translateCatalogKey('admin.dashboard.newUsers7Days', { count: users.newLast7Days }), Icon: Users },
+    { label: translateCatalogKey('ui.pages.admin.admindashboard.ang-online.47e929f9'), value: users.activeNow, sub: translateCatalogKey('admin.dashboard.current'), Icon: Activity, variant: 'success' },
+    { label: translateCatalogKey('ui.pages.admin.admindashboard.a-bi-ban.1dc82dfe'), value: users.banned, sub: translateCatalogKey('admin.dashboard.accounts'), Icon: ShieldOff, variant: 'danger' },
+    { label: translateCatalogKey('admin.posts.title'), value: content.totalPosts, sub: translateCatalogKey('admin.dashboard.todayCount', { count: content.postsToday }), Icon: FileText },
+    { label: 'Reels', value: content.totalReels, sub: translateCatalogKey('admin.dashboard.deletedCount', { count: content.deletedReels ?? 0 }), Icon: Film },
+    { label: translateCatalogKey('post.comment'), value: content.totalComments, sub: translateCatalogKey('admin.dashboard.systemWide'), Icon: MessageSquare },
+    { label: translateCatalogKey('ui.pages.admin.admindashboard.nhom.a35c3d84'), value: content.totalGroups, sub: 'Community modules', Icon: UsersRound },
+    { label: translateCatalogKey('ui.pages.admin.admindashboard.rbac.623e54e4'), value: rbac?.roleCount ?? 0, sub: `${rbac?.permissionCount ?? 0} permissions`, Icon: KeyRound, variant: 'success' },
+    { label: translateCatalogKey('ui.pages.admin.admindashboard.ip-bi-chan.75eaaed0'), value: security.blockedIps, sub: translateCatalogKey('admin.dashboard.activeNow'), Icon: AlertTriangle, variant: 'danger' },
+    { label: translateCatalogKey('ui.pages.admin.admindashboard.su-kien-24h.8ff64066'), value: security.eventsLast24h, sub: `${security.rateLimitHitsLast1h} rate limit/1h`, Icon: TrendingUp, variant: 'warn' },
   ];
 
   return (
     <div>
-      <h1 className="admin-page-title">Dashboard</h1>
+      <h1 className="admin-page-title">{translateCatalogKey('admin.dashboard.title')}</h1>
 
       <div className="admin-stats-grid">
         {stats.map(({ label, value, sub, Icon, variant }) => (
@@ -51,14 +52,14 @@ const AdminDashboard = () => {
         <div className="admin-section">
           <div className="admin-table-wrap">
             <div className="admin-table-header">
-              <span className="admin-table-title">Top IP đáng ngờ (24h)</span>
+              <span className="admin-table-title">{translateCatalogKey('ui.pages.admin.admindashboard.top-ip-ang-ngo-24h.32431fca')}</span>
             </div>
             <table className="admin-table">
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>IP Address</th>
-                  <th>Số sự kiện</th>
+                  <th>{translateCatalogKey('ui.pages.admin.admindashboard.ip-address.33dedda4')}</th>
+                  <th>{translateCatalogKey('ui.pages.admin.admindashboard.so-su-kien.c3305359')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -78,7 +79,7 @@ const AdminDashboard = () => {
       )}
 
       <div style={{ fontSize: 12, color: '#555', marginTop: 20 }}>
-        Một số dữ liệu bảo mật runtime vẫn là in-memory và sẽ reset khi restart server.
+        {translateCatalogKey('ui.pages.admin.admindashboard.mot-so-du-lieu-bao-mat-runtime-van-l.857d97a3')}
       </div>
     </div>
   );

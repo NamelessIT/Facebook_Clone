@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import userService from "../../services/userService";
 import toast from "react-hot-toast";
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const PrivacySettings = () => {
   const { user } = useAuth();
@@ -31,23 +32,23 @@ const PrivacySettings = () => {
     setLoading(true);
     try {
       await userService.updatePrivacy(form);
-      toast.success("Cập nhật quyền riêng tư thành công!");
+      toast.success(translateCatalogKey('ui.pages.settings.privacysettings.cap-nhat-quyen-rieng-tu-thanh-cong.5b9a2ccf'));
     } catch (error) {
-      toast.error(error.response?.data?.message || "Cập nhật thất bại!");
+      toast.error(error.response?.data?.message || translateCatalogKey('settings.updateFailed'));
     } finally {
       setLoading(false);
     }
   };
 
   const toggleItems = [
-    { key: "privateProfile", label: "Hồ sơ riêng tư", description: "Chỉ bạn bè mới xem được trang cá nhân của bạn" },
-    { key: "hideFriendsList", label: "Ẩn danh sách bạn bè", description: "Người khác không thể xem danh sách bạn bè của bạn" },
-    { key: "onlyFriendsCanMessage", label: "Chỉ bạn bè nhắn tin", description: "Chỉ những người bạn đã kết bạn mới gửi được tin nhắn" },
+    { key: "privateProfile", label: translateCatalogKey('ui.pages.settings.privacysettings.ho-so-rieng-tu.2ceeb89b'), description: translateCatalogKey('ui.pages.settings.privacysettings.chi-ban-be-moi-xem-uoc-trang-ca-nhan.7ab82774') },
+    { key: "hideFriendsList", label: translateCatalogKey('ui.pages.settings.privacysettings.an-danh-sach-ban-be.0f96e82f'), description: translateCatalogKey('ui.pages.settings.privacysettings.nguoi-khac-khong-the-xem-danh-sach-b.37120801') },
+    { key: "onlyFriendsCanMessage", label: translateCatalogKey('ui.pages.settings.privacysettings.chi-ban-be-nhan-tin.2e537272'), description: translateCatalogKey('ui.pages.settings.privacysettings.chi-nhung-nguoi-ban-a-ket-ban-moi-gu.1980f03d') },
   ];
 
   return (
     <div className="settings-section">
-      <h3 className="settings-section-title">Quyền riêng tư</h3>
+      <h3 className="settings-section-title">{translateCatalogKey('settings.privacy')}</h3>
 
       <div className="settings-toggle-list">
         {toggleItems.map((item) => (
@@ -69,7 +70,7 @@ const PrivacySettings = () => {
       </div>
 
       <button className="settings-save-btn" onClick={handleSave} disabled={loading}>
-        {loading ? "Đang lưu..." : "Lưu thay đổi"}
+        {loading ? translateCatalogKey('settings.saving') : translateCatalogKey('settings.saveChanges')}
       </button>
     </div>
   );

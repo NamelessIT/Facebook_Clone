@@ -10,11 +10,12 @@ import { getImageUrl } from '../../utils/formatUrl';
 import { PostPrivacy, ReactionType } from '../../shared/generated/enums';
 import postService from '../../services/postService';
 import './PostDetailModal.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const PRIVACY_MAP = {
-  [PostPrivacy.Public]: { icon: Globe, label: 'Cong khai' },
-  [PostPrivacy.Friends]: { icon: Users, label: 'Ban be' },
-  [PostPrivacy.Private]: { icon: Lock, label: 'Chi minh toi' },
+  [PostPrivacy.Public]: { icon: Globe, labelKey: 'privacy.public' },
+  [PostPrivacy.Friends]: { icon: Users, labelKey: 'privacy.friends' },
+  [PostPrivacy.Private]: { icon: Lock, labelKey: 'privacy.onlyMe' },
 };
 
 const REACTIONS = [
@@ -131,7 +132,7 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
     return (
       <img
         src={getImageUrl(first.url, 'posts')}
-        alt="Post media"
+        alt={translateCatalogKey('ui.components.post.cardsavedpost.post-media.981dca15')}
         className="pdm-media-el"
       />
     );
@@ -152,9 +153,9 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
         <div className="pdm-shared-header">
           <Avatar src={sharedPost.author?.avatarUrl} className="pdm-shared-avatar" />
           <div className="pdm-shared-author-info">
-            <span className="pdm-shared-author">{sharedPost.author?.fullName || 'Nguoi dung'}</span>
+            <span className="pdm-shared-author">{sharedPost.author?.fullName || translateCatalogKey('ui.components.post.postdetailmodal.nguoi-dung.3b81093d')}</span>
             <span className="pdm-shared-time">
-              {new Date(sharedPost.createdAt).toLocaleString('vi-VN')}
+              {new Date(sharedPost.createdAt).toLocaleString("vi-VN")}
             </span>
           </div>
         </div>
@@ -243,7 +244,7 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
         topReactions: prevTop,
         reactorNames: prevNames,
       });
-      toast.error(error.response?.data?.message || 'Khong the tha cam xuc');
+      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.post.postdetailmodal.khong-the-tha-cam-xuc.72436747'));
     }
   };
 
@@ -254,7 +255,7 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
   return (
     <div className="pdm-overlay" ref={overlayRef} onClick={handleOverlayClick}>
       <div className={`pdm-dialog ${!hasMedia ? 'pdm-dialog--no-media' : ''}`}>
-        <button className="pdm-close" onClick={onClose} aria-label="Dong">
+        <button className="pdm-close" onClick={onClose} aria-label={translateCatalogKey('ui.components.post.postdetailmodal.dong.e6fcdec1')}>
           <X size={20} />
         </button>
 
@@ -283,8 +284,8 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
                 {post.author?.fullName}
               </Link>
               <span className="pdm-meta">
-                {new Date(post.createdAt).toLocaleString('vi-VN')} -{' '}
-                <PrivacyIcon size={12} className="pdm-privacy-icon" title={privacyInfo.label} />
+                {new Date(post.createdAt).toLocaleString("vi-VN")} -{' '}
+                <PrivacyIcon size={12} className="pdm-privacy-icon" title={translateCatalogKey(privacyInfo.labelKey)} />
               </span>
             </div>
           </div>
@@ -296,7 +297,7 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
           {renderSharedPostPreview()}
 
           {!post.content && !hasMedia && !post.sharedPost && (
-            <p className="pdm-text pdm-text--empty">(Bai viet khong co noi dung)</p>
+            <p className="pdm-text pdm-text--empty">{translateCatalogKey('ui.components.post.postdetailmodal.bai-viet-khong-co-noi-dung.9b1b52ff')}</p>
           )}
 
           <div className="pdm-stats">
@@ -318,7 +319,7 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
             {commentCount > 0 && (
               <span className="pdm-stat-item">
                 <MessageSquare size={14} />
-                {commentCount} binh luan
+                {commentCount} {translateCatalogKey('ui.components.post.postdetailmodal.binh-luan.700ab913')}
               </span>
             )}
           </div>
@@ -335,7 +336,7 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
                 ) : (
                   <ThumbsUp size={18} />
                 )}
-                <span>{currentReactionData ? currentReactionData.name : 'Thich'}</span>
+                <span>{currentReactionData ? currentReactionData.name : translateCatalogKey('ui.components.post.postdetailmodal.thich.52a71335')}</span>
               </button>
 
               <div className="pdm-reaction-popover">
@@ -354,11 +355,11 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
             </div>
             <button className="pdm-action-btn" type="button" onClick={() => setShowComments((value) => !value)}>
               <MessageSquare size={18} />
-              <span>Binh luan</span>
+              <span>{translateCatalogKey('ui.components.post.postdetailmodal.binh-luan.484811c9')}</span>
             </button>
             <button className="pdm-action-btn" type="button" onClick={() => setShowShareModal(true)}>
               <Share2 size={18} />
-              <span>Chia se</span>
+              <span>{translateCatalogKey('ui.components.post.postdetailmodal.chia-se.75ec1af8')}</span>
             </button>
           </div>
 

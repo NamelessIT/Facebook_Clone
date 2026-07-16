@@ -10,6 +10,11 @@ public class SecurityMiddleware(RequestDelegate next, ISecurityService security,
         "/swagger", "/favicon", "/health", "/hubs"
     ];
 
+    private static readonly string[] PayloadInspectionBypassPaths =
+    [
+        "/api/v1/admin/localization"
+    ];
+
     public async Task InvokeAsync(HttpContext ctx)
     {
         var ip = GetClientIp(ctx);
@@ -52,7 +57,8 @@ public class SecurityMiddleware(RequestDelegate next, ISecurityService security,
         }
 
         // 3. Payload inspection for POST/PUT/PATCH
-        if (ctx.Request.Method is "POST" or "PUT" or "PATCH")
+        if (ctx.Request.Method is "POST" or "PUT" or "PATCH" &&
+            !ShouldBypassPayloadInspection(path))
         {
             ctx.Request.EnableBuffering();
             using var reader = new StreamReader(ctx.Request.Body, leaveOpen: true);
@@ -100,4 +106,7 @@ public class SecurityMiddleware(RequestDelegate next, ISecurityService security,
 
         return ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
     }
+
+    private static bool ShouldBypassPayloadInspection(string path)
+        => PayloadInspectionBypassPaths.Any(b => path.StartsWith(b, StringComparison.OrdinalIgnoreCase));
 }

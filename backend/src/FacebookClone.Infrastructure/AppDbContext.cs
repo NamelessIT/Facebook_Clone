@@ -32,6 +32,8 @@ public class AppDbContext : DbContext
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
+    public DbSet<LocaleLanguage> LocaleLanguages { get; set; }
+    public DbSet<LocalizationEntry> LocalizationEntries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

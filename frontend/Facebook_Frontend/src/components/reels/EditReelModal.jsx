@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react';
 import { X, Film } from 'lucide-react';
 import toast from 'react-hot-toast';
 import reelService from '../../services/reelService';
+import { useLocalization } from '../../contexts/useLocalization';
 import './EditReelModal.css';
 
 const PRIVACY_OPTIONS = [
-  { value: 0, label: 'Công khai' },
-  { value: 1, label: 'Bạn bè' },
-  { value: 2, label: 'Riêng tư' },
+  { value: 0, labelKey: 'privacy.public' },
+  { value: 1, labelKey: 'privacy.friends' },
+  { value: 2, labelKey: 'privacy.onlyMe' },
 ];
 
 const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
+  const { t } = useLocalization();
   const [form, setForm] = useState({ title: '', description: '', privacy: 0 });
   const [saving, setSaving] = useState(false);
 
@@ -34,17 +36,17 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.title.trim()) {
-      toast.error('Tiêu đề không được để trống');
+      toast.error(t('reels.titleRequired'));
       return;
     }
     setSaving(true);
     try {
       const res = await reelService.updateReel(reel.id, form);
       const updated = res.data?.data || res.data;
-      toast.success('Đã cập nhật Reel');
+      toast.success(t('reels.updateSuccess'));
       onSuccess?.({ ...reel, ...updated, ...form });
     } catch {
-      toast.error('Cập nhật thất bại');
+      toast.error(t('reels.updateFailed'));
     } finally {
       setSaving(false);
     }
@@ -56,9 +58,9 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
         <div className="erm-header">
           <div className="erm-header-title">
             <Film size={20} />
-            <span>Chỉnh sửa Reel</span>
+            <span>{t('reels.editTitle')}</span>
           </div>
-          <button className="erm-close" onClick={onClose} aria-label="Đóng">
+          <button className="erm-close" onClick={onClose} aria-label={t('common.close')}>
             <X size={20} />
           </button>
         </div>
@@ -66,7 +68,7 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
         <form className="erm-form" onSubmit={handleSubmit}>
           <div className="erm-field">
             <label className="erm-label" htmlFor="erm-title">
-              Tiêu đề <span className="erm-required">*</span>
+              {t('common.title')} <span className="erm-required">*</span>
             </label>
             <input
               id="erm-title"
@@ -75,7 +77,7 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
               value={form.title}
               onChange={handleChange}
               maxLength={100}
-              placeholder="Nhập tiêu đề Reel"
+              placeholder={t('reels.titlePlaceholder')}
               className="erm-input"
               autoFocus
             />
@@ -83,14 +85,14 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
           </div>
 
           <div className="erm-field">
-            <label className="erm-label" htmlFor="erm-desc">Mô tả</label>
+            <label className="erm-label" htmlFor="erm-desc">{t('common.description')}</label>
             <textarea
               id="erm-desc"
               name="description"
               value={form.description}
               onChange={handleChange}
               maxLength={500}
-              placeholder="Mô tả ngắn về Reel (tùy chọn)"
+              placeholder={t('reels.descriptionPlaceholder')}
               className="erm-textarea"
               rows={3}
             />
@@ -98,7 +100,7 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
           </div>
 
           <div className="erm-field">
-            <label className="erm-label" htmlFor="erm-privacy">Đối tượng</label>
+            <label className="erm-label" htmlFor="erm-privacy">{t('privacy.audience')}</label>
             <select
               id="erm-privacy"
               name="privacy"
@@ -108,7 +110,7 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
             >
               {PRIVACY_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
-                  {opt.label}
+                  {t(opt.labelKey)}
                 </option>
               ))}
             </select>
@@ -121,14 +123,14 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
               onClick={onClose}
               disabled={saving}
             >
-              Huỷ
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="erm-btn erm-btn--primary"
               disabled={saving}
             >
-              {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
+              {saving ? t('common.saving') : t('common.saveChanges')}
             </button>
           </div>
         </form>

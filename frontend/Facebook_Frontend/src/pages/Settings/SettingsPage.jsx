@@ -5,6 +5,7 @@ import PrivacySettings from "./PrivacySettings";
 import PreferencesSettings from "./PreferencesSettings";
 import DarkModeSettings from "./DarkModeSettings";
 import "./SettingsPage.css";
+import { useLocalization } from "../../contexts/useLocalization";
 
 const TABS = {
   PROFILE: "profile",
@@ -14,28 +15,29 @@ const TABS = {
 };
 
 const TAB_CONFIG = [
-  { key: TABS.PROFILE, label: "Hồ sơ", icon: User },
-  { key: TABS.PRIVACY, label: "Quyền riêng tư", icon: Shield },
-  { key: TABS.PREFERENCES, label: "Tùy chọn", icon: Sliders },
-  { key: TABS.DISPLAY, label: "Giao diện", icon: Moon },
+  { key: TABS.PROFILE, labelKey: "settings.profile", icon: User },
+  { key: TABS.PRIVACY, labelKey: "settings.privacy", icon: Shield },
+  { key: TABS.PREFERENCES, labelKey: "settings.preferences", icon: Sliders },
+  { key: TABS.DISPLAY, labelKey: "settings.display", icon: Moon },
 ];
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState(TABS.PROFILE);
+  const { t } = useLocalization();
 
   return (
     <div className="settings-page">
       <div className="settings-sidebar">
-        <h2 className="settings-sidebar-title">Cài đặt</h2>
+        <h2 className="settings-sidebar-title">{t('settings.title')}</h2>
         <nav className="settings-nav">
-          {TAB_CONFIG.map(({ key, label, icon: Icon }) => (
+          {TAB_CONFIG.map(({ key, labelKey, icon: Icon }) => (
             <button
               key={key}
               className={`settings-nav-item ${activeTab === key ? "settings-nav-item--active" : ""}`}
               onClick={() => setActiveTab(key)}
             >
               <Icon size={20} />
-              {label}
+              {t(labelKey)}
             </button>
           ))}
         </nav>

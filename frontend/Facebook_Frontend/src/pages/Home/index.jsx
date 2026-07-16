@@ -6,10 +6,12 @@ import Avatar from "../../components/common/Avatar";
 import CreatePostModal from "../../components/post/CreatePostModal"; 
 import PostItem from "../../components/post/PostItem"; 
 import ReelsHorizontalFeed from "../../components/reels/ReelsHorizontalFeed";
+import { useLocalization } from "../../contexts/useLocalization";
 import "./HomePage.css";
 
 const HomePage = () => {
   const { user } = useAuth();
+  const { t } = useLocalization();
   const [posts, setPosts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -35,7 +37,7 @@ const HomePage = () => {
           onClick={() => setIsModalOpen(true)}
           className="fb-content-submit"
         >
-          {user?.firstName} ơi, bạn đang nghĩ gì thế?
+          {t('post.whatsOnMindNamed', undefined, { name: user?.firstName || '' })}
         </div>
         
         {/* 3. Khu vực Icon chức năng nhanh */}
@@ -43,7 +45,7 @@ const HomePage = () => {
           <button 
             onClick={() => setIsModalOpen(true)} 
             className="quick-action-btn" 
-            title="Video trực tiếp"
+            title={t('post.liveVideo')}
             style={{ "--main-color": "#f3425f" }}
           >
             <Video size={24} className="text-[#f3425f]" />
@@ -52,7 +54,7 @@ const HomePage = () => {
           <button 
             onClick={() => setIsModalOpen(true)} 
             className="quick-action-btn" 
-            title="Ảnh/video"
+            title={t('post.photoVideo')}
             style={{ "--main-color": "#45bd62" }}
           >
             <ImageIcon size={24} className="text-[#45bd62]" />
@@ -61,7 +63,7 @@ const HomePage = () => {
           <button 
             onClick={() => setIsModalOpen(true)} 
             className="quick-action-btn hidden sm:flex" 
-            title="Cảm xúc/hoạt động"
+            title={t('post.feelingActivity')}
             style={{ "--main-color": "#f7b928" }}
           >
             <Smile size={24} className="text-[#f7b928]" />

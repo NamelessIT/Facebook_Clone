@@ -2,19 +2,22 @@ import { useState, useRef } from 'react';
 import { X, Upload, Film, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import reelService from '../../services/reelService';
+import { useLocalization } from '../../contexts/useLocalization';
+import { LIMITS } from '../../shared/generated/constants';
 import './UploadReelModal.css';
 
 const ACCEPTED_TYPES = ['video/mp4', 'video/quicktime', 'video/x-m4v'];
-const MAX_SIZE_MB = 100;
+const MAX_SIZE_MB = LIMITS.maxVideoUploadMb;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
 const PRIVACY_OPTIONS = [
-  { value: 1, label: 'Công khai' },
-  { value: 2, label: 'Bạn bè' },
-  { value: 3, label: 'Riêng tư' },
+  { value: 1, labelKey: 'privacy.public' },
+  { value: 2, labelKey: 'privacy.friends' },
+  { value: 3, labelKey: 'privacy.onlyMe' },
 ];
 
 const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
+  const { t } = useLocalization();
   const [form, setForm] = useState({ title: '', description: '', privacy: 1 });
   const [videoFile, setVideoFile] = useState(null);
   const [videoPreview, setVideoPreview] = useState(null);
@@ -36,11 +39,11 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
   const validateAndSetVideo = (file) => {
     if (!file) return;
     if (!ACCEPTED_TYPES.includes(file.type)) {
-      toast.error('Chỉ chấp nhận file .mp4 hoặc .mov');
+      toast.error(t('reels.invalidVideoType'));
       return;
     }
     if (file.size > MAX_SIZE_BYTES) {
-      toast.error(`File tối đa ${MAX_SIZE_MB}MB`);
+      toast.error(t('reels.videoTooLarge', undefined, { max: MAX_SIZE_MB }));
       return;
     }
     const url = URL.createObjectURL(file);
@@ -76,11 +79,11 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!videoFile) {
-      toast.error('Vui lòng chọn video');
+      toast.error(t('reels.selectVideoRequired'));
       return;
     }
     if (!form.title.trim()) {
-      toast.error('Tiêu đề không được để trống');
+      toast.error(t('reels.titleRequired'));
       return;
     }
 
@@ -101,13 +104,13 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
         }
       });
       const created = res.data?.data || res.data;
-      toast.success('Đăng Reel thành công!');
+      toast.success(t('reels.createSuccess'));
       handleRemoveVideo();
       setForm({ title: '', description: '', privacy: 1 });
       onSuccess?.(created);
       onClose();
     } catch {
-      toast.error('Đăng Reel thất bại. Vui lòng thử lại.');
+      toast.error(t('reels.createFailed'));
     } finally {
       setUploading(false);
     }
@@ -119,10 +122,10 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
         <div className="urm-header">
           <div className="urm-header-title">
             <Film size={20} />
-            <span>Đăng Reel mới</span>
+            <span>{t('reels.createTitle')}</span>
           </div>
           {!uploading && (
-            <button className="urm-close" onClick={onClose} aria-label="Đóng">
+            <button className="urm-close" onClick={onClose} aria-label={t('common.close')}>
               <X size={20} />
             </button>
           )}
@@ -140,11 +143,13 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
               role="button"
               tabIndex={0}
               onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
-              aria-label="Chọn video"
+              aria-label={t('reels.selectVideo')}
             >
               <Upload size={32} className="urm-upload-icon" />
-              <p className="urm-dropzone-text">Kéo thả video vào đây</p>
-              <p className="urm-dropzone-hint">hoặc click để chọn file • MP4, MOV • Tối đa {MAX_SIZE_MB}MB</p>
+              <p className="urm-dropzone-text">{t('reels.dropVideo')}</p>
+              <p className="urm-dropzone-hint">
+                {t('reels.dropVideoHint', undefined, { max: MAX_SIZE_MB })}
+              </p>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -173,7 +178,7 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
                     type="button"
                     className="urm-remove-btn"
                     onClick={handleRemoveVideo}
-                    aria-label="Xoá video"
+                    aria-label={t('reels.removeVideo')}
                   >
                     <X size={14} />
                   </button>
@@ -186,7 +191,7 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
           <div className="urm-fields">
             <div className="urm-field">
               <label className="urm-label" htmlFor="urm-title">
-                Tiêu đề <span className="urm-required">*</span>
+                {t('common.title')} <span className="urm-required">*</span>
               </label>
               <input
                 id="urm-title"
@@ -195,21 +200,21 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
                 value={form.title}
                 onChange={handleChange}
                 maxLength={100}
-                placeholder="Nhập tiêu đề cho Reel"
+                placeholder={t('reels.titlePlaceholder')}
                 className="urm-input"
               />
               <span className="urm-char-count">{form.title.length}/100</span>
             </div>
 
             <div className="urm-field">
-              <label className="urm-label" htmlFor="urm-desc">Mô tả</label>
+              <label className="urm-label" htmlFor="urm-desc">{t('common.description')}</label>
               <textarea
                 id="urm-desc"
                 name="description"
                 value={form.description}
                 onChange={handleChange}
                 maxLength={500}
-                placeholder="Mô tả về Reel của bạn (tùy chọn)"
+                placeholder={t('reels.descriptionPlaceholder')}
                 className="urm-textarea"
                 rows={2}
               />
@@ -217,7 +222,7 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
 
             <div className="urm-field">
-              <label className="urm-label" htmlFor="urm-privacy">Đối tượng</label>
+              <label className="urm-label" htmlFor="urm-privacy">{t('privacy.audience')}</label>
               <select
                 id="urm-privacy"
                 name="privacy"
@@ -227,7 +232,7 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
               >
                 {PRIVACY_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
-                    {opt.label}
+                    {t(opt.labelKey)}
                   </option>
                 ))}
               </select>
@@ -254,14 +259,16 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
               onClick={onClose}
               disabled={uploading}
             >
-              Huỷ
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="urm-btn urm-btn--primary"
               disabled={uploading || !videoFile}
             >
-              {uploading ? `Đang đăng ${progress}%...` : 'Đăng Reel'}
+              {uploading
+                ? t('reels.uploadingProgress', undefined, { progress })
+                : t('reels.publish')}
             </button>
           </div>
         </form>

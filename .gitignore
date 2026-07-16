@@ -8,6 +8,8 @@ AGENTS.md
 CLAUDE.md
 /.claude
 /backend/src/FacebookClone.API/logs
+/backend/logs
+/logs
 /backend/src/FacebookClone.API/wwwroot
 agent_workspace.md
 /backend/SECURITY.md

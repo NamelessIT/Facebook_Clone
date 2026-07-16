@@ -50,6 +50,41 @@
   background: #1a2d44;
 }
 
+[data-theme="dark"] .dms-section {
+  background: #242526;
+  border-color: #3e4042;
+}
+
+[data-theme="dark"] .dms-option {
+  background: #18191a;
+  border-color: #3e4042;
+}
+
+[data-theme="dark"] .dms-option:hover {
+  background: #2d2e2f;
+  border-color: #2d88ff;
+}
+
+[data-theme="dark"] .dms-option--active {
+  background: #263a5e;
+  border-color: #2d88ff;
+}
+
+[data-theme="dark"] .dms-title,
+[data-theme="dark"] .dms-label {
+  color: #e4e6eb;
+}
+
+[data-theme="dark"] .dms-subtitle,
+[data-theme="dark"] .dms-desc {
+  color: #b0b3b8;
+}
+
+[data-theme="dark"] .dms-icon-wrap {
+  background: #3a3b3c;
+  color: #e4e6eb;
+}
+
 .dms-radio {
   display: none;
 }

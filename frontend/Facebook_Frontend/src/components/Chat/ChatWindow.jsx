@@ -3,22 +3,22 @@ import { MessageCircle } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLocalization } from '../../contexts/useLocalization';
 import chatService from '../../services/chatService';
 import Avatar from '../common/Avatar';
 import MessageInput from './MessageInput';
+import { TIMERS } from '../../shared/generated/constants';
 import './ChatWindow.css';
-
-const TYPING_TIMEOUT_MS = 3000;
 
 const formatMessageTime = (dateStr) => {
   const date = new Date(dateStr);
   return format(date, 'HH:mm');
 };
 
-const formatDateLabel = (dateStr) => {
+const formatDateLabel = (dateStr, t) => {
   const date = new Date(dateStr);
-  if (isToday(date)) return 'Hôm nay';
-  if (isYesterday(date)) return 'Hôm qua';
+  if (isToday(date)) return t('chat.today');
+  if (isYesterday(date)) return t('chat.yesterday');
   return format(date, 'dd/MM/yyyy');
 };
 
@@ -31,6 +31,7 @@ const shouldShowDateSeparator = (current, previous) => {
 
 const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
   const { user } = useAuth();
+  const { t } = useLocalization();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(false);
@@ -67,14 +68,14 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
         setPage(1);
         isInitialLoad.current = true;
       } catch {
-        toast.error('Không thể tải tin nhắn.');
+        toast.error(t('chat.loadFailed'));
       } finally {
         setLoading(false);
       }
     };
 
     loadMessages();
-  }, [activeConvId]);
+  }, [activeConvId, t]);
 
   // Update activeConvId when prop changes
   useEffect(() => {
@@ -149,7 +150,7 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
       setHasMore(data.length >= 20);
       setPage(nextPage);
     } catch {
-      toast.error('Không thể tải thêm tin nhắn.');
+      toast.error(t('chat.loadMoreFailed'));
     } finally {
       setLoading(false);
     }
@@ -173,7 +174,7 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
         }
       } else {
         // Message from another friend — show toast
-        const senderName = message.sender?.fullName || 'Ai đó';
+        const senderName = message.sender?.fullName || t('chat.someone');
         toast(`${senderName}: ${message.content?.substring(0, 50)}`, { icon: '💬' });
       }
     };
@@ -188,9 +189,9 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
 
     const handleTyping = (userId) => {
       if (userId !== (friend?.userId || friend?.id)) return;
-      setTypingUser(friend?.profile?.fullName || friend?.fullName || 'Người dùng');
+      setTypingUser(friend?.profile?.fullName || friend?.fullName || t('chat.userFallback'));
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-      typingTimeoutRef.current = setTimeout(() => setTypingUser(null), TYPING_TIMEOUT_MS);
+      typingTimeoutRef.current = setTimeout(() => setTypingUser(null), TIMERS.chatTypingTimeoutMs);
     };
 
     chatService.onReceiveMessage(handleReceiveMessage);
@@ -205,7 +206,7 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
       chatService.offTypingIndicator(handleTyping);
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
-  }, [activeConvId, friend, onConversationCreated]);
+  }, [activeConvId, friend, onConversationCreated, t]);
 
   // ========== Handle message sent ==========
   const handleMessageSent = (message) => {
@@ -224,8 +225,8 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
       <div className="chat-window">
         <div className="chat-window-empty">
           <MessageCircle size={64} className="chat-window-empty-icon" />
-          <h3>Chọn một cuộc trò chuyện</h3>
-          <p>Chọn bạn bè từ danh sách bên trái để bắt đầu trò chuyện</p>
+          <h3>{t('chat.selectConversation')}</h3>
+          <p>{t('chat.selectConversationDescription')}</p>
         </div>
       </div>
     );
@@ -240,24 +241,24 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
           <h4 className="chat-header-name">{friend.profile?.fullName || friend.fullName}</h4>
           <p className="chat-header-status">
             {isOnline && <span className="online-dot" />}
-            {isOnline ? 'Đang hoạt động' : 'Ngoại tuyến'}
+            {isOnline ? t('chat.online') : t('chat.offline')}
           </p>
         </div>
       </div>
 
       {/* Messages */}
       {loading && messages.length === 0 ? (
-        <div className="chat-messages-loading">Đang tải tin nhắn...</div>
+        <div className="chat-messages-loading">{t('chat.loadingMessages')}</div>
       ) : messages.length === 0 ? (
         <div className="chat-messages-empty">
-          Chưa có tin nhắn. Hãy gửi lời chào!
+          {t('chat.noMessages')}
         </div>
       ) : (
         <div className="chat-messages">
           {hasMore && (
             <div className="chat-load-more">
               <button className="chat-load-more-btn" onClick={loadMore} disabled={loading}>
-                {loading ? 'Đang tải...' : 'Xem tin nhắn cũ hơn'}
+                {loading ? t('common.loading') : t('chat.loadOlder')}
               </button>
             </div>
           )}
@@ -270,7 +271,7 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
               <div key={msg.id}>
                 {showDate && (
                   <div className="message-date-separator">
-                    {formatDateLabel(msg.createdAt)}
+                    {formatDateLabel(msg.createdAt, t)}
                   </div>
                 )}
                 <div className={`message-row ${isOwn ? 'message-row--own' : 'message-row--other'}`}>
@@ -299,7 +300,7 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
             <span className="typing-dot" />
             <span className="typing-dot" />
           </div>
-          {typingUser} đang nhập...
+          {t('chat.typing', undefined, { name: typingUser })}
         </div>
       )}
 

@@ -11,13 +11,35 @@
   "storageKeys": {
     "accessToken": "accessToken",
     "refreshToken": "refreshToken",
-    "themeMode": "app_theme_mode"
+    "themeMode": "app_theme_mode",
+    "locale": "app_locale"
   },
   "limits": {
     "feedPageSize": 10,
     "commentsPageSize": 20,
+    "savedItemsPageSize": 10,
+    "notificationPageSize": 10,
+    "friendshipPageSize": 20,
     "searchDebounceMs": 300,
+    "messageMaxLength": 1000,
+    "editPostMaxContentLength": 500,
+    "profileBioMaxLength": 200,
+    "postPreviewTextLimit": 120,
     "maxImageUploadMb": 10,
     "maxVideoUploadMb": 100
+  },
+  "timers": {
+    "presenceHeartbeatMs": 900000,
+    "adminUsersRefreshMs": 300000,
+    "userOnlineTtlMinutes": 16,
+    "chatTypingDebounceMs": 300,
+    "chatTypingTimeoutMs": 3000,
+    "postDeleteUndoSeconds": 10,
+    "notInterestedAutoDismissSeconds": 60
+  },
+  "localization": {
+    "defaultLocale": "vi",
+    "fallbackLocale": "en",
+    "maxTranslationChunkChars": 800
   }
 }

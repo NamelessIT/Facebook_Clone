@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../config/env';
+import { STORAGE_KEYS } from '../shared/generated/constants';
 
 const axiosClient = axios.create({
   baseURL: API_BASE_URL,
@@ -20,8 +21,8 @@ const processQueue = (error, token = null) => {
 };
 
 export const clearAuthClientState = () => {
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
+  localStorage.removeItem(STORAGE_KEYS.accessToken);
+  localStorage.removeItem(STORAGE_KEYS.refreshToken);
   delete axiosClient.defaults.headers.common.Authorization;
   delete axiosClient.defaults.headers.common.authorization;
   isRefreshing = false;
@@ -35,7 +36,7 @@ const isAuthEndpoint = (url = '') => {
 };
 
 axiosClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
+  const token = localStorage.getItem(STORAGE_KEYS.accessToken);
 
   if (isAuthEndpoint(config.url)) {
     delete config.headers.Authorization;
@@ -83,7 +84,7 @@ axiosClient.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
-      const refreshToken = localStorage.getItem('refreshToken');
+      const refreshToken = localStorage.getItem(STORAGE_KEYS.refreshToken);
       if (!refreshToken) {
         clearAuthClientState();
         window.location.href = '/login';
@@ -96,8 +97,8 @@ axiosClient.interceptors.response.use(
         });
 
         const { accessToken, refreshToken: newRefreshToken } = response.data.data;
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', newRefreshToken);
+        localStorage.setItem(STORAGE_KEYS.accessToken, accessToken);
+        localStorage.setItem(STORAGE_KEYS.refreshToken, newRefreshToken);
 
         axiosClient.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;

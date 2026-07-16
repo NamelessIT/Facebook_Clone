@@ -1,17 +1,20 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Plus, ChevronLeft, ChevronRight, Play, Film } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLocalization } from '../../contexts/useLocalization';
 import Avatar from '../common/Avatar';
 import { getVideoUrl } from '../../utils/formatUrl';
 import reelService from '../../services/reelService';
 import ReelsPlayer from './ReelsPlayer';
 import UploadReelModal from './UploadReelModal';
 import './ReelsHorizontalFeed.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const CARD_WIDTH = 120; // px per scroll step (one card)
 
 const ReelsHorizontalFeed = () => {
   const { user } = useAuth();
+  const { t } = useLocalization();
   const [reels, setReels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -98,7 +101,7 @@ const ReelsHorizontalFeed = () => {
             <button
               className="rhf-arrow rhf-arrow--left"
               onClick={() => scroll(-1)}
-              aria-label="Cuon trai"
+              aria-label={t('common.scrollLeft')}
             >
               <ChevronLeft size={20} />
             </button>
@@ -110,7 +113,7 @@ const ReelsHorizontalFeed = () => {
             <button
               className="rhf-card rhf-card--create"
               onClick={() => setShowUpload(true)}
-              aria-label="Tao Reel moi"
+              aria-label={t('reels.createTitle')}
             >
               <div className="rhf-thumb rhf-thumb--create">
                 <Avatar
@@ -122,7 +125,7 @@ const ReelsHorizontalFeed = () => {
                   <Plus size={14} strokeWidth={3} />
                 </span>
               </div>
-              <span className="rhf-card-label">Tao Reels</span>
+              <span className="rhf-card-label">{t('reels.create')}</span>
             </button>
 
             {/* Reel cards */}
@@ -131,13 +134,13 @@ const ReelsHorizontalFeed = () => {
                 key={reel.id}
                 className="rhf-card"
                 onClick={() => setSelectedIndex(i)}
-                aria-label={reel.title || 'Xem Reel'}
+                aria-label={reel.title || t('reels.view')}
               >
                 <div className="rhf-thumb">
                   {reel.thumbnailUrl ? (
                     <img
                       src={getVideoUrl(reel.thumbnailUrl)}
-                      alt={reel.title || 'Reel'}
+                      alt={reel.title || translateCatalogKey('ui.components.reels.reelsgrid.reel.06dcbfb1')}
                       className="rhf-thumb-img"
                       loading="lazy"
                     />
@@ -156,7 +159,7 @@ const ReelsHorizontalFeed = () => {
                   </span>
                 </div>
                 <span className="rhf-card-label">
-                  {reel.userFullName || reel.userName || 'Reel'}
+                  {reel.userFullName || reel.userName || translateCatalogKey('ui.components.reels.reelsgrid.reel.06dcbfb1')}
                 </span>
               </button>
             ))}
@@ -167,7 +170,7 @@ const ReelsHorizontalFeed = () => {
             <button
               className="rhf-arrow rhf-arrow--right"
               onClick={() => scroll(1)}
-              aria-label="Cuon phai"
+              aria-label={t('common.scrollRight')}
             >
               <ChevronRight size={20} />
             </button>

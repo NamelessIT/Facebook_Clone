@@ -17,6 +17,7 @@ public static async Task RunAsync(AppDbContext context)
         var seeders = new ISeeder[]
         {
             new UserSeeder(),
+            new LocalizationSeeder(),
             new RbacSeeder(),
             new PostSeeder(),
             new FriendshipSeeder(),

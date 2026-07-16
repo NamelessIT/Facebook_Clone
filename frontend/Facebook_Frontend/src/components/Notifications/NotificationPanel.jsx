@@ -1,8 +1,9 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { Bell, ThumbsUp, MessageSquare, UserPlus, MessageCircle, UserCheck } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { enUS, vi } from 'date-fns/locale';
 import Avatar from '../common/Avatar';
+import { useLocalization } from '../../contexts/useLocalization';
 import './NotificationPanel.css';
 
 const NOTIFICATION_TYPE = {
@@ -30,27 +31,27 @@ const getNotificationIcon = (type) => {
   }
 };
 
-const getNotificationText = (notification) => {
-  const actorName = notification.actor?.fullName || 'Ai đó';
+const getNotificationText = (notification, t) => {
+  const actorName = notification.actor?.fullName || t('notification.someone');
   switch (notification.type) {
     case NOTIFICATION_TYPE.LIKE:
-      return { name: actorName, action: ' đã thích bài viết của bạn.' };
+      return { name: actorName, action: t('notification.likedPost') };
     case NOTIFICATION_TYPE.COMMENT:
-      return { name: actorName, action: ' đã bình luận về bài viết của bạn.' };
+      return { name: actorName, action: t('notification.commentedPost') };
     case NOTIFICATION_TYPE.FRIEND_REQUEST:
-      return { name: actorName, action: ' đã gửi cho bạn lời mời kết bạn.' };
+      return { name: actorName, action: t('notification.sentFriendRequest') };
     case NOTIFICATION_TYPE.MESSAGE:
-      return { name: actorName, action: ' đã gửi cho bạn một tin nhắn.' };
+      return { name: actorName, action: t('notification.sentMessage') };
     case NOTIFICATION_TYPE.FRIEND_ACCEPTED:
-      return { name: actorName, action: ' đã chấp nhận lời mời kết bạn của bạn.' };
+      return { name: actorName, action: t('notification.acceptedFriendRequest') };
     default:
-      return { name: actorName, action: ' đã thực hiện một hành động.' };
+      return { name: actorName, action: t('notification.performedAction') };
   }
 };
 
-const formatTimeAgo = (dateStr) => {
+const formatTimeAgo = (dateStr, locale) => {
   try {
-    return formatDistanceToNow(new Date(dateStr), { addSuffix: true, locale: vi });
+    return formatDistanceToNow(new Date(dateStr), { addSuffix: true, locale: locale === 'vi' ? vi : enUS });
   } catch {
     return '';
   }
@@ -80,6 +81,7 @@ const NotificationPanel = ({
   onMarkAllAsRead,
 }) => {
   const navigate = useNavigate();
+  const { locale, t } = useLocalization();
 
   const handleClickNotification = (notification) => {
     if (!notification.isRead) {
@@ -93,10 +95,10 @@ const NotificationPanel = ({
     <div className="notification-panel">
       {/* Header */}
       <div className="notification-panel-header">
-        <h3>Thông báo</h3>
+        <h3>{t('notification.title')}</h3>
         {notifications.some((n) => !n.isRead) && (
           <button className="notification-mark-all-btn" onClick={onMarkAllAsRead}>
-            Đánh dấu đã đọc
+            {t('notification.markAllRead')}
           </button>
         )}
       </div>
@@ -104,16 +106,16 @@ const NotificationPanel = ({
       {/* List */}
       <div className="notification-list">
         {loading && notifications.length === 0 ? (
-          <div className="notification-loading">Đang tải...</div>
+          <div className="notification-loading">{t('common.loading')}</div>
         ) : notifications.length === 0 ? (
           <div className="notification-empty">
             <Bell size={40} className="notification-empty-icon" />
-            <p>Chưa có thông báo nào</p>
+            <p>{t('notification.empty')}</p>
           </div>
         ) : (
           notifications.map((notification) => {
             const { icon: IconComponent, className: iconClass } = getNotificationIcon(notification.type);
-            const { name, action } = getNotificationText(notification);
+            const { name, action } = getNotificationText(notification, t);
 
             return (
               <button
@@ -135,7 +137,7 @@ const NotificationPanel = ({
                     <strong>{name}</strong>{action}
                   </p>
                   <p className={`notification-item-time ${!notification.isRead ? 'notification-item-time--unread' : ''}`}>
-                    {formatTimeAgo(notification.createdAt)}
+                    {formatTimeAgo(notification.createdAt, locale)}
                   </p>
                 </div>
 
@@ -154,7 +156,7 @@ const NotificationPanel = ({
             onClick={onLoadMore}
             disabled={loading}
           >
-            {loading ? 'Đang tải...' : 'Xem thêm thông báo'}
+            {loading ? t('common.loading') : t('notification.loadMore')}
           </button>
         </div>
       )}

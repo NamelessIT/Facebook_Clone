@@ -2,7 +2,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Bell } from 'lucide-react';
 import notificationService from '../../services/notificationService';
 import NotificationPanel from './NotificationPanel';
+import { LIMITS } from '../../shared/generated/constants';
 import './NotificationBell.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,14 +30,14 @@ const NotificationBell = () => {
   const fetchNotifications = useCallback(async (pageNum = 1, append = false) => {
     setLoading(true);
     try {
-      const res = await notificationService.getNotifications(pageNum, 10);
+      const res = await notificationService.getNotifications(pageNum, LIMITS.notificationPageSize);
       const data = res.data?.data || [];
       if (append) {
         setNotifications((prev) => [...prev, ...data]);
       } else {
         setNotifications(data);
       }
-      setHasMore(data.length >= 10);
+      setHasMore(data.length >= LIMITS.notificationPageSize);
       setPage(pageNum);
 
       if (!append) {
@@ -110,7 +112,7 @@ const NotificationBell = () => {
       <button
         className={`notification-bell-btn ${isOpen ? 'notification-bell-btn--active' : ''}`}
         onClick={handleToggle}
-        title="Thông báo"
+        title={translateCatalogKey('notification.title')}
       >
         <Bell size={20} />
         {unreadCount > 0 && (

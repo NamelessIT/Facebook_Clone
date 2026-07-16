@@ -7,9 +7,12 @@ import toast from "react-hot-toast";
 import { PostPrivacy } from "../../shared/generated/enums";
 import useSingleFlightAction from "../../hooks/useSingleFlightAction";
 import "./SharePostModal.css";
+import { useLocalization } from '../../contexts/useLocalization';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
   const { user } = useAuth();
+  const { locale, t } = useLocalization();
   const [content, setContent] = useState("");
   const [privacy, setPrivacy] = useState(PostPrivacy.Public);
 
@@ -20,12 +23,12 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
         caption: content,
         privacy,
       });
-      toast.success("Đã chia sẻ bài viết!");
+      toast.success(translateCatalogKey('ui.components.post.sharepostmodal.a-chia-se-bai-viet.b84a67ab'));
       setContent("");
       onClose();
       onShared?.();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Chia sẻ thất bại!");
+      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.post.sharepostmodal.chia-se-that-bai.dd30f06b'));
     }
   });
 
@@ -36,7 +39,7 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
       <div className="share-modal" onMouseDown={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="share-modal-header">
-          <h3>Chia sẻ bài viết</h3>
+          <h3>{t('post.shareTitle')}</h3>
           <button className="share-modal-close" onClick={onClose}>
             <X size={20} />
           </button>
@@ -53,16 +56,16 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
                 value={privacy}
                 onChange={(e) => setPrivacy(Number(e.target.value))}
               >
-                <option value={PostPrivacy.Public}>Công khai</option>
-                <option value={PostPrivacy.Friends}>Bạn bè</option>
-                <option value={PostPrivacy.Private}>Chỉ mình tôi</option>
+                <option value={PostPrivacy.Public}>{t('privacy.public')}</option>
+                <option value={PostPrivacy.Friends}>{t('privacy.friends')}</option>
+                <option value={PostPrivacy.Private}>{t('privacy.onlyMe')}</option>
               </select>
             </div>
           </div>
 
           <textarea
             className="share-textarea"
-            placeholder="Hãy nói gì đó về bài viết này..."
+            placeholder={t('post.sharePlaceholder')}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={3}
@@ -75,7 +78,7 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
               <div>
                 <div className="share-original-author">{post.author?.fullName}</div>
                 <div className="share-original-time">
-                  {new Date(post.createdAt).toLocaleString("vi-VN")}
+                  {new Date(post.createdAt).toLocaleString(locale)}
                 </div>
               </div>
             </div>
@@ -92,7 +95,7 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
             onClick={handleShare}
             disabled={loading}
           >
-            {loading ? "Đang chia sẻ..." : "Chia sẻ ngay"}
+            {loading ? t('post.sharing') : t('post.shareNow')}
           </button>
         </div>
       </div>

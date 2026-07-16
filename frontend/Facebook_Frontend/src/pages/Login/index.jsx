@@ -5,19 +5,20 @@ import { X } from "lucide-react";
 import api from "../../services/axiosClient";
 import { useAuth } from "../../contexts/AuthContext";
 import "./Login.css";
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const getApiErrorMessage = (error, fallback) => {
   if (!error.response) {
-    return "Không kết nối được API. Kiểm tra backend có đang chạy ở localhost:5286 không.";
+    return translateCatalogKey('auth.apiUnavailable');
   }
 
   const status = error.response.status;
   const data = error.response.data;
   const serverMessage = data?.message || data?.title || data?.error || data?.errorCode;
 
-  if (status === 401) return serverMessage || "Email hoặc mật khẩu không đúng.";
-  if (status === 403) return serverMessage || "Tài khoản không có quyền truy cập hoặc đã bị chặn.";
-  if (status >= 500) return serverMessage || "Backend đang lỗi 500. Xem terminal backend để biết chi tiết.";
+  if (status === 401) return serverMessage || translateCatalogKey('auth.invalidCredentials');
+  if (status === 403) return serverMessage || translateCatalogKey('auth.accessDenied');
+  if (status >= 500) return serverMessage || translateCatalogKey('auth.serverError');
   return serverMessage || fallback;
 };
 
@@ -43,13 +44,13 @@ const LoginPage = () => {
     setError("");
 
     if (!email.trim() || !password) {
-      const message = "Vui lòng nhập email và mật khẩu.";
+      const message = translateCatalogKey('auth.credentialsRequired');
       setError(message);
       toast.error(message);
       return;
     }
 
-    const loadingToast = toast.loading("Đang đăng nhập...");
+    const loadingToast = toast.loading(translateCatalogKey('ui.pages.login.index.ang-ang-nhap.06e78dfd'));
     setIsLoggingIn(true);
 
     try {
@@ -61,10 +62,10 @@ const LoginPage = () => {
       const { accessToken, refreshToken } = response.data.data;
       await login(accessToken, refreshToken);
 
-      toast.success("Đăng nhập thành công.", { id: loadingToast });
+      toast.success(translateCatalogKey('ui.pages.login.index.ang-nhap-thanh-cong.90a07943'), { id: loadingToast });
       navigate("/");
     } catch (err) {
-      const message = getApiErrorMessage(err, "Đăng nhập thất bại. Kiểm tra lại thông tin.");
+      const message = getApiErrorMessage(err, translateCatalogKey('ui.pages.login.index.ang-nhap-that-bai-kiem-tra-lai-thong.b27685a6'));
       setError(message);
       toast.error(message, { id: loadingToast, duration: 6000 });
       console.error("Login failed:", {
@@ -82,13 +83,13 @@ const LoginPage = () => {
     setRegError("");
 
     if (!regFirstName.trim() || !regLastName.trim() || !regEmail.trim() || !regPassword) {
-      const message = "Vui lòng điền đầy đủ thông tin.";
+      const message = translateCatalogKey('auth.registrationFieldsRequired');
       setRegError(message);
       toast.error(message);
       return;
     }
 
-    const loadingToast = toast.loading("Đang tạo tài khoản...");
+    const loadingToast = toast.loading(translateCatalogKey('ui.pages.login.index.ang-tao-tai-khoan.5c7501cb'));
     setIsRegistering(true);
 
     try {
@@ -99,7 +100,7 @@ const LoginPage = () => {
         password: regPassword,
       });
 
-      toast.success("Đăng ký thành công. Bạn có thể đăng nhập ngay.", { id: loadingToast });
+      toast.success(translateCatalogKey('ui.pages.login.index.ang-ky-thanh-cong-ban-co-the-ang-nha.e0565649'), { id: loadingToast });
       setEmail(regEmail.trim());
       setPassword(regPassword);
       setIsRegisterOpen(false);
@@ -108,7 +109,7 @@ const LoginPage = () => {
       setRegEmail("");
       setRegPassword("");
     } catch (err) {
-      const message = getApiErrorMessage(err, "Đăng ký thất bại. Email có thể đã tồn tại.");
+      const message = getApiErrorMessage(err, translateCatalogKey('ui.pages.login.index.ang-ky-that-bai-email-co-the-a-ton-t.409f0ce9'));
       setRegError(message);
       toast.error(message, { id: loadingToast, duration: 6000 });
       console.error("Register failed:", {
@@ -127,8 +128,8 @@ const LoginPage = () => {
         <div className="register-overlay" onMouseDown={() => setIsRegisterOpen(false)}>
           <div className="register-modal" onMouseDown={(event) => event.stopPropagation()}>
             <div className="register-header">
-              <h2>Đăng ký</h2>
-              <p>Nhanh chóng và dễ dàng.</p>
+              <h2>{translateCatalogKey('ui.pages.login.index.ang-ky.0794f093')}</h2>
+              <p>{translateCatalogKey('ui.pages.login.index.nhanh-chong-va-de-dang.83ceb7e4')}</p>
               <button onClick={() => setIsRegisterOpen(false)} className="close-register-btn" type="button">
                 <X size={24} />
               </button>
@@ -141,7 +142,7 @@ const LoginPage = () => {
                 <div className="name-row">
                   <input
                     type="text"
-                    placeholder="Họ"
+                    placeholder={translateCatalogKey('ui.components.profile.editprofilemodal.ho.10d03a7e')}
                     className="reg-input"
                     style={{ marginBottom: 0 }}
                     value={regLastName}
@@ -149,7 +150,7 @@ const LoginPage = () => {
                   />
                   <input
                     type="text"
-                    placeholder="Tên"
+                    placeholder={translateCatalogKey('ui.components.profile.editprofilemodal.ten.918728cd')}
                     className="reg-input"
                     style={{ marginBottom: 0 }}
                     value={regFirstName}
@@ -159,25 +160,25 @@ const LoginPage = () => {
 
                 <input
                   type="email"
-                  placeholder="Email hoặc số di động"
+                  placeholder={translateCatalogKey('ui.pages.login.index.email-hoac-so-di-ong.873c016b')}
                   className="reg-input"
                   value={regEmail}
                   onChange={(event) => setRegEmail(event.target.value)}
                 />
                 <input
                   type="password"
-                  placeholder="Mật khẩu mới"
+                  placeholder={translateCatalogKey('ui.pages.login.index.mat-khau-moi.db7f0bbe')}
                   className="reg-input"
                   value={regPassword}
                   onChange={(event) => setRegPassword(event.target.value)}
                 />
 
                 <p className="register-policy-text">
-                  Bằng cách nhấp vào Đăng ký, bạn đồng ý với Điều khoản, Chính sách quyền riêng tư và Chính sách cookie của chúng tôi.
+                  {translateCatalogKey('ui.pages.login.index.bang-cach-nhap-vao-ang-ky-ban-ong-y-.c11f3c6a')}
                 </p>
 
                 <button type="submit" className="btn-register-submit" disabled={isRegistering}>
-                  {isRegistering ? "Đang xử lý..." : "Đăng ký"}
+                  {isRegistering ? translateCatalogKey('common.processing') : translateCatalogKey('ui.pages.login.index.ang-ky.0794f093')}
                 </button>
               </form>
             </div>
@@ -193,7 +194,7 @@ const LoginPage = () => {
             className="fb-logo"
           />
           <h2 className="login-slogan">
-            Facebook giúp bạn kết nối và chia sẻ với mọi người trong cuộc sống của bạn.
+            {translateCatalogKey('ui.pages.login.index.facebook-giup-ban-ket-noi-va-chia-se.ce7608bc')}
           </h2>
         </div>
 
@@ -204,33 +205,33 @@ const LoginPage = () => {
             <form onSubmit={handleLoginSubmit}>
               <input
                 type="email"
-                placeholder="Email hoặc số điện thoại"
+                placeholder={translateCatalogKey('ui.pages.login.index.email-hoac-so-ien-thoai.2cdce0dc')}
                 className="login-input"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
               <input
                 type="password"
-                placeholder="Mật khẩu"
+                placeholder={translateCatalogKey('ui.pages.login.index.mat-khau.79f20c1e')}
                 className="login-input"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
               <button type="submit" className="btn-login" disabled={isLoggingIn}>
-                {isLoggingIn ? "Đang đăng nhập..." : "Đăng nhập"}
+                {isLoggingIn ? translateCatalogKey('ui.pages.login.index.ang-ang-nhap.06e78dfd') : translateCatalogKey('ui.pages.login.index.ang-nhap.ab7a3f30')}
               </button>
             </form>
 
-            <a href="#" className="forgot-link">Quên mật khẩu?</a>
+            <a href="#" className="forgot-link">{translateCatalogKey('ui.pages.login.index.quen-mat-khau.7e084716')}</a>
             <div className="divider" />
 
             <button onClick={() => setIsRegisterOpen(true)} className="btn-create" type="button">
-              Tạo tài khoản mới
+              {translateCatalogKey('ui.pages.login.index.tao-tai-khoan-moi.70069e6d')}
             </button>
           </div>
 
           <p className="create-page-text">
-            <b>Tạo Trang</b> dành cho người nổi tiếng, thương hiệu hoặc doanh nghiệp.
+            <b>{translateCatalogKey('ui.pages.login.index.tao-trang.db011044')}</b> {translateCatalogKey('ui.pages.login.index.danh-cho-nguoi-noi-tieng-thuong-hieu.52d55447')}
           </p>
         </div>
       </div>

@@ -2,10 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Edit3, Plus, Save, Search, ShieldCheck, Trash2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import adminService from '../../services/adminService';
+import { useConfirm } from '../../contexts/useConfirm';
+import { useLocalization } from '../../contexts/useLocalization';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const emptyRoleForm = { name: '', displayName: '', level: 10, permissionIds: [] };
 
 const AdminRoles = () => {
+  const confirm = useConfirm();
+  const { t } = useLocalization();
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
   const [users, setUsers] = useState([]);
@@ -26,11 +31,11 @@ const AdminRoles = () => {
       setPermissions(rolesResponse.data.data.permissions);
       setUsers(usersResponse.data.data);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Khong the tai RBAC');
+      toast.error(error.response?.data?.message || t('admin.roles.loadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [search]);
+  }, [search, t]);
 
   useEffect(() => {
     load();
@@ -79,7 +84,7 @@ const AdminRoles = () => {
   const handleSaveRole = async (event) => {
     event.preventDefault();
     if (!roleForm.name.trim() || !roleForm.displayName.trim()) {
-      toast.error('Role can co name va display name');
+      toast.error(t('admin.roles.requiredFields'));
       return;
     }
 
@@ -87,28 +92,34 @@ const AdminRoles = () => {
       if (editingRoleId) {
         await adminService.updateRole(editingRoleId, roleForm);
         await adminService.setRolePermissions(editingRoleId, roleForm.permissionIds);
-        toast.success('Da cap nhat role va quyen');
+        toast.success(t('admin.roles.updated'));
       } else {
         const response = await adminService.createRole(roleForm);
         const roleId = response.data.data.id;
         await adminService.setRolePermissions(roleId, roleForm.permissionIds);
-        toast.success('Da tao role va gan quyen');
+        toast.success(t('admin.roles.created'));
       }
       closeRoleModal();
       load();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Khong the luu role');
+      toast.error(error.response?.data?.message || t('admin.roles.saveFailed'));
     }
   };
 
   const handleDeleteRole = async (role) => {
-    if (!window.confirm(`Xoa role "${role.displayName}"?`)) return;
+    const accepted = await confirm({
+      title: t('admin.roles.deleteTitle'),
+      message: t('admin.roles.deleteMessage', undefined, { name: role.displayName }),
+      detail: t('admin.roles.deleteDetail'),
+      confirmText: t('admin.roles.deleteAction'),
+    });
+    if (!accepted) return;
     try {
       await adminService.deleteRole(role.id);
-      toast.success('Da xoa role');
+      toast.success(t('admin.roles.deleted'));
       load();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Khong the xoa role');
+      toast.error(error.response?.data?.message || t('admin.roles.deleteFailed'));
     }
   };
 
@@ -119,26 +130,26 @@ const AdminRoles = () => {
 
     try {
       await adminService.setUserRoles(user.id, Array.from(currentIds));
-      toast.success('Da cap nhat role cho account');
+      toast.success(t('admin.roles.assignmentUpdated'));
       load();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Khong the cap nhat role');
+      toast.error(error.response?.data?.message || t('admin.roles.assignmentFailed'));
     }
   };
 
   return (
     <div>
       <div className="admin-page-heading">
-        <h1 className="admin-page-title">Vai tro & quyen</h1>
+        <h1 className="admin-page-title">{t('admin.roles.title')}</h1>
         <button className="admin-btn admin-btn--primary" type="button" onClick={openCreateRoleModal}>
-          <Plus size={14} /> Them role
+          <Plus size={14} /> {t('admin.roles.add')}
         </button>
       </div>
 
       <div className="admin-rbac-grid">
         <div className="admin-table-wrap">
           <div className="admin-table-header">
-            <span className="admin-table-title">Role theo cap</span>
+            <span className="admin-table-title">{t('admin.roles.byLevel')}</span>
           </div>
 
           <div className="admin-role-list">
@@ -148,15 +159,15 @@ const AdminRoles = () => {
                   <div>
                     <div className="admin-role-title">{role.displayName}</div>
                     <div className="admin-role-meta">
-                      {role.name} - level {role.level} - {role.userCount} users
+                      {role.name} - {t('admin.roles.level')} {role.level} - {t('admin.roles.usersCount', undefined, { count: role.userCount })}
                     </div>
                   </div>
                   <div className="admin-actions">
                     <button className="admin-btn admin-btn--admin" type="button" onClick={() => openEditRoleModal(role)}>
-                      <Edit3 size={12} /> Sua quyen
+                      <Edit3 size={12} /> {t('admin.roles.editPermissions')}
                     </button>
                     <button className="admin-btn admin-btn--delete" type="button" onClick={() => handleDeleteRole(role)}>
-                      <Trash2 size={12} /> Xoa
+                      <Trash2 size={12} /> {t('common.delete')}
                     </button>
                   </div>
                 </div>
@@ -169,7 +180,7 @@ const AdminRoles = () => {
                       </span>
                     ))
                   ) : (
-                    <span className="admin-muted">Chua co permission</span>
+                    <span className="admin-muted">{t('admin.roles.noPermissions')}</span>
                   )}
                 </div>
               </div>
@@ -179,7 +190,7 @@ const AdminRoles = () => {
 
         <div className="admin-table-wrap">
           <div className="admin-table-header">
-            <span className="admin-table-title">Permission hien co</span>
+            <span className="admin-table-title">{t('admin.roles.availablePermissions')}</span>
           </div>
 
           <div className="admin-permission-modules">
@@ -200,12 +211,12 @@ const AdminRoles = () => {
 
       <div className="admin-table-wrap admin-section">
         <div className="admin-table-header">
-          <span className="admin-table-title">Gan role cho account</span>
+          <span className="admin-table-title">{t('admin.roles.assignToAccounts')}</span>
           <div className="admin-search-wrap">
             <Search size={14} className="admin-search-icon" />
             <input
               className="admin-search admin-search--with-icon"
-              placeholder="Tim user..."
+              placeholder={t('admin.roles.searchUsers')}
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
@@ -213,14 +224,14 @@ const AdminRoles = () => {
         </div>
 
         {loading ? (
-          <div className="admin-loading">Dang tai...</div>
+          <div className="admin-loading">{t('common.loading')}</div>
         ) : (
           <table className="admin-table">
             <thead>
               <tr>
-                <th>Account</th>
-                <th>Role hien tai</th>
-                <th>Gan role</th>
+                <th>{t('admin.roles.account')}</th>
+                <th>{t('admin.roles.currentRoles')}</th>
+                <th>{t('admin.roles.assignRole')}</th>
               </tr>
             </thead>
             <tbody>
@@ -242,7 +253,7 @@ const AdminRoles = () => {
                           </span>
                         ))
                       ) : (
-                        <span className="admin-muted">Chua gan</span>
+                        <span className="admin-muted">{t('admin.roles.unassigned')}</span>
                       )}
                     </td>
                     <td>
@@ -271,20 +282,20 @@ const AdminRoles = () => {
         <div className="admin-modal-backdrop" role="presentation" onMouseDown={closeRoleModal}>
           <form className="admin-role-modal" onSubmit={handleSaveRole} onMouseDown={(event) => event.stopPropagation()}>
             <div className="admin-role-modal-header">
-              <h2>{editingRoleId ? 'Sua role' : 'Them role moi'}</h2>
-              <button className="admin-icon-btn" type="button" onClick={closeRoleModal} aria-label="Dong modal">
+              <h2>{editingRoleId ? t('admin.roles.edit') : t('admin.roles.addNew')}</h2>
+              <button className="admin-icon-btn" type="button" onClick={closeRoleModal} aria-label={t('common.close')}>
                 <X size={18} />
               </button>
             </div>
 
             <div className="admin-role-modal-fields">
               <input
-                placeholder="name: content_admin"
+                placeholder={translateCatalogKey('ui.pages.admin.adminroles.name-content-admin.50ade12c')}
                 value={roleForm.name}
                 onChange={(event) => setRoleForm((prev) => ({ ...prev, name: event.target.value }))}
               />
               <input
-                placeholder="Display name"
+                placeholder={translateCatalogKey('ui.pages.admin.adminlocalization.display-name.f265139c')}
                 value={roleForm.displayName}
                 onChange={(event) => setRoleForm((prev) => ({ ...prev, displayName: event.target.value }))}
               />
@@ -292,7 +303,7 @@ const AdminRoles = () => {
                 type="number"
                 min="1"
                 max="100"
-                placeholder="Level"
+                placeholder={translateCatalogKey('ui.pages.admin.adminroles.level.845dac84')}
                 value={roleForm.level}
                 onChange={(event) => setRoleForm((prev) => ({ ...prev, level: Number(event.target.value) }))}
               />
@@ -320,10 +331,10 @@ const AdminRoles = () => {
 
             <div className="admin-role-modal-footer">
               <button className="admin-btn admin-btn--reset" type="button" onClick={closeRoleModal}>
-                <X size={12} /> Huy
+                <X size={12} /> {t('common.cancel')}
               </button>
               <button className="admin-btn admin-btn--primary" type="submit">
-                <Save size={12} /> Luu role
+                <Save size={12} /> {t('admin.roles.save')}
               </button>
             </div>
           </form>

@@ -3,6 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import userService from "../../services/userService";
 import Avatar from "../../components/common/Avatar";
 import toast from "react-hot-toast";
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const ProfileSettings = () => {
   const { user } = useAuth();
@@ -39,9 +40,9 @@ const ProfileSettings = () => {
         formData.append("avatar", avatarFile);
       }
       await userService.updateProfile(formData);
-      toast.success("Cập nhật hồ sơ thành công!");
+      toast.success(translateCatalogKey('ui.pages.settings.profilesettings.cap-nhat-ho-so-thanh-cong.94b910c2'));
     } catch (error) {
-      toast.error(error.response?.data?.message || "Cập nhật thất bại!");
+      toast.error(error.response?.data?.message || translateCatalogKey('settings.updateFailed'));
     } finally {
       setLoading(false);
     }
@@ -49,19 +50,19 @@ const ProfileSettings = () => {
 
   return (
     <div className="settings-section">
-      <h3 className="settings-section-title">Chỉnh sửa hồ sơ</h3>
+      <h3 className="settings-section-title">{translateCatalogKey('ui.pages.settings.profilesettings.chinh-sua-ho-so.7ab71428')}</h3>
 
       <div className="settings-avatar-section">
         <Avatar src={avatarPreview || user?.avatarUrl} className="w-24 h-24" />
         <label className="settings-upload-btn">
-          Thay đổi ảnh đại diện
+          {translateCatalogKey('ui.pages.settings.profilesettings.thay-oi-anh-ai-dien.ec96db9f')}
           <input type="file" accept="image/*" onChange={handleAvatarChange} hidden />
         </label>
       </div>
 
       <div className="settings-form">
         <div className="settings-field">
-          <label className="settings-label">Họ</label>
+          <label className="settings-label">{translateCatalogKey('ui.components.profile.editprofilemodal.ho.10d03a7e')}</label>
           <input
             type="text"
             className="settings-input"
@@ -71,7 +72,7 @@ const ProfileSettings = () => {
         </div>
 
         <div className="settings-field">
-          <label className="settings-label">Tên</label>
+          <label className="settings-label">{translateCatalogKey('ui.components.profile.editprofilemodal.ten.918728cd')}</label>
           <input
             type="text"
             className="settings-input"
@@ -81,18 +82,18 @@ const ProfileSettings = () => {
         </div>
 
         <div className="settings-field">
-          <label className="settings-label">Tiểu sử</label>
+          <label className="settings-label">{translateCatalogKey('ui.components.profile.editprofilemodal.tieu-su.1e5eed2f')}</label>
           <textarea
             className="settings-textarea"
             value={form.bio}
             onChange={(e) => handleChange("bio", e.target.value)}
-            placeholder="Giới thiệu về bạn..."
+            placeholder={translateCatalogKey('ui.pages.settings.profilesettings.gioi-thieu-ve-ban.40549cdb')}
             rows={3}
           />
         </div>
 
         <button className="settings-save-btn" onClick={handleSave} disabled={loading}>
-          {loading ? "Đang lưu..." : "Lưu thay đổi"}
+          {loading ? translateCatalogKey('settings.saving') : translateCatalogKey('settings.saveChanges')}
         </button>
       </div>
     </div>

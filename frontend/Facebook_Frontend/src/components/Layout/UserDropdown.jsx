@@ -4,11 +4,13 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Settings, Moon, Sun, HelpCircle, LogOut } from "lucide-react";
 import Avatar from "../common/Avatar";
+import { useLocalization } from "../../contexts/useLocalization";
 import "./UserDropdown.css";
 
 const UserDropdown = () => {
   const { user, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+  const { t } = useLocalization();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -39,7 +41,7 @@ const UserDropdown = () => {
         src={user?.avatarUrl}
         className="user-avatar"
         onClick={() => setIsOpen((prev) => !prev)}
-        title="Menu tài khoản"
+        title={t('account.menu')}
       />
 
       {isOpen && (
@@ -52,7 +54,7 @@ const UserDropdown = () => {
             <Avatar src={user?.avatarUrl} className="user-dropdown-avatar" />
             <div className="user-dropdown-header-info">
               <span className="user-dropdown-name">{user?.fullName}</span>
-              <span className="user-dropdown-sub">Xem trang cá nhân</span>
+              <span className="user-dropdown-sub">{t('account.viewProfile')}</span>
             </div>
           </Link>
 
@@ -64,14 +66,14 @@ const UserDropdown = () => {
             onClick={() => setIsOpen(false)}
           >
             <div className="user-dropdown-item-icon"><Settings size={20} /></div>
-            <span>Cài đặt & quyền riêng tư</span>
+            <span>{t('account.settingsPrivacy')}</span>
           </Link>
 
           <button className="user-dropdown-item" onClick={toggleDarkMode}>
             <div className="user-dropdown-item-icon">
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </div>
-            <span>Chế độ tối</span>
+            <span>{t('account.darkMode')}</span>
             <div className={`user-dropdown-toggle ${isDark ? "active" : ""}`}>
               <div className="user-dropdown-toggle-knob" />
             </div>
@@ -79,14 +81,14 @@ const UserDropdown = () => {
 
           <button className="user-dropdown-item" disabled>
             <div className="user-dropdown-item-icon"><HelpCircle size={20} /></div>
-            <span>Trợ giúp & hỗ trợ</span>
+            <span>{t('account.helpSupport')}</span>
           </button>
 
           <div className="user-dropdown-divider" />
 
           <button className="user-dropdown-item" onClick={handleLogout}>
             <div className="user-dropdown-item-icon"><LogOut size={20} /></div>
-            <span>Đăng xuất</span>
+            <span>{t('account.logout')}</span>
           </button>
         </div>
       )}

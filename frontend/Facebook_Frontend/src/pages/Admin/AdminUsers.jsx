@@ -2,25 +2,34 @@ import { useState, useEffect, useCallback } from 'react';
 import { Search, Ban, CheckCircle, Trash2, ShieldCheck } from 'lucide-react';
 import adminService from '../../services/adminService';
 import toast from 'react-hot-toast';
+import { TIMERS } from '../../shared/generated/constants';
+import { useConfirm } from '../../contexts/useConfirm';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const AdminUsers = () => {
+  const confirm = useConfirm();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('');
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({});
+  const [roles, setRoles] = useState([]);
   const [banModal, setBanModal] = useState(null);
   const [banReason, setBanReason] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const r = await adminService.getUsers({ page, pageSize: 20, search: search || undefined, filter: filter || undefined });
-      setUsers(r.data.data);
-      setPagination(r.data.pagination);
+      const [usersResponse, rolesResponse] = await Promise.all([
+        adminService.getUsers({ page, pageSize: 20, search: search || undefined, filter: filter || undefined }),
+        adminService.getRoles(),
+      ]);
+      setUsers(usersResponse.data.data);
+      setPagination(usersResponse.data.pagination);
+      setRoles(rolesResponse.data.data.roles);
     } catch {
-      toast.error('Không thể tải danh sách người dùng');
+      toast.error(translateCatalogKey('ui.pages.admin.adminusers.khong-the-tai-danh-sach-nguoi-dung.e5a7c59d'));
     } finally {
       setLoading(false);
     }
@@ -28,91 +37,107 @@ const AdminUsers = () => {
 
   useEffect(() => { load(); }, [load]);
 
+  useEffect(() => {
+    const timerId = window.setInterval(load, TIMERS.adminUsersRefreshMs);
+    return () => window.clearInterval(timerId);
+  }, [load]);
+
   const handleBan = async () => {
     if (!banModal || !banReason.trim()) return;
     try {
       await adminService.banUser(banModal.id, banReason);
-      toast.success(`Đã ban ${banModal.firstName}`);
+      toast.success(translateCatalogKey('ui.pages.admin.adminusers.a-ban-value0.78c7e386', { value0: banModal.firstName }));
       setBanModal(null);
       setBanReason('');
       load();
     } catch (e) {
-      toast.error(e.response?.data?.message || 'Lỗi ban user');
+      toast.error(e.response?.data?.message || translateCatalogKey('ui.pages.admin.adminusers.loi-ban-user.516a1edb'));
     }
   };
 
   const handleUnban = async (u) => {
     try {
       await adminService.unbanUser(u.id);
-      toast.success(`Đã unban ${u.firstName}`);
+      toast.success(translateCatalogKey('ui.pages.admin.adminusers.a-unban-value0.cf6ea679', { value0: u.firstName }));
       load();
     } catch {
-      toast.error('Lỗi unban user');
+      toast.error(translateCatalogKey('ui.pages.admin.adminusers.loi-unban-user.fbe5c264'));
     }
   };
 
   const handleDelete = async (u) => {
-    if (!window.confirm(`Xóa tài khoản "${u.firstName} ${u.lastName}"? Hành động này không thể hoàn tác.`)) return;
+    const accepted = await confirm({
+      title: translateCatalogKey('ui.pages.admin.adminusers.xoa-tai-khoan.63f27e9b'),
+      message: translateCatalogKey('admin.users.deleteDescription', { name: `${u.firstName} ${u.lastName}`.trim() }),
+      detail: translateCatalogKey('reels.irreversible'),
+      confirmText: translateCatalogKey('ui.pages.admin.adminusers.xoa-tai-khoan.e0c1ab6e'),
+    });
+    if (!accepted) return;
     try {
       await adminService.deleteUser(u.id);
-      toast.success('Đã xóa người dùng');
+      toast.success(translateCatalogKey('ui.pages.admin.adminusers.a-xoa-nguoi-dung.e72142e0'));
       load();
     } catch (e) {
-      toast.error(e.response?.data?.message || 'Lỗi xóa user');
+      toast.error(e.response?.data?.message || translateCatalogKey('ui.pages.admin.adminusers.loi-xoa-user.6292a721'));
     }
   };
 
-  const handleToggleAdmin = async (u) => {
+  const handleAssignRole = async (u, roleId) => {
     try {
-      const r = await adminService.toggleAdmin(u.id);
-      toast.success(r.data.message);
+      await adminService.setUserRoles(u.id, roleId ? [roleId] : []);
+      toast.success(translateCatalogKey('admin.roles.assignmentUpdated'));
       load();
-    } catch {
-      toast.error('Lỗi thay đổi quyền admin');
+    } catch (error) {
+      toast.error(error.response?.data?.message || translateCatalogKey('admin.roles.assignmentFailed'));
     }
   };
 
   return (
     <div>
-      <h1 className="admin-page-title">Quản lý người dùng</h1>
+      <h1 className="admin-page-title">{translateCatalogKey('admin.users.title')}</h1>
 
       <div className="admin-table-wrap">
         <div className="admin-table-header">
-          <span className="admin-table-title">Danh sách người dùng</span>
+          <span className="admin-table-title">{translateCatalogKey('ui.pages.admin.adminusers.danh-sach-nguoi-dung.0905277e')}</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
             <Search size={14} style={{ position: 'absolute', left: 10, color: '#666' }} />
             <input
               className="admin-search"
               style={{ paddingLeft: 28 }}
-              placeholder="Tìm kiếm..."
+              placeholder={translateCatalogKey('chat.search')}
               value={search}
               onChange={e => { setSearch(e.target.value); setPage(1); }}
             />
           </div>
           <select className="admin-filter-select" value={filter} onChange={e => { setFilter(e.target.value); setPage(1); }}>
-            <option value="">Tất cả</option>
-            <option value="banned">Đã ban</option>
-            <option value="admin">Admin</option>
+            <option value="">{translateCatalogKey('ui.pages.admin.adminusers.tat-ca.bb1e6fd0')}</option>
+            <option value="online">{translateCatalogKey('ui.pages.admin.adminusers.online.5ed1c623')}</option>
+            <option value="banned">{translateCatalogKey('ui.pages.admin.adminusers.a-ban.0218bad9')}</option>
+            <option value="admin">{translateCatalogKey('ui.components.layout.mainlayout.admin.ac03e484')}</option>
           </select>
         </div>
 
         {loading ? (
-          <div className="admin-loading">Đang tải...</div>
+          <div className="admin-loading">{translateCatalogKey('common.loading')}</div>
         ) : users.length === 0 ? (
-          <div className="admin-empty">Không có người dùng nào.</div>
+          <div className="admin-empty">{translateCatalogKey('ui.pages.admin.adminusers.khong-co-nguoi-dung-nao.e4e19948')}</div>
         ) : (
           <table className="admin-table">
             <thead>
               <tr>
-                <th>Người dùng</th>
-                <th>Email</th>
-                <th>Trạng thái</th>
-                <th>Ngày tạo</th>
-                <th>Hành động</th>
+                <th>{translateCatalogKey('chat.userFallback')}</th>
+                <th>{translateCatalogKey('ui.pages.admin.adminusers.email.518b5ead')}</th>
+                <th>{translateCatalogKey('ui.pages.admin.adminusers.trang-thai.50048e05')}</th>
+                <th>{translateCatalogKey('ui.pages.admin.adminusers.ngay-tao.029fd07b')}</th>
+                <th>{translateCatalogKey('ui.pages.admin.adminsecurity.hanh-ong.075838aa')}</th>
               </tr>
             </thead>
             <tbody>
-              {users.map(u => (
+              {users.map(u => {
+                const currentRoleId = (u.roles || [])[0]?.id || '';
+                const currentRole = roles.find((role) => role.id === currentRoleId);
+                const isProtectedAdmin = u.isAdmin || (currentRole?.level ?? 0) >= 50;
+                return (
                 <tr key={u.id}>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -122,55 +147,68 @@ const AdminUsers = () => {
                       }
                       <div>
                         <div style={{ fontWeight: 600, color: '#fff' }}>{u.firstName} {u.lastName}</div>
-                        {u.isAdmin && <span className="badge badge--admin">Admin</span>}
+                        {(u.roles || []).map((role) => (
+                          <span key={role.id} className="badge badge--admin">{role.displayName}</span>
+                        ))}
                       </div>
                     </div>
                   </td>
                   <td style={{ color: '#888' }}>{u.email}</td>
                   <td>
                     {u.isBanned
-                      ? <span className="badge badge--banned">Bị ban</span>
+                      ? <span className="badge badge--banned">{translateCatalogKey('ui.pages.admin.adminusers.bi-ban.522f1fc7')}</span>
                       : u.isOnline
-                        ? <span className="badge badge--active">Online</span>
-                        : <span style={{ fontSize: 12, color: '#666' }}>Offline</span>
+                        ? <span className="badge badge--active">{translateCatalogKey('ui.pages.admin.adminusers.online.5ed1c623')}</span>
+                        : <span style={{ fontSize: 12, color: '#666' }}>{translateCatalogKey('ui.pages.admin.adminusers.offline.c13ccecc')}</span>
                     }
                   </td>
                   <td style={{ color: '#666', fontSize: 12 }}>
-                    {new Date(u.createdAt).toLocaleDateString('vi-VN')}
+                    {new Date(u.createdAt).toLocaleDateString("vi-VN")}
                   </td>
                   <td>
                     <div className="admin-actions">
                       {u.isBanned
                         ? <button className="admin-btn admin-btn--unban" onClick={() => handleUnban(u)}>
-                            <CheckCircle size={12} /> Unban
+                            <CheckCircle size={12} /> {translateCatalogKey('ui.pages.admin.adminusers.unban.1cd691f5')}
                           </button>
-                        : !u.isAdmin && (
+                        : !isProtectedAdmin && (
                           <button className="admin-btn admin-btn--ban" onClick={() => setBanModal(u)}>
-                            <Ban size={12} /> Ban
+                            <Ban size={12} /> {translateCatalogKey('ui.pages.admin.adminusers.ban.9c469b98')}
                           </button>
                         )
                       }
-                      <button className="admin-btn admin-btn--admin" onClick={() => handleToggleAdmin(u)}>
-                        <ShieldCheck size={12} /> {u.isAdmin ? 'Bỏ Admin' : 'Cấp Admin'}
-                      </button>
-                      {!u.isAdmin && (
+                      <label className="admin-role-assign">
+                        <ShieldCheck size={12} />
+                        <select
+                          value={currentRoleId}
+                          onChange={(event) => handleAssignRole(u, event.target.value)}
+                          aria-label={translateCatalogKey('admin.roles.assignRole')}
+                        >
+                          <option value="">{translateCatalogKey('admin.roles.unassigned')}</option>
+                          {roles.map((role) => (
+                            <option key={role.id} value={role.id}>{role.displayName}</option>
+                          ))}
+                        </select>
+                      </label>
+                      {!isProtectedAdmin && (
                         <button className="admin-btn admin-btn--delete" onClick={() => handleDelete(u)}>
-                          <Trash2 size={12} /> Xóa
+                          <Trash2 size={12} /> {translateCatalogKey('common.delete')}
                         </button>
                       )}
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         )}
 
         {pagination.totalPages > 1 && (
           <div className="admin-pagination">
-            <button className="admin-pagination-btn" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>← Trước</button>
-            <span className="admin-pagination-info">Trang {page} / {pagination.totalPages}</span>
-            <button className="admin-pagination-btn" disabled={page >= pagination.totalPages} onClick={() => setPage(p => p + 1)}>Sau →</button>
+            <button className="admin-pagination-btn" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>{translateCatalogKey('ui.pages.admin.adminusers.truoc.a49056c7')}</button>
+            <span className="admin-pagination-info">{translateCatalogKey('ui.components.friendship.friendlist.trang.6d3a285d')} {page} / {pagination.totalPages}</span>
+            <button className="admin-pagination-btn" disabled={page >= pagination.totalPages} onClick={() => setPage(p => p + 1)}>{translateCatalogKey('ui.pages.admin.adminusers.sau.4b739fb7')}</button>
           </div>
         )}
       </div>
@@ -180,17 +218,17 @@ const AdminUsers = () => {
         <div style={{ position: 'fixed', inset: 0, background: '#000a', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
           <div style={{ background: '#1a1d27', border: '1px solid #2a2d3a', borderRadius: 12, padding: 24, width: 360 }}>
             <h3 style={{ color: '#fff', margin: '0 0 12px' }}>Ban: {banModal.firstName} {banModal.lastName}</h3>
-            <p style={{ color: '#aaa', fontSize: 13, margin: '0 0 16px' }}>Lý do ban sẽ được lưu và gửi đến người dùng.</p>
+            <p style={{ color: '#aaa', fontSize: 13, margin: '0 0 16px' }}>{translateCatalogKey('ui.pages.admin.adminusers.ly-do-ban-se-uoc-luu-va-gui-en-nguoi.eb04c0ea')}</p>
             <input
               className="admin-search"
               style={{ width: '100%', boxSizing: 'border-box', marginBottom: 12 }}
-              placeholder="Nhập lý do ban..."
+              placeholder={translateCatalogKey('ui.pages.admin.adminusers.nhap-ly-do-ban.0d7f00fd')}
               value={banReason}
               onChange={e => setBanReason(e.target.value)}
             />
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-              <button className="admin-btn" style={{ background: '#2a2d3a', color: '#ccc' }} onClick={() => { setBanModal(null); setBanReason(''); }}>Hủy</button>
-              <button className="admin-btn admin-btn--ban" disabled={!banReason.trim()} onClick={handleBan}>Xác nhận Ban</button>
+              <button className="admin-btn" style={{ background: '#2a2d3a', color: '#ccc' }} onClick={() => { setBanModal(null); setBanReason(''); }}>{translateCatalogKey('common.cancel')}</button>
+              <button className="admin-btn admin-btn--ban" disabled={!banReason.trim()} onClick={handleBan}>{translateCatalogKey('ui.pages.admin.adminusers.xac-nhan-ban.98982c75')}</button>
             </div>
           </div>
         </div>

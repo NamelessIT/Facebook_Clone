@@ -3,12 +3,14 @@ import { X, ChevronLeft, Search, Users, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import friendshipService from '../../services/friendshipService';
 import chatService from '../../services/chatService';
+import { useLocalization } from '../../contexts/useLocalization';
 import Avatar from '../common/Avatar';
 import ChatWindow from './ChatWindow';
 import './ChatFloatingPanel.css';
 
 const ChatFloatingPanel = ({ initialFriend = null, onClose }) => {
   const navigate = useNavigate();
+  const { t } = useLocalization();
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -67,7 +69,7 @@ const ChatFloatingPanel = ({ initialFriend = null, onClose }) => {
       {/* Header */}
       <div className="cfp-header">
         {selectedFriend ? (
-          <button className="cfp-btn" onClick={() => setSelectedFriend(null)} title="Quay lại">
+          <button className="cfp-btn" onClick={() => setSelectedFriend(null)} title={t('common.back')}>
             <ChevronLeft size={18} />
           </button>
         ) : null}
@@ -75,17 +77,17 @@ const ChatFloatingPanel = ({ initialFriend = null, onClose }) => {
         <span className="cfp-title">
           {selectedFriend
             ? (selectedFriend.profile?.fullName || selectedFriend.fullName)
-            : 'Tin nhắn'}
+            : t('chat.messages')}
         </span>
 
         <button
           className="cfp-btn"
           onClick={() => { onClose?.(); navigate('/messages'); }}
-          title="Mở giao diện chat đầy đủ"
+          title={t('chat.openFull')}
         >
           <ExternalLink size={16} />
         </button>
-        <button className="cfp-btn" onClick={onClose} title="Đóng">
+        <button className="cfp-btn" onClick={onClose} title={t('common.close')}>
           <X size={18} />
         </button>
       </div>
@@ -96,18 +98,18 @@ const ChatFloatingPanel = ({ initialFriend = null, onClose }) => {
           <div className="cfp-search">
             <Search size={14} />
             <input
-              placeholder="Tìm kiếm..."
+              placeholder={t('chat.search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <div className="cfp-contacts">
             {loading ? (
-              <div className="cfp-state">Đang tải...</div>
+              <div className="cfp-state">{t('common.loading')}</div>
             ) : filteredFriends.length === 0 ? (
               <div className="cfp-state">
                 <Users size={32} />
-                <p>{searchQuery ? 'Không tìm thấy' : 'Chưa có bạn bè'}</p>
+                <p>{searchQuery ? t('common.noResults') : t('friends.none')}</p>
               </div>
             ) : (
               filteredFriends.map((friend) => (

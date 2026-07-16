@@ -2,6 +2,8 @@
 
 export const API = Object.freeze({ prefix: "/api/v1" });
 export const HUBS = Object.freeze({ chat: "/hubs/chat", notification: "/hubs/notification" });
-export const STORAGE_KEYS = Object.freeze({ accessToken: "accessToken", refreshToken: "refreshToken", themeMode: "app_theme_mode" });
-export const LIMITS = Object.freeze({ feedPageSize: 10, commentsPageSize: 20, searchDebounceMs: 300, maxImageUploadMb: 10, maxVideoUploadMb: 100 });
+export const STORAGE_KEYS = Object.freeze({ accessToken: "accessToken", refreshToken: "refreshToken", themeMode: "app_theme_mode", locale: "app_locale" });
+export const LIMITS = Object.freeze({ feedPageSize: 10, commentsPageSize: 20, savedItemsPageSize: 10, notificationPageSize: 10, friendshipPageSize: 20, searchDebounceMs: 300, messageMaxLength: 1000, editPostMaxContentLength: 500, profileBioMaxLength: 200, postPreviewTextLimit: 120, maxImageUploadMb: 10, maxVideoUploadMb: 100 });
+export const TIMERS = Object.freeze({ presenceHeartbeatMs: 900000, adminUsersRefreshMs: 300000, userOnlineTtlMinutes: 16, chatTypingDebounceMs: 300, chatTypingTimeoutMs: 3000, postDeleteUndoSeconds: 10, notInterestedAutoDismissSeconds: 60 });
+export const LOCALIZATION = Object.freeze({ defaultLocale: "vi", fallbackLocale: "en", maxTranslationChunkChars: 800 });
 

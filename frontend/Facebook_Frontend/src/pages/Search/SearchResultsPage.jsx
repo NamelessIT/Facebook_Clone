@@ -7,6 +7,7 @@ import userService from "../../services/userService";
 import postService from "../../services/postService";
 import AddFriendButton from "../../components/friendship/AddFriendButton";
 import { useAuth } from "../../contexts/AuthContext";
+import { useLocalization } from "../../contexts/useLocalization";
 import "./SearchResultsPage.css";
 
 const TABS = {
@@ -16,6 +17,7 @@ const TABS = {
 
 const SearchResultsPage = () => {
   const { user: currentUser } = useAuth();
+  const { t } = useLocalization();
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
 
@@ -83,29 +85,29 @@ const SearchResultsPage = () => {
     if (totalPages <= 1) return null;
     return (
       <div className="search-pagination">
-        <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="search-page-btn">Trước</button>
-        <span className="search-page-info">Trang {page} / {totalPages}</span>
-        <button disabled={page >= totalPages} onClick={() => setPage(page + 1)} className="search-page-btn">Tiếp</button>
+        <button disabled={page <= 1} onClick={() => setPage(page - 1)} className="search-page-btn">{t('common.previous')}</button>
+        <span className="search-page-info">{t('common.pageOf', undefined, { page, total: totalPages })}</span>
+        <button disabled={page >= totalPages} onClick={() => setPage(page + 1)} className="search-page-btn">{t('common.next')}</button>
       </div>
     );
   };
 
   return (
     <div className="search-results-page">
-      <h2 className="search-results-title">Kết quả tìm kiếm cho &quot;{query}&quot;</h2>
+      <h2 className="search-results-title">{t('search.resultsFor', undefined, { query })}</h2>
 
       <div className="search-tabs">
         <button
           className={`search-tab ${activeTab === TABS.USERS ? "search-tab--active" : ""}`}
           onClick={() => setActiveTab(TABS.USERS)}
         >
-          <Users size={18} /> Mọi người
+          <Users size={18} /> {t('search.people')}
         </button>
         <button
           className={`search-tab ${activeTab === TABS.POSTS ? "search-tab--active" : ""}`}
           onClick={() => setActiveTab(TABS.POSTS)}
         >
-          <FileText size={18} /> Bài viết
+          <FileText size={18} /> {t('search.posts')}
         </button>
       </div>
 
@@ -113,9 +115,9 @@ const SearchResultsPage = () => {
       {activeTab === TABS.USERS && (
         <div className="search-results-content">
           {usersLoading ? (
-            <div className="search-results-loading">Đang tìm kiếm...</div>
+            <div className="search-results-loading">{t('search.searching')}</div>
           ) : users.length === 0 ? (
-            <div className="search-results-empty">Không tìm thấy người dùng nào</div>
+            <div className="search-results-empty">{t('search.noUsers')}</div>
           ) : (
             <>
               {users.map((u) => (
@@ -142,9 +144,9 @@ const SearchResultsPage = () => {
       {activeTab === TABS.POSTS && (
         <div className="search-results-content">
           {postsLoading ? (
-            <div className="search-results-loading">Đang tìm kiếm...</div>
+            <div className="search-results-loading">{t('search.searching')}</div>
           ) : posts.length === 0 ? (
-            <div className="search-results-empty">Không tìm thấy bài viết nào</div>
+            <div className="search-results-empty">{t('search.noPosts')}</div>
           ) : (
             <>
               {posts.map((p) => (

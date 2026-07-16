@@ -187,6 +187,105 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.ToTable("GroupMembers", (string)null);
                 });
 
+            modelBuilder.Entity("FacebookClone.Domain.Entities.LocaleLanguage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("NativeName")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("LocaleLanguages", (string)null);
+                });
+
+            modelBuilder.Entity("FacebookClone.Domain.Entities.LocalizationEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Context")
+                        .HasMaxLength(240)
+                        .HasColumnType("character varying(240)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsMachineTranslated")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(180)
+                        .HasColumnType("character varying(180)");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(700)
+                        .HasColumnType("character varying(700)");
+
+                    b.Property<string>("SourceLocale")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<string>("SourceText")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("TargetLocale")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TargetLocale");
+
+                    b.HasIndex("Key", "TargetLocale")
+                        .IsUnique();
+
+                    b.ToTable("LocalizationEntries", (string)null);
+                });
+
             modelBuilder.Entity("FacebookClone.Domain.Entities.MediaAttachment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -930,6 +1029,18 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FacebookClone.Domain.Entities.LocalizationEntry", b =>
+                {
+                    b.HasOne("FacebookClone.Domain.Entities.LocaleLanguage", "TargetLanguage")
+                        .WithMany("Entries")
+                        .HasForeignKey("TargetLocale")
+                        .HasPrincipalKey("Code")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TargetLanguage");
+                });
+
             modelBuilder.Entity("FacebookClone.Domain.Entities.MediaAttachment", b =>
                 {
                     b.HasOne("FacebookClone.Domain.Entities.Comment", "Comment")
@@ -1167,6 +1278,11 @@ namespace FacebookClone.Infrastructure.Migrations
             modelBuilder.Entity("FacebookClone.Domain.Entities.Group", b =>
                 {
                     b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("FacebookClone.Domain.Entities.LocaleLanguage", b =>
+                {
+                    b.Navigation("Entries");
                 });
 
             modelBuilder.Entity("FacebookClone.Domain.Entities.Permission", b =>

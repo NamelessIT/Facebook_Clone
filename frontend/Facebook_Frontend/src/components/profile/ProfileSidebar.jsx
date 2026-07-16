@@ -6,6 +6,7 @@ import { vi } from 'date-fns/locale';
 import Avatar from '../common/Avatar';
 import friendshipService from '../../services/friendshipService';
 import './ProfileSidebar.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const ProfileSidebar = ({ profileUser }) => {
   const [friends, setFriends] = useState([]);
@@ -30,7 +31,7 @@ const ProfileSidebar = ({ profileUser }) => {
     <aside className="profile-sidebar">
       {/* Gioi thieu */}
       <div className="psb-card">
-        <h3 className="psb-card-title">Giới thiệu</h3>
+        <h3 className="psb-card-title">{translateCatalogKey('ui.components.profile.profilesidebar.gioi-thieu.78a71f6d')}</h3>
         {profileUser?.bio && (
           <p className="psb-bio">{profileUser.bio}</p>
         )}
@@ -38,7 +39,7 @@ const ProfileSidebar = ({ profileUser }) => {
           {profileUser?.location && (
             <li className="psb-info-item">
               <MapPin size={16} />
-              <span>Sống tại <strong>{profileUser.location}</strong></span>
+              <span>{translateCatalogKey('ui.components.profile.profilesidebar.song-tai.3e16cd92')} <strong>{profileUser.location}</strong></span>
             </li>
           )}
           {profileUser?.email && (
@@ -50,7 +51,7 @@ const ProfileSidebar = ({ profileUser }) => {
           {joinDate && (
             <li className="psb-info-item">
               <Calendar size={16} />
-              <span>Tham gia vào <strong>{joinDate}</strong></span>
+              <span>{translateCatalogKey('ui.components.profile.profilesidebar.tham-gia-vao.8a721551')} <strong>{joinDate}</strong></span>
             </li>
           )}
         </ul>
@@ -61,9 +62,9 @@ const ProfileSidebar = ({ profileUser }) => {
         <div className="psb-card">
           <div className="psb-card-header">
             <h3 className="psb-card-title">
-              <Users size={16} /> Bạn bè
+              <Users size={16} /> {translateCatalogKey('privacy.friends')}
             </h3>
-            <span className="psb-friends-count">{friendsTotal} người</span>
+            <span className="psb-friends-count">{friendsTotal} {translateCatalogKey('ui.components.profile.profilesidebar.nguoi.31494191')}</span>
           </div>
           <div className="psb-friends-grid">
             {friends.map((f) => {

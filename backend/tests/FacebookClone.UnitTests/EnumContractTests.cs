@@ -1,4 +1,5 @@
 using FacebookClone.Domain.Enums;
+using FacebookClone.Domain.Constants;
 using Xunit;
 
 namespace FacebookClone.UnitTests;
@@ -38,5 +39,14 @@ public class EnumContractTests
     {
         Assert.Equal("SAVED", PostInteractionType.SAVED);
         Assert.Equal("NOT_INTERESTED", PostInteractionType.NOT_INTERESTED);
+    }
+
+    [Fact]
+    public void Shared_constants_are_stable()
+    {
+        Assert.Equal(300000, SharedConstants.Timers.AdminUsersRefreshMs);
+        Assert.Equal(900000, SharedConstants.Timers.PresenceHeartbeatMs);
+        Assert.Equal(1000, SharedConstants.Limits.MessageMaxLength);
+        Assert.Equal(800, SharedConstants.Localization.MaxTranslationChunkChars);
     }
 }

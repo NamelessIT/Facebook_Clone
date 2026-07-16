@@ -6,11 +6,13 @@ import friendshipService from '../../services/friendshipService';
 import chatService from '../../services/chatService';
 import Avatar from '../../components/common/Avatar';
 import ChatWindow from '../../components/Chat/ChatWindow';
+import { useLocalization } from '../../contexts/useLocalization';
 import './ChatListPage.css';
 
 const ChatListPage = () => {
   const { friendId } = useParams();
   const navigate = useNavigate();
+  const { t } = useLocalization();
 
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,13 +30,13 @@ const ChatListPage = () => {
         const data = res.data?.data || [];
         setFriends(data);
       } catch {
-        toast.error('Không thể tải danh sách bạn bè.');
+        toast.error(t('chat.loadFriendsFailed'));
       } finally {
         setLoading(false);
       }
     };
     loadFriends();
-  }, []);
+  }, [t]);
 
   // Start SignalR connection
   useEffect(() => {
@@ -108,17 +110,17 @@ const ChatListPage = () => {
       <div className="chat-sidebar" style={{ width: `${sidebarWidth}%` }}>
         <div className="chat-sidebar-header">
           <div className="chat-sidebar-title-row">
-            <button className="chat-back-btn" onClick={() => navigate('/')} title="Quay lại">
+            <button className="chat-back-btn" onClick={() => navigate('/')} title={t('common.back')}>
               <ChevronLeft size={22} />
             </button>
-            <h2>Chat</h2>
+            <h2>{t('chat.title')}</h2>
           </div>
           <div className="chat-search-form">
             <Search size={16} className="chat-search-icon" />
             <input
               type="text"
               className="chat-search-input"
-              placeholder="Tìm kiếm trên Messenger"
+              placeholder={t('chat.searchMessenger')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -127,11 +129,11 @@ const ChatListPage = () => {
 
         <div className="chat-contact-list">
           {loading ? (
-            <div className="chat-sidebar-loading">Đang tải...</div>
+            <div className="chat-sidebar-loading">{t('common.loading')}</div>
           ) : filteredFriends.length === 0 ? (
             <div className="chat-sidebar-empty">
               <Users size={40} />
-              <p>{searchQuery ? 'Không tìm thấy kết quả' : 'Chưa có bạn bè nào'}</p>
+              <p>{searchQuery ? t('common.noResults') : t('friends.none')}</p>
             </div>
           ) : (
             filteredFriends.map((friend) => (
@@ -151,7 +153,7 @@ const ChatListPage = () => {
                 </div>
                 <div className="chat-contact-info">
                   <p className="chat-contact-name">{friend.profile?.fullName || friend.fullName}</p>
-                  <p className="chat-contact-preview">Nhấn để bắt đầu trò chuyện</p>
+                  <p className="chat-contact-preview">{t('chat.startConversation')}</p>
                 </div>
               </button>
             ))

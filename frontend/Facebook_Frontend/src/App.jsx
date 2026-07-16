@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { LocalizationProvider } from "./contexts/LocalizationContext";
 import LoginPage from "./pages/Login";
 import MainLayout from "./components/Layout/MainLayout";
 import HomePage from "./pages/Home";
@@ -12,6 +13,8 @@ import ReelsPage from "./pages/Reels/ReelsPage";
 import SavedItemsPage from "./pages/SavedItems/SavedItemsPage";
 import PostDetailPage from "./pages/PostDetail/PostDetailPage";
 import AdminPage from "./pages/Admin/AdminPage";
+import ConfirmProvider from "./contexts/ConfirmProvider";
+import NotificationCenter from "./components/feedback/NotificationCenter";
 
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -29,6 +32,8 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <LocalizationProvider>
+        <ConfirmProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
 
@@ -66,6 +71,9 @@ function App() {
             }
           />
         </Routes>
+        <NotificationCenter />
+        </ConfirmProvider>
+        </LocalizationProvider>
       </AuthProvider>
     </BrowserRouter>
   );

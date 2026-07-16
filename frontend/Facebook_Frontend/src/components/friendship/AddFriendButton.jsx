@@ -3,6 +3,8 @@ import { UserPlus, UserCheck, UserX, Clock } from "lucide-react";
 import friendshipService from "../../services/friendshipService";
 import toast from "react-hot-toast";
 import "./AddFriendButton.css";
+import { useLocalization } from "../../contexts/useLocalization";
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const FRIENDSHIP_STATUS = {
   NONE: "none",
@@ -14,6 +16,7 @@ const FRIENDSHIP_STATUS = {
 const AddFriendButton = ({ targetUserId, initialStatus }) => {
   const [status, setStatus] = useState(initialStatus || FRIENDSHIP_STATUS.NONE);
   const [loading, setLoading] = useState(false);
+  const { t } = useLocalization();
 
   useEffect(() => {
     if (!initialStatus) {
@@ -40,27 +43,27 @@ const AddFriendButton = ({ targetUserId, initialStatus }) => {
         case FRIENDSHIP_STATUS.NONE: {
           await friendshipService.sendFriendRequest(targetUserId);
           setStatus(FRIENDSHIP_STATUS.PENDING_SENT);
-          toast.success("Đã gửi lời mời kết bạn!");
+          toast.success(translateCatalogKey('ui.components.friendship.addfriendbutton.a-gui-loi-moi-ket-ban.dbef53b6'));
           break;
         }
         case FRIENDSHIP_STATUS.PENDING_SENT:
           await friendshipService.removeFriend(targetUserId);
           setStatus(FRIENDSHIP_STATUS.NONE);
-          toast.success("Đã hủy lời mời kết bạn");
+          toast.success(translateCatalogKey('ui.components.friendship.addfriendbutton.a-huy-loi-moi-ket-ban.3c09651f'));
           break;
         case FRIENDSHIP_STATUS.PENDING_RECEIVED:
           await friendshipService.acceptFriendRequest(targetUserId);
           setStatus(FRIENDSHIP_STATUS.FRIENDS);
-          toast.success("Đã chấp nhận lời mời kết bạn!");
+          toast.success(translateCatalogKey('ui.components.friendship.addfriendbutton.a-chap-nhan-loi-moi-ket-ban.daba23c8'));
           break;
         case FRIENDSHIP_STATUS.FRIENDS:
           await friendshipService.removeFriend(targetUserId);
           setStatus(FRIENDSHIP_STATUS.NONE);
-          toast.success("Đã hủy kết bạn");
+          toast.success(translateCatalogKey('ui.components.friendship.addfriendbutton.a-huy-ket-ban.4777b18f'));
           break;
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Có lỗi xảy ra!");
+      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'));
     } finally {
       setLoading(false);
     }
@@ -69,13 +72,13 @@ const AddFriendButton = ({ targetUserId, initialStatus }) => {
   const getButtonConfig = () => {
     switch (status) {
       case FRIENDSHIP_STATUS.PENDING_SENT:
-        return { icon: Clock, text: "Đã gửi lời mời", className: "add-friend-btn--pending" };
+        return { icon: Clock, text: translateCatalogKey('friends.requestSent'), className: "add-friend-btn--pending" };
       case FRIENDSHIP_STATUS.PENDING_RECEIVED:
-        return { icon: UserCheck, text: "Chấp nhận", className: "add-friend-btn--accept" };
+        return { icon: UserCheck, text: t('friends.accept'), className: "add-friend-btn--accept" };
       case FRIENDSHIP_STATUS.FRIENDS:
-        return { icon: UserCheck, text: "Bạn bè", className: "add-friend-btn--friends" };
+        return { icon: UserCheck, text: t('friends.friend'), className: "add-friend-btn--friends" };
       default:
-        return { icon: UserPlus, text: "Thêm bạn bè", className: "add-friend-btn--add" };
+        return { icon: UserPlus, text: t('friends.add'), className: "add-friend-btn--add" };
     }
   };
 
@@ -89,7 +92,7 @@ const AddFriendButton = ({ targetUserId, initialStatus }) => {
       disabled={loading}
     >
       <Icon size={18} />
-      {loading ? "Đang xử lý..." : config.text}
+      {loading ? translateCatalogKey('common.processing') : config.text}
     </button>
   );
 };

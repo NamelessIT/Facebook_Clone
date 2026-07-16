@@ -1,22 +1,24 @@
 import { useState, useEffect, useCallback } from "react";
 import { Send } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { vi } from "date-fns/locale";
+import { enUS, vi } from "date-fns/locale";
 import Avatar from "../common/Avatar";
 import postService from "../../services/postService";
 import { useAuth } from "../../contexts/AuthContext";
 import toast from "react-hot-toast";
+import { useLocalization } from "../../contexts/useLocalization";
 import "./CommentSection.css";
 
-const formatTimeAgo = (dateStr) => {
+const formatTimeAgo = (dateStr, locale) => {
   try {
-    return formatDistanceToNow(new Date(dateStr), { addSuffix: true, locale: vi });
+    return formatDistanceToNow(new Date(dateStr), { addSuffix: true, locale: locale === 'vi' ? vi : enUS });
   } catch {
     return "";
   }
 };
 
 const CommentItem = ({ comment, onReply }) => {
+  const { locale, t } = useLocalization();
   return (
     <div className="comment-item">
       <Avatar src={comment.author?.avatarUrl} className="w-8 h-8" />
@@ -27,9 +29,9 @@ const CommentItem = ({ comment, onReply }) => {
         </div>
         <div className="comment-meta">
           <button className="comment-meta-btn" onClick={() => onReply(comment)}>
-            Trả lời
+            {t('comment.reply')}
           </button>
-          <span className="comment-meta-time">{formatTimeAgo(comment.createdAt)}</span>
+          <span className="comment-meta-time">{formatTimeAgo(comment.createdAt, locale)}</span>
         </div>
       </div>
     </div>
@@ -37,6 +39,7 @@ const CommentItem = ({ comment, onReply }) => {
 };
 
 const ReplyItem = ({ reply }) => {
+  const { locale } = useLocalization();
   return (
     <div className="comment-item comment-item--reply">
       <Avatar src={reply.author?.avatarUrl} className="w-7 h-7" />
@@ -46,7 +49,7 @@ const ReplyItem = ({ reply }) => {
           <p className="comment-text">{reply.content}</p>
         </div>
         <div className="comment-meta">
-          <span className="comment-meta-time">{formatTimeAgo(reply.createdAt)}</span>
+          <span className="comment-meta-time">{formatTimeAgo(reply.createdAt, locale)}</span>
         </div>
       </div>
     </div>
@@ -55,6 +58,7 @@ const ReplyItem = ({ reply }) => {
 
 const CommentSection = ({ postId, onCommentAdded }) => {
   const { user } = useAuth();
+  const { t } = useLocalization();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -101,7 +105,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
       fetchComments(1);
       onCommentAdded?.();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Không thể bình luận");
+      toast.error(error.response?.data?.message || t('comment.createFailed'));
     } finally {
       setPosting(false);
     }
@@ -120,7 +124,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
       fetchComments(1);
       onCommentAdded?.();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Không thể trả lời");
+      toast.error(error.response?.data?.message || t('comment.replyFailed'));
     } finally {
       setReplyPosting(false);
     }
@@ -156,7 +160,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
       <div className="comment-input-wrapper">
         <Avatar src={user?.avatarUrl} className="w-8 h-8" />
         <textarea
-          placeholder="Viết bình luận..."
+          placeholder={t('post.writeComment')}
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           onKeyDown={(e) => handleKeyDown(e, handleSubmitComment)}
@@ -174,9 +178,9 @@ const CommentSection = ({ postId, onCommentAdded }) => {
       {/* Danh sách comments */}
       <div className="comment-list">
         {loading && comments.length === 0 ? (
-          <div className="comment-loading">Đang tải bình luận...</div>
+          <div className="comment-loading">{t('comment.loading')}</div>
         ) : parentComments.length === 0 ? (
-          <div className="comment-empty">Chưa có bình luận nào</div>
+          <div className="comment-empty">{t('comment.empty')}</div>
         ) : (
           parentComments.map((comment) => {
             const replies = getReplies(comment.id);
@@ -189,7 +193,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
                 {/* Nút xem replies */}
                 {replies.length > 0 && !isExpanded && (
                   <button className="view-replies-btn" onClick={() => toggleReplies(comment.id)}>
-                    Xem {replies.length} phản hồi
+                    {t('comment.viewReplies', undefined, { count: replies.length })}
                   </button>
                 )}
 
@@ -199,7 +203,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
 
                 {isExpanded && replies.length > 0 && (
                   <button className="view-replies-btn" onClick={() => toggleReplies(comment.id)}>
-                    Ẩn phản hồi
+                    {t('comment.hideReplies')}
                   </button>
                 )}
 
@@ -208,7 +212,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
                   <div className="reply-input-wrapper">
                     <Avatar src={user?.avatarUrl} className="w-7 h-7" />
                     <textarea
-                      placeholder={`Trả lời ${comment.author?.fullName}...`}
+                      placeholder={t('comment.replyTo', undefined, { name: comment.author?.fullName || '' })}
                       value={replyContent}
                       onChange={(e) => setReplyContent(e.target.value)}
                       onKeyDown={(e) => handleKeyDown(e, handleSubmitReply)}
@@ -238,7 +242,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
             onClick={() => fetchComments(page + 1, true)}
             disabled={loading}
           >
-            {loading ? "Đang tải..." : "Xem thêm bình luận"}
+            {loading ? t('common.loading') : t('comment.loadMore')}
           </button>
         </div>
       )}

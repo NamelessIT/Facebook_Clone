@@ -4,9 +4,11 @@ import { useAuth } from '../../contexts/AuthContext';
 import ReelsGrid from '../../components/reels/ReelsGrid';
 import UploadReelModal from '../../components/reels/UploadReelModal';
 import './ReelsPage.css';
+import { useLocalization } from '../../contexts/useLocalization';
 
 const ReelsPage = () => {
   const { user: currentUser } = useAuth();
+  const { t } = useLocalization();
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -20,7 +22,7 @@ const ReelsPage = () => {
       <div className="reels-page-header">
         <div className="reels-page-title">
           <Film size={22} />
-          <h2>Reels</h2>
+          <h2>{t('reels.title')}</h2>
         </div>
         {currentUser && (
           <button
@@ -28,7 +30,7 @@ const ReelsPage = () => {
             onClick={() => setShowUploadModal(true)}
           >
             <Plus size={18} />
-            Đăng Reel
+            {t('reels.create')}
           </button>
         )}
       </div>

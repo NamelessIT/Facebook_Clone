@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { TIMERS } from '../../shared/generated/constants';
 import './NotInterestedItem.css';
+import { useLocalization } from '../../contexts/useLocalization';
 
-const AUTO_DISMISS_SECONDS = 60;
+const AUTO_DISMISS_SECONDS = TIMERS.notInterestedAutoDismissSeconds;
 
 const NotInterestedItem = ({ onUndo, onDismiss }) => {
+  const { t } = useLocalization();
   const [secondsLeft, setSecondsLeft] = useState(AUTO_DISMISS_SECONDS);
 
   useEffect(() => {
@@ -32,15 +35,15 @@ const NotInterestedItem = ({ onUndo, onDismiss }) => {
           <X size={20} />
         </div>
         <div className="ni-text">
-          <p className="ni-title">Đã ẩn bài viết</p>
+          <p className="ni-title">{t('post.hiddenTitle')}</p>
           <p className="ni-desc">
-            Việc ẩn bài viết giúp chúng tôi cá nhân hóa nội dung phù hợp hơn với bạn.
+            {t('post.hiddenDescription')}
           </p>
         </div>
       </div>
       <div className="ni-actions">
         <button className="ni-undo-btn" onClick={handleUndo}>
-          Hoàn tác
+          {t('common.undo')}
         </button>
         <span className="ni-timer">{secondsLeft}s</span>
       </div>

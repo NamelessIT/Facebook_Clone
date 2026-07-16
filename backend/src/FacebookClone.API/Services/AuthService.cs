@@ -47,14 +47,18 @@ public class AuthService : IAuthService
 
         var accessToken = _jwt.GenerateAccessToken(user);
         var refreshToken = _jwt.GenerateRefreshToken();
+        var now = DateTime.UtcNow;
+
+        user.IsOnline = true;
+        user.UpdatedAt = now;
 
         _context.RefreshTokens.Add(new RefreshToken
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
             Token = refreshToken,
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(7)
+            CreatedAt = now,
+            ExpiresAt = now.AddDays(7)
         });
 
         await _context.SaveChangesAsync();
@@ -130,20 +134,24 @@ public class AuthService : IAuthService
             throw new Exception("User not found");
 
         // 🔥 Revoke old refresh token
+        var now = DateTime.UtcNow;
         storedToken.IsRevoked = true;
-        storedToken.RevokedAt = DateTime.UtcNow;
+        storedToken.RevokedAt = now;
 
         // 🔥 Generate new tokens
         var newAccessToken = _jwt.GenerateAccessToken(user);
         var newRefreshToken = _jwt.GenerateRefreshToken();
+
+        user.IsOnline = true;
+        user.UpdatedAt = now;
 
         var newRefreshTokenEntity = new RefreshToken
         {
             Id = Guid.NewGuid(),
             UserId = user.Id,
             Token = newRefreshToken,
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            CreatedAt = now,
+            ExpiresAt = now.AddDays(7),
             IsRevoked = false
         };
 
@@ -172,8 +180,25 @@ public class AuthService : IAuthService
         if (token.IsRevoked)
             return;
 
+        var now = DateTime.UtcNow;
         token.IsRevoked = true;
-        token.RevokedAt = DateTime.UtcNow;
+        token.RevokedAt = now;
+
+        var hasOtherActiveSession = await _context.RefreshTokens.AnyAsync(x =>
+            x.UserId == token.UserId &&
+            x.Id != token.Id &&
+            !x.IsRevoked &&
+            x.ExpiresAt > now);
+
+        if (!hasOtherActiveSession)
+        {
+            var user = await _context.Users.FindAsync(token.UserId);
+            if (user != null)
+            {
+                user.IsOnline = false;
+                user.UpdatedAt = now;
+            }
+        }
 
         await _context.SaveChangesAsync();
     }
@@ -184,13 +209,19 @@ public class AuthService : IAuthService
             .Where(x => x.UserId == userId && !x.IsRevoked)
             .ToListAsync();
 
-        if (!tokens.Any())
-            return;
+        var now = DateTime.UtcNow;
 
         foreach (var token in tokens)
         {
             token.IsRevoked = true;
-            token.RevokedAt = DateTime.UtcNow;
+            token.RevokedAt = now;
+        }
+
+        var user = await _context.Users.FindAsync(userId);
+        if (user != null)
+        {
+            user.IsOnline = false;
+            user.UpdatedAt = now;
         }
 
         await _context.SaveChangesAsync();

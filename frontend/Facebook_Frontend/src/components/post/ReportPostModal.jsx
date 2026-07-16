@@ -3,32 +3,35 @@ import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import postInteractionService from '../../services/postInteractionService';
 import './ReportPostModal.css';
+import { useLocalization } from '../../contexts/useLocalization';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const REASONS = [
-  'Spam',
-  'Bạo lực',
-  'Nội dung khiêu dâm',
-  'Thông tin sai lệch',
-  'Quấy rối hoặc bắt nạt',
-  'Khác',
+  { value: 'Spam', key: 'post.report.spam' },
+  { value: 'Bạo lực', key: 'post.report.violence' },
+  { value: 'Nội dung khiêu dâm', key: 'post.report.sexual' },
+  { value: 'Thông tin sai lệch', key: 'post.report.falseInfo' },
+  { value: 'Quấy rối hoặc bắt nạt', key: 'post.report.harassment' },
+  { value: 'Khác', key: 'post.report.other' },
 ];
 
 const ReportPostModal = ({ postId, onClose }) => {
+  const { t } = useLocalization();
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     if (!reason) {
-      toast.error('Vui lòng chọn lý do báo cáo');
+      toast.error(translateCatalogKey('ui.components.post.reportpostmodal.vui-long-chon-ly-do-bao-cao.3d8c38fc'));
       return;
     }
     setLoading(true);
     try {
       await postInteractionService.reportPost(postId, reason);
-      toast.success('Cảm ơn! Chúng tôi sẽ xem xét báo cáo của bạn');
+      toast.success(translateCatalogKey('ui.components.post.reportpostmodal.cam-on-chung-toi-se-xem-xet-bao-cao-.df52d773'));
       onClose();
     } catch {
-      toast.error('Gửi báo cáo thất bại, vui lòng thử lại');
+      toast.error(translateCatalogKey('ui.components.post.reportpostmodal.gui-bao-cao-that-bai-vui-long-thu-la.33cadb46'));
     } finally {
       setLoading(false);
     }
@@ -38,25 +41,25 @@ const ReportPostModal = ({ postId, onClose }) => {
     <div className="rpm-overlay" onMouseDown={onClose}>
       <div className="rpm-modal" onMouseDown={(e) => e.stopPropagation()}>
         <div className="rpm-header">
-          <h3>Báo cáo bài viết</h3>
-          <button className="rpm-close" onClick={onClose} aria-label="Đóng">
+          <h3>{t('post.reportPost')}</h3>
+          <button className="rpm-close" onClick={onClose} aria-label={translateCatalogKey('common.close')}>
             <X size={20} />
           </button>
         </div>
 
         <div className="rpm-body">
-          <p className="rpm-label">Lý do báo cáo</p>
+          <p className="rpm-label">{t('post.reportReason')}</p>
           <div className="rpm-options">
-            {REASONS.map((r) => (
-              <label key={r} className={`rpm-option ${reason === r ? 'rpm-option--selected' : ''}`}>
+            {REASONS.map((item) => (
+              <label key={item.value} className={`rpm-option ${reason === item.value ? 'rpm-option--selected' : ''}`}>
                 <input
                   type="radio"
                   name="reportReason"
-                  value={r}
-                  checked={reason === r}
-                  onChange={() => setReason(r)}
+                  value={item.value}
+                  checked={reason === item.value}
+                  onChange={() => setReason(item.value)}
                 />
-                <span>{r}</span>
+                <span>{t(item.key)}</span>
               </label>
             ))}
           </div>
@@ -64,10 +67,10 @@ const ReportPostModal = ({ postId, onClose }) => {
 
         <div className="rpm-footer">
           <button className="rpm-btn rpm-btn--cancel" onClick={onClose} disabled={loading}>
-            Hủy
+            {t('common.cancel')}
           </button>
           <button className="rpm-btn rpm-btn--submit" onClick={handleSubmit} disabled={loading || !reason}>
-            {loading ? 'Đang gửi...' : 'Gửi báo cáo'}
+            {loading ? t('common.sending') : t('post.sendReport')}
           </button>
         </div>
       </div>

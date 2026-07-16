@@ -2,12 +2,12 @@ import { useState, useRef, useCallback } from 'react';
 import { Send, Loader } from 'lucide-react';
 import toast from 'react-hot-toast';
 import chatService from '../../services/chatService';
+import { useLocalization } from '../../contexts/useLocalization';
+import { LIMITS, TIMERS } from '../../shared/generated/constants';
 import './MessageInput.css';
 
-const MAX_LENGTH = 1000;
-const TYPING_DEBOUNCE_MS = 300;
-
 const MessageInput = ({ conversationId, receiverId, onMessageSent }) => {
+  const { t } = useLocalization();
   const [content, setContent] = useState('');
   const [sending, setSending] = useState(false);
   const typingTimerRef = useRef(null);
@@ -20,7 +20,7 @@ const MessageInput = ({ conversationId, receiverId, onMessageSent }) => {
     if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
     typingTimerRef.current = setTimeout(() => {
       chatService.sendTypingNotification(receiverId).catch(() => {});
-    }, TYPING_DEBOUNCE_MS);
+    }, TIMERS.chatTypingDebounceMs);
   }, [receiverId]);
 
   const handleSend = async () => {
@@ -38,7 +38,7 @@ const MessageInput = ({ conversationId, receiverId, onMessageSent }) => {
       setContent('');
       onMessageSent?.(message);
     } catch {
-      toast.error('Gửi tin nhắn thất bại. Vui lòng thử lại.');
+      toast.error(t('chat.sendFailed'));
     } finally {
       setSending(false);
     }
@@ -51,24 +51,24 @@ const MessageInput = ({ conversationId, receiverId, onMessageSent }) => {
     }
   };
 
-  const canSend = content.trim().length > 0 && content.length <= MAX_LENGTH && !sending;
+  const canSend = content.trim().length > 0 && content.length <= LIMITS.messageMaxLength && !sending;
 
   return (
     <div className="message-input-container">
       <div className="message-input-wrapper">
         <textarea
           className="message-input-field"
-          placeholder="Aa"
+          placeholder={t('chat.messagePlaceholder')}
           value={content}
           onChange={(e) => handleTyping(e.target.value)}
           onKeyDown={handleKeyDown}
-          maxLength={MAX_LENGTH}
+          maxLength={LIMITS.messageMaxLength}
           rows={1}
           disabled={sending}
         />
-        {content.length > MAX_LENGTH * 0.8 && (
-          <span className={`message-input-char-count ${content.length >= MAX_LENGTH ? 'message-input-char-count--warning' : ''}`}>
-            {content.length}/{MAX_LENGTH}
+        {content.length > LIMITS.messageMaxLength * 0.8 && (
+          <span className={`message-input-char-count ${content.length >= LIMITS.messageMaxLength ? 'message-input-char-count--warning' : ''}`}>
+            {content.length}/{LIMITS.messageMaxLength}
           </span>
         )}
       </div>
@@ -77,7 +77,7 @@ const MessageInput = ({ conversationId, receiverId, onMessageSent }) => {
         className="message-send-btn"
         onClick={handleSend}
         disabled={!canSend}
-        title="Gửi"
+        title={t('chat.send')}
       >
         {sending ? (
           <Loader size={20} className="message-send-btn--loading" />

@@ -10,9 +10,12 @@ import UserDropdown from './UserDropdown';
 import ChatFloatingPanel from '../Chat/ChatFloatingPanel';
 import friendshipService from '../../services/friendshipService';
 import savedItemsService from '../../services/savedItemsService';
+import { useLocalization } from '../../contexts/useLocalization';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const MainLayout = () => {
   const { user } = useAuth();
+  const { t } = useLocalization();
   const navigate = useNavigate();
   const location = useLocation();
   const [contacts, setContacts] = useState([]);
@@ -59,10 +62,10 @@ const MainLayout = () => {
       return (
         <aside className="sidebar sidebar--saved">
           <div className="saved-sb-header">
-            <button className="saved-sb-back" onClick={() => navigate('/')} title="Về trang chủ">
+            <button className="saved-sb-back" onClick={() => navigate('/')} title={translateCatalogKey('ui.components.layout.mainlayout.ve-trang-chu.a7f97907')}>
               <ChevronLeft size={20} />
             </button>
-            <h2 className="saved-sb-title">Đã lưu</h2>
+            <h2 className="saved-sb-title">{t('nav.saved')}</h2>
           </div>
 
           <Link
@@ -70,12 +73,12 @@ const MainLayout = () => {
             className={`saved-sb-item${!activeCol ? ' saved-sb-item--active' : ''}`}
           >
             <span className="saved-sb-icon"><Bookmark size={20} /></span>
-            <span>Mục đã lưu</span>
+            <span>{t('nav.savedItems')}</span>
           </Link>
 
           {savedCollections.length > 0 && (
             <div className="saved-sb-section">
-              <p className="saved-sb-section-label">Bộ sưu tập</p>
+              <p className="saved-sb-section-label">{t('nav.collections')}</p>
               {savedCollections.map((col) => (
                 <Link
                   key={col.id}
@@ -98,14 +101,20 @@ const MainLayout = () => {
           <Avatar src={user?.avatarUrl} className="w-9 h-9" />
           <span className="font-semibold">{user?.fullName}</span>
         </Link>
-        <div className="menu-item"><Users size={28} className="text-blue-500 mr-2" /> Bạn bè</div>
-        <div className="menu-item"><Clock size={28} className="text-blue-500 mr-2" /> Kỷ niệm</div>
+        <Link
+          to="/friends"
+          className={`menu-item${location.pathname.startsWith('/friends') ? ' active' : ''}`}
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          <Users size={28} className="text-blue-500 mr-2" /> {t('nav.friends')}
+        </Link>
+        <div className="menu-item"><Clock size={28} className="text-blue-500 mr-2" /> {t('nav.memories')}</div>
         <Link
           to="/saved"
           className={`menu-item${location.pathname.startsWith('/saved') ? ' active' : ''}`}
           style={{ textDecoration: 'none', color: 'inherit' }}
         >
-          <Bookmark size={28} className="text-purple-500 mr-2" /> Đã lưu
+          <Bookmark size={28} className="text-purple-500 mr-2" /> {t('nav.saved')}
         </Link>
       </aside>
     );
@@ -118,12 +127,12 @@ const MainLayout = () => {
         {/* Góc Trái */}
         <div className="nav-left">
           <Link to="/">
-            <img src="../../assets/images/Facebook-Logo.png" className="nav-logo" alt="logo" />
+            <img src="../../assets/images/Facebook-Logo.png" className="nav-logo" alt={translateCatalogKey('ui.components.layout.mainlayout.logo.c75ef89c')} />
           </Link>
           {/* Full search bar (desktop) */}
           <span className="nav-search-desktop"><SearchBar /></span>
           {/* Collapsed search icon (mobile) → opens the search sheet */}
-          <button className="nav-search-mobile-btn" onClick={() => setMobileSearchOpen(true)} title="Tìm kiếm" aria-label="Tìm kiếm">
+          <button className="nav-search-mobile-btn" onClick={() => setMobileSearchOpen(true)} title={translateCatalogKey('common.search')} aria-label={translateCatalogKey('common.search')}>
             <Search size={20} />
           </button>
         </div>
@@ -140,7 +149,7 @@ const MainLayout = () => {
         {/* Góc Phải */}
         <div className="nav-right">
           {user?.isAdmin && (
-            <Link to="/admin" className="icon-btn admin-entry-btn" title="Admin">
+            <Link to="/admin" className="icon-btn admin-entry-btn" title={translateCatalogKey('ui.components.layout.mainlayout.admin.ac03e484')}>
               <ShieldAlert size={20} />
             </Link>
           )}
@@ -168,7 +177,7 @@ const MainLayout = () => {
         <aside className="sidebar">
           {contacts.length > 0 && (
             <>
-              <h4 className="text-gray-500 font-semibold text-[15px] px-2 mt-4 mb-2">Người liên hệ</h4>
+              <h4 className="text-gray-500 font-semibold text-[15px] px-2 mt-4 mb-2">{t('nav.contacts')}</h4>
               {contacts.map((contact) => (
                 <div
                   key={contact.friendshipId}
@@ -195,7 +204,7 @@ const MainLayout = () => {
       {mobileSearchOpen && (
         <div className="mobile-search-overlay" onMouseDown={() => setMobileSearchOpen(false)}>
           <div className="mobile-search-sheet" onMouseDown={(e) => e.stopPropagation()}>
-            <button className="mobile-search-back" onClick={() => setMobileSearchOpen(false)} title="Đóng" aria-label="Đóng">
+            <button className="mobile-search-back" onClick={() => setMobileSearchOpen(false)} title={translateCatalogKey('common.close')} aria-label={translateCatalogKey('common.close')}>
               <ChevronLeft size={22} />
             </button>
             <div className="mobile-search-field"><SearchBar onNavigate={() => setMobileSearchOpen(false)} /></div>
@@ -205,11 +214,11 @@ const MainLayout = () => {
 
       {/* Mobile bottom navigation (hiện trên màn hình nhỏ, thay cho nav-center bị ẩn) */}
       <nav className="mobile-nav">
-        <Link to="/" className={location.pathname === '/' ? 'active' : ''} title="Trang chủ"><Home size={24} /></Link>
-        <Link to="/friends" className={location.pathname.startsWith('/friends') ? 'active' : ''} title="Bạn bè"><Users size={24} /></Link>
-        <Link to="/reels" className={location.pathname.startsWith('/reels') ? 'active' : ''} title="Reels"><Film size={24} /></Link>
-        <div className="mobile-nav-item" onClick={() => setChatPanelOpen((prev) => !prev)} title="Tin nhắn"><MessageCircle size={24} /></div>
-        <Link to={`/profile/${user?.id}`} className={location.pathname.startsWith('/profile') ? 'active' : ''} title="Trang cá nhân"><Avatar src={user?.avatarUrl} className="w-6 h-6" /></Link>
+        <Link to="/" className={location.pathname === '/' ? 'active' : ''} title={t('nav.home')}><Home size={24} /></Link>
+        <Link to="/friends" className={location.pathname.startsWith('/friends') ? 'active' : ''} title={t('nav.friends')}><Users size={24} /></Link>
+        <Link to="/reels" className={location.pathname.startsWith('/reels') ? 'active' : ''} title={t('nav.reels')}><Film size={24} /></Link>
+        <div className="mobile-nav-item" onClick={() => setChatPanelOpen((prev) => !prev)} title={t('nav.messages')}><MessageCircle size={24} /></div>
+        <Link to={`/profile/${user?.id}`} className={location.pathname.startsWith('/profile') ? 'active' : ''} title={t('nav.profile')}><Avatar src={user?.avatarUrl} className="w-6 h-6" /></Link>
       </nav>
 
       {/* Floating Chat Panel */}

@@ -5,8 +5,11 @@ import Avatar from "../common/Avatar";
 import friendshipService from "../../services/friendshipService";
 import toast from "react-hot-toast";
 import "./FriendList.css";
+import { useConfirm } from '../../contexts/useConfirm';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const FriendList = ({ userId }) => {
+  const confirm = useConfirm();
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -25,7 +28,7 @@ const FriendList = ({ userId }) => {
         setTotalPages(data.pagination.totalPages || 1);
       }
     } catch {
-      toast.error("Không thể tải danh sách bạn bè");
+      toast.error(translateCatalogKey('ui.components.friendship.friendlist.khong-the-tai-danh-sach-ban-be.ae40da14'));
     } finally {
       setLoading(false);
     }
@@ -36,25 +39,30 @@ const FriendList = ({ userId }) => {
   }, [page, userId]);
 
   const handleRemoveFriend = async (friendId, friendName) => {
-    if (!confirm(`Bạn có chắc muốn hủy kết bạn với ${friendName}?`)) return;
+    const accepted = await confirm({
+      title: translateCatalogKey('ui.components.friendship.friendlist.huy-ket-ban.3ede6f81'),
+      message: translateCatalogKey('friends.unfriendDescription', { name: friendName }),
+      confirmText: translateCatalogKey('ui.components.friendship.friendlist.huy-ket-ban.76e1bf1d'),
+    });
+    if (!accepted) return;
     setRemovingId(friendId);
     try {
       await friendshipService.removeFriend(friendId);
-      toast.success(`Đã hủy kết bạn với ${friendName}`);
+      toast.success(translateCatalogKey('ui.components.friendship.friendlist.a-huy-ket-ban-voi-value0.618babe9', { value0: friendName }));
       fetchFriends(page);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Có lỗi xảy ra!");
+      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'));
     } finally {
       setRemovingId(null);
     }
   };
 
   if (loading) {
-    return <div className="friend-list-loading">Đang tải...</div>;
+    return <div className="friend-list-loading">{translateCatalogKey('common.loading')}</div>;
   }
 
   if (friends.length === 0) {
-    return <div className="friend-list-empty">Chưa có bạn bè nào</div>;
+    return <div className="friend-list-empty">{translateCatalogKey('ui.components.friendship.friendlist.chua-co-ban-be-nao.add109a1')}</div>;
   }
 
   return (
@@ -74,7 +82,7 @@ const FriendList = ({ userId }) => {
               className="friend-card-remove"
               onClick={() => handleRemoveFriend(friend.userId, friend.profile?.fullName)}
               disabled={removingId === friend.userId}
-              title="Hủy kết bạn"
+              title={translateCatalogKey('ui.components.friendship.friendlist.huy-ket-ban.76e1bf1d')}
             >
               <UserMinus size={16} />
             </button>
@@ -90,15 +98,15 @@ const FriendList = ({ userId }) => {
             onClick={() => setPage(page - 1)}
             className="friend-page-btn"
           >
-            Trước
+            {translateCatalogKey('common.previous')}
           </button>
-          <span className="friend-page-info">Trang {page} / {totalPages}</span>
+          <span className="friend-page-info">{translateCatalogKey('ui.components.friendship.friendlist.trang.6d3a285d')} {page} / {totalPages}</span>
           <button
             disabled={page >= totalPages}
             onClick={() => setPage(page + 1)}
             className="friend-page-btn"
           >
-            Tiếp
+            {translateCatalogKey('common.next')}
           </button>
         </div>
       )}

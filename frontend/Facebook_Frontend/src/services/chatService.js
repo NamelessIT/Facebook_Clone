@@ -1,6 +1,7 @@
 import * as signalR from '@microsoft/signalr';
 import axiosClient from './axiosClient';
 import { CHAT_HUB_URL } from '../config/env';
+import { STORAGE_KEYS } from '../shared/generated/constants';
 
 const SIGNALR_HUB_URL = CHAT_HUB_URL;
 
@@ -16,13 +17,13 @@ const chatService = {
     if (isConnecting) return connection;
     if (connection?.state === signalR.HubConnectionState.Connected) return connection;
 
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem(STORAGE_KEYS.accessToken);
     if (!token) return null;
 
     isConnecting = true;
     connection = new signalR.HubConnectionBuilder()
       .withUrl(SIGNALR_HUB_URL, {
-        accessTokenFactory: () => localStorage.getItem('accessToken'),
+        accessTokenFactory: () => localStorage.getItem(STORAGE_KEYS.accessToken),
       })
       .withAutomaticReconnect([2000, 5000, 15000, 30000])
       .configureLogging(signalR.LogLevel.Warning)
