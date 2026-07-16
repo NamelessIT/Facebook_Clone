@@ -7,7 +7,8 @@ const root = path.resolve(__dirname, "..");
 const frontendRoot = path.join(root, "frontend", "Facebook_Frontend");
 const viteBin = path.join(frontendRoot, "node_modules", "vite", "bin", "vite.js");
 const apiProject = path.join(root, "backend", "src", "FacebookClone.API", "FacebookClone.API.csproj");
-const apiOutputDir = path.join(root, "backend", "src", "FacebookClone.API", "bin", "Debug", "net10.0");
+const backendConfiguration = "Release";
+const apiOutputDir = path.join(root, "backend", "src", "FacebookClone.API", "bin", backendConfiguration, "net10.0");
 
 const children = [];
 let shuttingDown = false;
@@ -167,8 +168,8 @@ if (!fs.existsSync(viteBin)) {
   process.exit(1);
 }
 
-runStep("Building backend once", "dotnet", ["build", apiProject]);
+runStep(`Building backend once (${backendConfiguration})`, "dotnet", ["build", apiProject, "-c", backendConfiguration]);
 unblockBackendOutputs();
 
-spawnProcess("BE", "dotnet", ["watch", "--project", apiProject, "run", "--no-build"]);
+spawnProcess("BE", "dotnet", ["watch", "--project", apiProject, "run", "--no-build", "-c", backendConfiguration]);
 spawnProcess("FE", process.execPath, [viteBin], { cwd: frontendRoot });

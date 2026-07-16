@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node scripts/dev.cjs",
     "dev:fe": "npm --prefix frontend/Facebook_Frontend run dev",
-    "dev:be": "dotnet watch --project backend/src/FacebookClone.API/FacebookClone.API.csproj run",
+    "dev:be": "dotnet build backend/src/FacebookClone.API/FacebookClone.API.csproj -c Release && dotnet watch --project backend/src/FacebookClone.API/FacebookClone.API.csproj run --no-build -c Release",
     "build": "npm run build:be && npm run build:fe",
     "build:fe": "npm --prefix frontend/Facebook_Frontend run build",
     "build:be": "dotnet build backend/FacebookClone.sln -c Release",
