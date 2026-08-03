@@ -57,4 +57,28 @@ public static class SharedConstants
         public const int MaxTranslationChunkChars = 800;
     }
 
+    public static class Offline
+    {
+        public const string DbName = "fbclone_offline";
+        public const int DbVersion = 1;
+        public const int MaxActions = 1000;
+        public const int MaxAgeDays = 30;
+        public const int SyncBatchSize = 25;
+        public static readonly IReadOnlyList<int> RetryBackoffMs = [1000, 5000, 15000, 60000, 300000];
+        public static readonly IReadOnlyList<string> ActionStatuses = ["pending", "syncing", "completed", "failed", "rolled_back", "expired", "paused", "conflict"];
+        public static readonly IReadOnlyList<string> RetryableStatuses = ["pending", "failed", "paused"];
+        public static readonly IReadOnlyList<string> TerminalStatuses = ["completed", "rolled_back", "expired"];
+        public static readonly IReadOnlyList<string> ActionTypes = ["post.create", "post.update", "post.delete", "post.share", "comment.create", "comment.delete", "reaction.set", "reaction.remove", "saved.add", "saved.remove", "friendship.send", "friendship.accept", "friendship.reject", "friendship.remove", "chat.send", "reel.create", "reel.update", "reel.delete", "profile.update"];
+    }
+
+    public static class UploadChunks
+    {
+        public const int MaxRecords = 2000;
+        public const int MaxAgeDays = 30;
+        public const int DefaultChunkSizeBytes = 5242880;
+        public const int MaxChunkSizeBytes = 10485760;
+        public static readonly IReadOnlyList<string> TargetTypes = ["post", "reel"];
+        public static readonly IReadOnlyList<string> Statuses = ["pending", "uploading", "completed", "failed", "paused", "expired"];
+    }
+
 }

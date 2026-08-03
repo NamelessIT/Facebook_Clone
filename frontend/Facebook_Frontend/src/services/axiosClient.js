@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../config/env';
 import { STORAGE_KEYS } from '../shared/generated/constants';
+import { createIdempotencyKey } from '../offline/idempotency';
+import { enqueueOfflineAction } from '../offline/offlineQueue';
 
 const axiosClient = axios.create({
   baseURL: API_BASE_URL,
@@ -35,6 +37,25 @@ const isAuthEndpoint = (url = '') => {
     url.includes('/auth/refresh-token');
 };
 
+const MUTATING_METHODS = new Set(['post', 'put', 'patch', 'delete']);
+const RETRYABLE_OFFLINE_STATUS_CODES = new Set([408, 429, 500, 502, 503, 504]);
+
+const isMutatingRequest = (config = {}) => MUTATING_METHODS.has((config.method || 'get').toLowerCase());
+
+const isRetryableOfflineError = (error) => {
+  if (!error.response) return true;
+  return RETRYABLE_OFFLINE_STATUS_CODES.has(error.response.status);
+};
+
+const shouldQueueOffline = (error, config = {}) => {
+  if (!config.offlineAction?.enabled) return false;
+  if (config._offlineQueued) return false;
+  if (isAuthEndpoint(config.url || '')) return false;
+  if (!isMutatingRequest(config)) return false;
+  if (config.data instanceof FormData && !config.offlineAction.allowFormData) return false;
+  return isRetryableOfflineError(error);
+};
+
 axiosClient.interceptors.request.use((config) => {
   const token = localStorage.getItem(STORAGE_KEYS.accessToken);
 
@@ -56,6 +77,11 @@ axiosClient.interceptors.request.use((config) => {
     }
   }
 
+  if (isMutatingRequest(config) && !isAuthEndpoint(config.url || '')) {
+    config.headers = config.headers || {};
+    config.headers['Idempotency-Key'] = config.headers['Idempotency-Key'] || config.idempotencyKey || createIdempotencyKey();
+  }
+
   return config;
 });
 
@@ -67,6 +93,29 @@ axiosClient.interceptors.response.use(
 
     if (!originalRequest || isAuthEndpoint(requestUrl)) {
       return Promise.reject(error);
+    }
+
+    if (shouldQueueOffline(error, originalRequest)) {
+      originalRequest._offlineQueued = true;
+      try {
+        await enqueueOfflineAction({
+          idempotencyKey: originalRequest.headers?.['Idempotency-Key'] || originalRequest.idempotencyKey,
+          type: originalRequest.offlineAction.type,
+          method: originalRequest.method?.toUpperCase() || 'POST',
+          url: originalRequest.url,
+          body: originalRequest.data ?? null,
+          headers: originalRequest.offlineAction.headers || {},
+          entityType: originalRequest.offlineAction.entityType,
+          entityId: originalRequest.offlineAction.entityId,
+          localEntityId: originalRequest.offlineAction.localEntityId,
+          rollbackStrategy: originalRequest.offlineAction.rollbackStrategy,
+          status: navigator.onLine === false ? 'paused' : 'failed',
+          errorCode: error.response?.status || 'NETWORK',
+          errorMessage: error.response?.data?.message || error.message || 'Request queued for offline sync',
+        });
+      } catch (queueError) {
+        console.warn('Failed to queue offline action', queueError);
+      }
     }
 
     if (error.response?.status === 401 && !originalRequest._retry) {

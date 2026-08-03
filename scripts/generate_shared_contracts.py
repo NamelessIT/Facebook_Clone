@@ -79,6 +79,8 @@ def gen_js_constants(c: dict) -> str:
     emit("LIMITS", c["limits"])
     emit("TIMERS", c["timers"])
     emit("LOCALIZATION", c["localization"])
+    emit("OFFLINE", c["offline"])
+    emit("UPLOAD_CHUNKS", c["uploadChunks"])
     out.append("")
     return "\n".join(out) + "\n"
 
@@ -168,6 +170,19 @@ def csharp_literal(value):
     return json.dumps(str(value)), "string"
 
 
+def csharp_member(name: str, value) -> str:
+    if isinstance(value, list):
+        if all(isinstance(item, int) for item in value):
+            items = ", ".join(str(item) for item in value)
+            return f"        public static readonly IReadOnlyList<int> {name} = [{items}];"
+
+        items = ", ".join(json.dumps(str(item)) for item in value)
+        return f"        public static readonly IReadOnlyList<string> {name} = [{items}];"
+
+    literal, value_type = csharp_literal(value)
+    return f"        public const {value_type} {name} = {literal};"
+
+
 def gen_csharp_constants(c: dict) -> str:
     groups = {
         "Api": c["api"],
@@ -176,6 +191,8 @@ def gen_csharp_constants(c: dict) -> str:
         "Limits": c["limits"],
         "Timers": c["timers"],
         "Localization": c["localization"],
+        "Offline": c["offline"],
+        "UploadChunks": c["uploadChunks"],
     }
 
     out = [AUTOGEN, "", "namespace FacebookClone.Domain.Constants;", "", "public static class SharedConstants", "{"]
@@ -183,8 +200,7 @@ def gen_csharp_constants(c: dict) -> str:
         out.append(f"    public static class {group_name}")
         out.append("    {")
         for key, value in values.items():
-            literal, value_type = csharp_literal(value)
-            out.append(f"        public const {value_type} {pascal(key)} = {literal};")
+            out.append(csharp_member(pascal(key), value))
         out.append("    }")
         out.append("")
     out.append("}")

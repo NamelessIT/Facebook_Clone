@@ -30,7 +30,7 @@ const AdminPage = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/admin/login');
   };
 
   return (
@@ -48,9 +48,9 @@ const AdminPage = () => {
           </button>
         </div>
 
-        <button className="admin-home-btn" onClick={() => navigate('/')} title={translateCatalogKey('ui.pages.admin.adminpage.ve-facebook.7d84fe74')}>
+        <button className="admin-home-btn" onClick={() => navigate('/admin/dashboard')} title={translateCatalogKey('admin.dashboard.title')}>
           <Home size={18} />
-          {!collapsed && <span>{translateCatalogKey('ui.pages.admin.adminpage.ve-facebook.7d84fe74')}</span>}
+          {!collapsed && <span>{translateCatalogKey('admin.dashboard.title')}</span>}
         </button>
 
         <nav className="admin-nav">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { X } from "lucide-react";
@@ -22,9 +22,10 @@ const getApiErrorMessage = (error, fallback) => {
   return serverMessage || fallback;
 };
 
-const LoginPage = () => {
-  const [email, setEmail] = useState("alice@fbclone.com");
-  const [password, setPassword] = useState("123456");
+const LoginPage = ({ mode = "user" }) => {
+  const isAdminLogin = mode === "admin";
+  const [email, setEmail] = useState(isAdminLogin ? "admin@fbclone.com" : "alice@fbclone.com");
+  const [password, setPassword] = useState(isAdminLogin ? "Admin@123" : "123456");
   const [error, setError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -36,8 +37,19 @@ const LoginPage = () => {
   const [regError, setRegError] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
 
-  const { login } = useAuth();
+  const { login, logout, user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAdminLogin || !isAuthenticated) return;
+
+    if (user?.isAdmin) {
+      navigate("/admin", { replace: true });
+      return;
+    }
+
+    logout();
+  }, [isAdminLogin, isAuthenticated, user, logout, navigate]);
 
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
@@ -60,10 +72,18 @@ const LoginPage = () => {
       });
 
       const { accessToken, refreshToken } = response.data.data;
-      await login(accessToken, refreshToken);
+      const loggedInUser = await login(accessToken, refreshToken);
+
+      if (isAdminLogin && !loggedInUser?.isAdmin) {
+        await logout();
+        const message = "Tài khoản này không có quyền quản trị.";
+        setError(message);
+        toast.error(message, { id: loadingToast, duration: 6000 });
+        return;
+      }
 
       toast.success(translateCatalogKey('ui.pages.login.index.ang-nhap-thanh-cong.90a07943'), { id: loadingToast });
-      navigate("/");
+      navigate((isAdminLogin || loggedInUser?.isAdmin) ? "/admin" : "/");
     } catch (err) {
       const message = getApiErrorMessage(err, translateCatalogKey('ui.pages.login.index.ang-nhap-that-bai-kiem-tra-lai-thong.b27685a6'));
       setError(message);
@@ -123,8 +143,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-container">
-      {isRegisterOpen && (
+    <div className={`login-container${isAdminLogin ? " admin-login-container" : ""}`}>
+      {!isAdminLogin && isRegisterOpen && (
         <div className="register-overlay" onMouseDown={() => setIsRegisterOpen(false)}>
           <div className="register-modal" onMouseDown={(event) => event.stopPropagation()}>
             <div className="register-header">
@@ -188,18 +208,34 @@ const LoginPage = () => {
 
       <div className="login-content">
         <div className="login-left">
-          <img
-            src="https://static.xx.fbcdn.net/rsrc.php/y1/r/4lCu2zih0ca.svg"
-            alt="Facebook"
-            className="fb-logo"
-          />
-          <h2 className="login-slogan">
-            {translateCatalogKey('ui.pages.login.index.facebook-giup-ban-ket-noi-va-chia-se.ce7608bc')}
-          </h2>
+          {isAdminLogin ? (
+            <div className="admin-login-brand">
+              <span>Admin Panel</span>
+              <h1>Facebook Clone Admin</h1>
+              <p>Đăng nhập bằng tài khoản quản trị để vào bảng quản lý hệ thống.</p>
+            </div>
+          ) : (
+            <>
+              <img
+                src="https://static.xx.fbcdn.net/rsrc.php/y1/r/4lCu2zih0ca.svg"
+                alt="Facebook"
+                className="fb-logo"
+              />
+              <h2 className="login-slogan">
+                {translateCatalogKey('ui.pages.login.index.facebook-giup-ban-ket-noi-va-chia-se.ce7608bc')}
+              </h2>
+            </>
+          )}
         </div>
 
         <div className="login-right">
-          <div className="login-card">
+          <div className={`login-card${isAdminLogin ? " admin-login-card" : ""}`}>
+            {isAdminLogin && (
+              <div className="admin-login-card-header">
+                <h2>Đăng nhập quản trị</h2>
+                <p>Trang admin là khu quản lý riêng, không mở giao diện Facebook người dùng.</p>
+              </div>
+            )}
             {error && <div className="login-error">{error}</div>}
 
             <form onSubmit={handleLoginSubmit}>
@@ -222,17 +258,23 @@ const LoginPage = () => {
               </button>
             </form>
 
-            <a href="#" className="forgot-link">{translateCatalogKey('ui.pages.login.index.quen-mat-khau.7e084716')}</a>
-            <div className="divider" />
+            {!isAdminLogin && (
+              <>
+                <a href="#" className="forgot-link">{translateCatalogKey('ui.pages.login.index.quen-mat-khau.7e084716')}</a>
+                <div className="divider" />
 
-            <button onClick={() => setIsRegisterOpen(true)} className="btn-create" type="button">
-              {translateCatalogKey('ui.pages.login.index.tao-tai-khoan-moi.70069e6d')}
-            </button>
+                <button onClick={() => setIsRegisterOpen(true)} className="btn-create" type="button">
+                  {translateCatalogKey('ui.pages.login.index.tao-tai-khoan-moi.70069e6d')}
+                </button>
+              </>
+            )}
           </div>
 
-          <p className="create-page-text">
-            <b>{translateCatalogKey('ui.pages.login.index.tao-trang.db011044')}</b> {translateCatalogKey('ui.pages.login.index.danh-cho-nguoi-noi-tieng-thuong-hieu.52d55447')}
-          </p>
+          {!isAdminLogin && (
+            <p className="create-page-text">
+              <b>{translateCatalogKey('ui.pages.login.index.tao-trang.db011044')}</b> {translateCatalogKey('ui.pages.login.index.danh-cho-nguoi-noi-tieng-thuong-hieu.52d55447')}
+            </p>
+          )}
         </div>
       </div>
     </div>

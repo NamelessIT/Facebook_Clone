@@ -121,11 +121,13 @@ public class SecurityService : ISecurityService
     {
         if (IsIpBlocked(ip)) return true;
 
-        var limit = StrictPaths.TryGetValue(path.ToLower(), out var strict)
+        var normalizedPath = NormalizeRateLimitPath(path);
+        var limit = StrictPaths.TryGetValue(normalizedPath, out var strict)
             ? strict
             : MaxRequestsPerWindow;
+        var rateKey = $"{ip}|{normalizedPath}";
 
-        var entry = _rateLimits.AddOrUpdate(ip,
+        var entry = _rateLimits.AddOrUpdate(rateKey,
             _ => new RateLimitEntry(ip, new Queue<DateTime>([DateTime.UtcNow]), 0, null),
             (_, e) =>
             {
@@ -139,14 +141,14 @@ public class SecurityService : ISecurityService
         if (entry.Timestamps.Count > limit)
         {
             RecordEvent(SecurityEventType.RateLimitExceeded, ip,
-                $"Exceeded {limit} req/min on {path}", path);
+                $"Exceeded {limit} req/min on {normalizedPath}", path);
 
             // Auto-block after 3x the limit in 1 window
             if (entry.Timestamps.Count > limit * 3)
             {
-                BlockIp(ip, $"Auto-blocked: rate limit exceeded on {path}", true, TimeSpan.FromHours(1));
+                BlockIp(ip, $"Auto-blocked: rate limit exceeded on {normalizedPath}", true, TimeSpan.FromHours(1));
                 RecordEvent(SecurityEventType.AutoBanned, ip,
-                    $"Auto-blocked for 1h: DoS pattern on {path}", path);
+                    $"Auto-blocked for 1h: DoS pattern on {normalizedPath}", path);
             }
             return true;
         }
@@ -181,7 +183,32 @@ public class SecurityService : ISecurityService
             });
     }
 
-    public void ResetRateLimit(string ip) => _rateLimits.TryRemove(ip, out _);
+    public void ResetRateLimit(string ip)
+    {
+        foreach (var key in _rateLimits.Keys.Where(k => k == ip || k.StartsWith($"{ip}|", StringComparison.Ordinal)).ToList())
+        {
+            _rateLimits.TryRemove(key, out _);
+        }
+    }
+
+    private static string NormalizeRateLimitPath(string path)
+    {
+        var normalized = (path ?? "/").ToLowerInvariant();
+        foreach (var strictPath in StrictPaths.Keys)
+        {
+            if (normalized.StartsWith(strictPath, StringComparison.OrdinalIgnoreCase))
+                return strictPath;
+        }
+
+        if (normalized.StartsWith("/api/v1/posts", StringComparison.OrdinalIgnoreCase)) return "/api/v1/posts";
+        if (normalized.StartsWith("/api/v1/reels", StringComparison.OrdinalIgnoreCase)) return "/api/v1/reels";
+        if (normalized.StartsWith("/api/v1/comments", StringComparison.OrdinalIgnoreCase)) return "/api/v1/comments";
+        if (normalized.StartsWith("/api/v1/messages", StringComparison.OrdinalIgnoreCase)) return "/api/v1/messages";
+        if (normalized.StartsWith("/api/v1/notifications", StringComparison.OrdinalIgnoreCase)) return "/api/v1/notifications";
+        if (normalized.StartsWith("/api/v1/admin", StringComparison.OrdinalIgnoreCase)) return "/api/v1/admin";
+
+        return normalized;
+    }
 
     // ---- IP Blocking ----
 

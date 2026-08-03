@@ -62,3 +62,103 @@ jobs:
         run: npm run test
       - name: Build
         run: npm run build
+
+  e2e:
+    name: Playwright E2E smoke before CD
+    runs-on: ubuntu-latest
+    needs: [contracts, backend, frontend]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: facebook_clone
+          POSTGRES_USER: fb_admin
+          POSTGRES_PASSWORD: fb_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fb_admin -d facebook_clone"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://127.0.0.1:5286
+      ConnectionStrings__Default: Host=127.0.0.1;Port=5432;Database=facebook_clone;Username=fb_admin;Password=fb_password;GSS Encryption Mode=Disable
+      Redis__ConnectionString: 127.0.0.1:6379
+      Jwt__Secret: THIS_IS_A_SUPER_SECRET_KEY_CHANGE_LATER
+      Jwt__Issuer: FacebookClone
+      Jwt__Audience: FacebookCloneClient
+      VITE_API_ORIGIN: http://127.0.0.1:5286
+      VITE_API_BASE_URL: http://127.0.0.1:5286/api/v1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/Facebook_Frontend/package-lock.json
+      - name: Restore and build backend
+        run: |
+          dotnet restore backend/FacebookClone.sln
+          dotnet build backend/FacebookClone.sln -c Release --no-restore
+      - name: Migrate and seed database
+        run: dotnet run --project backend/src/FacebookClone.API/FacebookClone.API.csproj -c Release --no-build -- --seed
+      - name: Start backend API
+        run: |
+          Database__AutoMigrate=false Database__AutoSeed=false \
+          dotnet run --project backend/src/FacebookClone.API/FacebookClone.API.csproj -c Release --no-build > backend-e2e.log 2>&1 &
+          echo $! > backend-e2e.pid
+          for i in {1..40}; do
+            if curl -fsS http://127.0.0.1:5286/swagger/index.html > /dev/null; then
+              echo "Backend API is ready"
+              exit 0
+            fi
+            echo "Waiting for backend API ($i/40)..."
+            sleep 2
+          done
+          echo "Backend API did not become ready. Last log lines:"
+          tail -n 120 backend-e2e.log || true
+          exit 1
+      - name: Install frontend dependencies
+        working-directory: frontend/Facebook_Frontend
+        run: npm ci
+      - name: Build frontend for E2E
+        working-directory: frontend/Facebook_Frontend
+        run: npm run build
+      - name: Install Playwright browsers
+        working-directory: frontend/Facebook_Frontend
+        run: npx playwright install --with-deps chromium
+      - name: Run Playwright E2E
+        working-directory: frontend/Facebook_Frontend
+        run: npm run test:e2e
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/Facebook_Frontend/playwright-reports
+      - name: Upload Playwright test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: frontend/Facebook_Frontend/test-results
+      - name: Upload backend E2E log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-e2e-log
+          path: backend-e2e.log

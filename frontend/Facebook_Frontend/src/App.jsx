@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { LocalizationProvider } from "./contexts/LocalizationContext";
@@ -14,17 +15,27 @@ import SavedItemsPage from "./pages/SavedItems/SavedItemsPage";
 import PostDetailPage from "./pages/PostDetail/PostDetailPage";
 import AdminPage from "./pages/Admin/AdminPage";
 import ConfirmProvider from "./contexts/ConfirmProvider";
+import { OfflineSyncProvider } from "./contexts/OfflineSyncContext";
 import NotificationCenter from "./components/feedback/NotificationCenter";
 
 const PrivateRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  const { isAuthenticated, user } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.isAdmin) return <Navigate to="/admin" replace />;
+  return children;
 };
 
 const AdminRoute = ({ children }) => {
-  const { isAuthenticated, user } = useAuth();
-  if (!isAuthenticated) return <Navigate to="/login" />;
-  if (!user?.isAdmin) return <Navigate to="/" />;
+  const { isAuthenticated, user, logout } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated && user && !user.isAdmin) {
+      logout();
+    }
+  }, [isAuthenticated, user, logout]);
+
+  if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
+  if (!user?.isAdmin) return <Navigate to="/admin/login" replace />;
   return children;
 };
 
@@ -33,9 +44,11 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <LocalizationProvider>
+        <OfflineSyncProvider>
         <ConfirmProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin/login" element={<LoginPage mode="admin" />} />
 
           {/* Các trang cần đăng nhập sẽ nằm trong MainLayout */}
           <Route
@@ -73,6 +86,7 @@ function App() {
         </Routes>
         <NotificationCenter />
         </ConfirmProvider>
+        </OfflineSyncProvider>
         </LocalizationProvider>
       </AuthProvider>
     </BrowserRouter>

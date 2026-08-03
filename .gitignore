@@ -23,3 +23,9 @@ __pycache__/
 *.pyc
 
 /node_modules/
+playwright-report/
+playwright-reports/
+test-results/
+frontend/Facebook_Frontend/playwright-report/
+frontend/Facebook_Frontend/playwright-reports/
+frontend/Facebook_Frontend/test-results/
