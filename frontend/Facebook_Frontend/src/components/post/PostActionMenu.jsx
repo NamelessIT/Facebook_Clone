@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import {
   MoreHorizontal, Star, EyeOff, Bookmark, Link2, Flag,
 } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import postInteractionService from '../../services/postInteractionService';
 import ReportPostModal from './ReportPostModal';
 import './PostActionMenu.css';

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Film } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import reelService from '../../services/reelService';
 import { useLocalization } from '../../contexts/useLocalization';
 import './EditReelModal.css';
@@ -45,8 +45,8 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
       const updated = res.data?.data || res.data;
       toast.success(t('reels.updateSuccess'));
       onSuccess?.({ ...reel, ...updated, ...form });
-    } catch {
-      toast.error(t('reels.updateFailed'));
+    } catch (error) {
+      toast.apiError(error, t('reels.updateFailed'), { context: 'reels.update' });
     } finally {
       setSaving(false);
     }

@@ -6,6 +6,7 @@ import Avatar from "../common/Avatar";
 import { LIMITS } from "../../shared/generated/constants";
 import "./SearchBar.css";
 import { useLocalization } from "../../contexts/useLocalization";
+import toast from '../../shared/appToast';
 
 const SearchBar = ({ onNavigate }) => {
   const [query, setQuery] = useState("");
@@ -43,8 +44,9 @@ const SearchBar = ({ onNavigate }) => {
         const users = res.data?.data || [];
         setSuggestions(users);
         setShowDropdown(users.length > 0);
-      } catch {
+      } catch (error) {
         setSuggestions([]);
+        toast.apiError(error, t('search.loadFailed'), { id: 'search-suggestions-error', context: 'search.suggestions' });
       } finally {
         setLoading(false);
       }
@@ -53,7 +55,7 @@ const SearchBar = ({ onNavigate }) => {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [query]);
+  }, [query, t]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

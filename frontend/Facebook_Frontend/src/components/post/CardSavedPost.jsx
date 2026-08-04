@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { MoreHorizontal, Link2, FolderPlus, X } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import { getImageUrl } from '../../utils/formatUrl';
 import savedItemsService from '../../services/savedItemsService';
 import './CardSavedPost.css';
@@ -131,8 +131,8 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, o
       const res = await savedItemsService.getPostCollectionState(post.id);
       setSelectedCollectionIds(res.data?.data?.collectionIds ?? []);
       setShowCollectionModal(true);
-    } catch {
-      toast.error(translateCatalogKey('ui.components.post.cardsavedpost.khong-the-tai-trang-thai-bo-suu-tap.b72d487b'));
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('ui.components.post.cardsavedpost.khong-the-tai-trang-thai-bo-suu-tap.b72d487b'), { context: 'saved.collectionState.load' });
     }
   };
 

@@ -5,7 +5,7 @@ import {
   Grid3X3, FileText, Users, Image, Film, ChevronDown,
   Eye, Upload
 } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import { useAuth } from '../../contexts/AuthContext';
 import userService from '../../services/userService';
 import postService from '../../services/postService';
@@ -208,8 +208,8 @@ const ProfilePage = () => {
 
       toast.success(translateCatalogKey('ui.pages.profile.profilepage.a-cap-nhat-anh-ai-dien-va-ang-bai-vi.333e8524'));
       fetchPosts(1);
-    } catch {
-      toast.error(translateCatalogKey('ui.pages.profile.profilepage.cap-nhat-anh-ai-dien-that-bai.3eeaf866'));
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('ui.pages.profile.profilepage.cap-nhat-anh-ai-dien-that-bai.3eeaf866'), { context: 'profile.avatar.update' });
     } finally {
       setAvatarUploading(false);
     }
@@ -242,8 +242,8 @@ const ProfilePage = () => {
 
       toast.success(translateCatalogKey('ui.pages.profile.profilepage.a-cap-nhat-anh-bia-va-ang-bai-viet.44f6e757'));
       fetchPosts(1);
-    } catch {
-      toast.error(translateCatalogKey('ui.pages.profile.profilepage.cap-nhat-anh-bia-that-bai.5d4e9dab'));
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('ui.pages.profile.profilepage.cap-nhat-anh-bia-that-bai.5d4e9dab'), { context: 'profile.cover.update' });
     } finally {
       setCoverUploading(false);
     }

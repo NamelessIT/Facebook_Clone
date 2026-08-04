@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import toast from '../../shared/appToast';
 import { X } from "lucide-react";
 import api from "../../services/axiosClient";
 import { useAuth } from "../../contexts/AuthContext";
@@ -87,12 +87,7 @@ const LoginPage = ({ mode = "user" }) => {
     } catch (err) {
       const message = getApiErrorMessage(err, translateCatalogKey('ui.pages.login.index.ang-nhap-that-bai-kiem-tra-lai-thong.b27685a6'));
       setError(message);
-      toast.error(message, { id: loadingToast, duration: 6000 });
-      console.error("Login failed:", {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message,
-      });
+      toast.apiError(err, message, { id: loadingToast, duration: 8000, context: isAdminLogin ? 'auth.admin.login' : 'auth.user.login' });
     } finally {
       setIsLoggingIn(false);
     }
@@ -131,12 +126,7 @@ const LoginPage = ({ mode = "user" }) => {
     } catch (err) {
       const message = getApiErrorMessage(err, translateCatalogKey('ui.pages.login.index.ang-ky-that-bai-email-co-the-a-ton-t.409f0ce9'));
       setRegError(message);
-      toast.error(message, { id: loadingToast, duration: 6000 });
-      console.error("Register failed:", {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message,
-      });
+      toast.apiError(err, message, { id: loadingToast, duration: 8000, context: 'auth.register' });
     } finally {
       setIsRegistering(false);
     }

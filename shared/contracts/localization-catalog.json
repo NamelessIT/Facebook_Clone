@@ -258,6 +258,58 @@
       }
     },
     {
+      "key": "notification.clientEventId",
+      "sourceText": "Mã sự kiện giao diện",
+      "context": "Mã cục bộ khi lỗi không bắt nguồn từ API",
+      "translations": {
+        "en": "UI event ID"
+      }
+    },
+    {
+      "key": "notification.loadFailed",
+      "sourceText": "Không thể tải thông báo.",
+      "context": "Lỗi tải danh sách thông báo",
+      "translations": { "en": "Could not load notifications." }
+    },
+    {
+      "key": "notification.markReadFailed",
+      "sourceText": "Không thể cập nhật trạng thái thông báo.",
+      "context": "Lỗi đánh dấu thông báo đã đọc",
+      "translations": { "en": "Could not update the notification status." }
+    },
+    {
+      "key": "notification.httpStatus",
+      "sourceText": "Trạng thái HTTP",
+      "context": "Chi tiết lỗi API",
+      "translations": {
+        "en": "HTTP status"
+      }
+    },
+    {
+      "key": "notification.errorCode",
+      "sourceText": "Mã lỗi",
+      "context": "Chi tiết lỗi API",
+      "translations": {
+        "en": "Error code"
+      }
+    },
+    {
+      "key": "notification.requestId",
+      "sourceText": "Mã yêu cầu",
+      "context": "Correlation ID để tra log API",
+      "translations": {
+        "en": "Request ID"
+      }
+    },
+    {
+      "key": "notification.retryAfter",
+      "sourceText": "Thử lại sau {seconds} giây",
+      "context": "Thời gian chờ trước khi gửi lại request",
+      "translations": {
+        "en": "Retry after {seconds} seconds"
+      }
+    },
+    {
       "key": "notification.title",
       "sourceText": "Thông báo",
       "context": "Tiêu đề bảng thông báo",
@@ -5096,6 +5148,198 @@
       "translations": {
         "en": "Load more reels"
       }
+    },
+    {
+      "key": "admin.users.createAccount",
+      "sourceText": "T\u1ea1o t\u00e0i kho\u1ea3n",
+      "context": "N\u00fat v\u00e0 ti\u00eau \u0111\u1ec1 modal t\u1ea1o account t\u1eeb admin",
+      "translations": { "en": "Create account" }
+    },
+    {
+      "key": "admin.users.createHierarchyHint",
+      "sourceText": "Ch\u1ec9 c\u00f3 th\u1ec3 t\u1ea1o account v\u00e0 g\u00e1n role th\u1ea5p h\u01a1n role cao nh\u1ea5t c\u1ee7a b\u1ea1n.",
+      "context": "M\u00f4 t\u1ea3 quy t\u1eafc ph\u00e2n c\u1ea5p khi t\u1ea1o account",
+      "translations": { "en": "You can only create accounts with roles below your highest role." }
+    },
+    {
+      "key": "admin.users.firstName",
+      "sourceText": "T\u00ean",
+      "context": "Form t\u1ea1o account",
+      "translations": { "en": "First name" }
+    },
+    {
+      "key": "admin.users.lastName",
+      "sourceText": "H\u1ecd",
+      "context": "Form t\u1ea1o account",
+      "translations": { "en": "Last name" }
+    },
+    {
+      "key": "admin.users.usernameEmail",
+      "sourceText": "T\u00ean \u0111\u0103ng nh\u1eadp (email)",
+      "context": "Form t\u1ea1o account",
+      "translations": { "en": "Username (email)" }
+    },
+    {
+      "key": "admin.users.initialPassword",
+      "sourceText": "M\u1eadt kh\u1ea9u ban \u0111\u1ea7u",
+      "context": "Form t\u1ea1o account",
+      "translations": { "en": "Initial password" }
+    },
+    {
+      "key": "admin.users.passwordRules",
+      "sourceText": "T\u1ed1i thi\u1ec3u {{count}} k\u00fd t\u1ef1, c\u00f3 ch\u1eef hoa, ch\u1eef th\u01b0\u1eddng v\u00e0 s\u1ed1.",
+      "context": "Quy t\u1eafc m\u1eadt kh\u1ea9u account",
+      "translations": { "en": "At least {{count}} characters with uppercase, lowercase and a number." }
+    },
+    {
+      "key": "admin.users.passwordOneTimeHint",
+      "sourceText": "M\u1eadt kh\u1ea9u ch\u1ec9 hi\u1ec3n th\u1ecb m\u1ed9t l\u1ea7n sau khi t\u1ea1o. H\u00e3y c\u1ea5p l\u1ea1i cho ng\u01b0\u1eddi s\u1eed d\u1ee5ng qua k\u00eanh an to\u00e0n.",
+      "context": "C\u1ea3nh b\u00e1o m\u1eadt kh\u1ea9u ban \u0111\u1ea7u",
+      "translations": { "en": "The password is shown once after creation. Share it through a secure channel." }
+    },
+    {
+      "key": "admin.users.assignLowerRoles",
+      "sourceText": "Role \u0111\u01b0\u1ee3c ph\u00e9p g\u00e1n",
+      "context": "Danh s\u00e1ch role trong form t\u1ea1o account",
+      "translations": { "en": "Assignable roles" }
+    },
+    {
+      "key": "admin.users.createValidation",
+      "sourceText": "Nh\u1eadp \u0111\u1ee7 th\u00f4ng tin, m\u1eadt kh\u1ea9u h\u1ee3p l\u1ec7 v\u00e0 ch\u1ecdn \u00edt nh\u1ea5t m\u1ed9t role.",
+      "context": "L\u1ed7i validation t\u1ea1o account",
+      "translations": { "en": "Complete all fields, use a valid password and select at least one role." }
+    },
+    {
+      "key": "admin.users.createSuccess",
+      "sourceText": "\u0110\u00e3 t\u1ea1o t\u00e0i kho\u1ea3n.",
+      "context": "Toast t\u1ea1o account th\u00e0nh c\u00f4ng",
+      "translations": { "en": "Account created." }
+    },
+    {
+      "key": "admin.users.createFailed",
+      "sourceText": "Kh\u00f4ng th\u1ec3 t\u1ea1o t\u00e0i kho\u1ea3n.",
+      "context": "Toast t\u1ea1o account th\u1ea5t b\u1ea1i",
+      "translations": { "en": "Could not create account." }
+    },
+    {
+      "key": "admin.users.accountReady",
+      "sourceText": "T\u00e0i kho\u1ea3n \u0111\u00e3 s\u1eb5n s\u00e0ng",
+      "context": "Ti\u00eau \u0111\u1ec1 hi\u1ec3n th\u1ecb credentials",
+      "translations": { "en": "Account is ready" }
+    },
+    {
+      "key": "admin.users.credentialsWarning",
+      "sourceText": "H\u00e3y l\u01b0u th\u00f4ng tin n\u00e0y ngay. M\u1eadt kh\u1ea9u s\u1ebd kh\u00f4ng \u0111\u01b0\u1ee3c hi\u1ec3n th\u1ecb l\u1ea1i.",
+      "context": "C\u1ea3nh b\u00e1o sau khi t\u1ea1o account",
+      "translations": { "en": "Save these credentials now. The password will not be shown again." }
+    },
+    {
+      "key": "admin.users.username",
+      "sourceText": "T\u00ean \u0111\u0103ng nh\u1eadp",
+      "context": "Nhãn credentials",
+      "translations": { "en": "Username" }
+    },
+    {
+      "key": "admin.users.password",
+      "sourceText": "M\u1eadt kh\u1ea9u",
+      "context": "Nhãn credentials",
+      "translations": { "en": "Password" }
+    },
+    {
+      "key": "admin.users.copyCredentials",
+      "sourceText": "Sao ch\u00e9p th\u00f4ng tin",
+      "context": "N\u00fat sao ch\u00e9p credentials",
+      "translations": { "en": "Copy credentials" }
+    },
+    {
+      "key": "admin.users.credentialsCopied",
+      "sourceText": "\u0110\u00e3 sao ch\u00e9p th\u00f4ng tin \u0111\u0103ng nh\u1eadp.",
+      "context": "Toast sao ch\u00e9p credentials",
+      "translations": { "en": "Credentials copied." }
+    },
+    {
+      "key": "admin.users.savedCredentials",
+      "sourceText": "T\u00f4i \u0111\u00e3 l\u01b0u",
+      "context": "N\u00fat \u0111\u00f3ng credentials",
+      "translations": { "en": "I have saved them" }
+    },
+    {
+      "key": "admin.users.togglePassword",
+      "sourceText": "Hi\u1ec7n ho\u1eb7c \u1ea9n m\u1eadt kh\u1ea9u",
+      "context": "Aria label n\u00fat m\u1eadt kh\u1ea9u",
+      "translations": { "en": "Show or hide password" }
+    },
+    {
+      "key": "admin.account.changePassword",
+      "sourceText": "\u0110\u1ed5i m\u1eadt kh\u1ea9u",
+      "context": "T\u00e0i kho\u1ea3n admin",
+      "translations": { "en": "Change password" }
+    },
+    {
+      "key": "admin.account.currentPassword",
+      "sourceText": "M\u1eadt kh\u1ea9u hi\u1ec7n t\u1ea1i",
+      "context": "Form \u0111\u1ed5i m\u1eadt kh\u1ea9u",
+      "translations": { "en": "Current password" }
+    },
+    {
+      "key": "admin.account.newPassword",
+      "sourceText": "M\u1eadt kh\u1ea9u m\u1edbi",
+      "context": "Form \u0111\u1ed5i m\u1eadt kh\u1ea9u",
+      "translations": { "en": "New password" }
+    },
+    {
+      "key": "admin.account.confirmPassword",
+      "sourceText": "Nh\u1eadp l\u1ea1i m\u1eadt kh\u1ea9u m\u1edbi",
+      "context": "Form \u0111\u1ed5i m\u1eadt kh\u1ea9u",
+      "translations": { "en": "Confirm new password" }
+    },
+    {
+      "key": "admin.account.passwordMismatch",
+      "sourceText": "M\u1eadt kh\u1ea9u x\u00e1c nh\u1eadn kh\u00f4ng kh\u1edbp.",
+      "context": "Validation \u0111\u1ed5i m\u1eadt kh\u1ea9u",
+      "translations": { "en": "Password confirmation does not match." }
+    },
+    {
+      "key": "admin.account.passwordChanged",
+      "sourceText": "\u0110\u00e3 \u0111\u1ed5i m\u1eadt kh\u1ea9u. Vui l\u00f2ng \u0111\u0103ng nh\u1eadp l\u1ea1i.",
+      "context": "Toast \u0111\u1ed5i m\u1eadt kh\u1ea9u",
+      "translations": { "en": "Password changed. Please sign in again." }
+    },
+    {
+      "key": "admin.account.passwordChangeFailed",
+      "sourceText": "Kh\u00f4ng th\u1ec3 \u0111\u1ed5i m\u1eadt kh\u1ea9u.",
+      "context": "Toast \u0111\u1ed5i m\u1eadt kh\u1ea9u",
+      "translations": { "en": "Could not change password." }
+    },
+    {
+      "key": "admin.account.passwordSignInAgain",
+      "sourceText": "Sau khi \u0111\u1ed5i m\u1eadt kh\u1ea9u, t\u1ea5t c\u1ea3 phi\u00ean s\u1ebd b\u1ecb thu h\u1ed3i v\u00e0 b\u1ea1n c\u1ea7n \u0111\u0103ng nh\u1eadp l\u1ea1i.",
+      "context": "C\u1ea3nh b\u00e1o \u0111\u1ed5i m\u1eadt kh\u1ea9u",
+      "translations": { "en": "Changing your password revokes all sessions and requires you to sign in again." }
+    },
+    {
+      "key": "comment.loadFailed",
+      "sourceText": "Không thể tải bình luận.",
+      "context": "Lỗi tải bình luận bài viết",
+      "translations": { "en": "Could not load comments." }
+    },
+    {
+      "key": "admin.dashboard.loadFailed",
+      "sourceText": "Không thể tải dashboard quản trị.",
+      "context": "Lỗi tải dashboard admin",
+      "translations": { "en": "Could not load the admin dashboard." }
+    },
+    {
+      "key": "reels.loadFailed",
+      "sourceText": "Không thể tải Reels.",
+      "context": "Lỗi tải danh sách Reel",
+      "translations": { "en": "Could not load Reels." }
+    },
+    {
+      "key": "search.loadFailed",
+      "sourceText": "Không thể tải kết quả tìm kiếm.",
+      "context": "Lỗi tìm kiếm user hoặc bài viết",
+      "translations": { "en": "Could not load search results." }
     }
   ]
 }

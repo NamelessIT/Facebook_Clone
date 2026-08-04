@@ -48,6 +48,30 @@ public class AdminController(
                 ur.Role.RolePermissions.Any(rp => rp.Permission.Key == permissionKey)));
     }
 
+    private async Task<bool> CurrentUserRoleHasPermission(string permissionKey)
+    {
+        var userId = UserContext.GetUserId(User);
+        return await db.UserRoles
+            .AsNoTracking()
+            .AnyAsync(ur => ur.UserId == userId &&
+                ur.Role.RolePermissions.Any(rp => rp.Permission.Key == permissionKey));
+    }
+
+    private async Task<int> GetCurrentUserMaxRoleLevel()
+    {
+        var userId = UserContext.GetUserId(User);
+        var user = await db.Users
+            .AsNoTracking()
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Id == userId && !u.IsDeleted);
+
+        if (user == null) return 0;
+        return user.UserRoles.Select(ur => ur.Role.Level)
+            .DefaultIfEmpty(user.IsAdmin ? SharedConstants.Limits.MaxRoleLevel : 0)
+            .Max();
+    }
+
     [HttpGet("me")]
     public async Task<IActionResult> GetAdminMe()
     {
@@ -187,6 +211,119 @@ public class AdminController(
             success = true,
             data = items,
             pagination = new { page, pageSize, total, totalPages = (int)Math.Ceiling((double)total / pageSize) }
+        });
+    }
+
+    [HttpGet("users/creation-options")]
+    public async Task<IActionResult> GetUserCreationOptions()
+    {
+        if (RequireAdmin() is { } err) return err;
+        var canCreateUsers = await CurrentUserRoleHasPermission("users.manage");
+        var canAssignRoles = await CurrentUserHasPermission("roles.manage");
+        if (!canCreateUsers && !canAssignRoles) return Forbid();
+
+        var maxRoleLevel = await GetCurrentUserMaxRoleLevel();
+        var roles = await db.Roles
+            .AsNoTracking()
+            .Where(r => r.Level < maxRoleLevel)
+            .OrderByDescending(r => r.Level)
+            .Select(r => new { r.Id, r.Name, r.DisplayName, r.Level })
+            .ToListAsync();
+
+        return Ok(new { success = true, data = new { maxRoleLevel, canCreateUsers, canAssignRoles, roles } });
+    }
+
+    [HttpPost("users")]
+    public async Task<IActionResult> CreateManagedUser([FromBody] CreateManagedUserRequest req)
+    {
+        if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserRoleHasPermission("users.manage")) return Forbid();
+
+        var email = (req.Email ?? string.Empty).Trim().ToLowerInvariant();
+        var firstName = (req.FirstName ?? string.Empty).Trim();
+        var lastName = (req.LastName ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+            return BadRequest(new { success = false, message = "Email, first name and last name are required." });
+        if (!email.Contains('@') || email.Length > 255)
+            return BadRequest(new { success = false, message = "Email is invalid." });
+        if (string.IsNullOrWhiteSpace(req.Password) ||
+            req.Password.Length < SharedConstants.Limits.PasswordMinLength ||
+            !req.Password.Any(char.IsUpper) ||
+            !req.Password.Any(char.IsLower) ||
+            !req.Password.Any(char.IsDigit))
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "Password must be at least 8 characters and include uppercase, lowercase and a number."
+            });
+        }
+        if (req.RoleIds == null || req.RoleIds.Count == 0)
+            return BadRequest(new { success = false, message = "At least one role is required." });
+        if (await db.Users.AnyAsync(u => u.Email == email))
+            return Conflict(new { success = false, message = "Email is already in use." });
+
+        var actorId = UserContext.GetUserId(User);
+        var maxRoleLevel = await GetCurrentUserMaxRoleLevel();
+        var roleIds = req.RoleIds.Distinct().ToList();
+        var roles = await db.Roles.Where(r => roleIds.Contains(r.Id)).ToListAsync();
+        if (roles.Count != roleIds.Count)
+            return BadRequest(new { success = false, message = "One or more roles are invalid." });
+        if (!AdminRolePolicy.CanAssignRoles(maxRoleLevel, roles.Select(r => r.Level)))
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new
+            {
+                success = false,
+                message = "You can only assign roles below your highest role."
+            });
+        }
+
+        var now = DateTime.UtcNow;
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Email = email,
+            FirstName = firstName,
+            LastName = lastName,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.Password),
+            IsAdmin = roles.Any(r => r.Level >= SharedConstants.Limits.AdminRoleMinLevel),
+            IsOnline = false,
+            IsDeleted = false,
+            CreatedAt = now,
+            UpdatedAt = now
+        };
+
+        await using var transaction = await db.Database.BeginTransactionAsync(HttpContext.RequestAborted);
+        db.Users.Add(user);
+        foreach (var role in roles)
+        {
+            db.UserRoles.Add(new UserRole
+            {
+                UserId = user.Id,
+                RoleId = role.Id,
+                AssignedAt = now,
+                AssignedByUserId = actorId
+            });
+        }
+
+        await db.SaveChangesAsync(HttpContext.RequestAborted);
+        await transaction.CommitAsync(HttpContext.RequestAborted);
+
+        logger.LogInformation("Admin {AdminId} created managed account {UserId} with roles {RoleIds}",
+            actorId, user.Id, roleIds);
+        return StatusCode(StatusCodes.Status201Created, new
+        {
+            success = true,
+            data = new
+            {
+                user.Id,
+                user.Email,
+                user.FirstName,
+                user.LastName,
+                user.IsAdmin,
+                Roles = roles.Select(r => new { r.Id, r.Name, r.DisplayName, r.Level })
+            },
+            message = "Account created. The password is only available to the administrator who entered it."
         });
     }
 
@@ -423,14 +560,36 @@ public class AdminController(
         if (RequireAdmin() is { } err) return err;
         if (!await CurrentUserHasPermission("roles.manage")) return Forbid();
 
+        var actorId = UserContext.GetUserId(User);
+        if (id == actorId)
+            return BadRequest(new { success = false, message = "You cannot change your own roles." });
+
+        var maxRoleLevel = await GetCurrentUserMaxRoleLevel();
         var target = await db.Users
             .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
             .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
         if (target == null) return NotFound(new { success = false, message = "User not found." });
+        if (!AdminRolePolicy.CanManageTarget(maxRoleLevel, target.UserRoles.Select(ur => ur.Role.Level)))
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new
+            {
+                success = false,
+                message = "You cannot change roles for an account at or above your level."
+            });
+        }
 
         var roleIds = req.RoleIds.Distinct().ToList();
         var roles = await db.Roles.Where(r => roleIds.Contains(r.Id)).ToListAsync();
         if (roles.Count != roleIds.Count) return BadRequest(new { success = false, message = "Invalid role id." });
+        if (!AdminRolePolicy.CanAssignRoles(maxRoleLevel, roles.Select(r => r.Level)))
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new
+            {
+                success = false,
+                message = "You can only assign roles below your highest role."
+            });
+        }
 
         db.UserRoles.RemoveRange(target.UserRoles);
         foreach (var role in roles)
@@ -440,11 +599,11 @@ public class AdminController(
                 UserId = target.Id,
                 RoleId = role.Id,
                 AssignedAt = DateTime.UtcNow,
-                AssignedByUserId = UserContext.GetUserId(User)
+                AssignedByUserId = actorId
             });
         }
 
-        target.IsAdmin = roles.Any(r => r.Level >= 50);
+        target.IsAdmin = roles.Any(r => r.Level >= SharedConstants.Limits.AdminRoleMinLevel);
         target.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
 
@@ -1162,6 +1321,12 @@ public class AdminController(
 // -----------------------------------------------------------------------
 
 public record BanRequest(string Reason);
+public record CreateManagedUserRequest(
+    string Email,
+    string Password,
+    string FirstName,
+    string LastName,
+    List<Guid> RoleIds);
 public record SetUserRolesRequest(List<Guid> RoleIds);
 public record RoleUpsertRequest(string Name, string DisplayName, int Level);
 public record SetRolePermissionsRequest(List<Guid> PermissionIds);

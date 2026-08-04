@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { RefreshCw, ShieldOff, Shield, Trash2 } from 'lucide-react';
 import adminService from '../../services/adminService';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const EVENT_TYPE_LABELS = {
@@ -33,7 +33,7 @@ const AdminSecurity = () => {
     try {
       const r = await adminService.getSecurityEvents(200, eventFilter || undefined);
       setEvents(r.data.data);
-    } catch { toast.error(translateCatalogKey('ui.pages.admin.adminsecurity.khong-the-tai-su-kien-bao-mat.8f795165')); }
+    } catch (error) { toast.apiError(error, translateCatalogKey('ui.pages.admin.adminsecurity.khong-the-tai-su-kien-bao-mat.8f795165'), { context: 'admin.security.events.load' }); }
     finally { setLoading(false); }
   }, [eventFilter]);
 
@@ -42,7 +42,7 @@ const AdminSecurity = () => {
     try {
       const r = await adminService.getBlockedIps();
       setBlockedIps(r.data.data);
-    } catch { toast.error(translateCatalogKey('ui.pages.admin.adminsecurity.khong-the-tai-ip-bi-chan.8d06aaeb')); }
+    } catch (error) { toast.apiError(error, translateCatalogKey('ui.pages.admin.adminsecurity.khong-the-tai-ip-bi-chan.8d06aaeb'), { context: 'admin.security.blockedIps.load' }); }
     finally { setLoading(false); }
   }, []);
 
@@ -59,7 +59,7 @@ const AdminSecurity = () => {
       setBlockIp(''); setBlockReason(''); setBlockDuration('');
       loadBlockedIps();
     } catch (e) {
-      toast.error(e.response?.data?.message || translateCatalogKey('ui.pages.admin.adminsecurity.loi-chan-ip.1f6514a7'));
+      toast.apiError(e, translateCatalogKey('ui.pages.admin.adminsecurity.loi-chan-ip.1f6514a7'), { context: 'admin.security.ip.block' });
     }
   };
 
@@ -68,14 +68,14 @@ const AdminSecurity = () => {
       await adminService.unblockIp(ip);
       toast.success(translateCatalogKey('ui.pages.admin.adminsecurity.a-bo-chan-value0.56b83219', { value0: ip }));
       loadBlockedIps();
-    } catch { toast.error(translateCatalogKey('ui.pages.admin.adminsecurity.loi-bo-chan-ip.a94bc0b4')); }
+    } catch (error) { toast.apiError(error, translateCatalogKey('ui.pages.admin.adminsecurity.loi-bo-chan-ip.a94bc0b4'), { context: 'admin.security.ip.unblock' }); }
   };
 
   const handleResetRate = async (ip) => {
     try {
       await adminService.resetRateLimit(ip);
       toast.success(translateCatalogKey('ui.pages.admin.adminsecurity.a-reset-rate-limit-cho-value0.4aca7efa', { value0: ip }));
-    } catch { toast.error(translateCatalogKey('ui.pages.admin.adminsecurity.loi-reset-rate-limit.42cd1027')); }
+    } catch (error) { toast.apiError(error, translateCatalogKey('ui.pages.admin.adminsecurity.loi-reset-rate-limit.42cd1027'), { context: 'admin.security.rateLimit.reset' }); }
   };
 
   return (

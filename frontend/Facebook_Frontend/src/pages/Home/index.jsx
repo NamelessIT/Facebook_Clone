@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import postService from "../../services/postService";
 import { useAuth } from "../../contexts/AuthContext";
 import { Video, Image as ImageIcon, Smile } from "lucide-react";
@@ -8,6 +8,7 @@ import PostItem from "../../components/post/PostItem";
 import ReelsHorizontalFeed from "../../components/reels/ReelsHorizontalFeed";
 import { useLocalization } from "../../contexts/useLocalization";
 import "./HomePage.css";
+import toast from '../../shared/appToast';
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -15,13 +16,15 @@ const HomePage = () => {
   const [posts, setPosts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const fetchPosts = () => {
-    postService.getFeed().then(res => setPosts(res.data.data)).catch(err => console.error(err));
-  };
+  const fetchPosts = useCallback(() => {
+    postService.getFeed()
+      .then((res) => setPosts(res.data.data))
+      .catch((error) => toast.apiError(error, t('post.loadFailed'), { id: 'home-feed-load-error', context: 'posts.feed.load' }));
+  }, [t]);
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [fetchPosts]);
 
   return (
     <div className="feed-wrapper">

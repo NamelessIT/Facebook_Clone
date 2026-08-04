@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Search, Users, ChevronLeft } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import friendshipService from '../../services/friendshipService';
 import chatService from '../../services/chatService';
 import Avatar from '../../components/common/Avatar';
@@ -29,8 +29,8 @@ const ChatListPage = () => {
         const res = await friendshipService.getFriends(1, 100);
         const data = res.data?.data || [];
         setFriends(data);
-      } catch {
-        toast.error(t('chat.loadFriendsFailed'));
+      } catch (error) {
+        toast.apiError(error, t('chat.loadFriendsFailed'), { context: 'chat.friends.load' });
       } finally {
         setLoading(false);
       }

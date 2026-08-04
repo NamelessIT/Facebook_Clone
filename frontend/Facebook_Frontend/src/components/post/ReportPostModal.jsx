@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import postInteractionService from '../../services/postInteractionService';
 import './ReportPostModal.css';
 import { useLocalization } from '../../contexts/useLocalization';
@@ -30,8 +30,8 @@ const ReportPostModal = ({ postId, onClose }) => {
       await postInteractionService.reportPost(postId, reason);
       toast.success(translateCatalogKey('ui.components.post.reportpostmodal.cam-on-chung-toi-se-xem-xet-bao-cao-.df52d773'));
       onClose();
-    } catch {
-      toast.error(translateCatalogKey('ui.components.post.reportpostmodal.gui-bao-cao-that-bai-vui-long-thu-la.33cadb46'));
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('ui.components.post.reportpostmodal.gui-bao-cao-that-bai-vui-long-thu-la.33cadb46'), { context: 'posts.report' });
     } finally {
       setLoading(false);
     }

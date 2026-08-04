@@ -7,7 +7,7 @@ import UserCard from "../../components/friendship/UserCard";
 import friendshipService from "../../services/friendshipService";
 import userService from "../../services/userService";
 import { useAuth } from "../../contexts/AuthContext";
-import toast from "react-hot-toast";
+import toast from '../../shared/appToast';
 import "./FriendsPage.css";
 import { useLocalization } from "../../contexts/useLocalization";
 import { translateCatalogKey } from '../../shared/localizationRuntime';
@@ -37,8 +37,8 @@ const FriendsPage = () => {
     try {
       const res = await friendshipService.getFriendRequests();
       setRequests(res.data?.data || []);
-    } catch {
-      toast.error(t('friends.loadFailed'));
+    } catch (error) {
+      toast.apiError(error, t('friends.loadFailed'), { context: 'friends.load' });
     } finally {
       setLoading(false);
     }
@@ -60,8 +60,9 @@ const FriendsPage = () => {
       if (res.data?.pagination) {
         setDiscoverTotalPages(res.data.pagination.totalPages || 1);
       }
-    } catch {
+    } catch (error) {
       setDiscoverUsers([]);
+      toast.apiError(error, t('friends.loadFailed'), { context: 'friends.discover' });
     } finally {
       setDiscoverLoading(false);
     }
@@ -80,7 +81,7 @@ const FriendsPage = () => {
       toast.success(translateCatalogKey('ui.components.friendship.addfriendbutton.a-chap-nhan-loi-moi-ket-ban.daba23c8'));
       setRequests((prev) => prev.filter((r) => r.userId !== request.userId));
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'));
+      toast.apiError(error, translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'), { context: 'friends.accept' });
     } finally {
       setProcessingId(null);
     }
@@ -93,7 +94,7 @@ const FriendsPage = () => {
       toast.success(translateCatalogKey('ui.pages.friends.index.a-tu-choi-loi-moi-ket-ban.aab667dd'));
       setRequests((prev) => prev.filter((r) => r.userId !== request.userId));
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'));
+      toast.apiError(error, translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'), { context: 'friends.reject' });
     } finally {
       setProcessingId(null);
     }

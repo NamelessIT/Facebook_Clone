@@ -4,7 +4,7 @@ import Avatar from "../common/Avatar";
 import { useAuth } from "../../contexts/AuthContext";
 import { getImageUrl } from "../../utils/formatUrl";
 import postService from "../../services/postService";
-import toast from "react-hot-toast";
+import toast from '../../shared/appToast';
 import { LIMITS } from "../../shared/generated/constants";
 import "./EditPostModal.css";
 import { translateCatalogKey } from '../../shared/localizationRuntime';
@@ -61,7 +61,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
         onPostUpdated?.();
         onClose();
       } catch (error) {
-        toast.error(error.response?.data?.message || translateCatalogKey('settings.updateFailed'));
+        toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: 'posts.privacy.update' });
       } finally {
         setSaving(false);
       }
@@ -95,7 +95,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
       onPostUpdated?.();
       onClose();
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('settings.updateFailed'));
+      toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: 'posts.update' });
     } finally {
       setSaving(false);
     }

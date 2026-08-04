@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import Avatar from "../common/Avatar";
 import { useAuth } from "../../contexts/AuthContext";
 import postService from "../../services/postService";
-import toast from "react-hot-toast";
+import toast from '../../shared/appToast';
 import { PostPrivacy } from "../../shared/generated/enums";
 import useSingleFlightAction from "../../hooks/useSingleFlightAction";
 import "./SharePostModal.css";
@@ -28,7 +28,7 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
       onClose();
       onShared?.();
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.post.sharepostmodal.chia-se-that-bai.dd30f06b'));
+      toast.apiError(error, translateCatalogKey('ui.components.post.sharepostmodal.chia-se-that-bai.dd30f06b'), { context: 'posts.share' });
     }
   });
 

@@ -5,7 +5,7 @@ import { enUS, vi } from "date-fns/locale";
 import Avatar from "../common/Avatar";
 import postService from "../../services/postService";
 import { useAuth } from "../../contexts/AuthContext";
-import toast from "react-hot-toast";
+import toast from '../../shared/appToast';
 import { useLocalization } from "../../contexts/useLocalization";
 import "./CommentSection.css";
 
@@ -85,12 +85,13 @@ const CommentSection = ({ postId, onCommentAdded }) => {
       }
       setHasMore(data.length >= 10);
       setPage(pageNum);
-    } catch {
+    } catch (error) {
       if (!append) setComments([]);
+      toast.apiError(error, t('comment.loadFailed'), { context: 'comments.load' });
     } finally {
       setLoading(false);
     }
-  }, [postId]);
+  }, [postId, t]);
 
   useEffect(() => {
     fetchComments(1);
@@ -105,7 +106,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
       fetchComments(1);
       onCommentAdded?.();
     } catch (error) {
-      toast.error(error.response?.data?.message || t('comment.createFailed'));
+      toast.apiError(error, t('comment.createFailed'), { context: 'comments.create' });
     } finally {
       setPosting(false);
     }
@@ -124,7 +125,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
       fetchComments(1);
       onCommentAdded?.();
     } catch (error) {
-      toast.error(error.response?.data?.message || t('comment.replyFailed'));
+      toast.apiError(error, t('comment.replyFailed'), { context: 'comments.reply' });
     } finally {
       setReplyPosting(false);
     }

@@ -4,6 +4,8 @@ using FacebookClone.Application.Services.Interfaces;
 using FacebookClone.Application.DTOs.User;
 using FacebookClone.Infrastructure;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
+using FacebookClone.Domain.Constants;
 
 namespace FacebookClone.API.Controllers;
 [ApiController]
@@ -61,6 +63,50 @@ public class UsersController : ControllerBase
         var userId = GetCurrentUserId();
         var updatedProfile = await _userService.UpdateProfileAsync(userId, request);
         return Ok(updatedProfile);
+    }
+
+    [HttpPut("me/password")]
+    public async Task<IActionResult> ChangeMyPassword([FromBody] ChangePasswordRequest request)
+    {
+        var userId = GetCurrentUserId();
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null || user.IsDeleted)
+            return Unauthorized(new { success = false, message = "Invalid token." });
+        if (string.IsNullOrWhiteSpace(request.CurrentPassword) ||
+            !BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.PasswordHash))
+            return BadRequest(new { success = false, message = "Current password is incorrect." });
+        if (string.IsNullOrWhiteSpace(request.NewPassword) ||
+            request.NewPassword.Length < SharedConstants.Limits.PasswordMinLength ||
+            !request.NewPassword.Any(char.IsUpper) ||
+            !request.NewPassword.Any(char.IsLower) ||
+            !request.NewPassword.Any(char.IsDigit))
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "New password must be at least 8 characters and include uppercase, lowercase and a number."
+            });
+        }
+        if (BCrypt.Net.BCrypt.Verify(request.NewPassword, user.PasswordHash))
+            return BadRequest(new { success = false, message = "New password must be different from the current password." });
+
+        var now = DateTime.UtcNow;
+        await using var transaction = await _db.Database.BeginTransactionAsync(HttpContext.RequestAborted);
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        user.UpdatedAt = now;
+
+        var activeTokens = await _db.RefreshTokens
+            .Where(token => token.UserId == userId && !token.IsRevoked)
+            .ToListAsync(HttpContext.RequestAborted);
+        foreach (var token in activeTokens)
+        {
+            token.IsRevoked = true;
+            token.RevokedAt = now;
+        }
+
+        await _db.SaveChangesAsync(HttpContext.RequestAborted);
+        await transaction.CommitAsync(HttpContext.RequestAborted);
+        return Ok(new { success = true, message = "Password changed. Please sign in again." });
     }
 
     [HttpPut("profile")]
@@ -211,3 +257,5 @@ public class UsersController : ControllerBase
         catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
     }
 }
+
+public record ChangePasswordRequest(string CurrentPassword, string NewPassword);

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Ban, RotateCcw, Search, Trash2 } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import adminService from '../../services/adminService';
 import { useConfirm, usePrompt } from '../../contexts/useConfirm';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
@@ -47,7 +47,7 @@ const AdminContent = ({ type }) => {
       setItems(response.data.data);
       setPagination(response.data.pagination);
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('ui.pages.admin.admincontent.khong-the-tai-value0.93bc95f1', { value0: type }));
+      toast.apiError(error, translateCatalogKey('ui.pages.admin.admincontent.khong-the-tai-value0.93bc95f1', { value0: type }), { context: `admin.${type}.load` });
     } finally {
       setLoading(false);
     }
@@ -70,7 +70,7 @@ const AdminContent = ({ type }) => {
       toast.success(translateCatalogKey('ui.pages.admin.admincontent.da-xoa-noi-dung.dfe7002c'));
       load();
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('ui.pages.admin.admincontent.khong-the-xoa-noi-dung.8c11aa67'));
+      toast.apiError(error, translateCatalogKey('ui.pages.admin.admincontent.khong-the-xoa-noi-dung.8c11aa67'), { context: `admin.${type}.delete` });
     }
   };
 
@@ -80,7 +80,7 @@ const AdminContent = ({ type }) => {
       toast.success(translateCatalogKey('ui.pages.admin.admincontent.da-khoi-phuc-noi-dung.b3ff83f8'));
       load();
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('ui.pages.admin.admincontent.khong-the-khoi-phuc-noi-dung.d021c501'));
+      toast.apiError(error, translateCatalogKey('ui.pages.admin.admincontent.khong-the-khoi-phuc-noi-dung.d021c501'), { context: `admin.${type}.restore` });
     }
   };
 
@@ -98,7 +98,7 @@ const AdminContent = ({ type }) => {
       toast.success(translateCatalogKey('ui.pages.admin.admincontent.da-cam-tac-gia.5cf94dae'));
       load();
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('ui.pages.admin.admincontent.khong-the-cam-tac-gia.29688cbb'));
+      toast.apiError(error, translateCatalogKey('ui.pages.admin.admincontent.khong-the-cam-tac-gia.29688cbb'), { context: `admin.${type}.banAuthor` });
     }
   };
 

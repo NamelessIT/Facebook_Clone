@@ -17,7 +17,7 @@ public class RbacSeeder : ISeeder
     [
         ("dashboard.view", "dashboard", "view", "View admin dashboard"),
         ("users.view", "users", "view", "View users"),
-        ("users.manage", "users", "manage", "Ban, unban, delete users"),
+        ("users.manage", "users", "manage", "Create, ban, unban and delete users"),
         ("roles.view", "roles", "view", "View roles and permissions"),
         ("roles.manage", "roles", "manage", "Assign roles to users"),
         ("posts.view", "posts", "view", "View posts in admin"),
@@ -79,6 +79,14 @@ public class RbacSeeder : ISeeder
                     Description = item.Description,
                     CreatedAt = now
                 });
+            }
+            else if (permission.Module != item.Module ||
+                     permission.Action != item.Action ||
+                     permission.Description != item.Description)
+            {
+                permission.Module = item.Module;
+                permission.Action = item.Action;
+                permission.Description = item.Description;
             }
         }
 

@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLocalization } from '../../contexts/useLocalization';
 import reelService from '../../services/reelService';
@@ -101,10 +101,10 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
     setLikeCount((c) => (prev ? c - 1 : c + 1));
     try {
       await reelService.toggleLike(reel.id);
-    } catch {
+    } catch (error) {
       setLiked(prev);
       setLikeCount((c) => (prev ? c + 1 : c - 1));
-      toast.error(t('common.actionFailed'));
+      toast.apiError(error, t('common.actionFailed'), { context: 'reels.toggleLike' });
     }
   };
 
@@ -120,8 +120,8 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
         const nextIndex = currentIndex >= reels.length - 1 ? currentIndex - 1 : currentIndex;
         setCurrentIndex(nextIndex);
       }
-    } catch {
-      toast.error(t('reels.deleteFailed'));
+    } catch (error) {
+      toast.apiError(error, t('reels.deleteFailed'), { context: 'reels.delete' });
     } finally {
       setDeleting(false);
       setShowDeleteConfirm(false);

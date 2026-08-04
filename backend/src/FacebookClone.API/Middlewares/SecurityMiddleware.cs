@@ -58,6 +58,7 @@ public class SecurityMiddleware(RequestDelegate next, ISecurityService security,
 
         // 3. Payload inspection for POST/PUT/PATCH
         if (ctx.Request.Method is "POST" or "PUT" or "PATCH" &&
+            IsTextPayload(ctx.Request) &&
             !ShouldBypassPayloadInspection(path))
         {
             ctx.Request.EnableBuffering();
@@ -77,7 +78,9 @@ public class SecurityMiddleware(RequestDelegate next, ISecurityService security,
                 await ctx.Response.WriteAsJsonAsync(new
                 {
                     success = false,
-                    message = "Request blocked: suspicious content detected."
+                    errorCode = "SECURITY_PAYLOAD_BLOCKED",
+                    message = "Request blocked because a text field matched a blocked security pattern.",
+                    correlationId = ctx.Items["X-Correlation-Id"]?.ToString() ?? ctx.TraceIdentifier
                 });
                 return;
             }
@@ -109,4 +112,14 @@ public class SecurityMiddleware(RequestDelegate next, ISecurityService security,
 
     private static bool ShouldBypassPayloadInspection(string path)
         => PayloadInspectionBypassPaths.Any(b => path.StartsWith(b, StringComparison.OrdinalIgnoreCase));
+
+    private static bool IsTextPayload(HttpRequest request)
+    {
+        var contentType = request.ContentType;
+        if (string.IsNullOrWhiteSpace(contentType)) return false;
+
+        return contentType.StartsWith("application/json", StringComparison.OrdinalIgnoreCase) ||
+               contentType.StartsWith("application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase) ||
+               contentType.StartsWith("text/", StringComparison.OrdinalIgnoreCase);
+    }
 }

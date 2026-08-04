@@ -6,7 +6,7 @@ import postService from "../../services/postService";
 import friendshipService from "../../services/friendshipService";
 import html2canvas from "html2canvas"; // 👈 IMPORT THƯ VIỆN CHỤP ẢNH
 import "./CreatePostModal.css";
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 // Danh sách các emoji cơ bản
@@ -77,7 +77,9 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }) => {
     try {
       const res = await friendshipService.getFriends();
       if (res.data?.data) setFriendsList(res.data.data);
-    } catch (err) { console.error("Lỗi lấy bạn bè:", err); }
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('friends.loadFailed'), { context: 'posts.create.friends' });
+    }
   };
 
   const toggleTagFriend = (friend) => {
@@ -134,8 +136,7 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }) => {
       onSuccess(); 
       onClose();   
     } catch (error) {
-      console.error("Lỗi đăng bài:", error.response?.data || error);
-      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.post.createpostmodal.ang-bai-that-bai.0be6e313'));
+      toast.apiError(error, translateCatalogKey('ui.components.post.createpostmodal.ang-bai-that-bai.0be6e313'), { context: 'posts.create' });
     } finally {
       setLoading(false);
     }

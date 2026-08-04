@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Routes, Route, NavLink, Navigate, useNavigate } from 'react-router-dom';
 import { FileText, Film, Home, KeyRound, Languages, LayoutDashboard, LogOut, Menu, ShieldAlert, Users, ChevronRight, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import userService from '../../services/userService';
+import toast from '../../shared/appToast';
 import AdminDashboard from './AdminDashboard';
 import AdminUsers from './AdminUsers';
 import AdminSecurity from './AdminSecurity';
@@ -10,6 +12,7 @@ import AdminRoles from './AdminRoles';
 import AdminLocalization from './AdminLocalization';
 import './AdminPage.css';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { LIMITS } from '../../shared/generated/constants';
 
 const NAV = [
   { to: '/admin/dashboard', labelKey: 'admin.dashboard.title', Icon: LayoutDashboard },
@@ -26,11 +29,34 @@ const AdminPage = () => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
   const displayName = user?.fullName || [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.email || 'Admin';
 
   const handleLogout = () => {
     logout();
     navigate('/admin/login');
+  };
+
+  const handlePasswordChange = async (event) => {
+    event.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error(translateCatalogKey('admin.account.passwordMismatch'));
+      return;
+    }
+
+    setPasswordSubmitting(true);
+    try {
+      await userService.changePassword(passwordForm.currentPassword, passwordForm.newPassword);
+      toast.success(translateCatalogKey('admin.account.passwordChanged'));
+      await logout();
+      navigate('/admin/login');
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('admin.account.passwordChangeFailed'), { context: 'admin.password.change' });
+    } finally {
+      setPasswordSubmitting(false);
+    }
   };
 
   return (
@@ -76,6 +102,9 @@ const AdminPage = () => {
               <span className="admin-user-role">{translateCatalogKey('ui.pages.admin.adminpage.administrator.36b99f8c')}</span>
             </div>
           )}
+          <button className="admin-logout-btn" onClick={() => setPasswordModalOpen(true)} title={translateCatalogKey('admin.account.changePassword')}>
+            <KeyRound size={18} />
+          </button>
           <button className="admin-logout-btn" onClick={handleLogout} title={translateCatalogKey('account.logout')}>
             <LogOut size={18} />
           </button>
@@ -103,6 +132,38 @@ const AdminPage = () => {
           <Route path="security" element={<AdminSecurity />} />
         </Routes>
       </main>
+
+      {passwordModalOpen && (
+        <div className="admin-modal-backdrop" role="presentation" onMouseDown={() => !passwordSubmitting && setPasswordModalOpen(false)}>
+          <form className="admin-password-modal" onSubmit={handlePasswordChange} onMouseDown={(event) => event.stopPropagation()}>
+            <div className="admin-role-modal-header">
+              <h2>{translateCatalogKey('admin.account.changePassword')}</h2>
+              <button className="admin-icon-btn" type="button" onClick={() => setPasswordModalOpen(false)} aria-label={translateCatalogKey('common.close')}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="admin-password-form">
+              <label>
+                <span>{translateCatalogKey('admin.account.currentPassword')}</span>
+                <input type="password" autoComplete="current-password" value={passwordForm.currentPassword} onChange={(event) => setPasswordForm((current) => ({ ...current, currentPassword: event.target.value }))} required />
+              </label>
+              <label>
+                <span>{translateCatalogKey('admin.account.newPassword')}</span>
+                <input type="password" autoComplete="new-password" minLength={LIMITS.passwordMinLength} value={passwordForm.newPassword} onChange={(event) => setPasswordForm((current) => ({ ...current, newPassword: event.target.value }))} required />
+              </label>
+              <label>
+                <span>{translateCatalogKey('admin.account.confirmPassword')}</span>
+                <input type="password" autoComplete="new-password" minLength={LIMITS.passwordMinLength} value={passwordForm.confirmPassword} onChange={(event) => setPasswordForm((current) => ({ ...current, confirmPassword: event.target.value }))} required />
+              </label>
+              <p>{translateCatalogKey('admin.account.passwordSignInAgain')}</p>
+            </div>
+            <div className="admin-role-modal-footer">
+              <button className="admin-btn admin-btn--reset" type="button" onClick={() => setPasswordModalOpen(false)}>{translateCatalogKey('common.cancel')}</button>
+              <button className="admin-btn admin-btn--primary" type="submit" disabled={passwordSubmitting}>{passwordSubmitting ? translateCatalogKey('common.loading') : translateCatalogKey('admin.account.changePassword')}</button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

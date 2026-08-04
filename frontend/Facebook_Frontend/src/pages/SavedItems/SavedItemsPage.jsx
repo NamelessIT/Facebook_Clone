@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Bookmark, BookmarkX } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import CardSavedPost from '../../components/post/CardSavedPost';
 import PostDetailModal from '../../components/post/PostDetailModal';
 import savedItemsService from '../../services/savedItemsService';
@@ -29,10 +29,11 @@ const SavedItemsPage = () => {
     try {
       const res = await savedItemsService.getCollections();
       setUserCollections(res.data?.data ?? []);
-    } catch {
+    } catch (error) {
       setUserCollections([]);
+      toast.apiError(error, t('saved.loadFailed'), { context: 'saved.collections.load' });
     }
-  }, []);
+  }, [t]);
 
   // Fetch saved posts hoặc collection posts
   const fetchPosts = useCallback(async (currentPage) => {
@@ -51,8 +52,8 @@ const SavedItemsPage = () => {
         setPosts(unwrapped);
         setPagination(pg ?? { page: 1, totalPages: 1, total: 0 });
       }
-    } catch {
-      toast.error(t('saved.loadFailed'));
+    } catch (error) {
+      toast.apiError(error, t('saved.loadFailed'), { context: 'saved.posts.load' });
     } finally {
       setLoading(false);
     }
@@ -79,8 +80,8 @@ const SavedItemsPage = () => {
       await savedItemsService.unsavePost(postId);
       toast.success(t('saved.unsaved'));
       setPosts((prev) => prev.filter((p) => p.id !== postId));
-    } catch {
-      toast.error(t('saved.unsaveFailed'));
+    } catch (error) {
+      toast.apiError(error, t('saved.unsaveFailed'), { context: 'saved.post.remove' });
     }
   };
 
@@ -111,8 +112,8 @@ const SavedItemsPage = () => {
           setPosts((prev) => prev.filter((p) => p.id !== postId));
         }
       }
-    } catch {
-      toast.error(t('common.actionFailed'));
+    } catch (error) {
+      toast.apiError(error, t('common.actionFailed'), { context: 'saved.collections.update' });
     }
   };
 

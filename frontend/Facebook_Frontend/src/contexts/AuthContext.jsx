@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from "rea
 import userService from "../services/userService";
 import axiosClient, { clearAuthClientState } from "../services/axiosClient";
 import { STORAGE_KEYS, TIMERS } from "../shared/generated/constants";
+import { reportApiError } from '../shared/apiError';
 
 const AuthContext = createContext();
 
@@ -12,7 +13,9 @@ export const AuthProvider = ({ children }) => {
   const logout = useCallback(async () => {
     const refreshToken = localStorage.getItem(STORAGE_KEYS.refreshToken);
     if (refreshToken) {
-      await axiosClient.post("/auth/logout", { refreshToken }).catch(() => {});
+      await axiosClient.post("/auth/logout", { refreshToken }).catch((error) => {
+        reportApiError(error, 'Could not close the server session.', 'auth.logout');
+      });
     }
     clearAuthClientState();
     setUser(null);
@@ -24,7 +27,7 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data);
       return response.data;
     } catch (error) {
-      console.error("Fetch profile failed:", error);
+      reportApiError(error, 'Could not load the authenticated profile.', 'auth.profile.load');
       logout();
       if (throwOnError) throw error;
       return null;
@@ -59,7 +62,9 @@ export const AuthProvider = ({ children }) => {
     if (!user?.id) return;
 
     const sendHeartbeat = () => {
-      userService.heartbeat().catch(() => {});
+      userService.heartbeat().catch((error) => {
+        reportApiError(error, 'Could not update online presence.', 'presence.heartbeat');
+      });
     };
 
     sendHeartbeat();

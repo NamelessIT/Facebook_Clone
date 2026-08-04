@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import userService from "../../services/userService";
-import toast from "react-hot-toast";
+import toast from '../../shared/appToast';
 import { useLocalization } from "../../contexts/useLocalization";
 
 const PreferencesSettings = () => {
@@ -45,7 +45,7 @@ const PreferencesSettings = () => {
       await setLocale(form.language);
       toast.success(t('settings.updated'));
     } catch (error) {
-      toast.error(error.response?.data?.message || t('settings.updateFailed'));
+      toast.apiError(error, t('settings.updateFailed'), { context: 'settings.preferences.update' });
     } finally {
       setLoading(false);
     }

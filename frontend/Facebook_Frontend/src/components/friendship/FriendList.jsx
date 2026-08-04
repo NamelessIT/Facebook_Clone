@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { UserMinus } from "lucide-react";
 import Avatar from "../common/Avatar";
 import friendshipService from "../../services/friendshipService";
-import toast from "react-hot-toast";
+import toast from '../../shared/appToast';
 import "./FriendList.css";
 import { useConfirm } from '../../contexts/useConfirm';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
@@ -27,8 +27,8 @@ const FriendList = ({ userId }) => {
       if (data.pagination) {
         setTotalPages(data.pagination.totalPages || 1);
       }
-    } catch {
-      toast.error(translateCatalogKey('ui.components.friendship.friendlist.khong-the-tai-danh-sach-ban-be.ae40da14'));
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('ui.components.friendship.friendlist.khong-the-tai-danh-sach-ban-be.ae40da14'), { context: 'friends.list' });
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,7 @@ const FriendList = ({ userId }) => {
       toast.success(translateCatalogKey('ui.components.friendship.friendlist.a-huy-ket-ban-voi-value0.618babe9', { value0: friendName }));
       fetchFriends(page);
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'));
+      toast.apiError(error, translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'), { context: 'friends.remove' });
     } finally {
       setRemovingId(null);
     }

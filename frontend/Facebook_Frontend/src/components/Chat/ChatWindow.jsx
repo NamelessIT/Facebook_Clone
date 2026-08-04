@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLocalization } from '../../contexts/useLocalization';
 import chatService from '../../services/chatService';
@@ -67,8 +67,8 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
         setHasMore(data.length >= 20);
         setPage(1);
         isInitialLoad.current = true;
-      } catch {
-        toast.error(t('chat.loadFailed'));
+      } catch (error) {
+        toast.apiError(error, t('chat.loadFailed'), { context: 'chat.messages.load' });
       } finally {
         setLoading(false);
       }
@@ -149,8 +149,8 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
       setMessages((prev) => [...data.reverse(), ...prev]);
       setHasMore(data.length >= 20);
       setPage(nextPage);
-    } catch {
-      toast.error(t('chat.loadMoreFailed'));
+    } catch (error) {
+      toast.apiError(error, t('chat.loadMoreFailed'), { context: 'chat.messages.loadMore' });
     } finally {
       setLoading(false);
     }

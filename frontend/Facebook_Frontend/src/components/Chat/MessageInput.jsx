@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Send, Loader } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import chatService from '../../services/chatService';
 import { useLocalization } from '../../contexts/useLocalization';
 import { LIMITS, TIMERS } from '../../shared/generated/constants';
@@ -37,8 +37,8 @@ const MessageInput = ({ conversationId, receiverId, onMessageSent }) => {
       const message = res.data?.data;
       setContent('');
       onMessageSent?.(message);
-    } catch {
-      toast.error(t('chat.sendFailed'));
+    } catch (error) {
+      toast.apiError(error, t('chat.sendFailed'), { context: 'chat.message.send' });
     } finally {
       setSending(false);
     }

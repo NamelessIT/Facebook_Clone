@@ -12,6 +12,7 @@ import friendshipService from '../../services/friendshipService';
 import savedItemsService from '../../services/savedItemsService';
 import { useLocalization } from '../../contexts/useLocalization';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import toast from '../../shared/appToast';
 
 const MainLayout = () => {
   const { user } = useAuth();
@@ -41,18 +42,21 @@ const MainLayout = () => {
     let cancelled = false;
     friendshipService.getFriends(1, 20)
       .then((res) => { if (!cancelled) setContacts(res.data?.data || []); })
-      .catch(() => {});
+      .catch((error) => toast.apiError(error, t('friends.loadFailed'), { id: 'layout-contacts-error', context: 'layout.contacts.load' }));
     return () => { cancelled = true; };
-  }, []);
+  }, [t]);
 
   // Fetch collections từ API khi vào /saved
   useEffect(() => {
     if (isOnSaved) {
       savedItemsService.getCollections()
         .then((res) => setSavedCollections(res.data?.data ?? []))
-        .catch(() => setSavedCollections([]));
+        .catch((error) => {
+          setSavedCollections([]);
+          toast.apiError(error, t('saved.loadFailed'), { id: 'layout-collections-error', context: 'layout.collections.load' });
+        });
     }
-  }, [isOnSaved, location.search]);
+  }, [isOnSaved, location.search, t]);
 
   const searchParams = new URLSearchParams(location.search);
   const activeCol = searchParams.get('col');

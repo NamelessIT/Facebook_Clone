@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Edit3, Languages, Plus, Save, Sparkles, Trash2, X } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import adminService from '../../services/adminService';
 import { LOCALIZATION } from '../../shared/generated/constants';
 import { LOCALIZATION_CATALOG } from '../../shared/generated/localizationCatalog';
@@ -107,7 +107,7 @@ const AdminLocalization = () => {
       setEntries(response.data.data.entries);
       setPagination(response.data.pagination);
     } catch (error) {
-      toast.error(readApiError(error, 'Khong the tai localization'));
+      toast.apiError(error, 'Khong the tai localization', { context: 'admin.localization.load' });
     } finally {
       setLoading(false);
     }
@@ -195,7 +195,7 @@ const AdminLocalization = () => {
       resetEntryForm();
       load();
     } catch (error) {
-      toast.error(readApiError(error, 'Khong the luu ban dich'));
+      toast.apiError(error, 'Khong the luu ban dich', { context: 'admin.localization.save' });
     }
   };
 
@@ -212,7 +212,7 @@ const AdminLocalization = () => {
       toast.success(translateCatalogKey('ui.pages.admin.adminlocalization.da-xoa-ban-dich.2f085b93'));
       load();
     } catch (error) {
-      toast.error(readApiError(error, 'Khong the xoa ban dich'));
+      toast.apiError(error, 'Khong the xoa ban dich', { context: 'admin.localization.delete' });
     }
   };
 
@@ -236,7 +236,7 @@ const AdminLocalization = () => {
       const message = readApiError(error, 'Thu vien dich noi bo chua dich duoc noi dung nay');
       setTranslationError(message);
       setEntryForm((prev) => ({ ...prev, lastError: message, isMachineTranslated: false }));
-      toast.error(message);
+      toast.apiError(error, message, { context: 'admin.localization.translate' });
     } finally {
       setTranslating(false);
     }
@@ -310,7 +310,7 @@ const AdminLocalization = () => {
       }
       await load();
     } catch (error) {
-      toast.error(readApiError(error, translateCatalogKey('admin.localization.bulkSaveFailed')));
+      toast.apiError(error, translateCatalogKey('admin.localization.bulkSaveFailed'), { context: 'admin.localization.bulkSave' });
     } finally {
       setBulkTranslating(false);
     }
@@ -329,7 +329,7 @@ const AdminLocalization = () => {
       toast.success(translateCatalogKey('ui.pages.admin.adminlocalization.da-them-ngon-ngu.2c4d249d'));
       load();
     } catch (error) {
-      toast.error(readApiError(error, 'Khong the them ngon ngu'));
+      toast.apiError(error, 'Khong the them ngon ngu', { context: 'admin.localization.locale.create' });
     }
   };
 

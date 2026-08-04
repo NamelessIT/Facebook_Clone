@@ -5,6 +5,7 @@ import NotificationPanel from './NotificationPanel';
 import { LIMITS } from '../../shared/generated/constants';
 import './NotificationBell.css';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import toast from '../../shared/appToast';
 
 const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,8 +45,8 @@ const NotificationBell = () => {
         const count = data.filter((n) => !n.isRead).length;
         setUnreadCount(count);
       }
-    } catch {
-      // Silent fail
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('notification.loadFailed'), { id: 'notifications-load-error', context: 'notifications.load' });
     } finally {
       setLoading(false);
     }
@@ -59,16 +60,17 @@ const NotificationBell = () => {
   // SignalR: listen for new notifications
   useEffect(() => {
     const handleNewNotification = () => {
-      setUnreadCount((prev) => prev + 1);
       fetchNotifications(1);
     };
+    const handleBadgeUpdate = (count) => setUnreadCount(count);
 
-    notificationService.startConnection().then(() => {
-      notificationService.onReceiveNotification(handleNewNotification);
-    });
+    notificationService.onReceiveNotification(handleNewNotification);
+    notificationService.onBadgeUpdate(handleBadgeUpdate);
+    notificationService.startConnection();
 
     return () => {
       notificationService.offReceiveNotification(handleNewNotification);
+      notificationService.offBadgeUpdate(handleBadgeUpdate);
     };
   }, [fetchNotifications]);
 
@@ -92,8 +94,8 @@ const NotificationBell = () => {
         prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
       );
       setUnreadCount((prev) => Math.max(0, prev - 1));
-    } catch {
-      // Silent fail
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('notification.markReadFailed'), { context: 'notifications.markRead' });
     }
   };
 
@@ -102,8 +104,8 @@ const NotificationBell = () => {
       await notificationService.markAllAsRead();
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0);
-    } catch {
-      // Silent fail
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('notification.markReadFailed'), { context: 'notifications.markAllRead' });
     }
   };
 

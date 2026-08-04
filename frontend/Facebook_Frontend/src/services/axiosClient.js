@@ -3,6 +3,7 @@ import { API_BASE_URL } from '../config/env';
 import { STORAGE_KEYS } from '../shared/generated/constants';
 import { createIdempotencyKey } from '../offline/idempotency';
 import { enqueueOfflineAction } from '../offline/offlineQueue';
+import { reportApiError } from '../shared/apiError';
 
 const axiosClient = axios.create({
   baseURL: API_BASE_URL,
@@ -114,7 +115,7 @@ axiosClient.interceptors.response.use(
           errorMessage: error.response?.data?.message || error.message || 'Request queued for offline sync',
         });
       } catch (queueError) {
-        console.warn('Failed to queue offline action', queueError);
+        reportApiError(queueError, 'The failed request could not be added to the offline queue.', 'offline.queue.enqueue');
       }
     }
 

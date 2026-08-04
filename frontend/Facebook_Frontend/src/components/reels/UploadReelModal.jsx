@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react';
 import { X, Upload, Film, CheckCircle } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import reelService from '../../services/reelService';
 import { useLocalization } from '../../contexts/useLocalization';
 import { LIMITS } from '../../shared/generated/constants';
+import { getApiErrorDetails } from '../../shared/apiError';
 import './UploadReelModal.css';
 
 const ACCEPTED_TYPES = ['video/mp4', 'video/quicktime', 'video/x-m4v'];
@@ -25,6 +26,7 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
   const [dragOver, setDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [uploadError, setUploadError] = useState(null);
 
   const fileInputRef = useRef(null);
   const videoPreviewRef = useRef(null);
@@ -47,6 +49,7 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
       return;
     }
     const url = URL.createObjectURL(file);
+    setUploadError(null);
     setVideoFile(file);
     setVideoPreview(url);
   };
@@ -74,6 +77,7 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
     setVideoPreview(null);
     setVideoDuration(0);
     setProgress(0);
+    setUploadError(null);
   };
 
   const handleSubmit = async (e) => {
@@ -96,6 +100,7 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
 
     setUploading(true);
     setProgress(0);
+    setUploadError(null);
 
     try {
       const res = await reelService.uploadReel(formData, (ev) => {
@@ -109,8 +114,10 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
       setForm({ title: '', description: '', privacy: 1 });
       onSuccess?.(created);
       onClose();
-    } catch {
-      toast.error(t('reels.createFailed'));
+    } catch (error) {
+      const details = getApiErrorDetails(error, t('reels.createFailed'));
+      setUploadError(details);
+      toast.apiError(error, t('reels.createFailed'), { context: 'reels.upload' });
     } finally {
       setUploading(false);
     }
@@ -249,6 +256,18 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
                 />
               </div>
               <span className="urm-progress-text">{progress}%</span>
+            </div>
+          )}
+
+          {uploadError && (
+            <div className="urm-error" role="alert">
+              <strong>{uploadError.message}</strong>
+              <div className="urm-error-details">
+                {uploadError.status && <span>{t('notification.httpStatus')}: <code>{uploadError.status}</code></span>}
+                {uploadError.errorCode && <span>{t('notification.errorCode')}: <code>{uploadError.errorCode}</code></span>}
+                {uploadError.correlationId && <span>{t('notification.requestId')}: <code>{uploadError.correlationId}</code></span>}
+                {uploadError.retryAfter && <span>{t('notification.retryAfter', undefined, { seconds: uploadError.retryAfter })}</span>}
+              </div>
             </div>
           )}
 

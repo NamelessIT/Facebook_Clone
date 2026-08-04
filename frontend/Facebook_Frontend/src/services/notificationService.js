@@ -2,11 +2,14 @@ import * as signalR from '@microsoft/signalr';
 import axiosClient from './axiosClient';
 import { NOTIFICATION_HUB_URL } from '../config/env';
 import { STORAGE_KEYS } from '../shared/generated/constants';
+import { reportApiError } from '../shared/apiError';
 
 const SIGNALR_HUB_URL = NOTIFICATION_HUB_URL;
 
 let connection = null;
 let isConnecting = false;
+const notificationCallbacks = new Set();
+const badgeCallbacks = new Set();
 
 const notificationService = {
   // ========== SignalR Connection ==========
@@ -29,6 +32,13 @@ const notificationService = {
       .configureLogging(signalR.LogLevel.Warning)
       .build();
 
+    connection.on('ReceiveNotification', (notification) => {
+      notificationCallbacks.forEach((callback) => callback(notification));
+    });
+    connection.on('BadgeUpdate', (unreadCount) => {
+      badgeCallbacks.forEach((callback) => callback(Number(unreadCount) || 0));
+    });
+
     connection.onreconnecting(() => {});
     connection.onreconnected(() => {});
     connection.onclose(() => { connection = null; });
@@ -36,7 +46,8 @@ const notificationService = {
     try {
       await connection.start();
       return connection;
-    } catch {
+    } catch (error) {
+      reportApiError(error, 'Could not connect to the notification service.', 'notifications.signalR.connect');
       connection = null;
       return null;
     } finally {
@@ -55,11 +66,19 @@ const notificationService = {
   // ========== SignalR Event Listeners ==========
 
   onReceiveNotification: (callback) => {
-    connection?.on('ReceiveNotification', callback);
+    notificationCallbacks.add(callback);
   },
 
   offReceiveNotification: (callback) => {
-    connection?.off('ReceiveNotification', callback);
+    notificationCallbacks.delete(callback);
+  },
+
+  onBadgeUpdate: (callback) => {
+    badgeCallbacks.add(callback);
+  },
+
+  offBadgeUpdate: (callback) => {
+    badgeCallbacks.delete(callback);
   },
 
   // ========== REST API ==========

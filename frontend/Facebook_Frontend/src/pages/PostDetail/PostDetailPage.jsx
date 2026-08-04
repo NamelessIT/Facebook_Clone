@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import toast from "react-hot-toast";
+import toast from '../../shared/appToast';
 import PostItem from "../../components/post/PostItem";
 import postService from "../../services/postService";
 import "./PostDetailPage.css";
@@ -29,7 +29,7 @@ const PostDetailPage = () => {
         if (!cancelled) {
           const message = err.response?.data?.message || translateCatalogKey('post.loadFailed');
           setError(message);
-          toast.error(message);
+          toast.apiError(err, translateCatalogKey('post.loadFailed'), { context: 'posts.detail.load' });
         }
       } finally {
         if (!cancelled) setLoading(false);

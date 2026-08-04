@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import userService from "../../services/userService";
-import toast from "react-hot-toast";
+import toast from '../../shared/appToast';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const PrivacySettings = () => {
@@ -34,7 +34,7 @@ const PrivacySettings = () => {
       await userService.updatePrivacy(form);
       toast.success(translateCatalogKey('ui.pages.settings.privacysettings.cap-nhat-quyen-rieng-tu-thanh-cong.5b9a2ccf'));
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('settings.updateFailed'));
+      toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: 'settings.privacy.update' });
     } finally {
       setLoading(false);
     }

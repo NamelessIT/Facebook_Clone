@@ -6,6 +6,7 @@ import ReelsPlayer from './ReelsPlayer';
 import './ReelsGrid.css';
 import { useLocalization } from '../../contexts/useLocalization';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import toast from '../../shared/appToast';
 
 const ReelsGrid = ({ userId }) => {
   const { t } = useLocalization();
@@ -31,14 +32,15 @@ const ReelsGrid = ({ userId }) => {
         const pg = res.data?.pagination;
         setReels((prev) => (page === 1 ? data : [...prev, ...data]));
         if (pg) setTotalPages(pg.totalPages || 1);
-      } catch {
+      } catch (error) {
         setReels([]);
+        toast.apiError(error, t('reels.loadFailed'), { id: 'reels-grid-load-error', context: 'reels.grid.load' });
       } finally {
         setLoading(false);
       }
     };
     fetchReels();
-  }, [userId, page]);
+  }, [userId, page, t]);
 
   const handleReelDeleted = (deletedId) => {
     setReels((prev) => prev.filter((r) => r.id !== deletedId));

@@ -1,5 +1,6 @@
 import { AlertTriangle, CheckCircle2, Info, LoaderCircle, X } from 'lucide-react';
-import { Toaster, resolveValue, toast } from 'react-hot-toast';
+import { Toaster, resolveValue } from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import { useLocalization } from '../../contexts/useLocalization';
 import './NotificationCenter.css';
 
@@ -20,7 +21,8 @@ const NotificationCenter = () => {
         const config = TYPE_CONFIG[item.type] || TYPE_CONFIG.blank;
         const { Icon } = config;
         const message = resolveValue(item.message, item);
-        const eventCode = String(item.id).slice(-8).toUpperCase();
+        const diagnostics = item.diagnostics;
+        const clientEventId = String(item.id).slice(-8).toUpperCase();
 
         return (
           <div className={`app-toast ${config.className} ${item.visible ? 'app-toast--visible' : ''}`} role="status">
@@ -33,10 +35,21 @@ const NotificationCenter = () => {
                 <span>{new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
               </div>
               <div className="app-toast-message">{message}</div>
-              {item.type === "error" && (
+              {item.type === 'error' && diagnostics && (
                 <div className="app-toast-debug">
-                  <span>{t('notification.eventCode')}</span>
-                  <code>{eventCode}</code>
+                  {diagnostics.status && <span>HTTP <code>{diagnostics.status}</code></span>}
+                  {diagnostics.errorCode && <span>{t('notification.errorCode')} <code>{diagnostics.errorCode}</code></span>}
+                  {diagnostics.correlationId && <span>{t('notification.requestId')} <code>{diagnostics.correlationId}</code></span>}
+                  {diagnostics.endpoint && <span className="app-toast-debug-endpoint"><code>{diagnostics.method}</code> {diagnostics.endpoint}</span>}
+                  {diagnostics.validationErrors?.map((validationError) => (
+                    <span className="app-toast-validation" key={validationError}>{validationError}</span>
+                  ))}
+                </div>
+              )}
+              {item.type === 'error' && !diagnostics && (
+                <div className="app-toast-debug">
+                  <span>{t('notification.clientEventId')}</span>
+                  <code>{clientEventId}</code>
                 </div>
               )}
             </div>

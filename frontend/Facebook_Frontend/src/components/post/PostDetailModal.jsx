@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { X, Globe, Users, Lock, ThumbsUp, MessageSquare, Share2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import Avatar from '../common/Avatar';
 import CommentSection from './CommentSection';
 import SharePostModal from './SharePostModal';
@@ -72,8 +72,8 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
         setTopReactions(freshPost.topReactions || []);
         setReactorNames(freshPost.reactorNames || []);
         setCommentCount(freshPost.commentsCount || 0);
-      } catch {
-        // Keep the optimistic/opening state if the detail refresh fails.
+      } catch (error) {
+        toast.apiError(error, translateCatalogKey('post.loadFailed'), { context: 'posts.detail.refresh' });
       }
     };
 
@@ -244,7 +244,7 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
         topReactions: prevTop,
         reactorNames: prevNames,
       });
-      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.post.postdetailmodal.khong-the-tha-cam-xuc.72436747'));
+      toast.apiError(error, translateCatalogKey('ui.components.post.postdetailmodal.khong-the-tha-cam-xuc.72436747'), { context: 'posts.reaction' });
     }
   };
 

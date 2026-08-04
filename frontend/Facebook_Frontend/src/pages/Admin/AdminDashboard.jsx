@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Activity, AlertTriangle, FileText, Film, KeyRound, MessageSquare, ShieldOff, TrendingUp, Users, UsersRound } from 'lucide-react';
 import adminService from '../../services/adminService';
+import toast from '../../shared/appToast';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const AdminDashboard = () => {
@@ -10,7 +11,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     adminService.getDashboard()
       .then((response) => setData(response.data.data))
-      .catch(() => {})
+      .catch((error) => toast.apiError(error, translateCatalogKey('admin.dashboard.loadFailed'), { context: 'admin.dashboard.load' }))
       .finally(() => setLoading(false));
   }, []);
 

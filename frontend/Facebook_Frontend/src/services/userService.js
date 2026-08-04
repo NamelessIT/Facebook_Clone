@@ -44,6 +44,10 @@ const userService = {
   updatePreferences: async (data) => {
     return await axiosClient.put('/users/me/preferences', data);
   },
+
+  changePassword: async (currentPassword, newPassword) => {
+    return await axiosClient.put('/users/me/password', { currentPassword, newPassword });
+  },
 };
 
 export default userService;

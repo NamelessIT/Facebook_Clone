@@ -35,6 +35,9 @@ public static class SharedConstants
         public const int EditPostMaxContentLength = 500;
         public const int ProfileBioMaxLength = 200;
         public const int PostPreviewTextLimit = 120;
+        public const int PasswordMinLength = 8;
+        public const int AdminRoleMinLevel = 50;
+        public const int MaxRoleLevel = 100;
         public const int MaxImageUploadMb = 10;
         public const int MaxVideoUploadMb = 100;
     }

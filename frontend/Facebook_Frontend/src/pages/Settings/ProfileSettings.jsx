@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import userService from "../../services/userService";
 import Avatar from "../../components/common/Avatar";
-import toast from "react-hot-toast";
+import toast from '../../shared/appToast';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const ProfileSettings = () => {
@@ -42,7 +42,7 @@ const ProfileSettings = () => {
       await userService.updateProfile(formData);
       toast.success(translateCatalogKey('ui.pages.settings.profilesettings.cap-nhat-ho-so-thanh-cong.94b910c2'));
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('settings.updateFailed'));
+      toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: 'settings.profile.update' });
     } finally {
       setLoading(false);
     }

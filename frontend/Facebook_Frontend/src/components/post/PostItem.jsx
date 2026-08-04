@@ -15,7 +15,7 @@ import ReportPostModal from "./ReportPostModal";
 import { getImageUrl } from "../../utils/formatUrl";
 import postService from "../../services/postService";
 import savedItemsService from "../../services/savedItemsService";
-import toast from "react-hot-toast";
+import toast from '../../shared/appToast';
 import { PostPrivacy, PostType, ReactionType } from "../../shared/generated/enums";
 import { LIMITS, TIMERS } from "../../shared/generated/constants";
 import { useLocalization } from "../../contexts/useLocalization";
@@ -132,7 +132,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
       toast.success(t('post.deleted'));
       onPostUpdated?.();
     } catch (error) {
-      toast.error(error.response?.data?.message || t('post.deleteFailed'));
+      toast.apiError(error, t('post.deleteFailed'), { context: 'posts.delete' });
       setIsDeletionPending(false);
       setDeletionTimeRemaining(TIMERS.postDeleteUndoSeconds);
     } finally {
@@ -172,8 +172,8 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
       setSavedCollectionIds(stateRes.data?.data?.collectionIds ?? []);
       setShowCollectionModal(true);
       toast.success(translateCatalogKey('ui.components.post.postactionmenu.a-luu-bai-viet.65dd7752'));
-    } catch {
-      toast.error(translateCatalogKey('ui.components.post.postitem.luu-bai-viet-that-bai.b085dd6a'));
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('ui.components.post.postitem.luu-bai-viet-that-bai.b085dd6a'), { context: 'saved.post.add' });
     }
   };
 
@@ -209,8 +209,8 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
         setIsSaved(true);
         toast.success(translateCatalogKey('saved.collectionUpdated'));
       }
-    } catch {
-      toast.error(translateCatalogKey('ui.components.post.postitem.thao-tac-that-bai.5581e390'));
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('ui.components.post.postitem.thao-tac-that-bai.5581e390'), { context: 'saved.collections.update' });
     }
 
     setShowCollectionModal(false);
@@ -310,7 +310,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
     try {
       await postService.reactPost(post.id, reactionId); 
     } catch (error) {
-      console.error("Lỗi thả cảm xúc:", error);
+      toast.apiError(error, translateCatalogKey('ui.components.post.postdetailmodal.khong-the-tha-cam-xuc.72436747'), { context: 'posts.reaction' });
       setMyReaction(prevReaction);
       setReactionCount(prevCount);
       setTopReactions(prevTop);

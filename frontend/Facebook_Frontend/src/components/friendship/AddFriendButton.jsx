@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { UserPlus, UserCheck, UserX, Clock } from "lucide-react";
 import friendshipService from "../../services/friendshipService";
-import toast from "react-hot-toast";
+import toast from '../../shared/appToast';
 import "./AddFriendButton.css";
 import { useLocalization } from "../../contexts/useLocalization";
 import { translateCatalogKey } from '../../shared/localizationRuntime';
@@ -63,7 +63,7 @@ const AddFriendButton = ({ targetUserId, initialStatus }) => {
           break;
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'));
+      toast.apiError(error, translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'), { context: 'friends.action' });
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Edit3, Plus, Save, Search, ShieldCheck, Trash2, X } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import adminService from '../../services/adminService';
 import { useConfirm } from '../../contexts/useConfirm';
 import { useLocalization } from '../../contexts/useLocalization';
@@ -31,7 +31,7 @@ const AdminRoles = () => {
       setPermissions(rolesResponse.data.data.permissions);
       setUsers(usersResponse.data.data);
     } catch (error) {
-      toast.error(error.response?.data?.message || t('admin.roles.loadFailed'));
+      toast.apiError(error, t('admin.roles.loadFailed'), { context: 'admin.roles.load' });
     } finally {
       setLoading(false);
     }
@@ -102,7 +102,7 @@ const AdminRoles = () => {
       closeRoleModal();
       load();
     } catch (error) {
-      toast.error(error.response?.data?.message || t('admin.roles.saveFailed'));
+      toast.apiError(error, t('admin.roles.saveFailed'), { context: editingRoleId ? 'admin.roles.update' : 'admin.roles.create' });
     }
   };
 
@@ -119,7 +119,7 @@ const AdminRoles = () => {
       toast.success(t('admin.roles.deleted'));
       load();
     } catch (error) {
-      toast.error(error.response?.data?.message || t('admin.roles.deleteFailed'));
+      toast.apiError(error, t('admin.roles.deleteFailed'), { context: 'admin.roles.delete' });
     }
   };
 
@@ -133,7 +133,7 @@ const AdminRoles = () => {
       toast.success(t('admin.roles.assignmentUpdated'));
       load();
     } catch (error) {
-      toast.error(error.response?.data?.message || t('admin.roles.assignmentFailed'));
+      toast.apiError(error, t('admin.roles.assignmentFailed'), { context: 'admin.roles.permissions.update' });
     }
   };
 

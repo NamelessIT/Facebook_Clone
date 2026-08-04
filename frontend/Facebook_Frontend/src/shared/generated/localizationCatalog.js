@@ -260,6 +260,62 @@ export const LOCALIZATION_CATALOG = Object.freeze({
       }
     },
     {
+      "key": "notification.clientEventId",
+      "sourceText": "Mã sự kiện giao diện",
+      "context": "Mã cục bộ khi lỗi không bắt nguồn từ API",
+      "translations": {
+        "en": "UI event ID"
+      }
+    },
+    {
+      "key": "notification.loadFailed",
+      "sourceText": "Không thể tải thông báo.",
+      "context": "Lỗi tải danh sách thông báo",
+      "translations": {
+        "en": "Could not load notifications."
+      }
+    },
+    {
+      "key": "notification.markReadFailed",
+      "sourceText": "Không thể cập nhật trạng thái thông báo.",
+      "context": "Lỗi đánh dấu thông báo đã đọc",
+      "translations": {
+        "en": "Could not update the notification status."
+      }
+    },
+    {
+      "key": "notification.httpStatus",
+      "sourceText": "Trạng thái HTTP",
+      "context": "Chi tiết lỗi API",
+      "translations": {
+        "en": "HTTP status"
+      }
+    },
+    {
+      "key": "notification.errorCode",
+      "sourceText": "Mã lỗi",
+      "context": "Chi tiết lỗi API",
+      "translations": {
+        "en": "Error code"
+      }
+    },
+    {
+      "key": "notification.requestId",
+      "sourceText": "Mã yêu cầu",
+      "context": "Correlation ID để tra log API",
+      "translations": {
+        "en": "Request ID"
+      }
+    },
+    {
+      "key": "notification.retryAfter",
+      "sourceText": "Thử lại sau {seconds} giây",
+      "context": "Thời gian chờ trước khi gửi lại request",
+      "translations": {
+        "en": "Retry after {seconds} seconds"
+      }
+    },
+    {
       "key": "notification.title",
       "sourceText": "Thông báo",
       "context": "Tiêu đề bảng thông báo",
@@ -5097,6 +5153,262 @@ export const LOCALIZATION_CATALOG = Object.freeze({
       "context": "Nút tải thêm reels",
       "translations": {
         "en": "Load more reels"
+      }
+    },
+    {
+      "key": "admin.users.createAccount",
+      "sourceText": "Tạo tài khoản",
+      "context": "Nút và tiêu đề modal tạo account từ admin",
+      "translations": {
+        "en": "Create account"
+      }
+    },
+    {
+      "key": "admin.users.createHierarchyHint",
+      "sourceText": "Chỉ có thể tạo account và gán role thấp hơn role cao nhất của bạn.",
+      "context": "Mô tả quy tắc phân cấp khi tạo account",
+      "translations": {
+        "en": "You can only create accounts with roles below your highest role."
+      }
+    },
+    {
+      "key": "admin.users.firstName",
+      "sourceText": "Tên",
+      "context": "Form tạo account",
+      "translations": {
+        "en": "First name"
+      }
+    },
+    {
+      "key": "admin.users.lastName",
+      "sourceText": "Họ",
+      "context": "Form tạo account",
+      "translations": {
+        "en": "Last name"
+      }
+    },
+    {
+      "key": "admin.users.usernameEmail",
+      "sourceText": "Tên đăng nhập (email)",
+      "context": "Form tạo account",
+      "translations": {
+        "en": "Username (email)"
+      }
+    },
+    {
+      "key": "admin.users.initialPassword",
+      "sourceText": "Mật khẩu ban đầu",
+      "context": "Form tạo account",
+      "translations": {
+        "en": "Initial password"
+      }
+    },
+    {
+      "key": "admin.users.passwordRules",
+      "sourceText": "Tối thiểu {{count}} ký tự, có chữ hoa, chữ thường và số.",
+      "context": "Quy tắc mật khẩu account",
+      "translations": {
+        "en": "At least {{count}} characters with uppercase, lowercase and a number."
+      }
+    },
+    {
+      "key": "admin.users.passwordOneTimeHint",
+      "sourceText": "Mật khẩu chỉ hiển thị một lần sau khi tạo. Hãy cấp lại cho người sử dụng qua kênh an toàn.",
+      "context": "Cảnh báo mật khẩu ban đầu",
+      "translations": {
+        "en": "The password is shown once after creation. Share it through a secure channel."
+      }
+    },
+    {
+      "key": "admin.users.assignLowerRoles",
+      "sourceText": "Role được phép gán",
+      "context": "Danh sách role trong form tạo account",
+      "translations": {
+        "en": "Assignable roles"
+      }
+    },
+    {
+      "key": "admin.users.createValidation",
+      "sourceText": "Nhập đủ thông tin, mật khẩu hợp lệ và chọn ít nhất một role.",
+      "context": "Lỗi validation tạo account",
+      "translations": {
+        "en": "Complete all fields, use a valid password and select at least one role."
+      }
+    },
+    {
+      "key": "admin.users.createSuccess",
+      "sourceText": "Đã tạo tài khoản.",
+      "context": "Toast tạo account thành công",
+      "translations": {
+        "en": "Account created."
+      }
+    },
+    {
+      "key": "admin.users.createFailed",
+      "sourceText": "Không thể tạo tài khoản.",
+      "context": "Toast tạo account thất bại",
+      "translations": {
+        "en": "Could not create account."
+      }
+    },
+    {
+      "key": "admin.users.accountReady",
+      "sourceText": "Tài khoản đã sẵn sàng",
+      "context": "Tiêu đề hiển thị credentials",
+      "translations": {
+        "en": "Account is ready"
+      }
+    },
+    {
+      "key": "admin.users.credentialsWarning",
+      "sourceText": "Hãy lưu thông tin này ngay. Mật khẩu sẽ không được hiển thị lại.",
+      "context": "Cảnh báo sau khi tạo account",
+      "translations": {
+        "en": "Save these credentials now. The password will not be shown again."
+      }
+    },
+    {
+      "key": "admin.users.username",
+      "sourceText": "Tên đăng nhập",
+      "context": "Nhãn credentials",
+      "translations": {
+        "en": "Username"
+      }
+    },
+    {
+      "key": "admin.users.password",
+      "sourceText": "Mật khẩu",
+      "context": "Nhãn credentials",
+      "translations": {
+        "en": "Password"
+      }
+    },
+    {
+      "key": "admin.users.copyCredentials",
+      "sourceText": "Sao chép thông tin",
+      "context": "Nút sao chép credentials",
+      "translations": {
+        "en": "Copy credentials"
+      }
+    },
+    {
+      "key": "admin.users.credentialsCopied",
+      "sourceText": "Đã sao chép thông tin đăng nhập.",
+      "context": "Toast sao chép credentials",
+      "translations": {
+        "en": "Credentials copied."
+      }
+    },
+    {
+      "key": "admin.users.savedCredentials",
+      "sourceText": "Tôi đã lưu",
+      "context": "Nút đóng credentials",
+      "translations": {
+        "en": "I have saved them"
+      }
+    },
+    {
+      "key": "admin.users.togglePassword",
+      "sourceText": "Hiện hoặc ẩn mật khẩu",
+      "context": "Aria label nút mật khẩu",
+      "translations": {
+        "en": "Show or hide password"
+      }
+    },
+    {
+      "key": "admin.account.changePassword",
+      "sourceText": "Đổi mật khẩu",
+      "context": "Tài khoản admin",
+      "translations": {
+        "en": "Change password"
+      }
+    },
+    {
+      "key": "admin.account.currentPassword",
+      "sourceText": "Mật khẩu hiện tại",
+      "context": "Form đổi mật khẩu",
+      "translations": {
+        "en": "Current password"
+      }
+    },
+    {
+      "key": "admin.account.newPassword",
+      "sourceText": "Mật khẩu mới",
+      "context": "Form đổi mật khẩu",
+      "translations": {
+        "en": "New password"
+      }
+    },
+    {
+      "key": "admin.account.confirmPassword",
+      "sourceText": "Nhập lại mật khẩu mới",
+      "context": "Form đổi mật khẩu",
+      "translations": {
+        "en": "Confirm new password"
+      }
+    },
+    {
+      "key": "admin.account.passwordMismatch",
+      "sourceText": "Mật khẩu xác nhận không khớp.",
+      "context": "Validation đổi mật khẩu",
+      "translations": {
+        "en": "Password confirmation does not match."
+      }
+    },
+    {
+      "key": "admin.account.passwordChanged",
+      "sourceText": "Đã đổi mật khẩu. Vui lòng đăng nhập lại.",
+      "context": "Toast đổi mật khẩu",
+      "translations": {
+        "en": "Password changed. Please sign in again."
+      }
+    },
+    {
+      "key": "admin.account.passwordChangeFailed",
+      "sourceText": "Không thể đổi mật khẩu.",
+      "context": "Toast đổi mật khẩu",
+      "translations": {
+        "en": "Could not change password."
+      }
+    },
+    {
+      "key": "admin.account.passwordSignInAgain",
+      "sourceText": "Sau khi đổi mật khẩu, tất cả phiên sẽ bị thu hồi và bạn cần đăng nhập lại.",
+      "context": "Cảnh báo đổi mật khẩu",
+      "translations": {
+        "en": "Changing your password revokes all sessions and requires you to sign in again."
+      }
+    },
+    {
+      "key": "comment.loadFailed",
+      "sourceText": "Không thể tải bình luận.",
+      "context": "Lỗi tải bình luận bài viết",
+      "translations": {
+        "en": "Could not load comments."
+      }
+    },
+    {
+      "key": "admin.dashboard.loadFailed",
+      "sourceText": "Không thể tải dashboard quản trị.",
+      "context": "Lỗi tải dashboard admin",
+      "translations": {
+        "en": "Could not load the admin dashboard."
+      }
+    },
+    {
+      "key": "reels.loadFailed",
+      "sourceText": "Không thể tải Reels.",
+      "context": "Lỗi tải danh sách Reel",
+      "translations": {
+        "en": "Could not load Reels."
+      }
+    },
+    {
+      "key": "search.loadFailed",
+      "sourceText": "Không thể tải kết quả tìm kiếm.",
+      "context": "Lỗi tìm kiếm user hoặc bài viết",
+      "translations": {
+        "en": "Could not load search results."
       }
     }
   ]

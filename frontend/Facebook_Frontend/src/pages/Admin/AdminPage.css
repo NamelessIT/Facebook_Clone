@@ -368,6 +368,123 @@ table.admin-table tr:hover td { background: #1e2130; }
   overflow: hidden;
 }
 
+.admin-account-modal,
+.admin-credentials-modal,
+.admin-password-modal {
+  width: min(620px, 100%);
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  background: #1a1d27;
+  border: 1px solid #2a2d3a;
+  border-radius: 12px;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.admin-role-modal-header > div > p,
+.admin-password-form p {
+  margin: 5px 0 0;
+  color: #9299a6;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.admin-account-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 18px;
+  overflow-y: auto;
+}
+
+.admin-account-form label,
+.admin-password-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #cbd0d9;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.admin-account-form input,
+.admin-password-form input {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #2a2d3a;
+  border-radius: 8px;
+  background: #0f1117;
+  color: #f2f3f5;
+  padding: 10px 11px;
+  font-size: 13px;
+}
+
+.admin-account-form input:focus,
+.admin-password-form input:focus {
+  outline: none;
+  border-color: #e74c3c;
+}
+
+.admin-account-field--wide,
+.admin-account-roles { grid-column: 1 / -1; }
+.admin-account-form small { color: #7f8794; font-weight: 400; }
+
+.admin-password-input { position: relative; }
+.admin-password-input input { padding-right: 42px; }
+.admin-password-input button {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #9299a6;
+  padding: 6px;
+  cursor: pointer;
+}
+.admin-password-input button:hover { background: #2a2d3a; color: #fff; }
+
+.admin-account-roles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid #2a2d3a;
+  border-radius: 8px;
+  padding: 12px;
+}
+.admin-account-roles legend { color: #fff; font-size: 13px; font-weight: 700; padding: 0 5px; }
+.admin-account-role-option {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  border: 1px solid #2a2d3a;
+  border-radius: 8px;
+  background: #0f1117;
+  padding: 9px 10px;
+  cursor: pointer;
+}
+.admin-account-role-option input { width: auto; accent-color: #e74c3c; }
+
+.admin-credentials-list { display: grid; gap: 10px; padding: 18px; }
+.admin-credentials-list > div {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 12px;
+  border: 1px solid #2a2d3a;
+  border-radius: 8px;
+  background: #0f1117;
+  padding: 12px;
+}
+.admin-credentials-list span { color: #9299a6; font-size: 12px; }
+.admin-credentials-list strong { color: #fff; overflow-wrap: anywhere; }
+
+.admin-password-form { display: grid; gap: 13px; padding: 18px; }
+
 .admin-role-modal-header,
 .admin-role-modal-footer {
   display: flex;
@@ -633,6 +750,14 @@ table.admin-table tr:hover td { background: #1e2130; }
   .admin-language-form { padding: 14px; }
   .admin-language-item { align-items: flex-start; }
   .admin-role-modal { max-height: calc(100dvh - 24px); }
+  .admin-account-modal,
+  .admin-credentials-modal,
+  .admin-password-modal { max-height: calc(100dvh - 24px); }
+  .admin-account-form { grid-template-columns: 1fr; }
+  .admin-account-field--wide,
+  .admin-account-roles { grid-column: auto; }
+  .admin-account-roles { grid-template-columns: 1fr; }
+  .admin-credentials-list > div { grid-template-columns: 1fr; gap: 4px; }
   .admin-modal-backdrop { padding: 12px; }
 }
 

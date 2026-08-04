@@ -7,6 +7,8 @@ const adminService = {
 
   // Users
   getUsers: (params = {}) => axiosClient.get('/admin/users', { params }),
+  getUserCreationOptions: () => axiosClient.get('/admin/users/creation-options'),
+  createUser: (data) => axiosClient.post('/admin/users', data),
   banUser: (id, reason) => axiosClient.put(`/admin/users/${id}/ban`, { reason }),
   unbanUser: (id) => axiosClient.put(`/admin/users/${id}/unban`),
   setUserRoles: (id, roleIds) => axiosClient.put(`/admin/users/${id}/roles`, { roleIds }),

@@ -7,7 +7,7 @@ test.describe('Facebook Clone E2E smoke', () => {
 
     await login(page, USERS.alice);
     await expectAppReady(page);
-    await expect(page.getByText(/Alice Nguyen/i)).toBeVisible();
+    await expect(page.getByText(/Alice Nguyen/i).first()).toBeVisible();
     await expect(page.locator('body')).toContainText(/Reels|Hello Facebook Clone|test/i);
 
     await finishDiagnostics();
@@ -46,12 +46,29 @@ test.describe('Facebook Clone E2E smoke', () => {
     await finishDiagnostics();
   });
 
+  test('admin create-account dialog only offers lower roles', async ({ page }, testInfo) => {
+    const finishDiagnostics = attachDiagnostics(page, testInfo);
+
+    await login(page, USERS.admin, { expectedUrl: /\/admin(\/dashboard)?$/ });
+    await page.goto('/admin/users');
+    await expectAppReady(page);
+    await page.getByRole('button', { name: /Create account|T\u1ea1o t\u00e0i kho\u1ea3n/i }).click();
+
+    const dialog = page.locator('.admin-account-modal');
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toContainText(/Admin/);
+    await expect(dialog).toContainText(/Moderator/);
+    await expect(dialog).not.toContainText(/Super Admin/);
+
+    await finishDiagnostics();
+  });
+
   test('keeps non-admin users out of admin area', async ({ page }, testInfo) => {
     const finishDiagnostics = attachDiagnostics(page, testInfo);
 
     await login(page, USERS.alice);
     await page.goto('/admin');
-    await expect(page).not.toHaveURL(/\/admin/);
+    await expect(page).toHaveURL(/\/admin\/login$/);
 
     await finishDiagnostics();
   });

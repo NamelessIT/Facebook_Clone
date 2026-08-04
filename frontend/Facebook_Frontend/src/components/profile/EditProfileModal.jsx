@@ -3,7 +3,7 @@ import { X, Camera } from 'lucide-react';
 import Avatar from '../common/Avatar';
 import { getImageUrl } from '../../utils/formatUrl';
 import userService from '../../services/userService';
-import toast from 'react-hot-toast';
+import toast from '../../shared/appToast';
 import { LIMITS } from '../../shared/generated/constants';
 import './EditProfileModal.css';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
@@ -86,7 +86,7 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
       });
       onClose();
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('settings.updateFailed'));
+      toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: 'profile.update' });
     } finally {
       setSaving(false);
     }

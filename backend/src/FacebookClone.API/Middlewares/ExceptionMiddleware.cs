@@ -15,13 +15,17 @@ public class ExceptionMiddleware
 
     public async Task Invoke(HttpContext context)
     {
+        var correlationId = context.Items["X-Correlation-Id"]?.ToString() ?? context.TraceIdentifier;
+
         try
         {
             await _next(context);
         }
         catch (AppException ex)
         {
-            _logger.LogWarning(ex, ex.Message);
+            _logger.LogWarning(ex,
+                "Application error {ErrorCode} for {Method} {Path}. CorrelationId: {CorrelationId}",
+                ex.ErrorCode, context.Request.Method, context.Request.Path, correlationId);
 
             context.Response.StatusCode = ex.StatusCode;
             context.Response.ContentType = "application/json";
@@ -30,12 +34,15 @@ public class ExceptionMiddleware
             {
                 success = false,
                 message = ex.Message,
-                errorCode = ex.ErrorCode
+                errorCode = ex.ErrorCode,
+                correlationId
             }));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception");
+            _logger.LogError(ex,
+                "Unhandled exception for {Method} {Path}. CorrelationId: {CorrelationId}",
+                context.Request.Method, context.Request.Path, correlationId);
 
             context.Response.StatusCode = 500;
             context.Response.ContentType = "application/json";
@@ -44,7 +51,8 @@ public class ExceptionMiddleware
             {
                 success = false,
                 message = "Internal server error",
-                errorCode = "INTERNAL_SERVER_ERROR"
+                errorCode = "INTERNAL_SERVER_ERROR",
+                correlationId
             }));
         }
     }

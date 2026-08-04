@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Search, Ban, CheckCircle, Trash2, ShieldCheck } from 'lucide-react';
+import { Search, Ban, CheckCircle, Trash2, ShieldCheck, UserPlus, Eye, EyeOff, Copy, X } from 'lucide-react';
 import adminService from '../../services/adminService';
-import toast from 'react-hot-toast';
-import { TIMERS } from '../../shared/generated/constants';
+import toast from '../../shared/appToast';
+import { LIMITS, TIMERS } from '../../shared/generated/constants';
 import { useConfirm } from '../../contexts/useConfirm';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 
@@ -14,22 +14,32 @@ const AdminUsers = () => {
   const [filter, setFilter] = useState('');
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({});
-  const [roles, setRoles] = useState([]);
+  const [creationRoles, setCreationRoles] = useState([]);
+  const [canCreateUsers, setCanCreateUsers] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [createSubmitting, setCreateSubmitting] = useState(false);
+  const [showCreatePassword, setShowCreatePassword] = useState(false);
+  const [createForm, setCreateForm] = useState({ firstName: '', lastName: '', email: '', password: '', roleIds: [] });
+  const [createdCredentials, setCreatedCredentials] = useState(null);
   const [banModal, setBanModal] = useState(null);
   const [banReason, setBanReason] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [usersResponse, rolesResponse] = await Promise.all([
+      const [usersResponse, creationOptionsResponse] = await Promise.all([
         adminService.getUsers({ page, pageSize: 20, search: search || undefined, filter: filter || undefined }),
-        adminService.getRoles(),
+        adminService.getUserCreationOptions().catch((error) => {
+          if (error.response?.status === 403) return null;
+          throw error;
+        }),
       ]);
       setUsers(usersResponse.data.data);
       setPagination(usersResponse.data.pagination);
-      setRoles(rolesResponse.data.data.roles);
-    } catch {
-      toast.error(translateCatalogKey('ui.pages.admin.adminusers.khong-the-tai-danh-sach-nguoi-dung.e5a7c59d'));
+      setCanCreateUsers(Boolean(creationOptionsResponse?.data?.data?.canCreateUsers));
+      setCreationRoles(creationOptionsResponse?.data?.data?.roles || []);
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('ui.pages.admin.adminusers.khong-the-tai-danh-sach-nguoi-dung.e5a7c59d'), { context: 'admin.users.load' });
     } finally {
       setLoading(false);
     }
@@ -51,7 +61,7 @@ const AdminUsers = () => {
       setBanReason('');
       load();
     } catch (e) {
-      toast.error(e.response?.data?.message || translateCatalogKey('ui.pages.admin.adminusers.loi-ban-user.516a1edb'));
+      toast.apiError(e, translateCatalogKey('ui.pages.admin.adminusers.loi-ban-user.516a1edb'), { context: 'admin.users.ban' });
     }
   };
 
@@ -60,8 +70,8 @@ const AdminUsers = () => {
       await adminService.unbanUser(u.id);
       toast.success(translateCatalogKey('ui.pages.admin.adminusers.a-unban-value0.cf6ea679', { value0: u.firstName }));
       load();
-    } catch {
-      toast.error(translateCatalogKey('ui.pages.admin.adminusers.loi-unban-user.fbe5c264'));
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('ui.pages.admin.adminusers.loi-unban-user.fbe5c264'), { context: 'admin.users.unban' });
     }
   };
 
@@ -78,7 +88,7 @@ const AdminUsers = () => {
       toast.success(translateCatalogKey('ui.pages.admin.adminusers.a-xoa-nguoi-dung.e72142e0'));
       load();
     } catch (e) {
-      toast.error(e.response?.data?.message || translateCatalogKey('ui.pages.admin.adminusers.loi-xoa-user.6292a721'));
+      toast.apiError(e, translateCatalogKey('ui.pages.admin.adminusers.loi-xoa-user.6292a721'), { context: 'admin.users.delete' });
     }
   };
 
@@ -88,13 +98,80 @@ const AdminUsers = () => {
       toast.success(translateCatalogKey('admin.roles.assignmentUpdated'));
       load();
     } catch (error) {
-      toast.error(error.response?.data?.message || translateCatalogKey('admin.roles.assignmentFailed'));
+      toast.apiError(error, translateCatalogKey('admin.roles.assignmentFailed'), { context: 'admin.users.roles.update' });
     }
+  };
+
+  const updateCreateForm = (field, value) => {
+    setCreateForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const toggleCreateRole = (roleId) => {
+    setCreateForm((current) => ({
+      ...current,
+      roleIds: current.roleIds.includes(roleId)
+        ? current.roleIds.filter((id) => id !== roleId)
+        : [...current.roleIds, roleId],
+    }));
+  };
+
+  const closeCreateModal = () => {
+    if (createSubmitting) return;
+    setCreateModalOpen(false);
+    setShowCreatePassword(false);
+    setCreateForm({ firstName: '', lastName: '', email: '', password: '', roleIds: [] });
+  };
+
+  const handleCreateUser = async (event) => {
+    event.preventDefault();
+    if (!createForm.firstName.trim() || !createForm.lastName.trim() || !createForm.email.trim() ||
+        createForm.password.length < LIMITS.passwordMinLength || createForm.roleIds.length === 0) {
+      toast.error(translateCatalogKey('admin.users.createValidation'));
+      return;
+    }
+
+    setCreateSubmitting(true);
+    try {
+      await adminService.createUser({
+        ...createForm,
+        email: createForm.email.trim(),
+        firstName: createForm.firstName.trim(),
+        lastName: createForm.lastName.trim(),
+      });
+      setCreatedCredentials({ username: createForm.email.trim(), password: createForm.password });
+      setCreateModalOpen(false);
+      setShowCreatePassword(false);
+      setCreateForm({ firstName: '', lastName: '', email: '', password: '', roleIds: [] });
+      toast.success(translateCatalogKey('admin.users.createSuccess'));
+      await load();
+    } catch (error) {
+      toast.apiError(error, translateCatalogKey('admin.users.createFailed'), { context: 'admin.users.create' });
+    } finally {
+      setCreateSubmitting(false);
+    }
+  };
+
+  const copyCredentials = async () => {
+    if (!createdCredentials) return;
+    await navigator.clipboard.writeText(
+      `${translateCatalogKey('admin.users.username')}: ${createdCredentials.username}\n${translateCatalogKey('admin.users.password')}: ${createdCredentials.password}`
+    );
+    toast.success(translateCatalogKey('admin.users.credentialsCopied'));
   };
 
   return (
     <div>
-      <h1 className="admin-page-title">{translateCatalogKey('admin.users.title')}</h1>
+      <div className="admin-page-heading">
+        <div>
+          <h1 className="admin-page-title">{translateCatalogKey('admin.users.title')}</h1>
+          <p className="admin-page-subtitle">{translateCatalogKey('admin.users.createHierarchyHint')}</p>
+        </div>
+        {canCreateUsers && creationRoles.length > 0 && (
+          <button className="admin-btn admin-btn--primary admin-btn--bulk" type="button" onClick={() => setCreateModalOpen(true)}>
+            <UserPlus size={16} /> {translateCatalogKey('admin.users.createAccount')}
+          </button>
+        )}
+      </div>
 
       <div className="admin-table-wrap">
         <div className="admin-table-header">
@@ -135,8 +212,9 @@ const AdminUsers = () => {
             <tbody>
               {users.map(u => {
                 const currentRoleId = (u.roles || [])[0]?.id || '';
-                const currentRole = roles.find((role) => role.id === currentRoleId);
-                const isProtectedAdmin = u.isAdmin || (currentRole?.level ?? 0) >= 50;
+                const currentRole = (u.roles || [])[0] || null;
+                const isProtectedAdmin = u.isAdmin || (currentRole?.level ?? 0) >= LIMITS.adminRoleMinLevel;
+                const canAssignCurrentRole = !currentRoleId || creationRoles.some((role) => role.id === currentRoleId);
                 return (
                 <tr key={u.id}>
                   <td>
@@ -183,9 +261,13 @@ const AdminUsers = () => {
                           value={currentRoleId}
                           onChange={(event) => handleAssignRole(u, event.target.value)}
                           aria-label={translateCatalogKey('admin.roles.assignRole')}
+                          disabled={!canAssignCurrentRole}
                         >
                           <option value="">{translateCatalogKey('admin.roles.unassigned')}</option>
-                          {roles.map((role) => (
+                          {!canAssignCurrentRole && currentRole && (
+                            <option value={currentRole.id}>{currentRole.displayName}</option>
+                          )}
+                          {creationRoles.map((role) => (
                             <option key={role.id} value={role.id}>{role.displayName}</option>
                           ))}
                         </select>
@@ -212,6 +294,93 @@ const AdminUsers = () => {
           </div>
         )}
       </div>
+
+      {createModalOpen && (
+        <div className="admin-modal-backdrop" role="presentation" onMouseDown={closeCreateModal}>
+          <form className="admin-account-modal" onSubmit={handleCreateUser} onMouseDown={(event) => event.stopPropagation()}>
+            <div className="admin-role-modal-header">
+              <div>
+                <h2>{translateCatalogKey('admin.users.createAccount')}</h2>
+                <p>{translateCatalogKey('admin.users.passwordOneTimeHint')}</p>
+              </div>
+              <button className="admin-icon-btn" type="button" onClick={closeCreateModal} aria-label={translateCatalogKey('common.close')}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="admin-account-form">
+              <label>
+                <span>{translateCatalogKey('admin.users.firstName')}</span>
+                <input autoFocus value={createForm.firstName} onChange={(event) => updateCreateForm('firstName', event.target.value)} maxLength={50} required />
+              </label>
+              <label>
+                <span>{translateCatalogKey('admin.users.lastName')}</span>
+                <input value={createForm.lastName} onChange={(event) => updateCreateForm('lastName', event.target.value)} maxLength={50} required />
+              </label>
+              <label className="admin-account-field--wide">
+                <span>{translateCatalogKey('admin.users.usernameEmail')}</span>
+                <input type="email" value={createForm.email} onChange={(event) => updateCreateForm('email', event.target.value)} maxLength={255} autoComplete="off" required />
+              </label>
+              <label className="admin-account-field--wide">
+                <span>{translateCatalogKey('admin.users.initialPassword')}</span>
+                <div className="admin-password-input">
+                  <input
+                    type={showCreatePassword ? 'text' : 'password'}
+                    value={createForm.password}
+                    onChange={(event) => updateCreateForm('password', event.target.value)}
+                    minLength={LIMITS.passwordMinLength}
+                    autoComplete="new-password"
+                    required
+                  />
+                  <button type="button" onClick={() => setShowCreatePassword((visible) => !visible)} aria-label={translateCatalogKey('admin.users.togglePassword')}>
+                    {showCreatePassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                  </button>
+                </div>
+                <small>{translateCatalogKey('admin.users.passwordRules', { count: LIMITS.passwordMinLength })}</small>
+              </label>
+
+              <fieldset className="admin-account-roles">
+                <legend>{translateCatalogKey('admin.users.assignLowerRoles')}</legend>
+                {creationRoles.map((role) => (
+                  <label key={role.id} className="admin-account-role-option">
+                    <input type="checkbox" checked={createForm.roleIds.includes(role.id)} onChange={() => toggleCreateRole(role.id)} />
+                    <span>{role.displayName}</span>
+                    <small>{translateCatalogKey('admin.roles.level')} {role.level}</small>
+                  </label>
+                ))}
+              </fieldset>
+            </div>
+
+            <div className="admin-role-modal-footer">
+              <button className="admin-btn admin-btn--reset" type="button" onClick={closeCreateModal}>{translateCatalogKey('common.cancel')}</button>
+              <button className="admin-btn admin-btn--primary" type="submit" disabled={createSubmitting}>
+                <UserPlus size={14} /> {createSubmitting ? translateCatalogKey('common.loading') : translateCatalogKey('admin.users.createAccount')}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {createdCredentials && (
+        <div className="admin-modal-backdrop" role="presentation">
+          <div className="admin-credentials-modal" role="dialog" aria-modal="true">
+            <div className="admin-role-modal-header">
+              <div>
+                <h2>{translateCatalogKey('admin.users.accountReady')}</h2>
+                <p>{translateCatalogKey('admin.users.credentialsWarning')}</p>
+              </div>
+            </div>
+            <div className="admin-credentials-list">
+              <div><span>{translateCatalogKey('admin.users.username')}</span><strong>{createdCredentials.username}</strong></div>
+              <div><span>{translateCatalogKey('admin.users.password')}</span><strong>{createdCredentials.password}</strong></div>
+            </div>
+            <div className="admin-role-modal-footer">
+              <button className="admin-btn admin-btn--reset" type="button" onClick={copyCredentials}><Copy size={14} /> {translateCatalogKey('admin.users.copyCredentials')}</button>
+              <button className="admin-btn admin-btn--primary" type="button" onClick={() => setCreatedCredentials(null)}>{translateCatalogKey('admin.users.savedCredentials')}</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Ban Modal */}
       {banModal && (

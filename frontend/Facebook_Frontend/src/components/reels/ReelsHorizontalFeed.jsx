@@ -9,6 +9,7 @@ import ReelsPlayer from './ReelsPlayer';
 import UploadReelModal from './UploadReelModal';
 import './ReelsHorizontalFeed.css';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import toast from '../../shared/appToast';
 
 const CARD_WIDTH = 120; // px per scroll step (one card)
 
@@ -28,12 +29,13 @@ const ReelsHorizontalFeed = () => {
     try {
       const res = await reelService.getReelsFeed(1, 20);
       setReels(res.data?.data || []);
-    } catch {
+    } catch (error) {
       setReels([]);
+      toast.apiError(error, t('reels.loadFailed'), { id: 'reels-feed-load-error', context: 'reels.feed.load' });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => { fetchReels(); }, [fetchReels]);
 

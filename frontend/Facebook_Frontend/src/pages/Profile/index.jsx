@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import userService from '../../services/userService';
 import { useAuth } from '../../contexts/AuthContext';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { reportApiError } from '../../shared/apiError';
 
 const ProfileTest = () => {
   const [user, setUser] = useState(null);
@@ -12,7 +13,7 @@ const ProfileTest = () => {
     userService.getMe()
       .then(res => setUser(res.data))
       .catch(err => {
-          console.error(err);
+          reportApiError(err, translateCatalogKey('ui.pages.profile.index.khong-tai-uoc-profile-kiem-tra-token.7ce63bf1'), 'profile.test.load');
           setError(translateCatalogKey('ui.pages.profile.index.khong-tai-uoc-profile-kiem-tra-token.7ce63bf1'));
       });
   }, []);

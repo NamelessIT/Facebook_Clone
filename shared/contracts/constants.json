@@ -25,6 +25,9 @@
     "editPostMaxContentLength": 500,
     "profileBioMaxLength": 200,
     "postPreviewTextLimit": 120,
+    "passwordMinLength": 8,
+    "adminRoleMinLevel": 50,
+    "maxRoleLevel": 100,
     "maxImageUploadMb": 10,
     "maxVideoUploadMb": 100
   },

@@ -9,6 +9,7 @@ import AddFriendButton from "../../components/friendship/AddFriendButton";
 import { useAuth } from "../../contexts/AuthContext";
 import { useLocalization } from "../../contexts/useLocalization";
 import "./SearchResultsPage.css";
+import toast from '../../shared/appToast';
 
 const TABS = {
   USERS: "users",
@@ -46,8 +47,9 @@ const SearchResultsPage = () => {
       if (res.data?.pagination) {
         setUsersTotalPages(res.data.pagination.totalPages || 1);
       }
-    } catch {
+    } catch (error) {
       setUsers([]);
+      toast.apiError(error, t('search.loadFailed'), { id: 'search-users-error', context: 'search.users' });
     } finally {
       setUsersLoading(false);
     }
@@ -62,8 +64,9 @@ const SearchResultsPage = () => {
       if (res.data?.pagination) {
         setPostsTotalPages(res.data.pagination.totalPages || 1);
       }
-    } catch {
+    } catch (error) {
       setPosts([]);
+      toast.apiError(error, t('search.loadFailed'), { id: 'search-posts-error', context: 'search.posts' });
     } finally {
       setPostsLoading(false);
     }
