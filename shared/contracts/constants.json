@@ -45,6 +45,17 @@
     "fallbackLocale": "en",
     "maxTranslationChunkChars": 800
   },
+  "security": {
+    "telemetryRetentionMinutes": 1440,
+    "maxTrackedIps": 5000,
+    "maxSamplesPerIp": 1000,
+    "suspiciousRequestRatePerMinute": 60,
+    "highRequestRatePerMinute": 120,
+    "mediumRiskScore": 35,
+    "highRiskScore": 70,
+    "criticalRiskScore": 90,
+    "defaultInvestigationBlockHours": 24
+  },
   "offline": {
     "dbName": "fbclone_offline",
     "dbVersion": 1,

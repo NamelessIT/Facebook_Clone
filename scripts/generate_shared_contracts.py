@@ -79,6 +79,7 @@ def gen_js_constants(c: dict) -> str:
     emit("LIMITS", c["limits"])
     emit("TIMERS", c["timers"])
     emit("LOCALIZATION", c["localization"])
+    emit("SECURITY", c["security"])
     emit("OFFLINE", c["offline"])
     emit("UPLOAD_CHUNKS", c["uploadChunks"])
     out.append("")
@@ -191,6 +192,7 @@ def gen_csharp_constants(c: dict) -> str:
         "Limits": c["limits"],
         "Timers": c["timers"],
         "Localization": c["localization"],
+        "Security": c["security"],
         "Offline": c["offline"],
         "UploadChunks": c["uploadChunks"],
     }

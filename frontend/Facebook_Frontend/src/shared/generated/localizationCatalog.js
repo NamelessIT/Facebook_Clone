@@ -5410,6 +5410,326 @@ export const LOCALIZATION_CATALOG = Object.freeze({
       "translations": {
         "en": "Could not load search results."
       }
+    },
+    {
+      "key": "admin.security.persistenceNote",
+      "sourceText": "IP bị chặn thủ công được lưu trong PostgreSQL và cache Redis; danh sách vẫn còn sau khi backend khởi động lại.",
+      "context": "Ghi chu luu tru blacklist IP",
+      "translations": {
+        "en": "Manually blocked IPs are stored in PostgreSQL and cached in Redis; the list survives backend restarts."
+      }
+    },
+    {
+      "key": "common.search",
+      "sourceText": "Tìm kiếm",
+      "context": "Lệnh tìm kiếm",
+      "translations": {
+        "en": "Search"
+      }
+    },
+    {
+      "key": "common.refresh",
+      "sourceText": "Làm mới",
+      "context": "Lệnh tải lại dữ liệu",
+      "translations": {
+        "en": "Refresh"
+      }
+    },
+    {
+      "key": "admin.security.suspiciousIps",
+      "sourceText": "IP nghi ngờ",
+      "context": "Tab điều tra security",
+      "translations": {
+        "en": "Suspicious IPs"
+      }
+    },
+    {
+      "key": "admin.security.investigationTitle",
+      "sourceText": "Điều tra truy cập bất thường",
+      "context": "Tiêu đề bảng IP nghi ngờ",
+      "translations": {
+        "en": "Suspicious access investigation"
+      }
+    },
+    {
+      "key": "admin.security.investigationSubtitle",
+      "sourceText": "Xếp hạng dựa trên request rate, lỗi, đăng nhập thất bại và tín hiệu tấn công trong 24 giờ gần nhất.",
+      "context": "Mô tả telemetry security",
+      "translations": {
+        "en": "Ranked by request rate, errors, failed logins, and attack signals from the last 24 hours."
+      }
+    },
+    {
+      "key": "admin.security.searchIpIdentity",
+      "sourceText": "Tìm IP, email hoặc user ID...",
+      "context": "Placeholder tìm IP nghi ngờ",
+      "translations": {
+        "en": "Search IP, email, or user ID..."
+      }
+    },
+    {
+      "key": "admin.security.allRiskLevels",
+      "sourceText": "Tất cả mức rủi ro",
+      "context": "Bộ lọc risk",
+      "translations": {
+        "en": "All risk levels"
+      }
+    },
+    {
+      "key": "admin.security.mediumAndAbove",
+      "sourceText": "Từ trung bình",
+      "context": "Bộ lọc risk",
+      "translations": {
+        "en": "Medium and above"
+      }
+    },
+    {
+      "key": "admin.security.highAndAbove",
+      "sourceText": "Từ cao",
+      "context": "Bộ lọc risk",
+      "translations": {
+        "en": "High and above"
+      }
+    },
+    {
+      "key": "admin.security.criticalOnly",
+      "sourceText": "Chỉ nghiêm trọng",
+      "context": "Bộ lọc risk",
+      "translations": {
+        "en": "Critical only"
+      }
+    },
+    {
+      "key": "admin.security.noSuspiciousIps",
+      "sourceText": "Chưa ghi nhận IP phù hợp với bộ lọc.",
+      "context": "Empty state IP nghi ngờ",
+      "translations": {
+        "en": "No IP addresses match the current filter."
+      }
+    },
+    {
+      "key": "admin.security.suspiciousLoadError",
+      "sourceText": "Không thể tải dữ liệu điều tra IP.",
+      "context": "Lỗi API suspicious IP",
+      "translations": {
+        "en": "Could not load suspicious IP investigation data."
+      }
+    },
+    {
+      "key": "admin.security.risk",
+      "sourceText": "Rủi ro",
+      "context": "Cột risk",
+      "translations": {
+        "en": "Risk"
+      }
+    },
+    {
+      "key": "admin.security.activity",
+      "sourceText": "Hoạt động",
+      "context": "Cột activity",
+      "translations": {
+        "en": "Activity"
+      }
+    },
+    {
+      "key": "admin.security.identity",
+      "sourceText": "Danh tính liên quan",
+      "context": "Cột identity",
+      "translations": {
+        "en": "Associated identity"
+      }
+    },
+    {
+      "key": "admin.security.signals",
+      "sourceText": "Tín hiệu",
+      "context": "Cột threat signals",
+      "translations": {
+        "en": "Signals"
+      }
+    },
+    {
+      "key": "admin.security.topEndpoints",
+      "sourceText": "Endpoint chính",
+      "context": "Cột endpoint",
+      "translations": {
+        "en": "Top endpoints"
+      }
+    },
+    {
+      "key": "admin.security.lastSeen",
+      "sourceText": "Lần cuối",
+      "context": "Thời gian IP hoạt động",
+      "translations": {
+        "en": "Last seen"
+      }
+    },
+    {
+      "key": "admin.security.requestsPerMinute",
+      "sourceText": "request/phút",
+      "context": "Đơn vị request rate",
+      "translations": {
+        "en": "requests/min"
+      }
+    },
+    {
+      "key": "admin.security.requestsPerHour",
+      "sourceText": "request/giờ",
+      "context": "Đơn vị request rate",
+      "translations": {
+        "en": "requests/hour"
+      }
+    },
+    {
+      "key": "admin.security.errors",
+      "sourceText": "lỗi",
+      "context": "Tỷ lệ response lỗi",
+      "translations": {
+        "en": "errors"
+      }
+    },
+    {
+      "key": "admin.security.anonymous",
+      "sourceText": "Chưa xác định",
+      "context": "IP chưa gắn user",
+      "translations": {
+        "en": "Unidentified"
+      }
+    },
+    {
+      "key": "admin.security.noStrongSignals",
+      "sourceText": "Chưa có tín hiệu mạnh",
+      "context": "IP risk thấp",
+      "translations": {
+        "en": "No strong signals"
+      }
+    },
+    {
+      "key": "admin.security.alreadyBlocked",
+      "sourceText": "Đã chặn",
+      "context": "IP đã nằm trong blacklist",
+      "translations": {
+        "en": "Blocked"
+      }
+    },
+    {
+      "key": "admin.security.reviewAndBlock",
+      "sourceText": "Xem xét chặn",
+      "context": "Chuẩn bị block IP nghi ngờ",
+      "translations": {
+        "en": "Review and block"
+      }
+    },
+    {
+      "key": "admin.security.investigationBlockReason",
+      "sourceText": "Chặn sau điều tra bảo mật, điểm rủi ro {value0}/100",
+      "context": "Lý do block tự điền",
+      "translations": {
+        "en": "Blocked after security investigation, risk score {value0}/100"
+      }
+    },
+    {
+      "key": "admin.security.risk.low",
+      "sourceText": "Thấp",
+      "context": "Risk level",
+      "translations": {
+        "en": "Low"
+      }
+    },
+    {
+      "key": "admin.security.risk.medium",
+      "sourceText": "Trung bình",
+      "context": "Risk level",
+      "translations": {
+        "en": "Medium"
+      }
+    },
+    {
+      "key": "admin.security.risk.high",
+      "sourceText": "Cao",
+      "context": "Risk level",
+      "translations": {
+        "en": "High"
+      }
+    },
+    {
+      "key": "admin.security.risk.critical",
+      "sourceText": "Nghiêm trọng",
+      "context": "Risk level",
+      "translations": {
+        "en": "Critical"
+      }
+    },
+    {
+      "key": "admin.security.signal.suspiciousPayload",
+      "sourceText": "Payload đáng ngờ",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Suspicious payload"
+      }
+    },
+    {
+      "key": "admin.security.signal.bruteForce",
+      "sourceText": "Thử mật khẩu hàng loạt",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Brute force"
+      }
+    },
+    {
+      "key": "admin.security.signal.rateLimit",
+      "sourceText": "Vượt rate limit",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Rate-limit violations"
+      }
+    },
+    {
+      "key": "admin.security.signal.failedLogin",
+      "sourceText": "Đăng nhập thất bại",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Failed logins"
+      }
+    },
+    {
+      "key": "admin.security.signal.highRequestRate",
+      "sourceText": "Request rate rất cao",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Very high request rate"
+      }
+    },
+    {
+      "key": "admin.security.signal.elevatedRequestRate",
+      "sourceText": "Request rate tăng cao",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Elevated request rate"
+      }
+    },
+    {
+      "key": "admin.security.signal.highErrorRate",
+      "sourceText": "Tỷ lệ lỗi cao",
+      "context": "Threat signal",
+      "translations": {
+        "en": "High error rate"
+      }
+    },
+    {
+      "key": "admin.security.signal.endpointScanning",
+      "sourceText": "Dò quét endpoint",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Endpoint scanning"
+      }
+    },
+    {
+      "key": "admin.security.signal.scannerUserAgent",
+      "sourceText": "Công cụ quét bảo mật",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Security scanner user agent"
+      }
     }
   ]
 });

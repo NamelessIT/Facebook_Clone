@@ -38,9 +38,10 @@ const adminService = {
   getBlockedIps: () => axiosClient.get('/admin/security/blocked-ips'),
   blockIp: (ip, reason, durationHours) =>
     axiosClient.post('/admin/security/block-ip', { ip, reason, durationHours }),
-  unblockIp: (ip) => axiosClient.delete(`/admin/security/blocked-ips/${encodeURIComponent(ip)}`),
-  resetRateLimit: (ip) => axiosClient.delete(`/admin/security/rate-limit/${encodeURIComponent(ip)}`),
+  unblockIp: (ip) => axiosClient.delete('/admin/security/blocked-ips', { params: { ip } }),
+  resetRateLimit: (ip) => axiosClient.delete('/admin/security/rate-limit', { params: { ip } }),
   getSecurityStats: () => axiosClient.get('/admin/security/stats'),
+  getSuspiciousIps: (params = {}) => axiosClient.get('/admin/security/suspicious-ips', { params }),
 
   // Localization
   getLocalization: (params = {}) => axiosClient.get('/admin/localization', { params }),

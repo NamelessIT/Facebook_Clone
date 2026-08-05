@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using FacebookClone.API.Services;
 using FacebookClone.API.Common;
 using FacebookClone.Domain.Constants;
@@ -1225,45 +1226,152 @@ public class AdminController(
     // -----------------------------------------------------------------------
 
     [HttpGet("security/blocked-ips")]
-    public IActionResult GetBlockedIps()
+    public async Task<IActionResult> GetBlockedIps()
     {
         if (RequireAdmin() is { } err) return err;
-        return Ok(new { success = true, data = security.GetBlockedIps() });
+
+        var now = DateTime.UtcNow;
+        var persistent = (await blockService.ListAsync(BlockListKind.Blacklist, HttpContext.RequestAborted))
+            .Where(x => x.IsActive && x.TargetType == BlockTargetType.Ip &&
+                        (!x.ExpiresAt.HasValue || x.ExpiresAt > now))
+            .Select(x => new BlockedIpEntry(x.Value, x.CreatedAt, x.Reason ?? "Blocked by administrator", false, x.ExpiresAt));
+
+        var data = security.GetBlockedIps()
+            .Concat(persistent)
+            .GroupBy(x => x.Ip, StringComparer.OrdinalIgnoreCase)
+            .Select(x => x.OrderByDescending(item => item.BlockedAt).First())
+            .OrderByDescending(x => x.BlockedAt);
+
+        return Ok(new { success = true, data });
     }
 
     [HttpPost("security/block-ip")]
-    public IActionResult BlockIp([FromBody] BlockIpRequest req)
+    public async Task<IActionResult> BlockIp([FromBody] BlockIpRequest req)
     {
         if (RequireAdmin() is { } err) return err;
 
-        if (string.IsNullOrWhiteSpace(req.Ip))
-            return BadRequest(new { success = false, message = "IP is required." });
+        if (!TryNormalizeIp(req.Ip, out var ip))
+            return BadRequest(new
+            {
+                success = false,
+                errorCode = "INVALID_IP_ADDRESS",
+                message = "Invalid IP address. Enter an IPv4 or IPv6 address without http://, https://, a port, or a path."
+            });
+
+        if (req.DurationHours is <= 0)
+            return BadRequest(new { success = false, errorCode = "INVALID_BLOCK_DURATION", message = "Duration must be greater than zero hours." });
 
         TimeSpan? duration = req.DurationHours.HasValue
             ? TimeSpan.FromHours(req.DurationHours.Value)
             : null;
 
-        security.BlockIp(req.Ip, req.Reason ?? "Blocked by admin", false, duration);
-        security.RecordEvent(SecurityEventType.IpManualBlocked, req.Ip,
+        var reason = string.IsNullOrWhiteSpace(req.Reason) ? "Blocked by admin" : req.Reason.Trim();
+        security.BlockIp(ip, reason, false, duration);
+        security.RecordEvent(SecurityEventType.IpManualBlocked, ip,
             $"Admin manually blocked: {req.Reason}");
 
-        return Ok(new { success = true, message = $"IP {req.Ip} has been blocked." });
+        var existing = (await blockService.ListAsync(BlockListKind.Blacklist, HttpContext.RequestAborted))
+            .Any(x => x.IsActive && x.TargetType == BlockTargetType.Ip &&
+                      string.Equals(x.Value, ip, StringComparison.OrdinalIgnoreCase) &&
+                      (!x.ExpiresAt.HasValue || x.ExpiresAt > DateTime.UtcNow));
+        if (!existing)
+        {
+            await blockService.AddAsync(
+                BlockListKind.Blacklist,
+                BlockTargetType.Ip,
+                ip,
+                reason,
+                UserContext.GetUserId(User),
+                duration.HasValue ? DateTime.UtcNow + duration : null,
+                HttpContext.RequestAborted);
+        }
+
+        return Ok(new { success = true, data = new { ip, persisted = true }, message = $"IP {ip} has been blocked and persisted." });
     }
 
-    [HttpDelete("security/blocked-ips/{ip}")]
-    public IActionResult UnblockIp(string ip)
+    [HttpDelete("security/blocked-ips")]
+    public async Task<IActionResult> UnblockIp([FromQuery] string ip)
     {
         if (RequireAdmin() is { } err) return err;
-        security.UnblockIp(ip);
-        return Ok(new { success = true, message = $"IP {ip} has been unblocked." });
+        if (!TryGetBlockLookupValue(ip, out var lookupValue))
+            return BadRequest(new { success = false, errorCode = "INVALID_IP_ADDRESS", message = "IP address is required." });
+
+        var removedFromMemory = security.UnblockIp(lookupValue);
+        var persistentEntries = (await blockService.ListAsync(BlockListKind.Blacklist, HttpContext.RequestAborted))
+            .Where(x => x.IsActive && x.TargetType == BlockTargetType.Ip &&
+                        string.Equals(x.Value, lookupValue, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        var removedPersistent = 0;
+        foreach (var entry in persistentEntries)
+        {
+            if (await blockService.RemoveAsync(entry.Id, HttpContext.RequestAborted))
+                removedPersistent++;
+        }
+
+        if (!removedFromMemory && removedPersistent == 0)
+            return NotFound(new { success = false, errorCode = "BLOCKED_IP_NOT_FOUND", message = $"IP {lookupValue} is not currently blocked." });
+
+        return Ok(new
+        {
+            success = true,
+            data = new { ip = lookupValue, removedFromMemory, removedPersistent },
+            message = $"IP {lookupValue} has been unblocked and removed from the active blacklist."
+        });
     }
 
-    [HttpDelete("security/rate-limit/{ip}")]
-    public IActionResult ResetRateLimit(string ip)
+    [HttpDelete("security/rate-limit")]
+    public IActionResult ResetRateLimit([FromQuery] string ip)
     {
         if (RequireAdmin() is { } err) return err;
-        security.ResetRateLimit(ip);
-        return Ok(new { success = true, message = $"Rate limit cleared for {ip}." });
+        if (!TryNormalizeIp(ip, out var normalizedIp))
+            return BadRequest(new { success = false, errorCode = "INVALID_IP_ADDRESS", message = "Invalid IP address." });
+
+        var removedBuckets = security.ResetRateLimit(normalizedIp);
+        return Ok(new
+        {
+            success = true,
+            data = new { ip = normalizedIp, removedBuckets },
+            message = removedBuckets > 0
+                ? $"Cleared {removedBuckets} rate-limit bucket(s) for {normalizedIp}."
+                : $"No active rate-limit counters were found for {normalizedIp}."
+        });
+    }
+
+    private static bool TryNormalizeIp(string? value, out string normalized)
+    {
+        normalized = string.Empty;
+        if (!IPAddress.TryParse(value?.Trim(), out var parsed)) return false;
+        if (parsed.IsIPv4MappedToIPv6) parsed = parsed.MapToIPv4();
+        normalized = parsed.ToString();
+        return true;
+    }
+
+    private static bool TryGetBlockLookupValue(string? value, out string lookupValue)
+    {
+        lookupValue = value?.Trim() ?? string.Empty;
+        if (lookupValue.Length == 0) return false;
+
+        // Older route-based clients could leave encoded separators in stored values.
+        for (var i = 0; i < 3; i++)
+        {
+            string decoded;
+            try
+            {
+                decoded = Uri.UnescapeDataString(lookupValue);
+            }
+            catch (UriFormatException)
+            {
+                break;
+            }
+            if (decoded == lookupValue) break;
+            lookupValue = decoded;
+        }
+
+        if (TryNormalizeIp(lookupValue, out var normalizedIp))
+            lookupValue = normalizedIp;
+
+        return true;
     }
 
     [HttpGet("security/stats")]
@@ -1271,6 +1379,28 @@ public class AdminController(
     {
         if (RequireAdmin() is { } err) return err;
         return Ok(new { success = true, data = security.GetStats() });
+    }
+
+    [HttpGet("security/suspicious-ips")]
+    public IActionResult GetSuspiciousIps(
+        [FromQuery] string? search = null,
+        [FromQuery] int minRiskScore = 0,
+        [FromQuery] int limit = 100)
+    {
+        if (RequireAdmin() is { } err) return err;
+
+        var data = security.GetSuspiciousIps(search, minRiskScore, limit);
+        return Ok(new
+        {
+            success = true,
+            data,
+            meta = new
+            {
+                retentionMinutes = SharedConstants.Security.TelemetryRetentionMinutes,
+                maxTrackedIps = SharedConstants.Security.MaxTrackedIps,
+                generatedAt = DateTime.UtcNow
+            }
+        });
     }
 
     // -----------------------------------------------------------------------

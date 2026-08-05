@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Text.RegularExpressions;
+using FacebookClone.Domain.Constants;
 
 namespace FacebookClone.API.Services;
 
@@ -45,6 +46,41 @@ public record RateLimitEntry(
     DateTime? FailedLoginWindowStart
 );
 
+public record SuspiciousIpPath(string Path, int Requests);
+
+public record SuspiciousIpSummary(
+    string IpAddress,
+    int RiskScore,
+    string RiskLevel,
+    DateTime FirstSeen,
+    DateTime LastSeen,
+    int RequestsLastMinute,
+    int RequestsLastHour,
+    int FailedRequestsLastHour,
+    double ErrorRatePercent,
+    int FailedLoginCount,
+    int ThreatEventCount,
+    int DistinctPathCount,
+    bool IsBlocked,
+    IReadOnlyList<string> Signals,
+    IReadOnlyList<string> AssociatedUserIds,
+    IReadOnlyList<string> AssociatedEmails,
+    IReadOnlyList<SuspiciousIpPath> TopPaths
+);
+
+internal record SecurityRequestSample(DateTime Timestamp, string Path, string Method, int StatusCode);
+
+internal sealed class IpActivityState(DateTime firstSeen)
+{
+    public object SyncRoot { get; } = new();
+    public Queue<SecurityRequestSample> Requests { get; } = new();
+    public HashSet<string> UserIds { get; } = new(StringComparer.OrdinalIgnoreCase);
+    public HashSet<string> Emails { get; } = new(StringComparer.OrdinalIgnoreCase);
+    public DateTime FirstSeen { get; } = firstSeen;
+    public DateTime LastSeen { get; set; } = firstSeen;
+    public int SuspiciousUserAgentCount { get; set; }
+}
+
 // -----------------------------------------------------------------------
 // Service
 // -----------------------------------------------------------------------
@@ -54,12 +90,15 @@ public interface ISecurityService
     // Rate limiting
     bool IsRateLimited(string ip, string path);
     void RecordFailedLogin(string ip);
-    void ResetRateLimit(string ip);
+    int ResetRateLimit(string ip);
+    void RecordRequest(string ip, string path, string method, int statusCode, string? userAgent);
+    void AssociateIdentity(string ip, Guid? userId, string? email);
+    IEnumerable<SuspiciousIpSummary> GetSuspiciousIps(string? search = null, int minRiskScore = 0, int limit = 100);
 
     // IP blocking
     bool IsIpBlocked(string ip);
     void BlockIp(string ip, string reason, bool isAutomatic, TimeSpan? duration = null);
-    void UnblockIp(string ip);
+    bool UnblockIp(string ip);
     IEnumerable<BlockedIpEntry> GetBlockedIps();
 
     // Events
@@ -112,8 +151,14 @@ public class SecurityService : ISecurityService
 
     private readonly ConcurrentDictionary<string, RateLimitEntry> _rateLimits = new();
     private readonly ConcurrentDictionary<string, BlockedIpEntry> _blockedIps = new();
+    private readonly ConcurrentDictionary<string, IpActivityState> _ipActivities = new();
     private readonly ConcurrentQueue<SecurityEvent> _events = new();
     private const int MaxEvents = 1000;
+
+    private static readonly string[] SuspiciousUserAgentMarkers =
+    [
+        "sqlmap", "nikto", "nmap", "masscan", "acunetix", "nessus", "wpscan", "dirbuster"
+    ];
 
     // ---- Rate Limiting ----
 
@@ -183,12 +228,161 @@ public class SecurityService : ISecurityService
             });
     }
 
-    public void ResetRateLimit(string ip)
+    public int ResetRateLimit(string ip)
     {
+        var removed = 0;
         foreach (var key in _rateLimits.Keys.Where(k => k == ip || k.StartsWith($"{ip}|", StringComparison.Ordinal)).ToList())
         {
-            _rateLimits.TryRemove(key, out _);
+            if (_rateLimits.TryRemove(key, out _)) removed++;
         }
+
+        return removed;
+    }
+
+    public void RecordRequest(string ip, string path, string method, int statusCode, string? userAgent)
+    {
+        if (string.IsNullOrWhiteSpace(ip) || ip == "unknown") return;
+
+        var now = DateTime.UtcNow;
+        var state = _ipActivities.GetOrAdd(ip, _ => new IpActivityState(now));
+        lock (state.SyncRoot)
+        {
+            state.LastSeen = now;
+            state.Requests.Enqueue(new SecurityRequestSample(now, NormalizeRateLimitPath(path), method, statusCode));
+            PruneRequestSamples(state, now);
+
+            if (!string.IsNullOrWhiteSpace(userAgent) &&
+                SuspiciousUserAgentMarkers.Any(marker => userAgent.Contains(marker, StringComparison.OrdinalIgnoreCase)))
+            {
+                state.SuspiciousUserAgentCount++;
+                if (state.SuspiciousUserAgentCount == 1)
+                    RecordEvent(SecurityEventType.AnomalousUserAgent, ip, "Known security-scanner user agent detected", path);
+            }
+        }
+
+        TrimTrackedIps();
+    }
+
+    public void AssociateIdentity(string ip, Guid? userId, string? email)
+    {
+        if (string.IsNullOrWhiteSpace(ip) || ip == "unknown" || (userId is null && string.IsNullOrWhiteSpace(email))) return;
+
+        var state = _ipActivities.GetOrAdd(ip, _ => new IpActivityState(DateTime.UtcNow));
+        lock (state.SyncRoot)
+        {
+            if (userId.HasValue) state.UserIds.Add(userId.Value.ToString());
+            if (!string.IsNullOrWhiteSpace(email)) state.Emails.Add(email.Trim());
+        }
+    }
+
+    public IEnumerable<SuspiciousIpSummary> GetSuspiciousIps(string? search = null, int minRiskScore = 0, int limit = 100)
+    {
+        var now = DateTime.UtcNow;
+        var cutoff = now.AddMinutes(-SharedConstants.Security.TelemetryRetentionMinutes);
+
+        foreach (var stale in _ipActivities.Where(x => x.Value.LastSeen < cutoff).Select(x => x.Key).ToList())
+            _ipActivities.TryRemove(stale, out _);
+
+        var summaries = _ipActivities
+            .Select(pair => BuildSuspiciousIpSummary(pair.Key, pair.Value, now))
+            .Where(summary => summary.RiskScore >= Math.Clamp(minRiskScore, 0, 100));
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim();
+            summaries = summaries.Where(summary =>
+                summary.IpAddress.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                summary.AssociatedEmails.Any(email => email.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                summary.AssociatedUserIds.Any(id => id.Contains(term, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        return summaries
+            .OrderByDescending(summary => summary.RiskScore)
+            .ThenByDescending(summary => summary.LastSeen)
+            .Take(Math.Clamp(limit, 1, 500))
+            .ToList();
+    }
+
+    private SuspiciousIpSummary BuildSuspiciousIpSummary(string ip, IpActivityState state, DateTime now)
+    {
+        List<SecurityRequestSample> samples;
+        List<string> userIds;
+        List<string> emails;
+        int suspiciousUserAgents;
+        DateTime lastSeen;
+
+        lock (state.SyncRoot)
+        {
+            PruneRequestSamples(state, now);
+            samples = state.Requests.ToList();
+            userIds = state.UserIds.Order().ToList();
+            emails = state.Emails.Order().ToList();
+            suspiciousUserAgents = state.SuspiciousUserAgentCount;
+            lastSeen = state.LastSeen;
+        }
+
+        var lastMinute = samples.Where(x => x.Timestamp >= now.AddMinutes(-1)).ToList();
+        var lastHour = samples.Where(x => x.Timestamp >= now.AddHours(-1)).ToList();
+        var failedRequests = lastHour.Count(x => x.StatusCode >= 400);
+        var errorRate = lastHour.Count == 0 ? 0 : failedRequests * 100d / lastHour.Count;
+        var distinctPaths = lastHour.Select(x => x.Path).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+        var failedLogins = _rateLimits.TryGetValue(ip, out var loginEntry) ? loginEntry.FailedLoginCount : 0;
+        var threatEvents = _events.Where(x => x.IpAddress == ip && x.Timestamp >= now.AddHours(-24)).ToList();
+        var signals = new List<string>();
+        var score = 0;
+
+        var suspiciousPayloads = threatEvents.Count(x => x.Type == SecurityEventType.SuspiciousPayload);
+        if (suspiciousPayloads > 0) { score += Math.Min(60, suspiciousPayloads * 30); signals.Add("suspicious_payload"); }
+
+        var bruteForceEvents = threatEvents.Count(x => x.Type == SecurityEventType.BruteForceDetected);
+        if (bruteForceEvents > 0) { score += 40; signals.Add("brute_force"); }
+
+        var rateLimitEvents = threatEvents.Count(x => x.Type == SecurityEventType.RateLimitExceeded);
+        if (rateLimitEvents > 0) { score += Math.Min(35, 15 + rateLimitEvents); signals.Add("rate_limit"); }
+
+        if (failedLogins > 0) { score += Math.Min(30, failedLogins * 4); signals.Add("failed_login"); }
+        if (lastMinute.Count >= SharedConstants.Security.HighRequestRatePerMinute) { score += 30; signals.Add("high_request_rate"); }
+        else if (lastMinute.Count >= SharedConstants.Security.SuspiciousRequestRatePerMinute) { score += 15; signals.Add("elevated_request_rate"); }
+        if (lastHour.Count >= 20 && errorRate >= 70) { score += 15; signals.Add("high_error_rate"); }
+        if (distinctPaths >= 25) { score += 10; signals.Add("endpoint_scanning"); }
+        if (suspiciousUserAgents > 0) { score += 35; signals.Add("scanner_user_agent"); }
+
+        score = Math.Min(100, score);
+        var riskLevel = score >= SharedConstants.Security.CriticalRiskScore ? "critical"
+            : score >= SharedConstants.Security.HighRiskScore ? "high"
+            : score >= SharedConstants.Security.MediumRiskScore ? "medium"
+            : "low";
+
+        var topPaths = lastHour
+            .GroupBy(x => x.Path, StringComparer.OrdinalIgnoreCase)
+            .OrderByDescending(group => group.Count())
+            .Take(5)
+            .Select(group => new SuspiciousIpPath(group.Key, group.Count()))
+            .ToList();
+
+        return new SuspiciousIpSummary(
+            ip, score, riskLevel, state.FirstSeen, lastSeen, lastMinute.Count, lastHour.Count,
+            failedRequests, Math.Round(errorRate, 1), failedLogins, threatEvents.Count, distinctPaths,
+            IsIpBlocked(ip), signals, userIds, emails, topPaths);
+    }
+
+    private static void PruneRequestSamples(IpActivityState state, DateTime now)
+    {
+        var cutoff = now.AddMinutes(-SharedConstants.Security.TelemetryRetentionMinutes);
+        while (state.Requests.Count > 0 &&
+               (state.Requests.Peek().Timestamp < cutoff || state.Requests.Count > SharedConstants.Security.MaxSamplesPerIp))
+        {
+            state.Requests.Dequeue();
+        }
+    }
+
+    private void TrimTrackedIps()
+    {
+        var overflow = _ipActivities.Count - SharedConstants.Security.MaxTrackedIps;
+        if (overflow <= 0) return;
+
+        foreach (var key in _ipActivities.OrderBy(x => x.Value.LastSeen).Take(overflow).Select(x => x.Key).ToList())
+            _ipActivities.TryRemove(key, out _);
     }
 
     private static string NormalizeRateLimitPath(string path)
@@ -230,10 +424,12 @@ public class SecurityService : ISecurityService
         _blockedIps[ip] = entry;
     }
 
-    public void UnblockIp(string ip)
+    public bool UnblockIp(string ip)
     {
-        _blockedIps.TryRemove(ip, out _);
-        RecordEvent(SecurityEventType.IpManualUnblocked, ip, "IP unblocked by admin");
+        var removed = _blockedIps.TryRemove(ip, out _);
+        if (removed)
+            RecordEvent(SecurityEventType.IpManualUnblocked, ip, "IP unblocked by admin");
+        return removed;
     }
 
     public IEnumerable<BlockedIpEntry> GetBlockedIps()

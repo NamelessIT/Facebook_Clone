@@ -60,6 +60,19 @@ public static class SharedConstants
         public const int MaxTranslationChunkChars = 800;
     }
 
+    public static class Security
+    {
+        public const int TelemetryRetentionMinutes = 1440;
+        public const int MaxTrackedIps = 5000;
+        public const int MaxSamplesPerIp = 1000;
+        public const int SuspiciousRequestRatePerMinute = 60;
+        public const int HighRequestRatePerMinute = 120;
+        public const int MediumRiskScore = 35;
+        public const int HighRiskScore = 70;
+        public const int CriticalRiskScore = 90;
+        public const int DefaultInvestigationBlockHours = 24;
+    }
+
     public static class Offline
     {
         public const string DbName = "fbclone_offline";

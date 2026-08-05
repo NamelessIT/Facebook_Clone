@@ -12,6 +12,7 @@ const apiOutputDir = path.join(root, "backend", "src", "FacebookClone.API", "bin
 
 const children = [];
 let shuttingDown = false;
+let usingDockerBackend = false;
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -95,6 +96,39 @@ function unblockBackendOutputs() {
   );
 }
 
+function hasBackendCodeIntegrityBlock() {
+  if (process.platform !== "win32") return false;
+
+  const result = spawnSync(
+    "powershell.exe",
+    [
+      "-NoProfile",
+      "-Command",
+      "$event = Get-WinEvent -LogName 'Microsoft-Windows-CodeIntegrity/Operational' -MaxEvents 100 -ErrorAction SilentlyContinue | Where-Object { $_.Id -eq 3077 -and $_.Message -like '*FacebookClone.*.dll*' } | Select-Object -First 1; if ($event) { exit 0 } else { exit 1 }",
+    ],
+    { cwd: root, shell: false, windowsHide: true, stdio: "ignore" }
+  );
+
+  return result.status === 0;
+}
+
+function shouldUseDockerBackend() {
+  const requestedRuntime = (process.env.FB_BACKEND_RUNTIME || "auto").toLowerCase();
+  if (requestedRuntime === "docker") return true;
+  if (requestedRuntime === "native") return false;
+  return hasBackendCodeIntegrityBlock();
+}
+
+function stopDockerBackend() {
+  if (!usingDockerBackend) return;
+  spawnSync("docker", ["compose", "--profile", "dev-api", "stop", "api"], {
+    cwd: root,
+    shell: false,
+    windowsHide: true,
+    stdio: "ignore",
+  });
+}
+
 function killTree(pid, force = false) {
   if (process.platform === "win32") {
     return new Promise((resolve) => {
@@ -149,6 +183,8 @@ async function shutdown(exitCode = 0) {
       .map(({ child }) => killTree(child.pid, true))
   );
 
+  stopDockerBackend();
+
   process.stdout.write("[DEV] All dev processes stopped.\n");
   process.exit(exitCode);
 }
@@ -168,8 +204,19 @@ if (!fs.existsSync(viteBin)) {
   process.exit(1);
 }
 
-runStep(`Building backend once (${backendConfiguration})`, "dotnet", ["build", apiProject, "-c", backendConfiguration]);
-unblockBackendOutputs();
+usingDockerBackend = shouldUseDockerBackend();
 
-spawnProcess("BE", "dotnet", ["watch", "--project", apiProject, "run", "--no-build", "-c", backendConfiguration]);
-spawnProcess("FE", process.execPath, [viteBin], { cwd: frontendRoot });
+if (usingDockerBackend) {
+  process.stdout.write("[DEV] Windows Code Integrity blocks local backend binaries; using Docker backend.\n");
+  process.stdout.write("[DEV] Set FB_BACKEND_RUNTIME=native to force the local .NET runtime.\n");
+  spawnProcess("BE", "docker", ["compose", "--profile", "dev-api", "up", "api"]);
+} else {
+  runStep(`Building backend once (${backendConfiguration})`, "dotnet", ["build", apiProject, "-c", backendConfiguration]);
+  unblockBackendOutputs();
+  spawnProcess("BE", "dotnet", ["watch", "--project", apiProject, "run", "--no-build", "-c", backendConfiguration]);
+}
+
+spawnProcess("FE", process.execPath, [viteBin], {
+  cwd: frontendRoot,
+  env: { BROWSERSLIST_IGNORE_OLD_DATA: "true" },
+});

@@ -4,7 +4,6 @@ namespace FacebookClone.API.Middlewares;
 
 public class SecurityMiddleware(RequestDelegate next, ISecurityService security, ILogger<SecurityMiddleware> logger)
 {
-    // These paths skip rate-limiting entirely (health checks, static files, swagger)
     private static readonly HashSet<string> BypassPaths =
     [
         "/swagger", "/favicon", "/health", "/hubs"
@@ -19,18 +18,18 @@ public class SecurityMiddleware(RequestDelegate next, ISecurityService security,
     {
         var ip = GetClientIp(ctx);
         var path = ctx.Request.Path.Value ?? "/";
+        var method = ctx.Request.Method;
+        var userAgent = ctx.Request.Headers.UserAgent.ToString();
 
-        // Skip if path is in bypass list
         if (BypassPaths.Any(b => path.StartsWith(b, StringComparison.OrdinalIgnoreCase)))
         {
             await next(ctx);
             return;
         }
 
-        // 1. Blocked IP check
         if (security.IsIpBlocked(ip))
         {
-            logger.LogWarning("Blocked IP attempted access: {Ip} → {Path}", ip, path);
+            logger.LogWarning("Blocked IP attempted access: {Ip} -> {Path}", ip, path);
             security.RecordEvent(SecurityEventType.IpBlocked, ip, $"Blocked IP tried to access {path}", path);
             ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
             await ctx.Response.WriteAsJsonAsync(new
@@ -38,13 +37,13 @@ public class SecurityMiddleware(RequestDelegate next, ISecurityService security,
                 success = false,
                 message = "Your IP has been blocked due to suspicious activity. Contact support if this is an error."
             });
+            security.RecordRequest(ip, path, method, ctx.Response.StatusCode, userAgent);
             return;
         }
 
-        // 2. Rate limit check
         if (security.IsRateLimited(ip, path))
         {
-            logger.LogWarning("Rate limit hit: {Ip} → {Path}", ip, path);
+            logger.LogWarning("Rate limit hit: {Ip} -> {Path}", ip, path);
             ctx.Response.StatusCode = StatusCodes.Status429TooManyRequests;
             ctx.Response.Headers["Retry-After"] = "60";
             await ctx.Response.WriteAsJsonAsync(new
@@ -53,10 +52,10 @@ public class SecurityMiddleware(RequestDelegate next, ISecurityService security,
                 message = "Too many requests. Please wait about 60 seconds and try again.",
                 retryAfter = 60
             });
+            security.RecordRequest(ip, path, method, ctx.Response.StatusCode, userAgent);
             return;
         }
 
-        // 3. Payload inspection for POST/PUT/PATCH
         if (ctx.Request.Method is "POST" or "PUT" or "PATCH" &&
             IsTextPayload(ctx.Request) &&
             !ShouldBypassPayloadInspection(path))
@@ -82,11 +81,11 @@ public class SecurityMiddleware(RequestDelegate next, ISecurityService security,
                     message = "Request blocked because a text field matched a blocked security pattern.",
                     correlationId = ctx.Items["X-Correlation-Id"]?.ToString() ?? ctx.TraceIdentifier
                 });
+                security.RecordRequest(ip, path, method, ctx.Response.StatusCode, userAgent);
                 return;
             }
         }
 
-        // 4. Record failed logins (scan for 401 responses on auth paths)
         await next(ctx);
 
         if (path.Contains("/auth/login", StringComparison.OrdinalIgnoreCase) &&
@@ -94,19 +93,14 @@ public class SecurityMiddleware(RequestDelegate next, ISecurityService security,
         {
             security.RecordFailedLogin(ip);
         }
+
+        security.RecordRequest(ip, path, method, ctx.Response.StatusCode, userAgent);
     }
 
     private static string GetClientIp(HttpContext ctx)
     {
-        // Respect reverse-proxy headers
-        var forwarded = ctx.Request.Headers["X-Forwarded-For"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(forwarded))
-            return forwarded.Split(',')[0].Trim();
-
-        var realIp = ctx.Request.Headers["X-Real-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(realIp))
-            return realIp;
-
+        // Trusted proxy middleware must resolve forwarded headers first. Reading
+        // X-Forwarded-For directly here would let clients spoof their address.
         return ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
     }
 

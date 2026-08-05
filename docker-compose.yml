@@ -32,6 +32,46 @@ services:
       timeout: 5s
       retries: 5
 
+  api:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    container_name: fb_api_dev
+    profiles: ["dev-api"]
+    working_dir: /workspace/backend
+    command:
+      - dotnet
+      - watch
+      - --project
+      - src/FacebookClone.API/FacebookClone.API.csproj
+      - run
+      - --no-launch-profile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "5286"
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      DOTNET_WATCH_SUPPRESS_LAUNCH_BROWSER: "1"
+      ConnectionStrings__Default: Host=postgres;Port=5432;Database=${POSTGRES_DB:-facebook_clone};Username=${POSTGRES_USER:-fb_admin};Password=${POSTGRES_PASSWORD:-fb_password};GSS Encryption Mode=Disable
+      Redis__ConnectionString: redis:6379
+      Database__AutoMigrate: ${Database__AutoMigrate:-true}
+      Database__AutoSeed: ${Database__AutoSeed:-true}
+      Jwt__Secret: ${Jwt__Secret:-THIS_IS_A_SUPER_SECRET_KEY_CHANGE_LATER}
+      Jwt__Issuer: ${Jwt__Issuer:-FacebookClone}
+      Jwt__Audience: ${Jwt__Audience:-FacebookCloneClient}
+      Jwt__AccessTokenMinutes: ${Jwt__AccessTokenMinutes:-15}
+      Jwt__RefreshTokenDays: ${Jwt__RefreshTokenDays:-7}
+    ports:
+      - "5286:5286"
+    volumes:
+      - ./backend:/workspace/backend
+      - dotnet_nuget:/root/.nuget/packages
+      - dotnet_dataprotection:/root/.aspnet/DataProtection-Keys
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
 volumes:
   pg_data:
   redis_data:
+  dotnet_nuget:
+  dotnet_dataprotection:

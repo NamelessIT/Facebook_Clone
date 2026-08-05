@@ -26,6 +26,8 @@ public class PersistentBlockMiddleware(RequestDelegate next, ILogger<PersistentB
         var ip = ctx.Connection.RemoteIpAddress?.ToString();
         Guid? userId = Guid.TryParse(ctx.User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var uid) ? uid : null;
         var email = ctx.User.FindFirst(ClaimTypes.Email)?.Value;
+        ctx.RequestServices.GetRequiredService<ISecurityService>()
+            .AssociateIdentity(ip ?? "unknown", userId, email);
 
         // Whitelist wins — skip blacklist enforcement for allow-listed identities.
         if (await service.IsWhitelistedAsync(ip, userId, email, ctx.RequestAborted))
