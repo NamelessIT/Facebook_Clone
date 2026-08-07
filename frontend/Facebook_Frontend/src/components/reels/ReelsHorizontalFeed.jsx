@@ -161,7 +161,7 @@ const ReelsHorizontalFeed = () => {
                   </span>
                 </div>
                 <span className="rhf-card-label">
-                  {reel.userFullName || reel.userName || translateCatalogKey('ui.components.reels.reelsgrid.reel.06dcbfb1')}
+                  {reel.author?.fullName || translateCatalogKey('ui.components.reels.reelsgrid.reel.06dcbfb1')}
                 </span>
               </button>
             ))}
