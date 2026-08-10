@@ -37,8 +37,7 @@
 /* ---- NAV BUTTONS ---- */
 .rp-nav-btn {
   position: absolute;
-  top: 50%;
-  translate: 0 -50%;
+  right: 24px;
   background: rgba(255, 255, 255, 0.15);
   border: none;
   border-radius: 50%;
@@ -50,19 +49,36 @@
   color: #fff;
   cursor: pointer;
   z-index: 10;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s;
 }
 
 .rp-nav-btn:hover {
   background: rgba(255, 255, 255, 0.28);
+  transform: scale(1.1);
 }
 
 .rp-nav-btn--prev {
-  left: 16px;
+  top: calc(50% - 32px);
+  translate: 0 -50%;
 }
 
 .rp-nav-btn--next {
-  right: 16px;
+  top: calc(50% + 32px);
+  translate: 0 -50%;
+}
+
+@media (max-width: 768px) {
+  .rp-nav-btn {
+    right: 12px;
+    width: 40px;
+    height: 40px;
+  }
+  .rp-nav-btn--prev {
+    top: calc(50% - 28px);
+  }
+  .rp-nav-btn--next {
+    top: calc(50% + 28px);
+  }
 }
 
 /* ---- PLAYER ---- */

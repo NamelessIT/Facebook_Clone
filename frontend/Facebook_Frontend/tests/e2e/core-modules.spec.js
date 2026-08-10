@@ -14,6 +14,7 @@ test.describe('Facebook Clone E2E smoke', () => {
   });
 
   const userModules = [
+    { name: 'live video', path: '/live', expected: /Video trực tiếp|Phát trực tiếp|Bản phát lại/i },
     { name: 'home feed', path: '/', expected: /Reels|Contacts|Người liên hệ/i },
     { name: 'friends', path: '/friends', expected: /Friends|Bạn bè|Discover|Khám phá/i },
     { name: 'messages', path: '/messages', expected: /Chat|Tin nhắn|Contacts|Bob Tran/i },
@@ -42,6 +43,17 @@ test.describe('Facebook Clone E2E smoke', () => {
     await page.goto('/admin');
     await expectAppReady(page);
     await expect(page.locator('body')).toContainText(/Admin Panel|Dashboard|User Management|Quản lý người dùng/i);
+
+    await finishDiagnostics();
+  });
+
+  test('opens live moderation for seeded admin account', async ({ page }, testInfo) => {
+    const finishDiagnostics = attachDiagnostics(page, testInfo);
+
+    await login(page, USERS.admin, { expectedUrl: /\/admin(\/dashboard)?$/ });
+    await page.goto('/admin/lives');
+    await expectAppReady(page);
+    await expect(page.locator('body')).toContainText(/Kiểm duyệt Live|Xem mọi phiên/i);
 
     await finishDiagnostics();
   });

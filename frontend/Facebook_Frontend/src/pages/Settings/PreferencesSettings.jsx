@@ -4,6 +4,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 import userService from "../../services/userService";
 import toast from '../../shared/appToast';
 import { useLocalization } from "../../contexts/useLocalization";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const PreferencesSettings = () => {
   const { user } = useAuth();
@@ -82,17 +83,16 @@ const PreferencesSettings = () => {
       <div className="settings-form" style={{ marginTop: 16 }}>
         <div className="settings-field">
           <label className="settings-label">{t('settings.language')}</label>
-          <select
-            className="settings-select"
-            value={form.language}
-            onChange={(e) => setForm((prev) => ({ ...prev, language: e.target.value }))}
-          >
+          <Select value={form.language} onValueChange={(language) => setForm((prev) => ({ ...prev, language }))}>
+            <SelectTrigger className="settings-select"><SelectValue /></SelectTrigger>
+            <SelectContent>
             {languages.map((language) => (
-              <option key={language.code} value={language.code}>
+              <SelectItem key={language.code} value={language.code}>
                 {language.nativeName} ({language.displayName})
-              </option>
+              </SelectItem>
             ))}
-          </select>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

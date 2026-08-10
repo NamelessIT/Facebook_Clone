@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from '../../shared/appToast';
-import { X } from "lucide-react";
 import api from "../../services/axiosClient";
 import { useAuth } from "../../contexts/AuthContext";
 import "./Login.css";
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
 const getApiErrorMessage = (error, fallback) => {
   if (!error.response) {
@@ -134,23 +137,20 @@ const LoginPage = ({ mode = "user" }) => {
 
   return (
     <div className={`login-container${isAdminLogin ? " admin-login-container" : ""}`}>
-      {!isAdminLogin && isRegisterOpen && (
-        <div className="register-overlay" onMouseDown={() => setIsRegisterOpen(false)}>
-          <div className="register-modal" onMouseDown={(event) => event.stopPropagation()}>
-            <div className="register-header">
-              <h2>{translateCatalogKey('ui.pages.login.index.ang-ky.0794f093')}</h2>
-              <p>{translateCatalogKey('ui.pages.login.index.nhanh-chong-va-de-dang.83ceb7e4')}</p>
-              <button onClick={() => setIsRegisterOpen(false)} className="close-register-btn" type="button">
-                <X size={24} />
-              </button>
-            </div>
+      {!isAdminLogin && (
+        <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
+          <DialogContent className="register-modal sm:max-w-md">
+            <DialogHeader className="register-header">
+              <DialogTitle>{translateCatalogKey('ui.pages.login.index.ang-ky.0794f093')}</DialogTitle>
+              <DialogDescription>{translateCatalogKey('ui.pages.login.index.nhanh-chong-va-de-dang.83ceb7e4')}</DialogDescription>
+            </DialogHeader>
 
             <div className="register-body">
               {regError && <div className="login-error">{regError}</div>}
 
               <form onSubmit={handleRegisterSubmit}>
                 <div className="name-row">
-                  <input
+                  <Input
                     type="text"
                     placeholder={translateCatalogKey('ui.components.profile.editprofilemodal.ho.10d03a7e')}
                     className="reg-input"
@@ -158,7 +158,7 @@ const LoginPage = ({ mode = "user" }) => {
                     value={regLastName}
                     onChange={(event) => setRegLastName(event.target.value)}
                   />
-                  <input
+                  <Input
                     type="text"
                     placeholder={translateCatalogKey('ui.components.profile.editprofilemodal.ten.918728cd')}
                     className="reg-input"
@@ -168,14 +168,14 @@ const LoginPage = ({ mode = "user" }) => {
                   />
                 </div>
 
-                <input
+                <Input
                   type="email"
                   placeholder={translateCatalogKey('ui.pages.login.index.email-hoac-so-di-ong.873c016b')}
                   className="reg-input"
                   value={regEmail}
                   onChange={(event) => setRegEmail(event.target.value)}
                 />
-                <input
+                <Input
                   type="password"
                   placeholder={translateCatalogKey('ui.pages.login.index.mat-khau-moi.db7f0bbe')}
                   className="reg-input"
@@ -187,13 +187,13 @@ const LoginPage = ({ mode = "user" }) => {
                   {translateCatalogKey('ui.pages.login.index.bang-cach-nhap-vao-ang-ky-ban-ong-y-.c11f3c6a')}
                 </p>
 
-                <button type="submit" className="btn-register-submit" disabled={isRegistering}>
+                <Button type="submit" className="btn-register-submit" disabled={isRegistering}>
                   {isRegistering ? translateCatalogKey('common.processing') : translateCatalogKey('ui.pages.login.index.ang-ky.0794f093')}
-                </button>
+                </Button>
               </form>
             </div>
-          </div>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
 
       <div className="login-content">
@@ -219,7 +219,8 @@ const LoginPage = ({ mode = "user" }) => {
         </div>
 
         <div className="login-right">
-          <div className={`login-card${isAdminLogin ? " admin-login-card" : ""}`}>
+          <Card className={`login-card${isAdminLogin ? " admin-login-card" : ""}`}>
+            <CardContent className="login-card-content">
             {isAdminLogin && (
               <div className="admin-login-card-header">
                 <h2>Đăng nhập quản trị</h2>
@@ -229,23 +230,23 @@ const LoginPage = ({ mode = "user" }) => {
             {error && <div className="login-error">{error}</div>}
 
             <form onSubmit={handleLoginSubmit}>
-              <input
+              <Input
                 type="email"
                 placeholder={translateCatalogKey('ui.pages.login.index.email-hoac-so-ien-thoai.2cdce0dc')}
                 className="login-input"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
-              <input
+              <Input
                 type="password"
                 placeholder={translateCatalogKey('ui.pages.login.index.mat-khau.79f20c1e')}
                 className="login-input"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
-              <button type="submit" className="btn-login" disabled={isLoggingIn}>
+              <Button type="submit" className="btn-login" disabled={isLoggingIn}>
                 {isLoggingIn ? translateCatalogKey('ui.pages.login.index.ang-ang-nhap.06e78dfd') : translateCatalogKey('ui.pages.login.index.ang-nhap.ab7a3f30')}
-              </button>
+              </Button>
             </form>
 
             {!isAdminLogin && (
@@ -253,12 +254,13 @@ const LoginPage = ({ mode = "user" }) => {
                 <a href="#" className="forgot-link">{translateCatalogKey('ui.pages.login.index.quen-mat-khau.7e084716')}</a>
                 <div className="divider" />
 
-                <button onClick={() => setIsRegisterOpen(true)} className="btn-create" type="button">
+                <Button onClick={() => setIsRegisterOpen(true)} className="btn-create" type="button">
                   {translateCatalogKey('ui.pages.login.index.tao-tai-khoan-moi.70069e6d')}
-                </button>
+                </Button>
               </>
             )}
-          </div>
+            </CardContent>
+          </Card>
 
           {!isAdminLogin && (
             <p className="create-page-text">

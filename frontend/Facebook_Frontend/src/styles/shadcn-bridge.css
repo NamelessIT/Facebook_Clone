@@ -1,0 +1,727 @@
+/*
+ * Compatibility layer for the legacy feature CSS.
+ * Loaded after the application graph so existing pages inherit the shadcn
+ * token system while feature components are migrated incrementally.
+ */
+
+:root {
+  --app-shadow-sm: 0 1px 2px oklch(0.2 0.03 255 / 0.06), 0 1px 5px oklch(0.2 0.03 255 / 0.04);
+  --app-shadow-md: 0 14px 40px oklch(0.2 0.04 255 / 0.1), 0 3px 12px oklch(0.2 0.03 255 / 0.06);
+  --app-shadow-lg: 0 28px 80px oklch(0.08 0.03 255 / 0.28), 0 8px 24px oklch(0.08 0.03 255 / 0.14);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--muted-foreground) 42%, transparent) transparent;
+}
+
+body,
+.main-layout,
+.body-container,
+.feed-container,
+.friends-page,
+.settings-page,
+.saved-page,
+.search-results-page,
+.reels-page,
+.pp-page,
+.post-detail-page {
+  background: var(--background) !important;
+  color: var(--foreground);
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease,
+    box-shadow 160ms ease, opacity 160ms ease, transform 160ms ease;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px;
+}
+
+/* App shell */
+.navbar {
+  height: 64px !important;
+  border-bottom: 1px solid color-mix(in oklch, var(--border) 78%, transparent);
+  background: color-mix(in oklch, var(--card) 88%, transparent) !important;
+  box-shadow: var(--app-shadow-sm) !important;
+  backdrop-filter: blur(18px) saturate(1.35);
+}
+
+.body-container {
+  min-height: calc(100dvh - 64px) !important;
+  padding-top: 20px !important;
+}
+
+.sidebar {
+  top: 84px !important;
+  height: calc(100dvh - 84px) !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.nav-tab {
+  margin: 6px 0;
+  height: calc(100% - 12px) !important;
+  border: 0 !important;
+  border-radius: calc(var(--radius) - 2px);
+  color: var(--muted-foreground) !important;
+}
+
+.nav-tab:hover,
+.nav-tab.active {
+  margin: 6px 0 !important;
+  height: calc(100% - 12px) !important;
+  background: var(--accent) !important;
+  color: var(--primary) !important;
+}
+
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  inset: auto 18px -6px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--primary);
+}
+
+.nav-tab { position: relative; }
+
+.icon-btn,
+.saved-sb-back,
+.mobile-search-back,
+.notification-button {
+  border: 1px solid transparent !important;
+  background: var(--secondary) !important;
+  color: var(--secondary-foreground) !important;
+  box-shadow: none !important;
+}
+
+.icon-btn:hover,
+.saved-sb-back:hover,
+.mobile-search-back:hover,
+.notification-button:hover {
+  border-color: var(--border) !important;
+  background: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+
+.menu-item,
+.saved-sb-item {
+  border-radius: var(--radius) !important;
+  color: var(--foreground) !important;
+}
+
+.menu-item:hover,
+.saved-sb-item:hover {
+  background: var(--muted) !important;
+}
+
+.menu-item.active,
+.saved-sb-item--active {
+  background: var(--accent) !important;
+  color: var(--primary) !important;
+}
+
+/* Shared surfaces across user pages */
+:where(
+  .fb-card,
+  .create-post-card,
+  .rhf-wrapper,
+  .rg-container,
+  .friend-request-card,
+  .friend-card,
+  .user-card,
+  .csp-card,
+  .saved-header,
+  .search-user-card,
+  .pp-card,
+  .psb-card,
+  .duu-card,
+  .ni-card,
+  .chat-page,
+  .notification-panel,
+  .user-dropdown-menu
+) {
+  border: 1px solid var(--border) !important;
+  border-radius: calc(var(--radius) + 4px) !important;
+  background: var(--card) !important;
+  color: var(--card-foreground) !important;
+  box-shadow: var(--app-shadow-sm) !important;
+}
+
+:where(.fb-card, .friend-card, .user-card, .csp-card, .pp-card, .psb-card):hover {
+  border-color: color-mix(in oklch, var(--primary) 22%, var(--border)) !important;
+  box-shadow: var(--app-shadow-md) !important;
+}
+
+:where(
+  .friends-page-header,
+  .reels-page-header,
+  .pp-header-bar,
+  .post-detail-header,
+  .chat-sidebar-header,
+  .notification-panel-header
+) {
+  border-color: var(--border) !important;
+  background: color-mix(in oklch, var(--card) 94%, var(--background)) !important;
+  color: var(--foreground) !important;
+}
+
+/* Forms */
+:where(
+  .nav-search,
+  .modal-collection-input,
+  .post-modal-textarea,
+  .urm-input,
+  .urm-textarea,
+  .urm-select,
+  .erm-input,
+  .erm-textarea,
+  .erm-select,
+  .edit-post-content,
+  .share-content-input,
+  .comment-input,
+  .settings-input,
+  .settings-select,
+  .settings-textarea
+) {
+  border: 1px solid var(--input) !important;
+  border-radius: calc(var(--radius) - 2px) !important;
+  background: color-mix(in oklch, var(--background) 68%, var(--card)) !important;
+  color: var(--foreground) !important;
+}
+
+:where(input, textarea, select)::placeholder { color: var(--muted-foreground); }
+
+:where(
+  .modal-collection-input,
+  .post-modal-textarea,
+  .urm-input,
+  .urm-textarea,
+  .urm-select,
+  .erm-input,
+  .erm-textarea,
+  .erm-select
+):focus {
+  border-color: var(--ring) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 18%, transparent) !important;
+}
+
+/* Modal and sheet coverage */
+:where(
+  .create-post-overlay,
+  .edit-post-overlay,
+  .edit-profile-overlay,
+  .share-modal-overlay,
+  .post-modal-overlay,
+  .modal-collection-overlay,
+  .csp-modal-overlay,
+  .rpm-overlay,
+  .urm-overlay,
+  .erm-overlay,
+  .pdm-overlay,
+  .media-viewer-overlay,
+  .rp-confirm-overlay,
+  .register-overlay,
+  .admin-modal-backdrop,
+  .mobile-search-overlay
+) {
+  background: oklch(0.08 0.02 255 / 0.62) !important;
+  backdrop-filter: blur(10px) saturate(0.85);
+}
+
+:where(
+  .create-post-modal,
+  .edit-post-modal,
+  .edit-profile-modal,
+  .share-modal,
+  .post-modal,
+  .modal-collection,
+  .csp-modal,
+  .rpm-modal,
+  .urm-dialog,
+  .erm-dialog,
+  .pdm-content-panel,
+  .tag-friends-modal,
+  .register-modal,
+  .admin-role-modal,
+  .admin-account-modal,
+  .admin-credentials-modal,
+  .admin-password-modal,
+  .mobile-search-sheet
+) {
+  border: 1px solid var(--border) !important;
+  border-radius: calc(var(--radius) + 6px) !important;
+  background: var(--popover) !important;
+  color: var(--popover-foreground) !important;
+  box-shadow: var(--app-shadow-lg) !important;
+}
+
+:where(
+  .create-post-header,
+  .edit-post-header,
+  .edit-profile-header,
+  .share-modal-header,
+  .post-modal-header,
+  .modal-collection-header,
+  .csp-modal-header,
+  .rpm-header,
+  .urm-header,
+  .erm-header,
+  .pdm-header,
+  .post-modal-footer,
+  .modal-collection-footer,
+  .csp-modal-footer,
+  .share-modal-footer,
+  .admin-role-modal-header,
+  .admin-role-modal-footer
+) {
+  border-color: var(--border) !important;
+  background: color-mix(in oklch, var(--popover) 92%, var(--muted)) !important;
+  color: var(--foreground) !important;
+}
+
+:where(
+  .modal-collection-close,
+  .csp-modal-close,
+  .share-modal-close,
+  .post-modal-close,
+  .urm-close,
+  .erm-close,
+  .rpm-close
+) {
+  border-radius: 999px !important;
+  color: var(--muted-foreground) !important;
+}
+
+:where(
+  .modal-collection-close,
+  .csp-modal-close,
+  .share-modal-close,
+  .post-modal-close,
+  .urm-close,
+  .erm-close,
+  .rpm-close
+):hover {
+  background: var(--muted) !important;
+  color: var(--foreground) !important;
+}
+
+/* Toasts */
+.app-toast {
+  border-color: color-mix(in oklch, var(--toast-accent) 34%, var(--border)) !important;
+  border-radius: calc(var(--radius) + 2px) !important;
+  background: color-mix(in oklch, var(--popover) 94%, transparent) !important;
+  color: var(--popover-foreground) !important;
+  box-shadow: var(--app-shadow-lg) !important;
+}
+
+.app-toast-message { color: var(--muted-foreground) !important; }
+.app-toast-heading span,
+.app-toast-debug { color: var(--muted-foreground) !important; }
+.app-toast-close { color: var(--muted-foreground) !important; }
+.app-toast-close:hover { background: var(--muted) !important; color: var(--foreground) !important; }
+
+/* Admin is now token-driven instead of a separate hard-coded red theme. */
+.admin-layout,
+.admin-main {
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  font-family: 'Geist Variable', 'Segoe UI', sans-serif !important;
+}
+
+.admin-sidebar {
+  border-color: var(--sidebar-border) !important;
+  background: var(--sidebar) !important;
+  color: var(--sidebar-foreground) !important;
+}
+
+.admin-sidebar-header,
+.admin-sidebar-footer,
+.admin-role-modal-header,
+.admin-role-modal-footer,
+.admin-role-modal-fields,
+.admin-table-header,
+.admin-pagination,
+.admin-block-form,
+.admin-rbac-form {
+  border-color: var(--border) !important;
+}
+
+.admin-logo-icon,
+.admin-user-role,
+.admin-nav-item--active,
+.admin-permission-row code {
+  color: var(--primary) !important;
+}
+
+.admin-nav-item,
+.admin-home-btn {
+  border-radius: var(--radius) !important;
+  color: var(--muted-foreground) !important;
+}
+
+.admin-nav-item:hover,
+.admin-home-btn:hover {
+  background: var(--muted) !important;
+  color: var(--foreground) !important;
+}
+
+.admin-nav-item--active {
+  background: var(--accent) !important;
+}
+
+:where(
+  .admin-stat-card,
+  .admin-table-wrap,
+  .admin-role-card,
+  .admin-permission-module,
+  .admin-language-item,
+  .admin-role-modal,
+  .admin-account-modal,
+  .admin-credentials-modal,
+  .admin-password-modal
+) {
+  border-color: var(--border) !important;
+  background: var(--card) !important;
+  color: var(--card-foreground) !important;
+  box-shadow: var(--app-shadow-sm) !important;
+}
+
+.admin-stat-card:hover,
+.admin-table-wrap:hover {
+  border-color: color-mix(in oklch, var(--primary) 24%, var(--border)) !important;
+  box-shadow: var(--app-shadow-md) !important;
+}
+
+.admin-page-title,
+.admin-table-title,
+.admin-stat-value,
+.admin-role-title,
+.admin-role-modal-header h2,
+.admin-language-item strong,
+.admin-user-name {
+  color: var(--foreground) !important;
+}
+
+.admin-page-subtitle,
+.admin-muted,
+.admin-stat-label,
+.admin-stat-sub,
+.admin-pagination-info,
+.admin-role-meta,
+.admin-language-item span {
+  color: var(--muted-foreground) !important;
+}
+
+:where(
+  .admin-search,
+  .admin-filter-select,
+  .admin-block-form input,
+  .admin-rbac-form input,
+  .admin-role-modal-fields input,
+  .admin-account-form input,
+  .admin-password-form input,
+  .admin-locale-form input,
+  .admin-locale-form select,
+  .admin-locale-form textarea,
+  .admin-language-form input
+) {
+  border-color: var(--input) !important;
+  border-radius: calc(var(--radius) - 2px) !important;
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+}
+
+:where(
+  .admin-search,
+  .admin-filter-select,
+  .admin-block-form input,
+  .admin-rbac-form input,
+  .admin-role-modal-fields input,
+  .admin-account-form input,
+  .admin-password-form input,
+  .admin-locale-form input,
+  .admin-locale-form select,
+  .admin-locale-form textarea,
+  .admin-language-form input
+):focus {
+  border-color: var(--ring) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 18%, transparent) !important;
+}
+
+table.admin-table th {
+  border-color: var(--border) !important;
+  color: var(--muted-foreground) !important;
+}
+
+table.admin-table td {
+  border-color: var(--border) !important;
+  color: var(--foreground) !important;
+}
+
+table.admin-table tr:hover td { background: var(--muted) !important; }
+
+.admin-btn,
+.admin-pagination-btn,
+.admin-icon-btn {
+  border-radius: calc(var(--radius) - 3px) !important;
+}
+
+.admin-btn,
+.admin-pagination-btn {
+  min-height: 36px;
+  padding: 0 14px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.admin-role-modal-footer .admin-btn {
+  min-width: 88px;
+}
+
+.admin-btn--primary,
+.admin-pagination-btn:hover:not(:disabled) {
+  border-color: transparent !important;
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+
+.admin-mobile-bar {
+  border-color: var(--border) !important;
+  background: color-mix(in oklch, var(--card) 90%, transparent) !important;
+  backdrop-filter: blur(18px);
+}
+
+/* Complete light/dark coverage for legacy admin surfaces. */
+:where(
+  .admin-block-form,
+  .admin-rbac-form,
+  .admin-role-modal-fields,
+  .admin-role-card,
+  .admin-permission-module,
+  .admin-account-role-option,
+  .admin-credentials-list > div,
+  .admin-language-item,
+  .admin-security-search,
+  .admin-security-note,
+  .admin-ban-dialog
+) {
+  border-color: var(--border) !important;
+  background: var(--card) !important;
+  color: var(--card-foreground) !important;
+}
+
+:where(
+  .admin-logo-text,
+  .admin-account-form label,
+  .admin-password-form label,
+  .admin-account-roles legend,
+  .admin-account-role-option,
+  .admin-credentials-list strong,
+  .admin-permission-module h3,
+  .admin-role-title,
+  .admin-content-author,
+  .admin-user-display-name,
+  .admin-security-note h3
+) {
+  color: var(--foreground) !important;
+}
+
+:where(
+  .admin-content-email,
+  .admin-user-email,
+  .admin-user-meta,
+  .admin-ban-dialog p,
+  .admin-security-note ul,
+  .admin-credentials-list span,
+  .admin-account-form small
+) {
+  color: var(--muted-foreground) !important;
+}
+
+.admin-icon-btn,
+.admin-collapse-btn,
+.admin-logout-btn,
+.admin-pagination-btn {
+  background: var(--secondary) !important;
+  color: var(--secondary-foreground) !important;
+}
+
+.admin-icon-btn:hover,
+.admin-collapse-btn:hover,
+.admin-logout-btn:hover,
+.admin-pagination-btn:hover:not(:disabled) {
+  background: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+
+.admin-account-roles {
+  border-color: var(--border) !important;
+}
+
+.admin-password-input button:hover,
+.admin-role-assign {
+  background: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+
+.admin-locale-context,
+.admin-permission-check {
+  border-color: color-mix(in oklch, var(--primary) 25%, var(--border)) !important;
+  background: color-mix(in oklch, var(--primary) 10%, var(--card)) !important;
+  color: var(--primary) !important;
+}
+
+.admin-locale-form textarea[readonly] {
+  background: var(--muted) !important;
+  color: var(--muted-foreground) !important;
+}
+
+.admin-ban-dialog {
+  width: min(360px, calc(100vw - 32px));
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 2px);
+  box-shadow: var(--app-shadow-lg);
+}
+
+.admin-ban-dialog h3 { margin: 0 0 12px; color: var(--foreground); }
+.admin-ban-dialog p { margin: 0 0 16px; font-size: 13px; }
+.admin-ban-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.admin-user-avatar-fallback { width: 32px; height: 32px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 13px; background: var(--secondary); color: var(--secondary-foreground); }
+.admin-user-display-name, .admin-content-author { font-weight: 600; color: var(--foreground); }
+.admin-user-email, .admin-content-email { font-size: 12px; color: var(--muted-foreground); }
+.admin-user-meta { font-size: 12px; color: var(--muted-foreground) !important; }
+.admin-nowrap { white-space: nowrap; }
+.admin-security-detail { max-width: 300px; font-size: 12px; color: var(--muted-foreground) !important; }
+.admin-security-note { padding: 20px; border: 1px solid var(--border); border-radius: calc(var(--radius) + 2px); }
+.admin-security-note h3 { margin: 0 0 12px; font-size: 15px; color: var(--destructive) !important; }
+.admin-security-note ul { margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.7; color: var(--muted-foreground) !important; }
+.admin-stat-icon { color: var(--muted-foreground); }
+.admin-dashboard-note { margin-top: 20px; font-size: 12px; color: var(--muted-foreground); }
+
+/* Polished native selects that remain in legacy forms. */
+:where(
+  .admin-filter-select,
+  .admin-locale-form select,
+  .admin-role-assign select,
+  .settings-select,
+  .edit-post-privacy-select,
+  .create-post-modal select
+) {
+  min-height: 38px;
+  appearance: none;
+  border: 1px solid var(--input) !important;
+  border-radius: calc(var(--radius) - 2px) !important;
+  padding: 8px 38px 8px 12px !important;
+  background-color: var(--background) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 11px center !important;
+  color: var(--foreground) !important;
+  cursor: pointer;
+}
+
+:where(
+  .admin-filter-select,
+  .admin-locale-form select,
+  .admin-role-assign select,
+  .settings-select,
+  .edit-post-privacy-select,
+  .create-post-modal select
+):focus {
+  border-color: var(--ring) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 18%, transparent) !important;
+}
+
+:where(select option) {
+  background: var(--popover);
+  color: var(--popover-foreground);
+}
+
+.create-post-privacy-select {
+  width: auto;
+  min-width: 116px;
+  height: 30px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .navbar { height: 58px !important; }
+  .body-container { min-height: calc(100dvh - 58px) !important; padding-top: 12px !important; }
+  .mobile-nav {
+    border-color: var(--border) !important;
+    background: color-mix(in oklch, var(--card) 92%, transparent) !important;
+    box-shadow: 0 -8px 30px oklch(0.15 0.03 255 / 0.09) !important;
+    backdrop-filter: blur(18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Native shadcn state hooks for migrated composite components. */
+.settings-nav-item[data-state="active"] {
+  background: color-mix(in oklch, var(--primary) 12%, var(--card)) !important;
+  color: var(--primary) !important;
+}
+
+[data-slot="tabs-list"].settings-nav {
+  height: auto;
+  align-items: stretch;
+  background: transparent;
+  padding: 0;
+}
+
+[data-slot="tabs-content"] {
+  margin-top: 0;
+}
+
+[data-slot="sheet-content"].mobile-search-sheet {
+  position: fixed;
+  inset: 0 0 auto 0;
+  width: 100%;
+  max-width: none;
+}
+
+[data-slot="dialog-content"].register-modal,
+[data-slot="dialog-content"].urm-dialog,
+[data-slot="dialog-content"].erm-dialog,
+[data-slot="dialog-content"].rpm-modal,
+[data-slot="dialog-content"].share-modal {
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--popover);
+  color: var(--popover-foreground);
+}
+
+[data-slot="dialog-content"].urm-dialog {
+  overflow-y: auto;
+}

@@ -16,7 +16,7 @@ public class PostProfile : Profile
         CreateMap<Post, PostResponseDto>()
             .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.User))
             .ForMember(dest => dest.ReactionsCount, opt => opt.MapFrom(src => src.Reactions.Count))
-            .ForMember(dest => dest.CommentsCount, opt => opt.MapFrom(src => src.Comments.Count))
+            .ForMember(dest => dest.CommentsCount, opt => opt.MapFrom(src => src.Comments.Count(c => !c.IsDeleted)))
             // 👇 3. Bổ sung map danh sách Medias
             .ForMember(dest => dest.Medias, opt => opt.MapFrom(src => src.Medias))
             .ForMember(dest => dest.SharedPost, opt => opt.MapFrom(src => src.SharedPost));

@@ -10,5 +10,5 @@ public interface IReelService
     Task<ReelResponseDto> GetReelAsync(Guid currentUserId, Guid reelId);
     Task<ReelResponseDto> UpdateReelAsync(Guid userId, Guid reelId, UpdateReelRequest request);
     Task DeleteReelAsync(Guid userId, Guid reelId);
-    Task<string> ToggleLikeAsync(Guid userId, Guid reelId);
+    Task<ToggleLikeResultDto> ToggleLikeAsync(Guid userId, Guid reelId);
 }

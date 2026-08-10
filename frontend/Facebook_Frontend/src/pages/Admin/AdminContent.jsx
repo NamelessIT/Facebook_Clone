@@ -8,7 +8,7 @@ import { translateCatalogKey } from '../../shared/localizationRuntime';
 const CONFIG = {
   posts: {
     titleKey: 'admin.posts.title',
-    tableTitle: 'Danh sach bai viet',
+    tableTitle: 'Bài viết theo người dùng',
     load: adminService.getPosts,
     remove: adminService.deletePost,
     restore: adminService.restorePost,
@@ -19,7 +19,7 @@ const CONFIG = {
   },
   reels: {
     titleKey: 'admin.reels.title',
-    tableTitle: 'Danh sach reels',
+    tableTitle: 'Reels theo người dùng',
     load: adminService.getReels,
     remove: adminService.deleteReel,
     restore: adminService.restoreReel,
@@ -43,7 +43,7 @@ const AdminContent = ({ type }) => {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await config.load({ page, pageSize: 20, search: search || undefined });
+      const response = await config.load({ page, pageSize: 100, search: search || undefined });
       setItems(response.data.data);
       setPagination(response.data.pagination);
     } catch (error) {
@@ -56,6 +56,24 @@ const AdminContent = ({ type }) => {
   useEffect(() => {
     load();
   }, [load]);
+
+  const groupedItems = useMemo(() => {
+    const groups = new Map();
+
+    items.forEach((item) => {
+      const authorKey = item.author?.userId || item.author?.email || 'unknown-author';
+      if (!groups.has(authorKey)) {
+        groups.set(authorKey, {
+          key: authorKey,
+          author: item.author || {},
+          items: [],
+        });
+      }
+      groups.get(authorKey).items.push(item);
+    });
+
+    return [...groups.values()];
+  }, [items]);
 
   const handleDelete = async (item) => {
     const accepted = await confirm({
@@ -128,74 +146,99 @@ const AdminContent = ({ type }) => {
         ) : items.length === 0 ? (
           <div className="admin-empty">{config.empty}</div>
         ) : (
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>{translateCatalogKey('ui.pages.admin.admincontent.tac-gia.6bf22a17')}</th>
-                <th>{config.contentLabel}</th>
-                <th>{translateCatalogKey('ui.pages.admin.admincontent.trang-thai.949ccef0')}</th>
-                <th>{translateCatalogKey('ui.pages.admin.admincontent.tuong-tac.6eff8174')}</th>
-                <th>{translateCatalogKey('ui.pages.admin.admincontent.ngay-tao.a23e5564')}</th>
-                <th>{translateCatalogKey('ui.pages.admin.admincontent.hanh-dong.bf3443dc')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <div style={{ fontWeight: 600, color: '#fff' }}>
-                      {item.author?.firstName} {item.author?.lastName}
+          <div className="admin-content-groups">
+            {groupedItems.map((group) => {
+              const fullName = `${group.author.firstName || ''} ${group.author.lastName || ''}`.trim() || 'Người dùng chưa xác định';
+              const initials = fullName
+                .split(/\s+/)
+                .slice(0, 2)
+                .map((part) => part.charAt(0).toUpperCase())
+                .join('');
+              const deletedCount = group.items.filter((item) => item.isDeleted).length;
+
+              return (
+                <section className="admin-content-group" key={group.key}>
+                  <header className="admin-content-group-header">
+                    <div className="admin-content-group-avatar" aria-hidden="true">{initials}</div>
+                    <div className="admin-content-group-identity">
+                      <div className="admin-content-group-name">
+                        {fullName}
+                        {group.author.isBanned && <span className="badge badge--banned">{translateCatalogKey('ui.pages.admin.admincontent.da-bi-cam.ff9a4521')}</span>}
+                      </div>
+                      <div className="admin-content-email">{group.author.email || 'Không có email'}</div>
                     </div>
-                    <div style={{ fontSize: 12, color: '#777' }}>{item.author?.email}</div>
-                    {item.author?.isBanned && <span className="badge badge--banned">{translateCatalogKey('ui.pages.admin.admincontent.da-bi-cam.ff9a4521')}</span>}
-                  </td>
-                  <td style={{ maxWidth: 420 }}>
-                    <div className="admin-content-snippet">
-                      {type === "posts"
-                        ? item.content
-                        : item.caption || item.title || translateCatalogKey('ui.pages.admin.admincontent.khong-co-noi-dung.e471b2db')}
+                    <div className="admin-content-group-summary">
+                      <span><strong>{group.items.length}</strong> {type === 'posts' ? 'bài viết' : 'reels'}</span>
+                      {deletedCount > 0 && <span className="admin-content-group-deleted">{deletedCount} đã ẩn</span>}
                     </div>
-                  </td>
-                  <td>
-                    {item.isDeleted ? (
-                      <span className="badge badge--banned">{translateCatalogKey('ui.pages.admin.admincontent.da-xoa.6612ebd2')}</span>
-                    ) : (
-                      <span className="badge badge--active">{translateCatalogKey('ui.pages.admin.admincontent.dang-hien-thi.5f3d7cad')}</span>
-                    )}
-                  </td>
-                  <td style={{ color: '#888', fontSize: 12 }}>
-                    {type === "posts"
-                      ? translateCatalogKey('ui.pages.admin.admincontent.value0-binh-luan-value1-reaction.e098c3b8', { value0: item.comments ?? 0, value1: item.reactions ?? 0 })
-                      : translateCatalogKey('ui.pages.admin.admincontent.value0-likes-value1-views.01f3de1c', { value0: item.likes ?? 0, value1: item.viewsCount ?? 0 })}
-                  </td>
-                  <td style={{ color: '#666', fontSize: 12 }}>
-                    {new Date(item.createdAt).toLocaleString("vi-VN")}
-                  </td>
-                  <td>
-                    <div className="admin-actions">
-                      {item.isDeleted ? (
-                        <button className="admin-btn admin-btn--unban" type="button" onClick={() => handleRestore(item)}>
-                          <RotateCcw size={12} /> {translateCatalogKey('ui.pages.admin.admincontent.khoi-phuc.fa177086')}
-                        </button>
-                      ) : (
-                        <button className="admin-btn admin-btn--delete" type="button" onClick={() => handleDelete(item)}>
-                          <Trash2 size={12} /> {translateCatalogKey('ui.pages.admin.admincontent.xoa.6deddac5')}
-                        </button>
-                      )}
-                      <button
-                        className="admin-btn admin-btn--ban"
-                        type="button"
-                        disabled={item.author?.isBanned}
-                        onClick={() => handleBanAuthor(item)}
-                      >
-                        <Ban size={12} /> {translateCatalogKey('ui.pages.admin.admincontent.cam-tac-gia.27f37b16')}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </header>
+
+                  <div className="admin-content-group-table">
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>{config.contentLabel}</th>
+                          <th>{translateCatalogKey('ui.pages.admin.admincontent.trang-thai.949ccef0')}</th>
+                          <th>{translateCatalogKey('ui.pages.admin.admincontent.tuong-tac.6eff8174')}</th>
+                          <th>{translateCatalogKey('ui.pages.admin.admincontent.ngay-tao.a23e5564')}</th>
+                          <th>{translateCatalogKey('ui.pages.admin.admincontent.hanh-dong.bf3443dc')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {group.items.map((item) => (
+                          <tr key={item.id}>
+                            <td style={{ maxWidth: 420 }}>
+                              <div className="admin-content-snippet">
+                                {type === 'posts'
+                                  ? item.content
+                                  : item.caption || item.title || translateCatalogKey('ui.pages.admin.admincontent.khong-co-noi-dung.e471b2db')}
+                              </div>
+                            </td>
+                            <td>
+                              {item.isDeleted ? (
+                                <span className="badge badge--banned">{translateCatalogKey('ui.pages.admin.admincontent.da-xoa.6612ebd2')}</span>
+                              ) : (
+                                <span className="badge badge--active">{translateCatalogKey('ui.pages.admin.admincontent.dang-hien-thi.5f3d7cad')}</span>
+                              )}
+                            </td>
+                            <td className="admin-user-meta">
+                              {type === 'posts'
+                                ? translateCatalogKey('ui.pages.admin.admincontent.value0-binh-luan-value1-reaction.e098c3b8', { value0: item.comments ?? 0, value1: item.reactions ?? 0 })
+                                : translateCatalogKey('ui.pages.admin.admincontent.value0-likes-value1-views.01f3de1c', { value0: item.likes ?? 0, value1: item.viewsCount ?? 0 })}
+                            </td>
+                            <td className="admin-user-meta">
+                              {new Date(item.createdAt).toLocaleString('vi-VN')}
+                            </td>
+                            <td>
+                              <div className="admin-actions">
+                                {item.isDeleted ? (
+                                  <button className="admin-btn admin-btn--unban" type="button" onClick={() => handleRestore(item)}>
+                                    <RotateCcw size={12} /> {translateCatalogKey('ui.pages.admin.admincontent.khoi-phuc.fa177086')}
+                                  </button>
+                                ) : (
+                                  <button className="admin-btn admin-btn--delete" type="button" onClick={() => handleDelete(item)}>
+                                    <Trash2 size={12} /> {translateCatalogKey('ui.pages.admin.admincontent.xoa.6deddac5')}
+                                  </button>
+                                )}
+                                <button
+                                  className="admin-btn admin-btn--ban"
+                                  type="button"
+                                  disabled={item.author?.isBanned}
+                                  onClick={() => handleBanAuthor(item)}
+                                >
+                                  <Ban size={12} /> {translateCatalogKey('ui.pages.admin.admincontent.cam-tac-gia.27f37b16')}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              );
+            })}
+          </div>
         )}
 
         {pagination.totalPages > 1 && (

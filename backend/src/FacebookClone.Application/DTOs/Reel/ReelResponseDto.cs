@@ -19,3 +19,5 @@ public class ReelResponseDto
     public DateTime CreatedAt { get; set; }
     public UserProfileDto Author { get; set; } = null!;
 }
+
+public record ToggleLikeResultDto(bool IsLiked, int LikesCount, string Message);

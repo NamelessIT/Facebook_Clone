@@ -14,6 +14,9 @@ import ReelsPage from "./pages/Reels/ReelsPage";
 import SavedItemsPage from "./pages/SavedItems/SavedItemsPage";
 import PostDetailPage from "./pages/PostDetail/PostDetailPage";
 import AdminPage from "./pages/Admin/AdminPage";
+import MarketplacePage from "./pages/Discovery/MarketplacePage";
+import MemoriesPage from "./pages/Discovery/MemoriesPage";
+import LivePage from "./pages/Discovery/LivePage";
 import ConfirmProvider from "./contexts/ConfirmProvider";
 import { OfflineSyncProvider } from "./contexts/OfflineSyncContext";
 import NotificationCenter from "./components/feedback/NotificationCenter";
@@ -71,6 +74,9 @@ function App() {
             <Route path="messages/:friendId" element={<ChatListPage />} />
             <Route path="reels" element={<ReelsPage />} />
             <Route path="saved" element={<SavedItemsPage />} />
+            <Route path="marketplace" element={<MarketplacePage />} />
+            <Route path="memories" element={<MemoriesPage />} />
+            <Route path="live" element={<LivePage />} />
             <Route path="posts/:postId" element={<PostDetailPage />} />
           </Route>
 

@@ -46,6 +46,11 @@ public class User
     public string? BanReason { get; set; }
     public DateTime? BannedAt { get; set; }
 
+    // Live-only moderation. A suspended user can still use every non-live feature.
+    public bool IsLiveSuspended { get; set; } = false;
+    public string? LiveSuspensionReason { get; set; }
+    public DateTime? LiveSuspendedAt { get; set; }
+
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
@@ -56,6 +61,7 @@ public class User
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     public ICollection<Message> Messages { get; set; } = new List<Message>();
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    public ICollection<LiveSession> LiveSessions { get; set; } = new List<LiveSession>();
 
     // --- THÊM PHẦN NÀY ĐỂ SỬA LỖI FriendshipConfiguration ---
     // Danh sách lời mời kết bạn ĐÃ GỬI

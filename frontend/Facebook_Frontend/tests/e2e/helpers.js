@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 
 export const USERS = Object.freeze({
   alice: { email: 'alice@fbclone.com', password: '123456' },
+  bob: { email: 'bob@fbclone.com', password: '123456' },
   admin: { email: 'admin@fbclone.com', password: 'Admin@123' },
 });
 

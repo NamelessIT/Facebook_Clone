@@ -240,10 +240,10 @@ const AdminRoles = () => {
                 return (
                   <tr key={user.id}>
                     <td>
-                      <div style={{ fontWeight: 600, color: '#fff' }}>
+                      <div className="admin-user-display-name">
                         {user.firstName} {user.lastName}
                       </div>
-                      <div style={{ color: '#777', fontSize: 12 }}>{user.email}</div>
+                      <div className="admin-user-email">{user.email}</div>
                     </td>
                     <td>
                       {(user.roles || []).length > 0 ? (

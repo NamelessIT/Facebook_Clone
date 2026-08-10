@@ -32,6 +32,11 @@ const adminService = {
   restoreReel: (id) => axiosClient.put(`/admin/reels/${id}/restore`),
   banReelAuthor: (id, reason) => axiosClient.put(`/admin/reels/${id}/ban-author`, { reason }),
 
+  // Live moderation
+  getLives: () => axiosClient.get('/admin/lives'),
+  terminateLive: (id, reason) => axiosClient.post(`/admin/lives/${id}/terminate`, { reason }),
+  restoreLiveAccess: (userId) => axiosClient.post(`/admin/lives/users/${userId}/restore`),
+
   // Security
   getSecurityEvents: (count = 200, type) =>
     axiosClient.get('/admin/security/events', { params: { count, type } }),

@@ -1,8 +1,19 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import ConfirmContextValue from './confirmContextValue';
 import { useLocalization } from './useLocalization';
-import '../components/feedback/ConfirmDialog.css';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
 
 const ConfirmProvider = ({ children }) => {
   const { t } = useLocalization();
@@ -35,26 +46,46 @@ const ConfirmProvider = ({ children }) => {
   return (
     <ConfirmContextValue.Provider value={contextValue}>
       {children}
-      {dialog && (
-        <div className="app-confirm-backdrop" role="presentation" onMouseDown={() => close(false)}>
-          <section className="app-confirm" role="alertdialog" aria-modal="true" aria-labelledby="app-confirm-title" onMouseDown={(event) => event.stopPropagation()}>
-            <div className="app-confirm-icon"><AlertTriangle size={22} /></div>
-            <div className="app-confirm-copy">
-              <h2 id="app-confirm-title">{dialog.title || t('confirm.title')}</h2>
-              <p>{dialog.message}</p>
-              {dialog.detail && <div className="app-confirm-detail">{dialog.detail}</div>}
-              {dialog.mode === "prompt" && (
-                <input className="app-confirm-input" value={inputValue} onChange={(event) => setInputValue(event.target.value)} placeholder={dialog.placeholder || ''} autoFocus />
-              )}
-            </div>
-            <button className="app-confirm-close" type="button" onClick={() => close(false)} aria-label={t('common.close')}><X size={18} /></button>
-            <div className="app-confirm-actions">
-              <button className="app-confirm-btn app-confirm-btn--cancel" type="button" onClick={() => close(false)}>{dialog.cancelText || t('common.cancel')}</button>
-              <button className={`app-confirm-btn ${dialog.danger === false ? 'app-confirm-btn--primary' : 'app-confirm-btn--danger'}`} type="button" onClick={() => close(true)}>{dialog.confirmText || t('common.confirm')}</button>
-            </div>
-          </section>
-        </div>
-      )}
+      <AlertDialog open={Boolean(dialog)} onOpenChange={(open) => { if (!open && dialog) close(false); }}>
+        {dialog && (
+          <AlertDialogContent className="sm:max-w-md">
+            <AlertDialogHeader>
+              <AlertDialogMedia className={dialog.danger === false ? 'bg-primary/10 text-primary' : 'bg-destructive/10 text-destructive'}>
+                <AlertTriangle />
+              </AlertDialogMedia>
+              <AlertDialogTitle>{dialog.title || t('confirm.title')}</AlertDialogTitle>
+              <AlertDialogDescription className="space-y-3">
+                <span className="block">{dialog.message}</span>
+                {dialog.detail && (
+                  <span className="block rounded-lg border bg-muted/60 p-3 text-left text-xs text-foreground">
+                    {dialog.detail}
+                  </span>
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            {dialog.mode === 'prompt' && (
+              <Input
+                value={inputValue}
+                onChange={(event) => setInputValue(event.target.value)}
+                placeholder={dialog.placeholder || ''}
+                className="h-10"
+                autoFocus
+              />
+            )}
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => close(false)}>
+                {dialog.cancelText || t('common.cancel')}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                variant={dialog.danger === false ? 'default' : 'destructive'}
+                onClick={() => close(true)}
+              >
+                {dialog.confirmText || t('common.confirm')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        )}
+      </AlertDialog>
     </ConfirmContextValue.Provider>
   );
 };

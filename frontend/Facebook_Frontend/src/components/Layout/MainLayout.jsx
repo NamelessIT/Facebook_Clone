@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import { Home, Tv, Store, Users, MessageCircle, Grid, Clock, Bookmark, Film, Folder, ChevronLeft, ShieldAlert, Search } from "lucide-react";
+import { Home, Tv, Store, Users, MessageCircle, Grid, Clock, Bookmark, Film, Folder, ChevronLeft, ShieldAlert, Search, Settings2, UserRound } from "lucide-react";
 import "./MainLayout.css";
 import Avatar from '../common/Avatar';
 import SearchBar from '../common/SearchBar';
@@ -13,6 +13,17 @@ import savedItemsService from '../../services/savedItemsService';
 import { useLocalization } from '../../contexts/useLocalization';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 import toast from '../../shared/appToast';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+
+const IconTooltip = ({ label, children }) => (
+  <Tooltip>
+    <TooltipTrigger asChild>{children}</TooltipTrigger>
+    <TooltipContent>{label}</TooltipContent>
+  </Tooltip>
+);
 
 const MainLayout = () => {
   const { user } = useAuth();
@@ -112,7 +123,13 @@ const MainLayout = () => {
         >
           <Users size={28} className="text-blue-500 mr-2" /> {t('nav.friends')}
         </Link>
-        <div className="menu-item"><Clock size={28} className="text-blue-500 mr-2" /> {t('nav.memories')}</div>
+        <Link
+          to="/memories"
+          className={`menu-item${location.pathname.startsWith('/memories') ? ' active' : ''}`}
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          <Clock size={28} className="text-blue-500 mr-2" /> {t('nav.memories')}
+        </Link>
         <Link
           to="/saved"
           className={`menu-item${location.pathname.startsWith('/saved') ? ' active' : ''}`}
@@ -136,16 +153,16 @@ const MainLayout = () => {
           {/* Full search bar (desktop) */}
           <span className="nav-search-desktop"><SearchBar /></span>
           {/* Collapsed search icon (mobile) → opens the search sheet */}
-          <button className="nav-search-mobile-btn" onClick={() => setMobileSearchOpen(true)} title={translateCatalogKey('common.search')} aria-label={translateCatalogKey('common.search')}>
+          <Button variant="ghost" size="icon" className="nav-search-mobile-btn" onClick={() => setMobileSearchOpen(true)} aria-label={translateCatalogKey('common.search')}>
             <Search size={20} />
-          </button>
+          </Button>
         </div>
 
         {/* Giữa */}
         <div className="nav-center">
           <Link to="/" className={`nav-tab${location.pathname === '/' ? ' active' : ''}`}><Home size={28} /></Link>
-          <div className="nav-tab"><Tv size={28} /></div>
-          <div className="nav-tab"><Store size={28} /></div>
+          <Link to="/live" className={`nav-tab${location.pathname.startsWith('/live') ? ' active' : ''}`} aria-label="Video trực tiếp"><Tv size={28} /></Link>
+          <Link to="/marketplace" className={`nav-tab${location.pathname.startsWith('/marketplace') ? ' active' : ''}`} aria-label="Marketplace"><Store size={28} /></Link>
           <Link to="/friends" className={`nav-tab${location.pathname.startsWith('/friends') ? ' active' : ''}`}><Users size={28} /></Link>
           <Link to="/reels" className={`nav-tab${location.pathname.startsWith('/reels') ? ' active' : ''}`}><Film size={28} /></Link>
         </div>
@@ -153,14 +170,39 @@ const MainLayout = () => {
         {/* Góc Phải */}
         <div className="nav-right">
           {user?.isAdmin && (
-            <Link to="/admin" className="icon-btn admin-entry-btn" title={translateCatalogKey('ui.components.layout.mainlayout.admin.ac03e484')}>
-              <ShieldAlert size={20} />
-            </Link>
+            <IconTooltip label={translateCatalogKey('ui.components.layout.mainlayout.admin.ac03e484')}>
+              <Link to="/admin" className="icon-btn admin-entry-btn" aria-label={translateCatalogKey('ui.components.layout.mainlayout.admin.ac03e484')}>
+                <ShieldAlert size={20} />
+              </Link>
+            </IconTooltip>
           )}
-          <div className="icon-btn nav-grid-btn"><Grid size={20} /></div>
-          <div className="icon-btn nav-msg-btn" onClick={() => setChatPanelOpen((prev) => !prev)} title="Messenger">
-            <MessageCircle size={20} />
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon" className="icon-btn nav-grid-btn" aria-label={t('account.menu')} title={t('account.menu')}><Grid size={20} /></Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="app-shortcuts-menu w-64">
+              <DropdownMenuLabel>{t('account.menu')}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => navigate(`/profile/${user?.id}`)}><UserRound /> {t('nav.profile')}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => navigate('/settings')}><Settings2 /> {t('settings.title')}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => navigate('/marketplace')}><Store /> Marketplace</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => navigate('/live')}><Tv /> Video trực tiếp</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => navigate('/memories')}><Clock /> {t('nav.memories')}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => navigate('/saved')}><Bookmark /> {t('nav.saved')}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => navigate('/messages')}><MessageCircle /> {t('nav.messages')}</DropdownMenuItem>
+              {user?.isAdmin && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onSelect={() => navigate('/admin')}><ShieldAlert /> Admin</DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <IconTooltip label={t('nav.messages')}>
+            <Button variant="secondary" size="icon" className="icon-btn nav-msg-btn" onClick={() => setChatPanelOpen((prev) => !prev)} aria-label={t('nav.messages')}>
+              <MessageCircle size={20} />
+            </Button>
+          </IconTooltip>
           <NotificationBell />
           <UserDropdown />
         </div>
@@ -205,16 +247,18 @@ const MainLayout = () => {
       </div>
 
       {/* Mobile search sheet (mở khi bấm icon kính lúp trên header mobile) */}
-      {mobileSearchOpen && (
-        <div className="mobile-search-overlay" onMouseDown={() => setMobileSearchOpen(false)}>
-          <div className="mobile-search-sheet" onMouseDown={(e) => e.stopPropagation()}>
-            <button className="mobile-search-back" onClick={() => setMobileSearchOpen(false)} title={translateCatalogKey('common.close')} aria-label={translateCatalogKey('common.close')}>
-              <ChevronLeft size={22} />
-            </button>
-            <div className="mobile-search-field"><SearchBar onNavigate={() => setMobileSearchOpen(false)} /></div>
-          </div>
-        </div>
-      )}
+      <Sheet open={mobileSearchOpen} onOpenChange={setMobileSearchOpen}>
+        <SheetContent side="top" className="mobile-search-sheet">
+          <SheetHeader className="sr-only">
+            <SheetTitle>{translateCatalogKey('common.search')}</SheetTitle>
+            <SheetDescription>{translateCatalogKey('common.search')}</SheetDescription>
+          </SheetHeader>
+          <Button variant="ghost" size="icon" className="mobile-search-back" onClick={() => setMobileSearchOpen(false)} aria-label={translateCatalogKey('common.close')}>
+            <ChevronLeft size={22} />
+          </Button>
+          <div className="mobile-search-field"><SearchBar onNavigate={() => setMobileSearchOpen(false)} /></div>
+        </SheetContent>
+      </Sheet>
 
       {/* Mobile bottom navigation (hiện trên màn hình nhỏ, thay cho nav-center bị ẩn) */}
       <nav className="mobile-nav">

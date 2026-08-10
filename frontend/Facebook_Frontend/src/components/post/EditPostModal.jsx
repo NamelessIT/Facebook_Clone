@@ -8,6 +8,7 @@ import toast from '../../shared/appToast';
 import { LIMITS } from "../../shared/generated/constants";
 import "./EditPostModal.css";
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const PRIVACY_OPTIONS = [
   { value: 1, labelKey: "privacy.public", icon: Globe },
@@ -117,17 +118,16 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
           <Avatar src={user?.avatarUrl} className="w-10 h-10" />
           <div className="edit-post-author-info">
             <span className="edit-post-author-name">{user?.fullName}</span>
-            <select
-              value={privacy}
-              onChange={(e) => setPrivacy(Number(e.target.value))}
-              className="edit-post-privacy-select"
-            >
+            <Select value={String(privacy)} onValueChange={(value) => setPrivacy(Number(value))}>
+              <SelectTrigger className="edit-post-privacy-select"><SelectValue /></SelectTrigger>
+              <SelectContent>
               {PRIVACY_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
+                <SelectItem key={opt.value} value={String(opt.value)}>
                   {translateCatalogKey(opt.labelKey)}
-                </option>
+                </SelectItem>
               ))}
-            </select>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

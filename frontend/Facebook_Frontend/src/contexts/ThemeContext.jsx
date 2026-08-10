@@ -33,12 +33,13 @@ function persistTheme(theme) {
 
 function applyTheme(theme) {
   const root = document.documentElement;
-  if (theme === 'auto') {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
-  } else {
-    root.setAttribute('data-theme', theme);
-  }
+  const resolvedTheme = theme === 'auto'
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : theme;
+
+  root.setAttribute('data-theme', resolvedTheme);
+  root.classList.toggle('dark', resolvedTheme === 'dark');
+  root.style.colorScheme = resolvedTheme;
 }
 
 export function ThemeProvider({ children }) {

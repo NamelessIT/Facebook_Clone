@@ -23,3 +23,6 @@ export const CHAT_HUB_URL =
 
 export const NOTIFICATION_HUB_URL =
   import.meta.env.VITE_NOTIFICATION_HUB_URL || `${API_ORIGIN}${HUBS.notification}`;
+
+export const LIVE_HUB_URL =
+  import.meta.env.VITE_LIVE_HUB_URL || `${API_ORIGIN}/hubs/live`;

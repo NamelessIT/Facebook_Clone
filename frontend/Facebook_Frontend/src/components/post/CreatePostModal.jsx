@@ -8,6 +8,7 @@ import html2canvas from "html2canvas"; // 👈 IMPORT THƯ VIỆN CHỤP ẢNH
 import "./CreatePostModal.css";
 import toast from '../../shared/appToast';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Danh sách các emoji cơ bản
 const EMOJIS = ['😀', '😂', '😍', '🥰', '😎', '😭', '😡', '👍', '❤️', '🔥'];
@@ -202,11 +203,14 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }) => {
           <Avatar src={user?.avatarUrl} className="w-10 h-10" />
           <div className="flex flex-col">
             <span className="font-semibold text-[15px] text-[#050505]">{user?.fullName}</span>
-            <select value={privacy} onChange={(e) => setPrivacy(e.target.value)} className="bg-[#e4e6eb] text-[#050505] text-[13px] font-semibold px-2 py-1 rounded-md mt-1 outline-none border-none cursor-pointer">
-              <option value="1">{translateCatalogKey('ui.components.post.createpostmodal.cong-khai.e400efcb')}</option>
-              <option value="2">{translateCatalogKey('ui.components.post.createpostmodal.ban-be.af8f0037')}</option>
-              <option value="3">{translateCatalogKey('ui.components.post.createpostmodal.chi-minh-toi.f3ec78e2')}</option>
-            </select>
+            <Select value={privacy} onValueChange={setPrivacy}>
+              <SelectTrigger className="create-post-privacy-select"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">{translateCatalogKey('ui.components.post.createpostmodal.cong-khai.e400efcb')}</SelectItem>
+                <SelectItem value="2">{translateCatalogKey('ui.components.post.createpostmodal.ban-be.af8f0037')}</SelectItem>
+                <SelectItem value="3">{translateCatalogKey('ui.components.post.createpostmodal.chi-minh-toi.f3ec78e2')}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

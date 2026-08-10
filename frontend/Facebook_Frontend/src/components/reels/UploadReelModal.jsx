@@ -6,6 +6,13 @@ import { useLocalization } from '../../contexts/useLocalization';
 import { LIMITS } from '../../shared/generated/constants';
 import { getApiErrorDetails } from '../../shared/apiError';
 import './UploadReelModal.css';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 const ACCEPTED_TYPES = ['video/mp4', 'video/quicktime', 'video/x-m4v'];
 const MAX_SIZE_MB = LIMITS.maxVideoUploadMb;
@@ -30,8 +37,6 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
 
   const fileInputRef = useRef(null);
   const videoPreviewRef = useRef(null);
-
-  if (!isOpen) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -124,19 +129,15 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="urm-overlay" onClick={!uploading ? onClose : undefined}>
-      <div className="urm-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="urm-header">
-          <div className="urm-header-title">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && !uploading && onClose()}>
+      <DialogContent className="urm-dialog sm:max-w-2xl" showCloseButton={!uploading}>
+        <DialogHeader className="urm-header">
+          <DialogTitle className="urm-header-title">
             <Film size={20} />
             <span>{t('reels.createTitle')}</span>
-          </div>
-          {!uploading && (
-            <button className="urm-close" onClick={onClose} aria-label={t('common.close')}>
-              <X size={20} />
-            </button>
-          )}
-        </div>
+          </DialogTitle>
+          <DialogDescription>{t('reels.dropVideoHint', undefined, { max: MAX_SIZE_MB })}</DialogDescription>
+        </DialogHeader>
 
         <form className="urm-body" onSubmit={handleSubmit}>
           {/* Video zone */}
@@ -197,10 +198,10 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
           {/* Form fields */}
           <div className="urm-fields">
             <div className="urm-field">
-              <label className="urm-label" htmlFor="urm-title">
+              <Label className="urm-label" htmlFor="urm-title">
                 {t('common.title')} <span className="urm-required">*</span>
-              </label>
-              <input
+              </Label>
+              <Input
                 id="urm-title"
                 type="text"
                 name="title"
@@ -214,8 +215,8 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
 
             <div className="urm-field">
-              <label className="urm-label" htmlFor="urm-desc">{t('common.description')}</label>
-              <textarea
+              <Label className="urm-label" htmlFor="urm-desc">{t('common.description')}</Label>
+              <Textarea
                 id="urm-desc"
                 name="description"
                 value={form.description}
@@ -229,32 +230,26 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
 
             <div className="urm-field">
-              <label className="urm-label" htmlFor="urm-privacy">{t('privacy.audience')}</label>
-              <select
-                id="urm-privacy"
-                name="privacy"
-                value={form.privacy}
-                onChange={handleChange}
-                className="urm-select"
-              >
+              <Label className="urm-label" htmlFor="urm-privacy">{t('privacy.audience')}</Label>
+              <Select value={String(form.privacy)} onValueChange={(value) => setForm((prev) => ({ ...prev, privacy: Number(value) }))}>
+                <SelectTrigger id="urm-privacy" className="urm-select">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
                 {PRIVACY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
+                  <SelectItem key={opt.value} value={String(opt.value)}>
                     {t(opt.labelKey)}
-                  </option>
+                  </SelectItem>
                 ))}
-              </select>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           {/* Progress bar */}
           {uploading && (
             <div className="urm-progress-wrap">
-              <div className="urm-progress-bar">
-                <div
-                  className="urm-progress-fill"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
+              <Progress value={progress} className="urm-progress-bar" />
               <span className="urm-progress-text">{progress}%</span>
             </div>
           )}
@@ -272,15 +267,16 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
           )}
 
           <div className="urm-footer">
-            <button
+            <Button
               type="button"
+              variant="outline"
               className="urm-btn urm-btn--secondary"
               onClick={onClose}
               disabled={uploading}
             >
               {t('common.cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               className="urm-btn urm-btn--primary"
               disabled={uploading || !videoFile}
@@ -288,11 +284,11 @@ const UploadReelModal = ({ isOpen, onClose, onSuccess }) => {
               {uploading
                 ? t('reels.uploadingProgress', undefined, { progress })
                 : t('reels.publish')}
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -20,6 +20,7 @@ public static async Task RunAsync(AppDbContext context)
             new LocalizationSeeder(),
             new RbacSeeder(),
             new PostSeeder(),
+            new ReelSeeder(),
             new FriendshipSeeder(),
             new InteractionSeeder(),
             new ChatSeeder(),

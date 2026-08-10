@@ -6,6 +6,7 @@ import PreferencesSettings from "./PreferencesSettings";
 import DarkModeSettings from "./DarkModeSettings";
 import "./SettingsPage.css";
 import { useLocalization } from "../../contexts/useLocalization";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const TABS = {
   PROFILE: "profile",
@@ -26,30 +27,30 @@ const SettingsPage = () => {
   const { t } = useLocalization();
 
   return (
-    <div className="settings-page">
+    <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical" className="settings-page">
       <div className="settings-sidebar">
         <h2 className="settings-sidebar-title">{t('settings.title')}</h2>
-        <nav className="settings-nav">
+        <TabsList className="settings-nav" aria-label={t('settings.title')}>
           {TAB_CONFIG.map(({ key, labelKey, icon: Icon }) => (
-            <button
+            <TabsTrigger
               key={key}
-              className={`settings-nav-item ${activeTab === key ? "settings-nav-item--active" : ""}`}
-              onClick={() => setActiveTab(key)}
+              value={key}
+              className="settings-nav-item"
             >
               <Icon size={20} />
               {t(labelKey)}
-            </button>
+            </TabsTrigger>
           ))}
-        </nav>
+        </TabsList>
       </div>
 
       <div className="settings-content">
-        {activeTab === TABS.PROFILE && <ProfileSettings />}
-        {activeTab === TABS.PRIVACY && <PrivacySettings />}
-        {activeTab === TABS.PREFERENCES && <PreferencesSettings />}
-        {activeTab === TABS.DISPLAY && <DarkModeSettings />}
+        <TabsContent value={TABS.PROFILE}><ProfileSettings /></TabsContent>
+        <TabsContent value={TABS.PRIVACY}><PrivacySettings /></TabsContent>
+        <TabsContent value={TABS.PREFERENCES}><PreferencesSettings /></TabsContent>
+        <TabsContent value={TABS.DISPLAY}><DarkModeSettings /></TabsContent>
       </div>
-    </div>
+    </Tabs>
   );
 };
 

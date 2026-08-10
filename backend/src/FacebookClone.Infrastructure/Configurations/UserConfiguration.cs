@@ -25,5 +25,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(x => x.IsDeleted).HasDefaultValue(false);
         builder.Property(x => x.IsOnline).HasDefaultValue(false);
+        builder.Property(x => x.IsLiveSuspended).HasDefaultValue(false);
+        builder.Property(x => x.LiveSuspensionReason).HasMaxLength(500);
     }
 }

@@ -1,3 +1,6 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,30 +11,116 @@
 
 :root,
 :root[data-theme="light"] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f0f2f5;
-  --bg-card: #ffffff;
-  --text-primary: #050505;
-  --text-secondary: #65676b;
-  --border-color: #e4e6ea;
-  --hover-bg: #f0f2f5;
+  --bg-primary: oklch(1 0 0);
+  --bg-secondary: oklch(0.965 0.012 255);
+  --bg-card: oklch(1 0 0);
+  --text-primary: oklch(0.18 0.025 255);
+  --text-secondary: oklch(0.48 0.025 255);
+  --border-color: oklch(0.9 0.018 255);
+  --hover-bg: oklch(0.945 0.022 255);
 }
 
 :root[data-theme="dark"] {
-  --bg-primary: #18191a;
-  --bg-secondary: #242526;
-  --bg-card: #242526;
-  --text-primary: #e4e6eb;
-  --text-secondary: #b0b3b8;
-  --border-color: #3e4042;
-  --hover-bg: #3a3b3c;
+  --bg-primary: oklch(0.16 0.018 255);
+  --bg-secondary: oklch(0.13 0.015 255);
+  --bg-card: oklch(0.205 0.02 255);
+  --text-primary: oklch(0.96 0.008 255);
+  --text-secondary: oklch(0.72 0.02 255);
+  --border-color: oklch(0.31 0.025 255);
+  --hover-bg: oklch(0.27 0.03 255);
 }
 
 body {
   margin: 0;
   padding: 0;
   background-color: var(--bg-secondary);
-  font-family: Segoe UI, Helvetica, Arial, sans-serif;
+  font-family: 'Geist Variable', 'Segoe UI', Helvetica, Arial, sans-serif;
   color: var(--text-primary);
   transition: background-color 0.25s, color 0.25s;
+}
+
+@layer base {
+  .theme {
+    --font-heading: var(--font-sans);
+    --font-sans: 'Geist Variable', sans-serif;
+  }
+  :root {
+    --background: oklch(0.965 0.012 255);
+    --foreground: oklch(0.18 0.025 255);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.18 0.025 255);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.18 0.025 255);
+    --primary: oklch(0.57 0.215 257);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.935 0.026 255);
+    --secondary-foreground: oklch(0.28 0.05 255);
+    --muted: oklch(0.94 0.015 255);
+    --muted-foreground: oklch(0.48 0.025 255);
+    --accent: oklch(0.925 0.04 255);
+    --accent-foreground: oklch(0.35 0.12 257);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.9 0.018 255);
+    --input: oklch(0.9 0.018 255);
+    --ring: oklch(0.57 0.215 257);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --radius: 0.875rem;
+    --sidebar: oklch(0.985 0.008 255);
+    --sidebar-foreground: oklch(0.18 0.025 255);
+    --sidebar-primary: oklch(0.57 0.215 257);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.925 0.04 255);
+    --sidebar-accent-foreground: oklch(0.35 0.12 257);
+    --sidebar-border: oklch(0.9 0.018 255);
+    --sidebar-ring: oklch(0.57 0.215 257);
+  }
+  .dark,
+  :root[data-theme="dark"] {
+    --background: oklch(0.13 0.015 255);
+    --foreground: oklch(0.96 0.008 255);
+    --card: oklch(0.205 0.02 255);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0.02 255);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.68 0.19 257);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.265 0.028 255);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.255 0.022 255);
+    --muted-foreground: oklch(0.72 0.02 255);
+    --accent: oklch(0.28 0.05 255);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(0.34 0.025 255);
+    --input: oklch(0.34 0.025 255);
+    --ring: oklch(0.68 0.19 257);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.175 0.02 255);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.68 0.19 257);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.28 0.05 255);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(0.34 0.025 255);
+    --sidebar-ring: oklch(0.68 0.19 257);
+  }
+  * {
+    border-color: var(--border);
+    outline-color: var(--ring);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+  html {
+    font-family: 'Geist Variable', 'Segoe UI', sans-serif;
+  }
 }

@@ -109,8 +109,8 @@ public class ReelsController : ControllerBase
     {
         try
         {
-            var message = await _reelService.ToggleLikeAsync(GetCurrentUserId(), id);
-            return Ok(new { success = true, message });
+            var result = await _reelService.ToggleLikeAsync(GetCurrentUserId(), id);
+            return Ok(new { success = true, isLiked = result.IsLiked, likesCount = result.LikesCount, message = result.Message });
         }
         catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
     }

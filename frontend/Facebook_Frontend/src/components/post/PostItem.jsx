@@ -177,8 +177,8 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
     }
   };
 
-  const handleSaveToCollection = async ({ nextCollectionIds, newName } = {}) => {
-    if (!nextCollectionIds && !newName) {
+  const handleSaveToCollection = async ({ nextCollectionIds, newName, keepSaved } = {}) => {
+    if (!nextCollectionIds && !newName && keepSaved === undefined) {
       setShowCollectionModal(false);
       return;
     }
@@ -188,10 +188,13 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
         const res = await savedItemsService.createCollection(newName);
         const newCol = res.data?.data;
         if (newCol) {
-          await savedItemsService.addPostToCollection(newCol.id, post.id);
+          await Promise.all([
+            savedItemsService.addPostToCollection(newCol.id, post.id),
+            ...(keepSaved === false ? [savedItemsService.unsavePost(post.id)] : []),
+          ]);
           setUserCollections((prev) => [...prev, newCol]);
           setSavedCollectionIds((prev) => [...new Set([...prev, newCol.id])]);
-          setIsSaved(true);
+          setIsSaved(keepSaved !== false);
           toast.success(translateCatalogKey('ui.components.post.postitem.a-tao-bo-suu-tap-value0-va-luu-bai-v.177b536c', { value0: newName }));
         }
       } else if (nextCollectionIds) {
@@ -199,15 +202,17 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
         const next = new Set(nextCollectionIds);
         const toAdd = [...next].filter((id) => !previous.has(id));
         const toRemove = [...previous].filter((id) => !next.has(id));
+        const shouldRemainSaved = keepSaved ?? isSaved;
 
         await Promise.all([
           ...toAdd.map((id) => savedItemsService.addPostToCollection(id, post.id)),
           ...toRemove.map((id) => savedItemsService.removePostFromCollection(id, post.id)),
+          ...(!shouldRemainSaved ? [savedItemsService.unsavePost(post.id)] : []),
         ]);
 
         setSavedCollectionIds([...next]);
-        setIsSaved(true);
-        toast.success(translateCatalogKey('saved.collectionUpdated'));
+        setIsSaved(shouldRemainSaved);
+        toast.success(shouldRemainSaved ? translateCatalogKey('saved.collectionUpdated') : t('saved.unsaved'));
       }
     } catch (error) {
       toast.apiError(error, translateCatalogKey('ui.components.post.postitem.thao-tac-that-bai.5581e390'), { context: 'saved.collections.update' });
@@ -670,6 +675,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
           onSaveToCollection={handleSaveToCollection}
           userCollections={userCollections}
           savedCollectionIds={savedCollectionIds}
+          isSaved={isSaved}
         />
       )}
 
@@ -688,8 +694,9 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
 };
 
 // Modal chọn bộ sưu tập để lưu vào
-const PostCollectionModal = ({ onClose, onSaveToCollection, userCollections, savedCollectionIds }) => {
+const PostCollectionModal = ({ onClose, onSaveToCollection, userCollections, savedCollectionIds, isSaved }) => {
   const [selectedIds, setSelectedIds] = useState(() => new Set(savedCollectionIds ?? []));
+  const [keepSaved, setKeepSaved] = useState(Boolean(isSaved));
   const [newName, setNewName] = useState('');
   const [showCreate, setShowCreate] = useState(false);
 
@@ -703,13 +710,13 @@ const PostCollectionModal = ({ onClose, onSaveToCollection, userCollections, sav
   };
 
   const handleConfirm = () => {
-    onSaveToCollection({ nextCollectionIds: [...selectedIds] });
+    onSaveToCollection({ nextCollectionIds: [...selectedIds], keepSaved });
     onClose();
   };
 
   const handleCreate = () => {
     if (!newName.trim()) return;
-    onSaveToCollection({ newName: newName.trim() });
+    onSaveToCollection({ newName: newName.trim(), keepSaved });
     setNewName('');
     setShowCreate(false);
     onClose();
@@ -723,9 +730,13 @@ const PostCollectionModal = ({ onClose, onSaveToCollection, userCollections, sav
           <button className="modal-collection-close" onClick={onClose}><X size={18} /></button>
         </div>
         <div className="modal-collection-body">
-          <button className="modal-collection-item modal-collection-item--active" type="button">
+          <button
+            className={'modal-collection-item ' + (keepSaved ? 'modal-collection-item--active' : '')}
+            type="button"
+            onClick={() => setKeepSaved((current) => !current)}
+          >
             <span>{translateCatalogKey('ui.components.post.postitem.tat-ca-bai-viet-a-luu.de756339')}</span>
-            <span className="modal-collection-check">✓</span>
+            {keepSaved && <span className="modal-collection-check">✓</span>}
           </button>
           {userCollections.map((col) => (
             <button

@@ -30,6 +30,9 @@ public class RbacSeeder : ISeeder
         ("reels.delete", "reels", "delete", "Delete or hide reels"),
         ("reels.restore", "reels", "restore", "Restore deleted reels"),
         ("reels.ban_author", "reels", "ban_author", "Ban a user from a reel moderation action"),
+        ("lives.view", "lives", "view", "View every live session, including private sessions"),
+        ("lives.moderate", "lives", "moderate", "Terminate live sessions and suspend live access"),
+        ("lives.restore", "lives", "restore", "Restore a user's live access after review"),
         ("security.view", "security", "view", "View security events"),
         ("security.manage", "security", "manage", "Manage block lists and security actions"),
         ("localization.view", "localization", "view", "View localization entries"),
@@ -101,6 +104,7 @@ public class RbacSeeder : ISeeder
             "dashboard.view", "users.view", "posts.view", "posts.manage",
             "posts.delete", "posts.restore", "reels.view", "reels.manage",
             "reels.delete", "reels.restore", "security.view", "localization.view"
+            , "lives.view", "lives.moderate", "lives.restore"
         ]);
         await GrantAsync(context, roles["user"], []);
 

@@ -299,7 +299,7 @@ const AdminSecurity = () => {
               <tbody>
                 {events.map((e, i) => (
                   <tr key={i}>
-                    <td style={{ fontSize: 11, color: '#666', whiteSpace: 'nowrap' }}>
+                    <td className="admin-user-meta admin-nowrap">
                       {new Date(e.timestamp).toLocaleString("vi-VN")}
                     </td>
                     <td>
@@ -307,9 +307,9 @@ const AdminSecurity = () => {
                         {EVENT_TYPE_LABELS[e.type] ?? e.type}
                       </span>
                     </td>
-                    <td><code style={{ color: '#e74c3c', fontSize: 12 }}>{e.ipAddress}</code></td>
-                    <td style={{ fontSize: 12, color: '#aaa', maxWidth: 300 }}>{e.detail}</td>
-                    <td style={{ fontSize: 11, color: '#666' }}>{e.path ?? '—'}</td>
+                    <td><code className="admin-security-ip">{e.ipAddress}</code></td>
+                    <td className="admin-security-detail">{e.detail}</td>
+                    <td className="admin-user-meta">{e.path ?? '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -354,20 +354,20 @@ const AdminSecurity = () => {
                 <tbody>
                   {blockedIps.map((entry, i) => (
                     <tr key={i}>
-                      <td><code style={{ color: '#e74c3c' }}>{entry.ip}</code></td>
+                      <td><code className="admin-security-ip">{entry.ip}</code></td>
                       <td>
                         <span className={`badge ${entry.isAutomatic ? 'badge--auto' : 'badge--manual'}`}>
                           {entry.isAutomatic ? translateCatalogKey('settings.themeAuto') : translateCatalogKey('ui.pages.admin.adminsecurity.thu-cong.7abbb978')}
                         </span>
                       </td>
-                      <td style={{ fontSize: 12, color: '#aaa', maxWidth: 250 }}>{entry.reason}</td>
-                      <td style={{ fontSize: 11, color: '#666' }}>
+                      <td className="admin-security-detail">{entry.reason}</td>
+                      <td className="admin-user-meta">
                         {new Date(entry.blockedAt).toLocaleString("vi-VN")}
                       </td>
-                      <td style={{ fontSize: 11, color: '#666' }}>
+                      <td className="admin-user-meta">
                         {entry.expiresAt
                           ? new Date(entry.expiresAt).toLocaleString("vi-VN")
-                          : <span style={{ color: '#e74c3c' }}>{translateCatalogKey('ui.pages.admin.adminsecurity.vinh-vien.aa37b328')}</span>
+                          : <span className="admin-security-danger">{translateCatalogKey('ui.pages.admin.adminsecurity.vinh-vien.aa37b328')}</span>
                         }
                       </td>
                       <td>
@@ -387,9 +387,9 @@ const AdminSecurity = () => {
             )}
           </div>
 
-          <div style={{ background: '#1a1d27', border: '1px solid #2a2d3a', borderRadius: 12, padding: 20 }}>
-            <h3 style={{ color: '#e74c3c', margin: '0 0 12px', fontSize: 15 }}>{translateCatalogKey('ui.pages.admin.adminsecurity.luu-y-quan-trong.8d5e47e8')}</h3>
-            <ul style={{ color: '#aaa', fontSize: 13, lineHeight: 1.7, paddingLeft: 20, margin: 0 }}>
+          <div className="admin-security-note">
+            <h3>{translateCatalogKey('ui.pages.admin.adminsecurity.luu-y-quan-trong.8d5e47e8')}</h3>
+            <ul>
               <li>{translateCatalogKey('admin.security.persistenceNote')}</li>
               <li>{translateCatalogKey('ui.pages.admin.adminsecurity.rate-limit-toi-a.687fdb94')} <strong>{translateCatalogKey('ui.pages.admin.adminsecurity.200-request-phut.95531957')}</strong> {translateCatalogKey('ui.pages.admin.adminsecurity.moi-ip-cac-endpoint-auth-co-nguong-t.1780d065')}</li>
               <li>{translateCatalogKey('ui.pages.admin.admincontent.sau.40f64e76')} <strong>{translateCatalogKey('ui.pages.admin.adminsecurity.10-lan-ang-nhap-sai.45309118')}</strong> {translateCatalogKey('ui.pages.admin.adminsecurity.trong-15-phut-ip-bi-tu-ong-chan-2-gi.73b45e91')}</li>

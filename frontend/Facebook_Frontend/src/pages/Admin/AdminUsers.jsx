@@ -221,26 +221,26 @@ const AdminUsers = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {u.avatarUrl
                         ? <img src={u.avatarUrl} alt="" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
-                        : <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#2a2d3a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, color: '#888' }}>{u.firstName?.[0]}</div>
+                        : <div className="admin-user-avatar-fallback">{u.firstName?.[0]}</div>
                       }
                       <div>
-                        <div style={{ fontWeight: 600, color: '#fff' }}>{u.firstName} {u.lastName}</div>
+                        <div className="admin-user-display-name">{u.firstName} {u.lastName}</div>
                         {(u.roles || []).map((role) => (
                           <span key={role.id} className="badge badge--admin">{role.displayName}</span>
                         ))}
                       </div>
                     </div>
                   </td>
-                  <td style={{ color: '#888' }}>{u.email}</td>
+                  <td className="admin-user-email">{u.email}</td>
                   <td>
                     {u.isBanned
                       ? <span className="badge badge--banned">{translateCatalogKey('ui.pages.admin.adminusers.bi-ban.522f1fc7')}</span>
                       : u.isOnline
                         ? <span className="badge badge--active">{translateCatalogKey('ui.pages.admin.adminusers.online.5ed1c623')}</span>
-                        : <span style={{ fontSize: 12, color: '#666' }}>{translateCatalogKey('ui.pages.admin.adminusers.offline.c13ccecc')}</span>
+                        : <span className="admin-user-meta">{translateCatalogKey('ui.pages.admin.adminusers.offline.c13ccecc')}</span>
                     }
                   </td>
-                  <td style={{ color: '#666', fontSize: 12 }}>
+                  <td className="admin-user-meta">
                     {new Date(u.createdAt).toLocaleDateString("vi-VN")}
                   </td>
                   <td>
@@ -384,10 +384,10 @@ const AdminUsers = () => {
 
       {/* Ban Modal */}
       {banModal && (
-        <div style={{ position: 'fixed', inset: 0, background: '#000a', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
-          <div style={{ background: '#1a1d27', border: '1px solid #2a2d3a', borderRadius: 12, padding: 24, width: 360 }}>
-            <h3 style={{ color: '#fff', margin: '0 0 12px' }}>Ban: {banModal.firstName} {banModal.lastName}</h3>
-            <p style={{ color: '#aaa', fontSize: 13, margin: '0 0 16px' }}>{translateCatalogKey('ui.pages.admin.adminusers.ly-do-ban-se-uoc-luu-va-gui-en-nguoi.eb04c0ea')}</p>
+        <div className="admin-modal-backdrop">
+          <div className="admin-ban-dialog">
+            <h3>Ban: {banModal.firstName} {banModal.lastName}</h3>
+            <p>{translateCatalogKey('ui.pages.admin.adminusers.ly-do-ban-se-uoc-luu-va-gui-en-nguoi.eb04c0ea')}</p>
             <input
               className="admin-search"
               style={{ width: '100%', boxSizing: 'border-box', marginBottom: 12 }}
@@ -395,8 +395,8 @@ const AdminUsers = () => {
               value={banReason}
               onChange={e => setBanReason(e.target.value)}
             />
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-              <button className="admin-btn" style={{ background: '#2a2d3a', color: '#ccc' }} onClick={() => { setBanModal(null); setBanReason(''); }}>{translateCatalogKey('common.cancel')}</button>
+            <div className="admin-ban-actions">
+              <button className="admin-btn admin-btn--reset" onClick={() => { setBanModal(null); setBanReason(''); }}>{translateCatalogKey('common.cancel')}</button>
               <button className="admin-btn admin-btn--ban" disabled={!banReason.trim()} onClick={handleBan}>{translateCatalogKey('ui.pages.admin.adminusers.xac-nhan-ban.98982c75')}</button>
             </div>
           </div>

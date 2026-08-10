@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
 import toast from '../../shared/appToast';
 import postInteractionService from '../../services/postInteractionService';
 import './ReportPostModal.css';
 import { useLocalization } from '../../contexts/useLocalization';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const REASONS = [
   { value: 'Spam', key: 'post.report.spam' },
@@ -38,43 +41,35 @@ const ReportPostModal = ({ postId, onClose }) => {
   };
 
   return (
-    <div className="rpm-overlay" onMouseDown={onClose}>
-      <div className="rpm-modal" onMouseDown={(e) => e.stopPropagation()}>
-        <div className="rpm-header">
-          <h3>{t('post.reportPost')}</h3>
-          <button className="rpm-close" onClick={onClose} aria-label={translateCatalogKey('common.close')}>
-            <X size={20} />
-          </button>
-        </div>
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="rpm-modal sm:max-w-md">
+        <DialogHeader className="rpm-header">
+          <DialogTitle>{t('post.reportPost')}</DialogTitle>
+          <DialogDescription>{t('post.reportReason')}</DialogDescription>
+        </DialogHeader>
 
         <div className="rpm-body">
           <p className="rpm-label">{t('post.reportReason')}</p>
-          <div className="rpm-options">
+          <RadioGroup className="rpm-options" value={reason} onValueChange={setReason}>
             {REASONS.map((item) => (
-              <label key={item.value} className={`rpm-option ${reason === item.value ? 'rpm-option--selected' : ''}`}>
-                <input
-                  type="radio"
-                  name="reportReason"
-                  value={item.value}
-                  checked={reason === item.value}
-                  onChange={() => setReason(item.value)}
-                />
+              <Label key={item.value} htmlFor={`report-${item.value}`} className={`rpm-option ${reason === item.value ? 'rpm-option--selected' : ''}`}>
+                <RadioGroupItem id={`report-${item.value}`} value={item.value} />
                 <span>{t(item.key)}</span>
-              </label>
+              </Label>
             ))}
-          </div>
+          </RadioGroup>
         </div>
 
-        <div className="rpm-footer">
-          <button className="rpm-btn rpm-btn--cancel" onClick={onClose} disabled={loading}>
+        <DialogFooter className="rpm-footer">
+          <Button variant="outline" className="rpm-btn rpm-btn--cancel" onClick={onClose} disabled={loading}>
             {t('common.cancel')}
-          </button>
-          <button className="rpm-btn rpm-btn--submit" onClick={handleSubmit} disabled={loading || !reason}>
+          </Button>
+          <Button className="rpm-btn rpm-btn--submit" onClick={handleSubmit} disabled={loading || !reason}>
             {loading ? t('common.sending') : t('post.sendReport')}
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

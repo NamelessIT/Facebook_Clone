@@ -187,6 +187,74 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.ToTable("GroupMembers", (string)null);
                 });
 
+            modelBuilder.Entity("FacebookClone.Domain.Entities.LiveSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ConvertedPostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("EndReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("EndedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("EndedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsShopping")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Privacy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("RecordingExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RecordingUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(180)
+                        .HasColumnType("character varying(180)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConvertedPostId");
+
+                    b.HasIndex("OwnerId")
+                        .IsUnique()
+                        .HasFilter("\"Status\" = 1");
+
+                    b.HasIndex("RecordingExpiresAt");
+
+                    b.HasIndex("OwnerId", "Status");
+
+                    b.ToTable("LiveSessions", (string)null);
+                });
+
             modelBuilder.Entity("FacebookClone.Domain.Entities.LocaleLanguage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -854,6 +922,11 @@ namespace FacebookClone.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("IsLiveSuspended")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsOnline")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -867,6 +940,13 @@ namespace FacebookClone.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime?>("LiveSuspendedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LiveSuspensionReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("Location")
                         .HasMaxLength(100)
@@ -1027,6 +1107,24 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.Navigation("Group");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FacebookClone.Domain.Entities.LiveSession", b =>
+                {
+                    b.HasOne("FacebookClone.Domain.Entities.Post", "ConvertedPost")
+                        .WithMany()
+                        .HasForeignKey("ConvertedPostId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("FacebookClone.Domain.Entities.User", "Owner")
+                        .WithMany("LiveSessions")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ConvertedPost");
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("FacebookClone.Domain.Entities.LocalizationEntry", b =>
@@ -1319,6 +1417,8 @@ namespace FacebookClone.Infrastructure.Migrations
             modelBuilder.Entity("FacebookClone.Domain.Entities.User", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("LiveSessions");
 
                     b.Navigation("Messages");
 

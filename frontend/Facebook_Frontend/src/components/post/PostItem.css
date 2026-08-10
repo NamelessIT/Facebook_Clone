@@ -547,9 +547,7 @@
   background: #166fe5;
 }
 
-/* =========================================
-   VŨ KHÍ TỐI THƯỢNG ĐỂ ÉP KHUNG ẢNH/VIDEO (GIỮ NGUYÊN)
-========================================= */
+/* Keep post media constrained to its gallery cell. */
 .media-thumb {
   position: relative;
   cursor: pointer;

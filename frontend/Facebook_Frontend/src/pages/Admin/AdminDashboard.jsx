@@ -40,7 +40,7 @@ const AdminDashboard = () => {
         {stats.map(({ label, value, sub, Icon, variant }) => (
           <div key={label} className={`admin-stat-card ${variant ? `admin-stat-card--${variant}` : ''}`}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Icon size={16} style={{ color: '#888' }} />
+              <Icon size={16} className="admin-stat-icon" />
               <span className="admin-stat-label">{label}</span>
             </div>
             <span className="admin-stat-value">{value?.toLocaleString() ?? 0}</span>
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
                   .map(([ip, count], index) => (
                     <tr key={ip}>
                       <td>{index + 1}</td>
-                      <td><code style={{ color: '#e74c3c' }}>{ip}</code></td>
+                      <td><code className="admin-security-ip">{ip}</code></td>
                       <td>{count}</td>
                     </tr>
                   ))}
@@ -79,7 +79,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      <div style={{ fontSize: 12, color: '#555', marginTop: 20 }}>
+      <div className="admin-dashboard-note">
         {translateCatalogKey('ui.pages.admin.admindashboard.mot-so-du-lieu-bao-mat-runtime-van-l.857d97a3')}
       </div>
     </div>

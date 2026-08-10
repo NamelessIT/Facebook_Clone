@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { X } from "lucide-react";
 import Avatar from "../common/Avatar";
 import { useAuth } from "../../contexts/AuthContext";
 import postService from "../../services/postService";
@@ -9,6 +8,10 @@ import useSingleFlightAction from "../../hooks/useSingleFlightAction";
 import "./SharePostModal.css";
 import { useLocalization } from '../../contexts/useLocalization';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
   const { user } = useAuth();
@@ -35,15 +38,13 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
   if (!isOpen || !post) return null;
 
   return (
-    <div className="share-modal-overlay" onMouseDown={onClose}>
-      <div className="share-modal" onMouseDown={(e) => e.stopPropagation()}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="share-modal sm:max-w-lg">
         {/* Header */}
-        <div className="share-modal-header">
-          <h3>{t('post.shareTitle')}</h3>
-          <button className="share-modal-close" onClick={onClose}>
-            <X size={20} />
-          </button>
-        </div>
+        <DialogHeader className="share-modal-header">
+          <DialogTitle>{t('post.shareTitle')}</DialogTitle>
+          <DialogDescription>{t('post.sharePlaceholder')}</DialogDescription>
+        </DialogHeader>
 
         {/* Body */}
         <div className="share-modal-body">
@@ -51,19 +52,18 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
             <Avatar src={user?.avatarUrl} className="w-10 h-10" />
             <div>
               <div className="share-user-name">{user?.fullName}</div>
-              <select
-                className="share-privacy-select"
-                value={privacy}
-                onChange={(e) => setPrivacy(Number(e.target.value))}
-              >
-                <option value={PostPrivacy.Public}>{t('privacy.public')}</option>
-                <option value={PostPrivacy.Friends}>{t('privacy.friends')}</option>
-                <option value={PostPrivacy.Private}>{t('privacy.onlyMe')}</option>
-              </select>
+              <Select value={String(privacy)} onValueChange={(value) => setPrivacy(Number(value))}>
+                <SelectTrigger className="share-privacy-select" aria-label={t('privacy.audience')}><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={String(PostPrivacy.Public)}>{t('privacy.public')}</SelectItem>
+                  <SelectItem value={String(PostPrivacy.Friends)}>{t('privacy.friends')}</SelectItem>
+                  <SelectItem value={String(PostPrivacy.Private)}>{t('privacy.onlyMe')}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
-          <textarea
+          <Textarea
             className="share-textarea"
             placeholder={t('post.sharePlaceholder')}
             value={content}
@@ -89,17 +89,17 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
         </div>
 
         {/* Footer */}
-        <div className="share-modal-footer">
-          <button
+        <DialogFooter className="share-modal-footer">
+          <Button
             className="share-submit-btn"
             onClick={handleShare}
             disabled={loading}
           >
             {loading ? t('post.sharing') : t('post.shareNow')}
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
-import { X, Film } from 'lucide-react';
+import { Film } from 'lucide-react';
 import toast from '../../shared/appToast';
 import reelService from '../../services/reelService';
 import { useLocalization } from '../../contexts/useLocalization';
 import './EditReelModal.css';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 const PRIVACY_OPTIONS = [
   { value: 0, labelKey: 'privacy.public' },
@@ -25,8 +31,6 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
       });
     }
   }, [reel]);
-
-  if (!isOpen) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,24 +57,22 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="erm-overlay" onClick={onClose}>
-      <div className="erm-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="erm-header">
-          <div className="erm-header-title">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && !saving && onClose()}>
+      <DialogContent className="erm-dialog sm:max-w-lg" showCloseButton={!saving}>
+        <DialogHeader className="erm-header">
+          <DialogTitle className="erm-header-title">
             <Film size={20} />
             <span>{t('reels.editTitle')}</span>
-          </div>
-          <button className="erm-close" onClick={onClose} aria-label={t('common.close')}>
-            <X size={20} />
-          </button>
-        </div>
+          </DialogTitle>
+          <DialogDescription>{t('reels.descriptionPlaceholder')}</DialogDescription>
+        </DialogHeader>
 
         <form className="erm-form" onSubmit={handleSubmit}>
           <div className="erm-field">
-            <label className="erm-label" htmlFor="erm-title">
+            <Label className="erm-label" htmlFor="erm-title">
               {t('common.title')} <span className="erm-required">*</span>
-            </label>
-            <input
+            </Label>
+            <Input
               id="erm-title"
               type="text"
               name="title"
@@ -85,8 +87,8 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
           </div>
 
           <div className="erm-field">
-            <label className="erm-label" htmlFor="erm-desc">{t('common.description')}</label>
-            <textarea
+            <Label className="erm-label" htmlFor="erm-desc">{t('common.description')}</Label>
+            <Textarea
               id="erm-desc"
               name="description"
               value={form.description}
@@ -100,42 +102,40 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
           </div>
 
           <div className="erm-field">
-            <label className="erm-label" htmlFor="erm-privacy">{t('privacy.audience')}</label>
-            <select
-              id="erm-privacy"
-              name="privacy"
-              value={form.privacy}
-              onChange={handleChange}
-              className="erm-select"
-            >
+            <Label className="erm-label" htmlFor="erm-privacy">{t('privacy.audience')}</Label>
+            <Select value={String(form.privacy)} onValueChange={(value) => setForm((prev) => ({ ...prev, privacy: Number(value) }))}>
+              <SelectTrigger id="erm-privacy" className="erm-select"><SelectValue /></SelectTrigger>
+              <SelectContent>
               {PRIVACY_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
+                <SelectItem key={opt.value} value={String(opt.value)}>
                   {t(opt.labelKey)}
-                </option>
+                </SelectItem>
               ))}
-            </select>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="erm-footer">
-            <button
+            <Button
               type="button"
+              variant="outline"
               className="erm-btn erm-btn--secondary"
               onClick={onClose}
               disabled={saving}
             >
               {t('common.cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               className="erm-btn erm-btn--primary"
               disabled={saving}
             >
               {saving ? t('common.saving') : t('common.saveChanges')}
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

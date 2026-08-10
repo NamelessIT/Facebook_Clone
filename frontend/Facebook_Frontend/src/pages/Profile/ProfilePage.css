@@ -37,24 +37,37 @@
 }
 
 .pp-cover-edit-btn {
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
+  position: static;
   display: flex;
   align-items: center;
   gap: 6px;
   background: rgba(255, 255, 255, 0.9);
+  color: #050505;
   border: none;
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 13px;
   font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .pp-cover-edit-btn:hover {
   background: rgba(255, 255, 255, 1);
+}
+
+[data-theme="dark"] .pp-cover-edit-btn {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(24, 25, 26, 0.9);
+  color: #f2f3f5;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
+}
+
+[data-theme="dark"] .pp-cover-edit-btn:hover {
+  background: rgba(58, 59, 60, 0.96);
+  color: #fff;
 }
 
 .pp-cover-action-wrap {
@@ -143,6 +156,8 @@
 .pp-avatar {
   width: 120px !important;
   height: 120px !important;
+  max-width: none;
+  max-height: none;
   border-radius: 50%;
   border: 4px solid #fff;
   background: #e4e6eb;

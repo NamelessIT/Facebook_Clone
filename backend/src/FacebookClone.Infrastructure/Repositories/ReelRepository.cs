@@ -23,6 +23,7 @@ public class ReelRepository : IReelRepository
     {
         return await _context.Reels
             .Include(r => r.User)
+            .Include(r => r.Likes)
             .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
     }
 

@@ -156,6 +156,8 @@ try
     builder.Services.AddScoped<ISecurityBlockService, SecurityBlockService>();
     builder.Services.AddScoped<IInternalTranslationService, InternalTranslationService>();
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+    builder.Services.AddScoped<LiveAccessService>();
+    builder.Services.AddHostedService<ExpiredLiveRecordingCleanupService>();
 
     // ---------------------------------------------------------
     // 5. SWAGGER (Swashbuckle) & CORS
@@ -310,6 +312,7 @@ try
     app.MapControllers();
     app.MapHub<NotificationHub>("/hubs/notification"); // 👈 Mở cổng cho Frontend kết nối WebSockets
     app.MapHub<ChatHub>("/hubs/chat"); // 👈 Mở cổng Realtime cho Chat
+    app.MapHub<LiveHub>("/hubs/live");
     app.Run();
 }
 catch (Exception ex)

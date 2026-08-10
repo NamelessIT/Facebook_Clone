@@ -124,12 +124,15 @@ public class ReelService : IReelService
         await _reelRepo.UpdateAsync(reel);
     }
 
-    public async Task<string> ToggleLikeAsync(Guid userId, Guid reelId)
+    public async Task<ToggleLikeResultDto> ToggleLikeAsync(Guid userId, Guid reelId)
     {
         var reel = await _reelRepo.GetByIdAsync(reelId);
         if (reel == null) throw new Exception("Reel khong ton tai.");
 
         var existingLike = await _reelRepo.GetLikeAsync(reelId, userId);
+        bool isLiked;
+        string message;
+
         if (existingLike == null)
         {
             await _reelRepo.AddLikeAsync(new ReelLike
@@ -140,12 +143,17 @@ public class ReelService : IReelService
             });
             if (reel.UserId != userId)
                 await _notiService.CreateNotificationAsync(reel.UserId, userId, NotificationType.Like, reelId);
-            return "Da like Reel.";
+            isLiked = true;
+            message = "Da like Reel.";
         }
         else
         {
             await _reelRepo.RemoveLikeAsync(existingLike);
-            return "Da bo like Reel.";
+            isLiked = false;
+            message = "Da bo like Reel.";
         }
+
+        int likesCount = await _reelRepo.CountLikesAsync(reelId);
+        return new ToggleLikeResultDto(isLiked, likesCount, message);
     }
 }

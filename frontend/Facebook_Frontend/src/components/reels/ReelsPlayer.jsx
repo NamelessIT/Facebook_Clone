@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  X, ChevronLeft, ChevronRight, Heart, Trash2, Edit2, Volume2, VolumeX, MoreVertical,
+  X, ChevronUp, ChevronDown, Heart, Trash2, Edit2, Volume2, VolumeX, MoreVertical,
   Star, EyeOff, Bookmark, Link2, Flag,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -31,6 +31,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
   const [showMenu, setShowMenu] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const lastWheelTime = useRef(0);
+  const touchStartY = useRef(0);
   const menuRef = useRef(null);
 
   const reel = reels[currentIndex];
@@ -38,7 +39,8 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
 
   useEffect(() => {
     if (!reel) return;
-    setLiked(reel.isLikedByCurrentUser || false);
+    const isLiked = Boolean(reel.isLikedByMe ?? reel.isLikedByCurrentUser ?? reel.isLiked ?? false);
+    setLiked(isLiked);
     setLikeCount(reel.likesCount || 0);
   }, [reel]);
 
@@ -50,12 +52,12 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
     }
   }, [currentIndex]);
 
-  // Close on Escape, navigate with arrow / wheel
+  // Close on Escape, navigate vertically with arrow / wheel
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goNext();
-      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPrev();
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') goNext();
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp'   || e.key === 'PageUp')   goPrev();
     };
     const handleWheel = (e) => {
       const now = Date.now();
@@ -95,15 +97,61 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
     }
   };
 
+  const handleTouchStart = (e) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e) => {
+    const deltaY = touchStartY.current - e.changedTouches[0].clientY;
+    if (Math.abs(deltaY) > 50) {
+      if (deltaY > 0) goNext();
+      else goPrev();
+    }
+  };
+
   const handleToggleLike = async () => {
-    const prev = liked;
-    setLiked(!prev);
-    setLikeCount((c) => (prev ? c - 1 : c + 1));
+    if (!reel) return;
+    const prevLiked = liked;
+    const prevCount = likeCount;
+
+    // Optimistic UI update (immediate user feedback)
+    const nextLiked = !prevLiked;
+    const nextCount = Math.max(0, prevCount + (nextLiked ? 1 : -1));
+
+    setLiked(nextLiked);
+    setLikeCount(nextCount);
+
+    onReelUpdated?.({
+      ...reel,
+      isLikedByMe: nextLiked,
+      isLikedByCurrentUser: nextLiked,
+      likesCount: nextCount,
+    });
+
     try {
-      await reelService.toggleLike(reel.id);
+      // Eventual consistency synchronization with backend
+      const res = await reelService.toggleLike(reel.id);
+      const data = res?.data;
+      if (data && typeof data.isLiked === 'boolean') {
+        setLiked(data.isLiked);
+        setLikeCount(data.likesCount);
+        onReelUpdated?.({
+          ...reel,
+          isLikedByMe: data.isLiked,
+          isLikedByCurrentUser: data.isLiked,
+          likesCount: data.likesCount,
+        });
+      }
     } catch (error) {
-      setLiked(prev);
-      setLikeCount((c) => (prev ? c + 1 : c - 1));
+      // Rollback optimistic state on API failure
+      setLiked(prevLiked);
+      setLikeCount(prevCount);
+      onReelUpdated?.({
+        ...reel,
+        isLikedByMe: prevLiked,
+        isLikedByCurrentUser: prevLiked,
+        likesCount: prevCount,
+      });
       toast.apiError(error, t('common.actionFailed'), { context: 'reels.toggleLike' });
     }
   };
@@ -181,7 +229,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
           onClick={(e) => { e.stopPropagation(); goPrev(); }}
           aria-label={translateCatalogKey('ui.components.reels.reelsplayer.reels-truoc.c6475326')}
         >
-          <ChevronLeft size={28} />
+          <ChevronUp size={28} />
         </button>
       )}
 
@@ -189,6 +237,8 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
       <div
         className={`rp-player${slideDirection ? ` rp-slide-${slideDirection}` : ''}`}
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         onAnimationEnd={() => setSlideDirection(null)}
       >
         <video
@@ -287,7 +337,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
           onClick={(e) => { e.stopPropagation(); goNext(); }}
           aria-label={translateCatalogKey('ui.components.reels.reelsplayer.reels-tiep-theo.df296c1b')}
         >
-          <ChevronRight size={28} />
+          <ChevronDown size={28} />
         </button>
       )}
 
