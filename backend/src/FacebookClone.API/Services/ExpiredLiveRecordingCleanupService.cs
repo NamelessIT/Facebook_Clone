@@ -23,9 +23,8 @@ public class ExpiredLiveRecordingCleanupService(
                 var expired = await db.LiveSessions
                     .Where(x => x.ConvertedPostId == null &&
                         x.Status != LiveSessionStatus.Live &&
-                        !x.IsEvidenceOnHold &&
                         ((x.EvidenceExpiresAt != null && x.EvidenceExpiresAt <= now) ||
-                         (x.EvidenceExpiresAt == null && x.RecordingExpiresAt <= now)))
+                         (x.EvidenceExpiresAt == null && !x.IsEvidenceOnHold && x.RecordingExpiresAt <= now)))
                     .ToListAsync(stoppingToken);
                 foreach (var live in expired)
                 {

@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
+using FacebookClone.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace FacebookClone.API.Controllers;
 
@@ -20,11 +22,13 @@ public class PostsController : ControllerBase
 {
     private readonly IPostService _postService;
     private readonly INotificationService _notificationService;
+    private readonly AppDbContext _db;
 
-    public PostsController(IPostService postService, INotificationService notificationService)
+    public PostsController(IPostService postService, INotificationService notificationService, AppDbContext db)
     {
         _postService = postService;
         _notificationService = notificationService;
+        _db = db;
     }
 
     private Guid GetCurrentUserId()
@@ -96,8 +100,13 @@ public class PostsController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> CreatePost([FromForm] CreatePostRequest request)
     {
+        var userId = GetCurrentUserId();
+        var suspension = await _db.Users.AsNoTracking().Where(x => x.Id == userId)
+            .Select(x => new { x.IsPostSuspended, x.PostSuspensionReason }).FirstOrDefaultAsync();
+        if (suspension?.IsPostSuspended == true)
+            return StatusCode(StatusCodes.Status423Locked, new { success = false, message = suspension.PostSuspensionReason ?? "Quyền đăng bài đang bị tạm khóa." });
         try {
-            var post = await _postService.CreatePostAsync(GetCurrentUserId(), request);
+            var post = await _postService.CreatePostAsync(userId, request);
             return Ok(new { success = true, data = post });
         } catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
     }
@@ -148,6 +157,9 @@ public class PostsController : ControllerBase
         var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!Guid.TryParse(userIdString, out Guid userId))
             return Unauthorized(new { success = false, message = "Token khong hop le" });
+
+        var isSuspended = await _db.Users.AsNoTracking().AnyAsync(x => x.Id == userId && x.IsPostSuspended);
+        if (isSuspended) return StatusCode(StatusCodes.Status423Locked, new { success = false, message = "Quyền đăng bài đang bị tạm khóa." });
 
         try
         {

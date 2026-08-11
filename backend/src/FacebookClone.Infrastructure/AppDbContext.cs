@@ -36,6 +36,9 @@ public class AppDbContext : DbContext
     public DbSet<LocalizationEntry> LocalizationEntries { get; set; }
     public DbSet<LiveSession> LiveSessions { get; set; }
     public DbSet<LiveComment> LiveComments { get; set; }
+    public DbSet<MarketplaceListing> MarketplaceListings { get; set; }
+    public DbSet<MarketplaceFavorite> MarketplaceFavorites { get; set; }
+    public DbSet<ModerationReport> ModerationReports { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

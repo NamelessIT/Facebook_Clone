@@ -33,6 +33,11 @@ public class RbacSeeder : ISeeder
         ("lives.view", "lives", "view", "View every live session, including private sessions"),
         ("lives.moderate", "lives", "moderate", "Terminate live sessions and suspend live access"),
         ("lives.restore", "lives", "restore", "Restore a user's live access after review"),
+        ("marketplace.view", "marketplace", "view", "View marketplace listings and merchant statistics"),
+        ("marketplace.manage", "marketplace", "manage", "Approve, reject and remove marketplace listings"),
+        ("marketplace.suspend_seller", "marketplace", "suspend_seller", "Suspend and restore marketplace seller access"),
+        ("reports.view", "reports", "view", "View user reports across all content modules"),
+        ("reports.manage", "reports", "manage", "Review reports and apply feature-scoped moderation actions"),
         ("security.view", "security", "view", "View security events"),
         ("security.manage", "security", "manage", "Manage block lists and security actions"),
         ("localization.view", "localization", "view", "View localization entries"),
@@ -104,7 +109,8 @@ public class RbacSeeder : ISeeder
             "dashboard.view", "users.view", "posts.view", "posts.manage",
             "posts.delete", "posts.restore", "reels.view", "reels.manage",
             "reels.delete", "reels.restore", "security.view", "localization.view"
-            , "lives.view", "lives.moderate", "lives.restore"
+            , "lives.view", "lives.moderate", "lives.restore", "marketplace.view", "marketplace.manage",
+            "marketplace.suspend_seller", "reports.view", "reports.manage"
         ]);
         await GrantAsync(context, roles["user"], []);
 

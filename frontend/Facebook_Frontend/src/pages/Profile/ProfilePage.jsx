@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   Camera, MapPin, Calendar, MessageCircle, Edit3,
   Grid3X3, FileText, Users, Image, Film, ChevronDown,
-  Eye, Upload
+  Eye, Flag, Upload
 } from 'lucide-react';
 import toast from '../../shared/appToast';
 import { useAuth } from '../../contexts/AuthContext';
@@ -23,6 +23,8 @@ import './ProfilePage.css';
 import { useConfirm } from '../../contexts/useConfirm';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 import { useLocalization } from '../../contexts/useLocalization';
+import ReportDialog from '../../components/moderation/ReportDialog';
+import { ModerationTargetType } from '../../shared/generated/enums';
 
 const TABS = {
   ALL: 'all',
@@ -60,6 +62,7 @@ const ProfilePage = () => {
   const [photosLoading, setPhotosLoading] = useState(false);
 
   const [showEditModal, setShowEditModal] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [showAvatarDropdown, setShowAvatarDropdown] = useState(false);
   const [showCoverDropdown, setShowCoverDropdown] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
@@ -460,6 +463,9 @@ const ProfilePage = () => {
                     <MessageCircle size={16} />
                     {translateCatalogKey('friends.message')}
                   </button>
+                  <button className="pp-btn pp-btn--secondary" onClick={() => setReportOpen(true)} title="Báo cáo người dùng">
+                    <Flag size={16} /> Báo cáo
+                  </button>
                 </>
               )}
             </div>
@@ -672,6 +678,7 @@ const ProfilePage = () => {
           onSelectPost={setViewAvatarPost}
         />
       )}
+      <ReportDialog open={reportOpen} onOpenChange={setReportOpen} targetType={ModerationTargetType.User} targetId={profileUser?.id} targetLabel="người dùng này" />
     </div>
   );
 };

@@ -27,5 +27,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.IsOnline).HasDefaultValue(false);
         builder.Property(x => x.IsLiveSuspended).HasDefaultValue(false);
         builder.Property(x => x.LiveSuspensionReason).HasMaxLength(500);
+        builder.Property(x => x.IsPostSuspended).HasDefaultValue(false);
+        builder.Property(x => x.PostSuspensionReason).HasMaxLength(500);
+        builder.Property(x => x.IsReelSuspended).HasDefaultValue(false);
+        builder.Property(x => x.ReelSuspensionReason).HasMaxLength(500);
+        builder.Property(x => x.IsMarketplaceSuspended).HasDefaultValue(false);
+        builder.Property(x => x.MarketplaceSuspensionReason).HasMaxLength(500);
     }
 }

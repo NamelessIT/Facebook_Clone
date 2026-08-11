@@ -38,6 +38,20 @@ const adminService = {
   setLiveEvidenceHold: (id, hold) => axiosClient.put(`/admin/lives/${id}/evidence-hold`, { hold }),
   restoreLiveAccess: (userId) => axiosClient.post(`/admin/lives/users/${userId}/restore`),
 
+  // Marketplace moderation
+  getMarketplaceListings: (params = {}) => axiosClient.get('/admin/marketplace/listings', { params }),
+  getMerchantStats: (userId) => axiosClient.get(`/admin/marketplace/merchants/${userId}/stats`),
+  reviewMarketplaceListing: (id, status, note) =>
+    axiosClient.put(`/admin/marketplace/listings/${id}/review`, { status, note }),
+  setMarketplaceSellerSuspension: (userId, suspended, reason = '') =>
+    axiosClient.put(`/admin/marketplace/merchants/${userId}/suspension`, { suspended, reason }),
+
+  // Cross-module reports
+  getReports: (params = {}) => axiosClient.get('/admin/reports', { params }),
+  reviewReport: (id) => axiosClient.put(`/admin/reports/${id}/review`),
+  resolveReport: (id, action, note, dismiss = false) =>
+    axiosClient.post(`/admin/reports/${id}/resolve`, { action, note, dismiss }),
+
   // Security
   getSecurityEvents: (count = 200, type) =>
     axiosClient.get('/admin/security/events', { params: { count, type } }),

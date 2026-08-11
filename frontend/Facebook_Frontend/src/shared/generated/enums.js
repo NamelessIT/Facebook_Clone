@@ -12,6 +12,10 @@ export const GroupPrivacy = Object.freeze({ Public: 1, Private: 2 });
 export const GroupRole = Object.freeze({ Admin: 1, Member: 2 });
 export const BlockTargetType = Object.freeze({ Ip: 1, User: 2, Email: 3 });
 export const BlockListKind = Object.freeze({ Blacklist: 1, Whitelist: 2 });
+export const MarketplaceListingStatus = Object.freeze({ PendingReview: 1, Approved: 2, Rejected: 3, Sold: 4, Removed: 5 });
+export const ModerationTargetType = Object.freeze({ Post: 1, Reel: 2, Live: 3, MarketplaceListing: 4, User: 5 });
+export const ModerationReportStatus = Object.freeze({ Pending: 1, Reviewing: 2, Resolved: 3, Dismissed: 4 });
+export const ModerationAction = Object.freeze({ None: 0, ContentRemoved: 1, PostSuspended: 2, ReelSuspended: 3, LiveSuspended: 4, MarketplaceSuspended: 5, AccountBanned: 6 });
 
 export const PostInteractionType = Object.freeze({ INTERESTED: "INTERESTED", NOT_INTERESTED: "NOT_INTERESTED", SAVED: "SAVED", REPORTED: "REPORTED" });
 

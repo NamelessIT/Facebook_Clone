@@ -33,8 +33,8 @@ public class LivesController(
         var now = DateTime.UtcNow;
         var candidates = await db.LiveSessions.AsNoTracking().Include(x => x.Owner)
             .Where(x => x.Status == LiveSessionStatus.Live ||
-                (includeEnded && x.Status == LiveSessionStatus.Ended && x.ConvertedPostId == null &&
-                    x.RecordingUrl != null && x.RecordingExpiresAt > now))
+                (includeEnded && x.Status == LiveSessionStatus.Ended && x.RecordingUrl != null &&
+                    (x.ConvertedPostId != null || x.RecordingExpiresAt > now)))
             .OrderByDescending(x => x.StartedAt).Take(100).ToListAsync();
         var visible = new List<object>();
         foreach (var session in candidates)
@@ -357,6 +357,10 @@ public class LivesController(
     public async Task<IActionResult> ConvertToPost(Guid id, [FromBody] ConvertLiveToPostRequest request)
     {
         var userId = UserContext.GetUserId(User);
+        var postSuspension = await db.Users.AsNoTracking().Where(x => x.Id == userId)
+            .Select(x => new { x.IsPostSuspended, x.PostSuspensionReason }).FirstOrDefaultAsync();
+        if (postSuspension?.IsPostSuspended == true)
+            return StatusCode(StatusCodes.Status423Locked, new { success = false, message = postSuspension.PostSuspensionReason ?? "Quyền đăng bài đang bị tạm khóa." });
         var session = await db.LiveSessions.Include(x => x.Owner).FirstOrDefaultAsync(x => x.Id == id);
         if (session == null) return NotFound();
         if (session.OwnerId != userId) return Forbid();

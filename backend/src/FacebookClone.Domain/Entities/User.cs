@@ -51,6 +51,17 @@ public class User
     public string? LiveSuspensionReason { get; set; }
     public DateTime? LiveSuspendedAt { get; set; }
 
+    // Feature-scoped moderation keeps the rest of the account usable.
+    public bool IsPostSuspended { get; set; } = false;
+    public string? PostSuspensionReason { get; set; }
+    public DateTime? PostSuspendedAt { get; set; }
+    public bool IsReelSuspended { get; set; } = false;
+    public string? ReelSuspensionReason { get; set; }
+    public DateTime? ReelSuspendedAt { get; set; }
+    public bool IsMarketplaceSuspended { get; set; } = false;
+    public string? MarketplaceSuspensionReason { get; set; }
+    public DateTime? MarketplaceSuspendedAt { get; set; }
+
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
@@ -62,6 +73,7 @@ public class User
     public ICollection<Message> Messages { get; set; } = new List<Message>();
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     public ICollection<LiveSession> LiveSessions { get; set; } = new List<LiveSession>();
+    public ICollection<MarketplaceListing> MarketplaceListings { get; set; } = new List<MarketplaceListing>();
 
     // --- THÊM PHẦN NÀY ĐỂ SỬA LỖI FriendshipConfiguration ---
     // Danh sách lời mời kết bạn ĐÃ GỬI

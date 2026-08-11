@@ -14,6 +14,8 @@ import EditReelModal from './EditReelModal';
 import { getVideoUrl } from '../../utils/formatUrl';
 import './ReelsPlayer.css';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import ReportDialog from '../moderation/ReportDialog';
+import { ModerationTargetType } from '../../shared/generated/enums';
 
 const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUpdated, onNotInterested }) => {
   const { user: currentUser } = useAuth();
@@ -30,6 +32,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
   const [slideDirection, setSlideDirection] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const lastWheelTime = useRef(0);
   const touchStartY = useRef(0);
   const menuRef = useRef(null);
@@ -206,7 +209,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
 
   const handleMenuReport = () => {
     setShowMenu(false);
-    toast.success(t('reels.reported'));
+    setReportOpen(true);
   };
 
   if (!reel) return null;
@@ -378,6 +381,13 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
           }}
         />
       )}
+      <ReportDialog
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        targetType={ModerationTargetType.Reel}
+        targetId={reel.id}
+        targetLabel="reel này"
+      />
     </div>
   );
 };

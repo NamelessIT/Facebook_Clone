@@ -91,3 +91,40 @@ public enum BlockListKind
     Whitelist = 2
 }
 
+public enum MarketplaceListingStatus
+{
+    PendingReview = 1,
+    Approved = 2,
+    Rejected = 3,
+    Sold = 4,
+    Removed = 5
+}
+
+public enum ModerationTargetType
+{
+    Post = 1,
+    Reel = 2,
+    Live = 3,
+    MarketplaceListing = 4,
+    User = 5
+}
+
+public enum ModerationReportStatus
+{
+    Pending = 1,
+    Reviewing = 2,
+    Resolved = 3,
+    Dismissed = 4
+}
+
+public enum ModerationAction
+{
+    None = 0,
+    ContentRemoved = 1,
+    PostSuspended = 2,
+    ReelSuspended = 3,
+    LiveSuspended = 4,
+    MarketplaceSuspended = 5,
+    AccountBanned = 6
+}
+

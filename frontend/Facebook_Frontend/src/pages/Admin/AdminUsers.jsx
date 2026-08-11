@@ -5,8 +5,10 @@ import toast from '../../shared/appToast';
 import { LIMITS, TIMERS } from '../../shared/generated/constants';
 import { useConfirm } from '../../contexts/useConfirm';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { useSearchParams } from 'react-router-dom';
 
 const AdminUsers = () => {
+  const [searchParams] = useSearchParams();
   const confirm = useConfirm();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +36,8 @@ const AdminUsers = () => {
           throw error;
         }),
       ]);
-      setUsers(usersResponse.data.data);
+      const targetId = searchParams.get('targetId');
+      setUsers(targetId ? usersResponse.data.data.filter((item) => item.id === targetId) : usersResponse.data.data);
       setPagination(usersResponse.data.pagination);
       setCanCreateUsers(Boolean(creationOptionsResponse?.data?.data?.canCreateUsers));
       setCreationRoles(creationOptionsResponse?.data?.data?.roles || []);
@@ -43,7 +46,7 @@ const AdminUsers = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, search, filter]);
+  }, [page, search, filter, searchParams]);
 
   useEffect(() => { load(); }, [load]);
 

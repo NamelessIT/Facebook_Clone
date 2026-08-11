@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import toast from '../../shared/appToast';
-import postInteractionService from '../../services/postInteractionService';
+import reportService from '../../services/reportService';
+import { ModerationTargetType } from '../../shared/generated/enums';
 import './ReportPostModal.css';
 import { useLocalization } from '../../contexts/useLocalization';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
@@ -30,7 +31,7 @@ const ReportPostModal = ({ postId, onClose }) => {
     }
     setLoading(true);
     try {
-      await postInteractionService.reportPost(postId, reason);
+      await reportService.create(ModerationTargetType.Post, postId, reason);
       toast.success(translateCatalogKey('ui.components.post.reportpostmodal.cam-on-chung-toi-se-xem-xet-bao-cao-.df52d773'));
       onClose();
     } catch (error) {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Routes, Route, NavLink, Navigate, useNavigate } from 'react-router-dom';
-import { FileText, Film, KeyRound, Languages, LayoutDashboard, LogOut, Menu, Radio, Settings2, ShieldAlert, Users, ChevronRight, X } from 'lucide-react';
+import { FileText, Film, Flag, KeyRound, Languages, LayoutDashboard, LogOut, Menu, Radio, Settings2, ShieldAlert, Store, Users, ChevronRight, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import userService from '../../services/userService';
 import toast from '../../shared/appToast';
@@ -12,6 +12,8 @@ import AdminRoles from './AdminRoles';
 import AdminLocalization from './AdminLocalization';
 import SettingsPage from '../Settings/SettingsPage';
 import AdminLives from './AdminLives';
+import AdminMarketplace from './AdminMarketplace';
+import AdminReports from './AdminReports';
 import './AdminPage.css';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 import { LIMITS } from '../../shared/generated/constants';
@@ -26,6 +28,8 @@ const NAV = [
   { to: '/admin/posts', labelKey: 'admin.posts.title', Icon: FileText },
   { to: '/admin/reels', labelKey: 'admin.reels.title', Icon: Film },
   { to: '/admin/lives', label: 'Kiểm duyệt Live', Icon: Radio },
+  { to: '/admin/marketplace', label: 'Marketplace', Icon: Store },
+  { to: '/admin/reports', label: 'Báo cáo vi phạm', Icon: Flag },
   { to: '/admin/roles', labelKey: 'admin.roles.title', Icon: KeyRound },
   { to: '/admin/localization', labelKey: 'admin.localization.title', Icon: Languages },
   { to: '/admin/security', labelKey: 'admin.security.title', Icon: ShieldAlert },
@@ -131,6 +135,8 @@ const AdminPage = () => {
           <Route path="posts" element={<AdminContent type="posts" />} />
           <Route path="reels" element={<AdminContent type="reels" />} />
           <Route path="lives" element={<AdminLives />} />
+          <Route path="marketplace" element={<AdminMarketplace />} />
+          <Route path="reports" element={<AdminReports />} />
           <Route path="roles" element={<AdminRoles />} />
           <Route path="localization" element={<AdminLocalization />} />
           <Route path="security" element={<AdminSecurity />} />

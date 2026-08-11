@@ -3,6 +3,8 @@ using FacebookClone.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using FacebookClone.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace FacebookClone.API.Controllers;
 
@@ -12,10 +14,12 @@ namespace FacebookClone.API.Controllers;
 public class ReelsController : ControllerBase
 {
     private readonly IReelService _reelService;
+    private readonly AppDbContext _db;
 
-    public ReelsController(IReelService reelService)
+    public ReelsController(IReelService reelService, AppDbContext db)
     {
         _reelService = reelService;
+        _db = db;
     }
 
     private Guid GetCurrentUserId()
@@ -30,9 +34,14 @@ public class ReelsController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> CreateReel([FromForm] CreateReelRequest request)
     {
+        var userId = GetCurrentUserId();
+        var suspension = await _db.Users.AsNoTracking().Where(x => x.Id == userId)
+            .Select(x => new { x.IsReelSuspended, x.ReelSuspensionReason }).FirstOrDefaultAsync();
+        if (suspension?.IsReelSuspended == true)
+            return StatusCode(StatusCodes.Status423Locked, new { success = false, message = suspension.ReelSuspensionReason ?? "Quyền đăng Reel đang bị tạm khóa." });
         try
         {
-            var reel = await _reelService.CreateReelAsync(GetCurrentUserId(), request);
+            var reel = await _reelService.CreateReelAsync(userId, request);
             return Ok(new { success = true, data = reel });
         }
         catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }

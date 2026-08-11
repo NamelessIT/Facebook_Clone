@@ -21,14 +21,14 @@ public static class LiveSessionPolicy
 
     public static bool IsEvidenceAvailable(LiveSession session, DateTime now) =>
         !string.IsNullOrWhiteSpace(session.RecordingUrl) &&
-        (session.ConvertedPostId != null || session.IsEvidenceOnHold || session.EvidenceExpiresAt > now);
+        (session.ConvertedPostId != null || session.EvidenceExpiresAt > now);
 
     public static bool CanUploadEvidence(LiveSession session, DateTime now) =>
         session.Status == LiveSessionStatus.Terminated &&
         session.ConvertedPostId == null &&
         string.IsNullOrWhiteSpace(session.RecordingUrl) &&
         session.UpdatedAt.Add(EvidenceUploadGrace) > now &&
-        (session.IsEvidenceOnHold || session.EvidenceExpiresAt > now);
+        session.EvidenceExpiresAt > now;
 
     public static bool CanChangePrivacy(LiveSession session, Guid actorId) =>
         session.OwnerId == actorId && session.Status == LiveSessionStatus.Live;

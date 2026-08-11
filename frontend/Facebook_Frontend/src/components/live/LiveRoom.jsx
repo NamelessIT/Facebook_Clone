@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Clock3, Eye, FileVideo2, Loader2, MessageCircle, Radio, Save, Send, ShieldAlert, Trash2, UploadCloud, VideoOff } from 'lucide-react';
+import { Clock3, Eye, FileVideo2, Flag, Loader2, MessageCircle, Radio, Save, Send, ShieldAlert, Trash2, UploadCloud, VideoOff } from 'lucide-react';
 import toast from '../../shared/appToast';
 import liveService from '../../services/liveService';
 import { getImageUrl } from '../../utils/formatUrl';
@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LIVE } from '../../shared/generated/constants';
+import { ModerationTargetType } from '../../shared/generated/enums';
+import ReportDialog from '../moderation/ReportDialog';
 import './LiveRoom.css';
 
 const PRIVACY_OPTIONS = [
@@ -32,6 +34,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
   const [conversionOpen, setConversionOpen] = useState(false);
   const [conversionPrivacy, setConversionPrivacy] = useState(String(initialSession?.privacy || 1));
   const [conversionBusy, setConversionBusy] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const connectionRef = useRef(null);
@@ -418,7 +421,10 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
               <Button variant="outline" onClick={retryRecordingUpload} disabled={uploadProgress !== null}><UploadCloud /> Tải lại bản ghi</Button>
             )}
             {moderationMode && <div className="live-moderation-note"><ShieldAlert size={16} /> Kiểm duyệt viên đang xem với quyền bỏ qua chế độ riêng tư.</div>}
-            <DialogFooter><Button variant="outline" onClick={() => onOpenChange(false)} disabled={isOwner && session?.status === 1}>Đóng</Button></DialogFooter>
+            <DialogFooter>
+              {!isOwner && !moderationMode && <Button variant="ghost" onClick={() => setReportOpen(true)}><Flag /> Báo cáo live</Button>}
+              <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isOwner && session?.status === 1}>Đóng</Button>
+            </DialogFooter>
           </div>
         </main>
         <aside className="live-comments-panel">
@@ -442,6 +448,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
         </aside>
       </DialogContent>
     </Dialog>
+    <ReportDialog open={reportOpen} onOpenChange={setReportOpen} targetType={ModerationTargetType.Live} targetId={session?.id} targetLabel="buổi live này" />
     <Dialog open={conversionOpen} onOpenChange={(value) => value ? setConversionOpen(true) : discardReplay()}>
       <DialogContent className="live-conversion-dialog" onInteractOutside={(event) => event.preventDefault()}>
         <DialogHeader><DialogTitle>Đăng bản live thành video</DialogTitle><DialogDescription>Bản tạm được gia hạn thêm {LIVE.replayLifetimeMinutes} phút trong lúc bạn hoàn thiện bài viết.</DialogDescription></DialogHeader>

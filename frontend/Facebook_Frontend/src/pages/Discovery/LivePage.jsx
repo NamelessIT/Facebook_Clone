@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Clock3, Eye, Play, Radio, Search, ShoppingBag, Users, Video } from 'lucide-react';
 import toast from '../../shared/appToast';
 import liveService from '../../services/liveService';
@@ -31,6 +31,7 @@ const LivePage = () => {
   const [creatorOpen, setCreatorOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', privacy: '1', isShopping: false });
+  const closingSessionRef = useRef(null);
 
   const load = useCallback(async () => {
     try { setSessions((await liveService.list(true)).data.data || []); }
@@ -42,6 +43,11 @@ const LivePage = () => {
 
   useEffect(() => {
     const sessionId = searchParams.get('session');
+    if (!sessionId) {
+      closingSessionRef.current = null;
+      return;
+    }
+    if (closingSessionRef.current === sessionId) return;
     if (!sessionId || selected?.id === sessionId) return;
     liveService.get(sessionId)
       .then((response) => setSelected(response.data.data))
@@ -81,6 +87,12 @@ const LivePage = () => {
     setSearchParams({}, { replace: true });
   };
 
+  const closeSelectedSession = () => {
+    closingSessionRef.current = selected?.id || searchParams.get('session');
+    setSearchParams({}, { replace: true });
+    setSelected(null);
+  };
+
   return (
     <section className="discovery-page discovery-page--wide live-page">
       <div className="discovery-hero live-hero">
@@ -98,7 +110,7 @@ const LivePage = () => {
             <div className="live-thumbnail">
               {stream.recordingUrl ? <video src={getImageUrl(stream.recordingUrl)} muted preload="metadata" /> : <div className="live-thumbnail-placeholder"><Radio /></div>}
               <Badge variant={stream.status === 1 ? 'destructive' : 'secondary'} className="live-badge">{stream.status === 1 ? 'LIVE' : 'XEM LẠI'}</Badge>
-              <span className="live-viewers">{stream.status === 1 ? <><Eye size={14} /> {stream.viewerCount || 0}</> : <><Clock3 size={14} /> {LIVE.replayLifetimeMinutes} phút</>}</span>
+              <span className="live-viewers">{stream.status === 1 ? <><Eye size={14} /> {stream.viewerCount || 0}</> : stream.convertedPostId ? <><Clock3 size={14} /> Đã đăng</> : <><Clock3 size={14} /> {LIVE.replayLifetimeMinutes} phút</>}</span>
               <span className="live-play"><Play fill="currentColor" /></span>
             </div>
             <CardContent className="live-card-content"><div className="live-host-avatar">{stream.ownerName?.charAt(0) || '?'}</div><div><h2>{stream.title}</h2><p>{stream.ownerName}</p><span>{stream.isShopping ? <ShoppingBag size={13} /> : <Users size={13} />} {stream.isShopping ? 'Bán hàng' : 'Cộng đồng'}</span></div></CardContent>
@@ -124,7 +136,7 @@ const LivePage = () => {
         </form></DialogContent>
       </Dialog>
 
-      {selected && <LiveRoom key={selected.id} initialSession={selected} open={Boolean(selected)} onOpenChange={(value) => { if (!value) { setSelected(null); setSearchParams({}, { replace: true }); } }} onUpdated={updateSession} onDeleted={deleteSession} />}
+      {selected && <LiveRoom key={selected.id} initialSession={selected} open={Boolean(selected)} onOpenChange={(value) => { if (!value) closeSelectedSession(); }} onUpdated={updateSession} onDeleted={deleteSession} />}
     </section>
   );
 };

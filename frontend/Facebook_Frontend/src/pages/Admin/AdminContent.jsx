@@ -4,6 +4,7 @@ import toast from '../../shared/appToast';
 import adminService from '../../services/adminService';
 import { useConfirm, usePrompt } from '../../contexts/useConfirm';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { useSearchParams } from 'react-router-dom';
 
 const CONFIG = {
   posts: {
@@ -31,6 +32,7 @@ const CONFIG = {
 };
 
 const AdminContent = ({ type }) => {
+  const [searchParams] = useSearchParams();
   const confirm = useConfirm();
   const prompt = usePrompt();
   const config = useMemo(() => CONFIG[type], [type]);
@@ -60,7 +62,8 @@ const AdminContent = ({ type }) => {
   const groupedItems = useMemo(() => {
     const groups = new Map();
 
-    items.forEach((item) => {
+    const targetId = searchParams.get('targetId');
+    items.filter((item) => !targetId || item.id === targetId).forEach((item) => {
       const authorKey = item.author?.userId || item.author?.email || 'unknown-author';
       if (!groups.has(authorKey)) {
         groups.set(authorKey, {
@@ -73,7 +76,7 @@ const AdminContent = ({ type }) => {
     });
 
     return [...groups.values()];
-  }, [items]);
+  }, [items, searchParams]);
 
   const handleDelete = async (item) => {
     const accepted = await confirm({

@@ -64,7 +64,7 @@ public class LiveSessionPolicyTests
     }
 
     [Fact]
-    public void EvidenceHoldKeepsRecordingAvailableUntilDecision()
+    public void EvidenceHoldCannotExtendSevenDayRetention()
     {
         var now = DateTime.UtcNow;
         var session = new LiveSession
@@ -72,6 +72,20 @@ public class LiveSessionPolicyTests
             Status = LiveSessionStatus.Terminated,
             RecordingUrl = "/uploads/live-recordings/test.webm",
             EvidenceExpiresAt = now.AddDays(-1),
+            IsEvidenceOnHold = true
+        };
+        Assert.False(LiveSessionPolicy.IsEvidenceAvailable(session, now));
+    }
+
+    [Fact]
+    public void EvidenceHoldKeepsRecordingAvailableInsideSevenDayRetention()
+    {
+        var now = DateTime.UtcNow;
+        var session = new LiveSession
+        {
+            Status = LiveSessionStatus.Terminated,
+            RecordingUrl = "/uploads/live-recordings/test.webm",
+            EvidenceExpiresAt = now.AddDays(1),
             IsEvidenceOnHold = true
         };
         Assert.True(LiveSessionPolicy.IsEvidenceAvailable(session, now));

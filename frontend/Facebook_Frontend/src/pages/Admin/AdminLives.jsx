@@ -9,11 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useSearchParams } from 'react-router-dom';
 
 const statusLabel = { 1: 'Đang live', 2: 'Đã kết thúc', 3: 'Bị kiểm duyệt' };
 const privacyLabel = { 1: 'Công khai', 2: 'Bạn bè', 3: 'Riêng tư' };
 
 const AdminLives = () => {
+  const [searchParams] = useSearchParams();
   const prompt = usePrompt();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,9 +32,10 @@ const AdminLives = () => {
   useEffect(() => { load(); const timer = window.setInterval(load, 10000); return () => window.clearInterval(timer); }, [load]);
 
   const filtered = useMemo(() => sessions.filter((item) => {
+    const targetId = searchParams.get('targetId');
     const matchesSearch = `${item.title} ${item.ownerName} ${item.email}`.toLowerCase().includes(search.toLowerCase());
-    return matchesSearch && (statusFilter === 'all' || item.status === Number(statusFilter));
-  }), [search, sessions, statusFilter]);
+    return (!targetId || item.id === targetId) && matchesSearch && (statusFilter === 'all' || item.status === Number(statusFilter));
+  }), [search, searchParams, sessions, statusFilter]);
   const counts = useMemo(() => ({
     all: sessions.length,
     live: sessions.filter((item) => item.status === 1).length,
@@ -88,7 +91,7 @@ const AdminLives = () => {
       {loading ? <div className="admin-loading">Đang tải…</div> : (
         <div className="admin-live-grid">
           {filtered.map((session) => (
-            <Card key={session.id} className="admin-live-card">
+            <Card key={session.id} className={`admin-live-card${searchParams.get('targetId') === session.id ? ' admin-target-highlight' : ''}`}>
               <CardHeader><div><Badge variant={session.status === 1 ? 'destructive' : 'secondary'}><Radio /> {statusLabel[session.status]}</Badge><CardTitle>{session.title}</CardTitle></div><Badge variant="outline">{privacyLabel[session.privacy]}</Badge></CardHeader>
               <CardContent>
                 <div className="admin-live-info-grid">

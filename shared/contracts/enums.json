@@ -14,7 +14,11 @@
     "GroupPrivacy": { "Public": 1, "Private": 2 },
     "GroupRole": { "Admin": 1, "Member": 2 },
     "BlockTargetType": { "Ip": 1, "User": 2, "Email": 3 },
-    "BlockListKind": { "Blacklist": 1, "Whitelist": 2 }
+    "BlockListKind": { "Blacklist": 1, "Whitelist": 2 },
+    "MarketplaceListingStatus": { "PendingReview": 1, "Approved": 2, "Rejected": 3, "Sold": 4, "Removed": 5 },
+    "ModerationTargetType": { "Post": 1, "Reel": 2, "Live": 3, "MarketplaceListing": 4, "User": 5 },
+    "ModerationReportStatus": { "Pending": 1, "Reviewing": 2, "Resolved": 3, "Dismissed": 4 },
+    "ModerationAction": { "None": 0, "ContentRemoved": 1, "PostSuspended": 2, "ReelSuspended": 3, "LiveSuspended": 4, "MarketplaceSuspended": 5, "AccountBanned": 6 }
   },
   "stringConstants": {
     "PostInteractionType": {
