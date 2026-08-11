@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LIVE } from '../../shared/generated/constants';
+import { useSearchParams } from 'react-router-dom';
 import './DiscoveryPages.css';
 
 const categories = ['Tất cả', 'Đang live', 'Bán hàng', 'Bản phát lại'];
@@ -21,6 +22,7 @@ const privacyOptions = [
 ];
 
 const LivePage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -37,6 +39,14 @@ const LivePage = () => {
   }, []);
 
   useEffect(() => { load(); const timer = window.setInterval(load, 15000); return () => window.clearInterval(timer); }, [load]);
+
+  useEffect(() => {
+    const sessionId = searchParams.get('session');
+    if (!sessionId || selected?.id === sessionId) return;
+    liveService.get(sessionId)
+      .then((response) => setSelected(response.data.data))
+      .catch((error) => toast.apiError(error, 'Phiên live không còn khả dụng hoặc bạn không có quyền xem.', { context: 'live.deep-link', dedupe: true }));
+  }, [searchParams, selected?.id]);
 
   const filtered = useMemo(() => sessions.filter((item) => {
     const matchesText = `${item.title} ${item.ownerName}`.toLowerCase().includes(search.trim().toLowerCase());
@@ -65,6 +75,12 @@ const LivePage = () => {
     setSelected(updated);
   };
 
+  const deleteSession = (id) => {
+    setSessions((current) => current.filter((item) => item.id !== id));
+    setSelected(null);
+    setSearchParams({}, { replace: true });
+  };
+
   return (
     <section className="discovery-page discovery-page--wide live-page">
       <div className="discovery-hero live-hero">
@@ -78,7 +94,7 @@ const LivePage = () => {
 
       <div className="live-grid">
         {filtered.map((stream) => (
-          <Card className="live-card" key={stream.id} onClick={() => setSelected(stream)}>
+          <Card className="live-card" key={stream.id} onClick={() => { setSelected(stream); setSearchParams({ session: stream.id }); }}>
             <div className="live-thumbnail">
               {stream.recordingUrl ? <video src={getImageUrl(stream.recordingUrl)} muted preload="metadata" /> : <div className="live-thumbnail-placeholder"><Radio /></div>}
               <Badge variant={stream.status === 1 ? 'destructive' : 'secondary'} className="live-badge">{stream.status === 1 ? 'LIVE' : 'XEM LẠI'}</Badge>
@@ -108,7 +124,7 @@ const LivePage = () => {
         </form></DialogContent>
       </Dialog>
 
-      {selected && <LiveRoom key={selected.id} initialSession={selected} open={Boolean(selected)} onOpenChange={(value) => !value && setSelected(null)} onUpdated={updateSession} />}
+      {selected && <LiveRoom key={selected.id} initialSession={selected} open={Boolean(selected)} onOpenChange={(value) => { if (!value) { setSelected(null); setSearchParams({}, { replace: true }); } }} onUpdated={updateSession} onDeleted={deleteSession} />}
     </section>
   );
 };

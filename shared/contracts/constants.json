@@ -43,9 +43,13 @@
   },
   "live": {
     "replayLifetimeMinutes": 15,
+    "evidenceRetentionDays": 7,
+    "evidenceUploadGraceMinutes": 5,
+    "maxRecordingSizeBytes": 524288000,
     "commentMaxLength": 500,
     "commentsPageSize": 100,
     "commentsPollIntervalMs": 5000,
+    "discoveryPollIntervalMs": 5000,
     "cleanupIntervalSeconds": 60
   },
   "localization": {
@@ -101,7 +105,7 @@
     "maxAgeDays": 30,
     "defaultChunkSizeBytes": 5242880,
     "maxChunkSizeBytes": 10485760,
-    "targetTypes": ["post", "reel"],
+    "targetTypes": ["post", "reel", "live"],
     "statuses": ["pending", "uploading", "completed", "failed", "paused", "expired"]
   }
 }

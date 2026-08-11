@@ -35,6 +35,7 @@ const adminService = {
   // Live moderation
   getLives: () => axiosClient.get('/admin/lives'),
   terminateLive: (id, reason) => axiosClient.post(`/admin/lives/${id}/terminate`, { reason }),
+  setLiveEvidenceHold: (id, hold) => axiosClient.put(`/admin/lives/${id}/evidence-hold`, { hold }),
   restoreLiveAccess: (userId) => axiosClient.post(`/admin/lives/users/${userId}/restore`),
 
   // Security

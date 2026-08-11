@@ -6,6 +6,8 @@ import Avatar from "../../components/common/Avatar";
 import CreatePostModal from "../../components/post/CreatePostModal"; 
 import PostItem from "../../components/post/PostItem"; 
 import ReelsHorizontalFeed from "../../components/reels/ReelsHorizontalFeed";
+import ActiveLiveBanner from "../../components/live/ActiveLiveBanner";
+import { useNavigate } from "react-router-dom";
 import { useLocalization } from "../../contexts/useLocalization";
 import "./HomePage.css";
 import toast from '../../shared/appToast';
@@ -13,6 +15,7 @@ import toast from '../../shared/appToast';
 const HomePage = () => {
   const { user } = useAuth();
   const { t } = useLocalization();
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -46,7 +49,7 @@ const HomePage = () => {
         {/* 3. Khu vực Icon chức năng nhanh */}
         <div className="create-post-actions">
           <button 
-            onClick={() => setIsModalOpen(true)} 
+            onClick={() => navigate('/live')}
             className="quick-action-btn" 
             title={t('post.liveVideo')}
             style={{ "--main-color": "#f3425f" }}
@@ -83,6 +86,8 @@ const HomePage = () => {
       />
 
       {/* REELS CUỘN NGANG */}
+      <ActiveLiveBanner />
+
       <ReelsHorizontalFeed />
 
       {/* DANH SÁCH BÀI VIẾT */}

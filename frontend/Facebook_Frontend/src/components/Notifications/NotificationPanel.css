@@ -116,6 +116,11 @@
   color: #fff;
 }
 
+.notification-icon--live {
+  background: #f02849;
+  color: #fff;
+}
+
 .notification-item-content {
   flex: 1;
   min-width: 0;

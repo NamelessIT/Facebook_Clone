@@ -1,12 +1,12 @@
 using FacebookClone.Infrastructure;
 using FacebookClone.Domain.Constants;
+using FacebookClone.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace FacebookClone.API.Services;
 
 public class ExpiredLiveRecordingCleanupService(
     IServiceScopeFactory scopeFactory,
-    IWebHostEnvironment env,
     ILogger<ExpiredLiveRecordingCleanupService> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -18,31 +18,31 @@ public class ExpiredLiveRecordingCleanupService(
             {
                 using var scope = scopeFactory.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var storage = scope.ServiceProvider.GetRequiredService<LiveRecordingStorageService>();
                 var now = DateTime.UtcNow;
                 var expired = await db.LiveSessions
-                    .Where(x => x.ConvertedPostId == null && x.RecordingUrl != null && x.RecordingExpiresAt <= now)
+                    .Where(x => x.ConvertedPostId == null &&
+                        x.Status != LiveSessionStatus.Live &&
+                        !x.IsEvidenceOnHold &&
+                        ((x.EvidenceExpiresAt != null && x.EvidenceExpiresAt <= now) ||
+                         (x.EvidenceExpiresAt == null && x.RecordingExpiresAt <= now)))
                     .ToListAsync(stoppingToken);
                 foreach (var live in expired)
                 {
-                    DeletePhysicalFile(live.RecordingUrl!);
-                    live.RecordingUrl = null;
-                    live.RecordingExpiresAt = null;
-                    live.UpdatedAt = now;
+                    storage.DeleteRecording(live.RecordingUrl);
+                    storage.DeletePendingUploads(live.Id);
                 }
-                if (expired.Count > 0) await db.SaveChangesAsync(stoppingToken);
+                if (expired.Count > 0)
+                {
+                    db.LiveSessions.RemoveRange(expired);
+                    await db.SaveChangesAsync(stoppingToken);
+                    logger.LogInformation("Deleted {Count} live sessions after their moderation-evidence retention expired.", expired.Count);
+                }
+                storage.DeleteExpiredPendingUploads(now.AddMinutes(-SharedConstants.Live.ReplayLifetimeMinutes));
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested) { }
             catch (Exception ex) { logger.LogError(ex, "Failed to clean expired live recordings."); }
         }
     }
 
-    private void DeletePhysicalFile(string relativeUrl)
-    {
-        var normalized = relativeUrl.Replace('/', Path.DirectorySeparatorChar).TrimStart(Path.DirectorySeparatorChar);
-        var prefix = $"uploads{Path.DirectorySeparatorChar}live-recordings{Path.DirectorySeparatorChar}";
-        if (!normalized.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) return;
-        var root = Path.GetFullPath(env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
-        var path = Path.GetFullPath(Path.Combine(root, normalized));
-        if (path.StartsWith(root, StringComparison.OrdinalIgnoreCase) && File.Exists(path)) File.Delete(path);
-    }
 }

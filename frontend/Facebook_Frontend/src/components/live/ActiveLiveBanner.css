@@ -1,0 +1,18 @@
+.active-live-banner { overflow: hidden; border: 1px solid var(--border); border-radius: calc(var(--radius) + 4px); background: var(--card); color: var(--card-foreground); box-shadow: 0 1px 2px rgb(0 0 0 / 8%); }
+.active-live-banner > header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.active-live-banner > header span { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+.active-live-banner > header svg { width: 17px; height: 17px; color: var(--destructive); }
+.active-live-banner > header small { color: var(--muted-foreground); }
+.active-live-list { display: grid; }
+.active-live-item { width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 11px; padding: 11px 14px; border: 0; border-bottom: 1px solid var(--border); background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.active-live-item:last-child { border-bottom: 0; }
+.active-live-item:hover { background: var(--accent); }
+.active-live-avatar { position: relative; }
+.active-live-avatar > span { position: absolute; right: -1px; bottom: -1px; width: 12px; height: 12px; border: 2px solid var(--card); border-radius: 50%; background: #f02849; box-shadow: 0 0 0 2px rgb(240 40 73 / 20%); }
+.active-live-copy { min-width: 0; display: grid; gap: 2px; }
+.active-live-copy strong, .active-live-copy span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.active-live-copy strong { font-size: 14px; }
+.active-live-copy span, .active-live-meta { color: var(--muted-foreground); font-size: 12px; }
+.active-live-meta { display: inline-flex; align-items: center; gap: 5px; }
+.active-live-meta svg { width: 14px; height: 14px; }
+.active-live-banner--profile { width: min(100% - 32px, 760px); margin: 16px auto 0; }

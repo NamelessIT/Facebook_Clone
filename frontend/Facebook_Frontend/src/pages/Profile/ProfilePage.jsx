@@ -17,6 +17,7 @@ import EditProfileModal from '../../components/profile/EditProfileModal';
 import ProfileSidebar from '../../components/profile/ProfileSidebar';
 import ReelsGrid from '../../components/reels/ReelsGrid';
 import PostDetailModal from '../../components/post/PostDetailModal';
+import ActiveLiveBanner from '../../components/live/ActiveLiveBanner';
 import { getImageUrl } from '../../utils/formatUrl';
 import './ProfilePage.css';
 import { useConfirm } from '../../contexts/useConfirm';
@@ -465,6 +466,8 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+
+      <ActiveLiveBanner ownerId={userId} limit={1} />
 
       {/* Tabs */}
       <div className="pp-tabs-bar">

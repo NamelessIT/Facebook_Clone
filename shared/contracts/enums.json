@@ -7,7 +7,7 @@
     "PostType": { "Normal": 1, "Share": 2, "Group": 3, "ProfilePicture": 4, "CoverPhoto": 5 },
     "ReactionType": { "Like": 1, "Love": 2, "Haha": 3, "Wow": 4, "Sad": 5, "Angry": 6 },
     "FriendshipStatus": { "Pending": 1, "Accepted": 2, "Rejected": 3, "Blocked": 4 },
-    "NotificationType": { "Like": 1, "Comment": 2, "FriendRequest": 3, "Message": 4, "FriendAccepted": 5 },
+    "NotificationType": { "Like": 1, "Comment": 2, "FriendRequest": 3, "Message": 4, "FriendAccepted": 5, "LiveStarted": 6 },
     "ConversationType": { "Private": 1, "Group": 2 },
     "MessageType": { "Text": 1, "Image": 2, "Video": 3, "File": 4 },
     "MediaType": { "Image": 0, "Video": 1 },

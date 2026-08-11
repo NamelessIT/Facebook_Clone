@@ -57,9 +57,13 @@ public static class SharedConstants
     public static class Live
     {
         public const int ReplayLifetimeMinutes = 15;
+        public const int EvidenceRetentionDays = 7;
+        public const int EvidenceUploadGraceMinutes = 5;
+        public const int MaxRecordingSizeBytes = 524288000;
         public const int CommentMaxLength = 500;
         public const int CommentsPageSize = 100;
         public const int CommentsPollIntervalMs = 5000;
+        public const int DiscoveryPollIntervalMs = 5000;
         public const int CleanupIntervalSeconds = 60;
     }
 
@@ -103,7 +107,7 @@ public static class SharedConstants
         public const int MaxAgeDays = 30;
         public const int DefaultChunkSizeBytes = 5242880;
         public const int MaxChunkSizeBytes = 10485760;
-        public static readonly IReadOnlyList<string> TargetTypes = ["post", "reel"];
+        public static readonly IReadOnlyList<string> TargetTypes = ["post", "reel", "live"];
         public static readonly IReadOnlyList<string> Statuses = ["pending", "uploading", "completed", "failed", "paused", "expired"];
     }
 

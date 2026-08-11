@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { PostPrivacy, PostType, ReactionType } from './enums';
-import { API, LIMITS, LOCALIZATION, STORAGE_KEYS, TIMERS } from './constants';
+import { NotificationType, PostPrivacy, PostType, ReactionType } from './enums';
+import { API, LIMITS, LIVE, LOCALIZATION, STORAGE_KEYS, TIMERS, UPLOAD_CHUNKS } from './constants';
 
 // Guards the generated contract values shared with the backend + DB.
 describe('shared generated enums', () => {
@@ -24,6 +24,10 @@ describe('shared generated enums', () => {
   it('objects are frozen (immutable)', () => {
     expect(Object.isFrozen(PostPrivacy)).toBe(true);
   });
+
+  it('live notification type matches contract', () => {
+    expect(NotificationType.LiveStarted).toBe(6);
+  });
 });
 
 describe('shared generated constants', () => {
@@ -37,5 +41,12 @@ describe('shared generated constants', () => {
     expect(TIMERS.presenceHeartbeatMs).toBe(900000);
     expect(LIMITS.messageMaxLength).toBe(1000);
     expect(LOCALIZATION.maxTranslationChunkChars).toBe(800);
+  });
+
+  it('live lifecycle and chunk upload constants match', () => {
+    expect(LIVE.replayLifetimeMinutes).toBe(15);
+    expect(LIVE.maxRecordingSizeBytes).toBe(524288000);
+    expect(LIVE.discoveryPollIntervalMs).toBe(5000);
+    expect(UPLOAD_CHUNKS.targetTypes).toContain('live');
   });
 });

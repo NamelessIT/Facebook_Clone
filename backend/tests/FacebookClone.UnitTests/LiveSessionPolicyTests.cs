@@ -8,10 +8,17 @@ namespace FacebookClone.UnitTests;
 public class LiveSessionPolicyTests
 {
     [Fact]
-    public void ReplayExpiresExactlyThirtyMinutesAfterLiveEnds()
+    public void ReplayExpiresExactlyFifteenMinutesAfterLiveEnds()
     {
         var endedAt = new DateTime(2026, 8, 10, 4, 0, 0, DateTimeKind.Utc);
         Assert.Equal(endedAt.AddMinutes(15), LiveSessionPolicy.ReplayExpiresAt(endedAt));
+    }
+
+    [Fact]
+    public void ModerationEvidenceExpiresSevenDaysAfterLiveEnds()
+    {
+        var endedAt = new DateTime(2026, 8, 10, 4, 0, 0, DateTimeKind.Utc);
+        Assert.Equal(endedAt.AddDays(7), LiveSessionPolicy.EvidenceExpiresAt(endedAt));
     }
 
     [Fact]
@@ -39,6 +46,35 @@ public class LiveSessionPolicyTests
             ConvertedPostId = Guid.NewGuid()
         };
         Assert.True(LiveSessionPolicy.IsReplayAvailable(session, now));
+    }
+
+    [Fact]
+    public void ModeratorCanReviewEvidenceAfterOwnerReplayDeadline()
+    {
+        var now = DateTime.UtcNow;
+        var session = new LiveSession
+        {
+            Status = LiveSessionStatus.Ended,
+            RecordingUrl = "/uploads/live-recordings/test.webm",
+            RecordingExpiresAt = now.AddMinutes(-1),
+            EvidenceExpiresAt = now.AddDays(6)
+        };
+        Assert.False(LiveSessionPolicy.IsReplayAvailable(session, now));
+        Assert.True(LiveSessionPolicy.IsEvidenceAvailable(session, now));
+    }
+
+    [Fact]
+    public void EvidenceHoldKeepsRecordingAvailableUntilDecision()
+    {
+        var now = DateTime.UtcNow;
+        var session = new LiveSession
+        {
+            Status = LiveSessionStatus.Terminated,
+            RecordingUrl = "/uploads/live-recordings/test.webm",
+            EvidenceExpiresAt = now.AddDays(-1),
+            IsEvidenceOnHold = true
+        };
+        Assert.True(LiveSessionPolicy.IsEvidenceAvailable(session, now));
     }
 
     [Fact]

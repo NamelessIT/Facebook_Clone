@@ -915,15 +915,29 @@ table.admin-table tr:hover td { background: #1e2130; }
 .admin-page-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
 .admin-page-heading .admin-page-title { margin-bottom: 4px; }
 .admin-page-heading p { margin: 0; color: var(--muted-foreground); }
-.admin-live-search { display: flex; width: min(100%, 620px); align-items: center; gap: 8px; margin-bottom: 18px; }
+.admin-live-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.admin-live-summary > div { display: grid; gap: 5px; padding: 14px 16px; border: 1px solid var(--border); border-radius: calc(var(--radius) + 2px); background: var(--card); box-shadow: 0 1px 2px rgb(0 0 0 / 5%); }
+.admin-live-summary span { color: var(--muted-foreground); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.admin-live-summary strong { font-size: 24px; line-height: 1; }
+.admin-live-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.admin-live-search { display: flex; width: min(100%, 620px); align-items: center; gap: 8px; margin-bottom: 0; }
 .admin-live-search input { width: 100%; }
+.admin-live-filter { width: 210px; }
 .admin-live-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.admin-live-card [data-slot="card-header"] { display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.admin-live-card [data-slot="card-title"] { margin-top: 9px; font-size: 16px; }
-.admin-live-card [data-slot="card-content"] { display: grid; gap: 12px; }
-.admin-live-owner { display: grid; gap: 2px; }
-.admin-live-owner span, .admin-live-meta { color: var(--muted-foreground); font-size: 13px; }
-.admin-live-meta { display: flex; justify-content: space-between; gap: 10px; }
+.admin-live-card { gap: 16px; overflow: hidden; padding: 16px 0; transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease; }
+.admin-live-card:hover { border-color: color-mix(in oklch, var(--primary) 50%, var(--border)); box-shadow: 0 8px 24px rgb(0 0 0 / 8%); transform: translateY(-1px); }
+.admin-live-card [data-slot="card-header"] { display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 0 16px 14px; border-bottom: 1px solid var(--border); }
+.admin-live-card [data-slot="card-title"] { margin-top: 10px; font-size: 17px; line-height: 1.35; }
+.admin-live-card [data-slot="card-content"] { display: grid; gap: 12px; padding: 0 16px; }
+.admin-live-info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.admin-live-info { min-width: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 9px; padding: 10px; border-radius: var(--radius); background: var(--muted); }
+.admin-live-info > svg { width: 17px; height: 17px; color: var(--primary); }
+.admin-live-info > span { min-width: 0; display: grid; gap: 2px; }
+.admin-live-info small { color: var(--muted-foreground); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.admin-live-info strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.admin-live-actions-label { color: var(--muted-foreground); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.admin-live-no-actions { padding-top: 4px; border-top: 1px dashed var(--border); color: var(--muted-foreground); font-size: 12px; }
 .admin-live-warning { display: flex; align-items: flex-start; gap: 7px; padding: 10px; border: 1px solid color-mix(in oklch, var(--destructive) 45%, var(--border)); border-radius: var(--radius); background: color-mix(in oklch, var(--destructive) 10%, var(--card)); color: var(--destructive); font-size: 13px; }
 .admin-live-warning svg { width: 16px; flex: 0 0 auto; }
-@media (max-width: 900px) { .admin-live-grid { grid-template-columns: 1fr; } }
+@media (max-width: 1100px) { .admin-live-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } .admin-live-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .admin-live-summary { grid-template-columns: 1fr 1fr; } .admin-live-toolbar { align-items: stretch; flex-direction: column; } .admin-live-filter { width: 100%; } .admin-live-info-grid { grid-template-columns: 1fr; } }

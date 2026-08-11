@@ -15,6 +15,7 @@ public class LiveSessionConfiguration : IEntityTypeConfiguration<LiveSession>
             .IsUnique()
             .HasFilter("\"Status\" = 1");
         builder.HasIndex(x => x.RecordingExpiresAt);
+        builder.HasIndex(x => new { x.IsEvidenceOnHold, x.EvidenceExpiresAt });
         builder.Property(x => x.Title).IsRequired().HasMaxLength(180);
         builder.Property(x => x.Description).HasMaxLength(2000);
         builder.Property(x => x.EndReason).HasMaxLength(500);

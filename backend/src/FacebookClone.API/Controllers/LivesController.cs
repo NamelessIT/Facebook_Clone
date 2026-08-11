@@ -20,6 +20,8 @@ public class LivesController(
     AppDbContext db,
     LiveAccessService access,
     IFileService files,
+    INotificationService notifications,
+    LiveRecordingStorageService recordingStorage,
     IHubContext<LiveHub> hub,
     ILogger<LivesController> logger) : ControllerBase
 {
@@ -31,7 +33,8 @@ public class LivesController(
         var now = DateTime.UtcNow;
         var candidates = await db.LiveSessions.AsNoTracking().Include(x => x.Owner)
             .Where(x => x.Status == LiveSessionStatus.Live ||
-                (includeEnded && x.RecordingUrl != null && (x.RecordingExpiresAt == null || x.RecordingExpiresAt > now)))
+                (includeEnded && x.Status == LiveSessionStatus.Ended && x.ConvertedPostId == null &&
+                    x.RecordingUrl != null && x.RecordingExpiresAt > now))
             .OrderByDescending(x => x.StartedAt).Take(100).ToListAsync();
         var visible = new List<object>();
         foreach (var session in candidates)
@@ -47,8 +50,14 @@ public class LivesController(
         if (session == null) return NotFound(new { success = false, message = "Không tìm thấy phiên live." });
         var moderator = await access.IsModeratorAsync(userId);
         if (!moderator && !await access.CanViewAsync(session, userId, false)) return Forbid();
-        if (session.Status != LiveSessionStatus.Live && session.RecordingExpiresAt <= DateTime.UtcNow)
-            return StatusCode(StatusCodes.Status410Gone, new { success = false, message = "Bản phát lại đã hết hạn." });
+        if (session.Status != LiveSessionStatus.Live)
+        {
+            var available = moderator
+                ? LiveSessionPolicy.IsEvidenceAvailable(session, DateTime.UtcNow)
+                : LiveSessionPolicy.IsReplayAvailable(session, DateTime.UtcNow);
+            if (!available)
+                return StatusCode(StatusCodes.Status410Gone, new { success = false, message = "Bản phát lại không còn khả dụng." });
+        }
         return Ok(new { success = true, data = ToResponse(session, userId, moderator) });
     }
 
@@ -72,6 +81,34 @@ public class LivesController(
         };
         db.LiveSessions.Add(session);
         await db.SaveChangesAsync();
+        if (request.Privacy != PostPrivacy.Private)
+        {
+            try
+            {
+                var friendIds = await db.Friendships.AsNoTracking()
+                    .Where(x => x.Status == FriendshipStatus.Accepted && (x.RequesterId == userId || x.ReceiverId == userId))
+                    .Select(x => x.RequesterId == userId ? x.ReceiverId : x.RequesterId)
+                    .Distinct()
+                    .ToListAsync();
+                foreach (var friendId in friendIds)
+                {
+                    try
+                    {
+                        await notifications.CreateNotificationAsync(
+                            friendId, userId, NotificationType.LiveStarted, session.Id,
+                            $"{user.FullName} đang phát trực tiếp: {session.Title}");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "Could not notify friend {FriendId} about live {LiveId}.", friendId, session.Id);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Live {LiveId} started but the friend list could not be loaded for notifications.", session.Id);
+            }
+        }
         return CreatedAtAction(nameof(Get), new { id = session.Id }, new { success = true, data = ToResponse(session, userId, false) });
     }
 
@@ -79,7 +116,9 @@ public class LivesController(
     public async Task<IActionResult> ChangePrivacy(Guid id, [FromBody] ChangeLivePrivacyRequest request)
     {
         var userId = UserContext.GetUserId(User);
-        var session = await db.LiveSessions.Include(x => x.Owner).FirstOrDefaultAsync(x => x.Id == id);
+        var session = await db.LiveSessions
+            .Include(x => x.Owner)
+            .FirstOrDefaultAsync(x => x.Id == id);
         if (session == null) return NotFound();
         if (session.OwnerId != userId) return Forbid();
         if (session.Status != LiveSessionStatus.Live) return Conflict(new { success = false, message = "Chỉ đổi được quyền riêng tư khi đang live." });
@@ -181,13 +220,14 @@ public class LivesController(
         session.EndedAt = now;
         session.UpdatedAt = now;
         session.RecordingExpiresAt = LiveSessionPolicy.ReplayExpiresAt(now);
+        session.EvidenceExpiresAt = LiveSessionPolicy.EvidenceExpiresAt(now);
         await db.SaveChangesAsync();
         await transaction.CommitAsync();
         await hub.Clients.Group(LiveHub.SessionGroup(id)).SendAsync("LiveEnded", session.RecordingExpiresAt);
         return Ok(new { success = true, data = ToResponse(session, userId, false) });
     }
 
-    [HttpPost("{id:guid}/recording"), RequestSizeLimit(524_288_000)]
+    [HttpPost("{id:guid}/recording"), RequestSizeLimit(SharedConstants.Live.MaxRecordingSizeBytes)]
     public async Task<IActionResult> UploadRecording(Guid id, IFormFile recording)
     {
         var userId = UserContext.GetUserId(User);
@@ -195,13 +235,122 @@ public class LivesController(
         if (session == null) return NotFound();
         if (session.OwnerId != userId) return Forbid();
         if (session.Status == LiveSessionStatus.Live) return Conflict(new { success = false, message = "Hãy kết thúc live trước khi lưu bản ghi." });
-        if (session.Status == LiveSessionStatus.Terminated) return StatusCode(StatusCodes.Status423Locked, new { success = false, message = "Live bị kiểm duyệt không được lưu bản phát lại." });
+        if (session.Status == LiveSessionStatus.Terminated && !LiveSessionPolicy.CanUploadEvidence(session, DateTime.UtcNow))
+            return StatusCode(StatusCodes.Status423Locked, new { success = false, message = "Đã hết thời gian tải bản ghi làm bằng chứng kiểm duyệt." });
         if (!string.IsNullOrWhiteSpace(session.RecordingUrl)) return Conflict(new { success = false, message = "Bản ghi live đã được tải lên." });
+        if (session.Status == LiveSessionStatus.Ended && (session.RecordingExpiresAt is null || session.RecordingExpiresAt <= DateTime.UtcNow))
+            return StatusCode(StatusCodes.Status410Gone, new { success = false, message = "Bản live đã hết thời gian lưu tạm." });
         session.RecordingUrl = await files.UploadVideoAsync(recording, "live-recordings");
+        RefreshRetentionAfterUploadActivity(session, DateTime.UtcNow);
+        session.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+        return Ok(new { success = true, data = ToResponse(session, userId, false) });
+    }
+
+    [HttpPost("{id:guid}/recording/uploads")]
+    public async Task<IActionResult> InitializeRecordingUpload(Guid id, [FromBody] InitializeLiveRecordingUploadRequest request)
+    {
+        var userId = UserContext.GetUserId(User);
+        var session = await db.LiveSessions.Include(x => x.Owner).FirstOrDefaultAsync(x => x.Id == id);
+        var validation = ValidateRecordingUpload(session, userId);
+        if (validation != null) return validation;
+        try
+        {
+            var ticket = await recordingStorage.InitializeAsync(
+                id, request.FileName, request.ContentType, request.TotalSize, request.TotalChunks, HttpContext.RequestAborted);
+            RefreshRetentionAfterUploadActivity(session!, DateTime.UtcNow);
+            session!.UpdatedAt = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+            return Ok(new { success = true, data = ticket });
+        }
+        catch (ArgumentException ex) { return BadRequest(new { success = false, message = ex.Message }); }
+    }
+
+    [HttpPost("{id:guid}/recording/uploads/{uploadId:guid}/chunks/{chunkIndex:int}"),
+     RequestSizeLimit(SharedConstants.UploadChunks.MaxChunkSizeBytes + 1_048_576)]
+    public async Task<IActionResult> UploadRecordingChunk(Guid id, Guid uploadId, int chunkIndex, IFormFile chunk)
+    {
+        var userId = UserContext.GetUserId(User);
+        var session = await db.LiveSessions.Include(x => x.Owner).FirstOrDefaultAsync(x => x.Id == id);
+        var validation = ValidateRecordingUpload(session, userId);
+        if (validation != null) return validation;
+        try
+        {
+            await recordingStorage.StoreChunkAsync(id, uploadId, chunkIndex, chunk, HttpContext.RequestAborted);
+            RefreshRetentionAfterUploadActivity(session!, DateTime.UtcNow);
+            session!.UpdatedAt = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+            return Ok(new { success = true, data = new { uploadId, chunkIndex } });
+        }
+        catch (KeyNotFoundException ex) { return NotFound(new { success = false, message = ex.Message }); }
+        catch (ArgumentException ex) { return BadRequest(new { success = false, message = ex.Message }); }
+    }
+
+    [HttpPost("{id:guid}/recording/uploads/{uploadId:guid}/complete")]
+    public async Task<IActionResult> CompleteRecordingUpload(Guid id, Guid uploadId)
+    {
+        var userId = UserContext.GetUserId(User);
+        var session = await db.LiveSessions.Include(x => x.Owner).FirstOrDefaultAsync(x => x.Id == id);
+        var validation = ValidateRecordingUpload(session, userId);
+        if (validation != null) return validation;
+        try
+        {
+            session!.RecordingUrl = await recordingStorage.CompleteAsync(id, uploadId, HttpContext.RequestAborted);
+            RefreshRetentionAfterUploadActivity(session, DateTime.UtcNow);
+            session.UpdatedAt = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+            return Ok(new { success = true, data = ToResponse(session, userId, false) });
+        }
+        catch (KeyNotFoundException ex) { return NotFound(new { success = false, message = ex.Message }); }
+        catch (InvalidOperationException ex) { return Conflict(new { success = false, message = ex.Message }); }
+    }
+
+    [HttpPost("{id:guid}/prepare-conversion")]
+    public async Task<IActionResult> PrepareConversion(Guid id)
+    {
+        var userId = UserContext.GetUserId(User);
+        var session = await db.LiveSessions.Include(x => x.Owner).FirstOrDefaultAsync(x => x.Id == id);
+        if (session == null) return NotFound();
+        if (session.OwnerId != userId) return Forbid();
+        if (session.Status != LiveSessionStatus.Ended || session.ConvertedPostId != null || string.IsNullOrWhiteSpace(session.RecordingUrl))
+            return Conflict(new { success = false, message = "Bản live không còn sẵn sàng để đăng bài." });
+        if (session.RecordingExpiresAt is null || session.RecordingExpiresAt <= DateTime.UtcNow)
+            return StatusCode(StatusCodes.Status410Gone, new { success = false, message = "Bản live đã hết thời gian lưu tạm." });
         session.RecordingExpiresAt = LiveSessionPolicy.ReplayExpiresAt(DateTime.UtcNow);
         session.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
         return Ok(new { success = true, data = ToResponse(session, userId, false) });
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Discard(Guid id)
+    {
+        var userId = UserContext.GetUserId(User);
+        var session = await db.LiveSessions
+            .Include(x => x.Owner)
+            .FirstOrDefaultAsync(x => x.Id == id);
+        if (session == null) return NoContent();
+        if (session.OwnerId != userId) return Forbid();
+        if (session.Status == LiveSessionStatus.Live)
+            return Conflict(new { success = false, message = "Hãy kết thúc live trước khi xóa." });
+        if (session.ConvertedPostId != null)
+        {
+            var convertedPostWasDeleted = await db.Posts
+                .IgnoreQueryFilters()
+                .AnyAsync(x => x.Id == session.ConvertedPostId && x.IsDeleted);
+            if (!convertedPostWasDeleted)
+                return Conflict(new { success = false, message = "Live đã được đăng thành bài viết nên không thể xóa bản ghi gốc." });
+            recordingStorage.DeleteRecording(session.RecordingUrl);
+            recordingStorage.DeletePendingUploads(session.Id);
+            db.LiveSessions.Remove(session);
+            await db.SaveChangesAsync();
+            return NoContent();
+        }
+        session.RecordingExpiresAt = DateTime.UtcNow;
+        session.UpdatedAt = DateTime.UtcNow;
+        recordingStorage.DeletePendingUploads(session.Id);
+        await db.SaveChangesAsync();
+        return NoContent();
     }
 
     [HttpPost("{id:guid}/convert-to-post")]
@@ -225,16 +374,40 @@ public class LivesController(
         db.Posts.Add(post);
         session.ConvertedPostId = post.Id;
         session.RecordingExpiresAt = null;
+        session.EvidenceExpiresAt = null;
+        session.IsEvidenceOnHold = false;
         session.UpdatedAt = now;
         await db.SaveChangesAsync();
         return Ok(new { success = true, data = new { postId = post.Id, live = ToResponse(session, userId, false) } });
+    }
+
+    private IActionResult? ValidateRecordingUpload(LiveSession? session, Guid userId)
+    {
+        if (session == null) return NotFound(new { success = false, message = "Không tìm thấy phiên live." });
+        if (session.OwnerId != userId) return Forbid();
+        if (session.Status == LiveSessionStatus.Live)
+            return Conflict(new { success = false, message = "Hãy kết thúc live trước khi lưu bản ghi." });
+        if (session.Status == LiveSessionStatus.Terminated && !LiveSessionPolicy.CanUploadEvidence(session, DateTime.UtcNow))
+            return StatusCode(StatusCodes.Status423Locked, new { success = false, message = "Đã hết thời gian tải bản ghi làm bằng chứng kiểm duyệt." });
+        if (session.ConvertedPostId != null || !string.IsNullOrWhiteSpace(session.RecordingUrl))
+            return Conflict(new { success = false, message = "Bản ghi live đã được lưu hoặc đăng bài." });
+        if (session.Status == LiveSessionStatus.Ended && session.RecordingExpiresAt <= DateTime.UtcNow)
+            return StatusCode(StatusCodes.Status410Gone, new { success = false, message = "Phiên lưu bản ghi đã hết hạn." });
+        return null;
+    }
+
+    private static void RefreshRetentionAfterUploadActivity(LiveSession session, DateTime now)
+    {
+        if (session.Status == LiveSessionStatus.Ended)
+            session.RecordingExpiresAt = LiveSessionPolicy.ReplayExpiresAt(now);
+        session.EvidenceExpiresAt ??= LiveSessionPolicy.EvidenceExpiresAt(session.EndedAt ?? now);
     }
 
     private static object ToResponse(LiveSession x, Guid currentUserId, bool moderator) => new
     {
         x.Id, x.OwnerId, OwnerName = x.Owner.FullName, x.Owner.AvatarUrl, x.Title, x.Description,
         Privacy = (int)x.Privacy, x.IsShopping, Status = (int)x.Status, x.StartedAt, x.EndedAt,
-        x.RecordingUrl, x.RecordingExpiresAt, x.ConvertedPostId, x.EndReason,
+        x.RecordingUrl, x.RecordingExpiresAt, x.EvidenceExpiresAt, x.IsEvidenceOnHold, x.ConvertedPostId, x.EndReason,
         ViewerCount = LiveHub.GetViewerCount(x.Id), IsOwner = x.OwnerId == currentUserId, CanModerate = moderator
     };
 
@@ -248,6 +421,13 @@ public class LivesController(
 public sealed record StartLiveRequest(string Title, string? Description, PostPrivacy Privacy = PostPrivacy.Public, bool IsShopping = false);
 public sealed record ChangeLivePrivacyRequest(PostPrivacy Privacy);
 public sealed record ConvertLiveToPostRequest(string? Content, PostPrivacy? Privacy);
+public sealed class InitializeLiveRecordingUploadRequest
+{
+    [Required, StringLength(255)] public string FileName { get; init; } = string.Empty;
+    [StringLength(100)] public string? ContentType { get; init; }
+    [Range(1, SharedConstants.Live.MaxRecordingSizeBytes)] public long TotalSize { get; init; }
+    [Range(1, 1000)] public int TotalChunks { get; init; }
+}
 public sealed class AddLiveCommentRequest
 {
     [Required]

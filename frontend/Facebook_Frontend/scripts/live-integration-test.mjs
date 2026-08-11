@@ -1,6 +1,6 @@
 import * as signalR from '@microsoft/signalr';
 
-const base = process.env.LIVE_TEST_API || 'http://127.0.0.1:5286';
+const base = process.argv[2] || process.env.LIVE_TEST_API || 'http://127.0.0.1:5286';
 const api = `${base}/api/v1`;
 const results = [];
 const check = (condition, label) => {
@@ -21,6 +21,14 @@ const request = async (path, { token, method = 'GET', body, form, expected } = {
 const login = async (email, password) => (await request('/auth/login', { method: 'POST', body: { email, password } })).data.accessToken;
 const deferred = () => { let resolve; const promise = new Promise((r) => { resolve = r; }); return { promise, resolve }; };
 const timeout = (promise, label) => Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error(`Timeout: ${label}`)), 5000))]);
+const eventually = async (read, predicate, attempts = 12) => {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const value = await read();
+    if (predicate(value)) return true;
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+  return false;
+};
 const connect = async (token) => {
   const connection = new signalR.HubConnectionBuilder().withUrl(`${base}/hubs/live`, { accessTokenFactory: () => token }).build();
   await connection.start();
@@ -34,6 +42,11 @@ check(Boolean(alice && bob && admin), 'đăng nhập broadcaster, viewer và mod
 
 const first = (await request('/lives', { token: alice, method: 'POST', body: { title: 'Integration live moderation', privacy: 1, isShopping: true } })).data;
 check(first.status === 1 && first.isOwner, 'tạo live công khai');
+check((await request('/lives?includeEnded=false', { token: bob })).data.some((item) => item.id === first.id), 'bạn bè thấy live công khai trong discovery');
+check(await eventually(
+  async () => (await request('/notifications?pageNumber=1&pageSize=100', { token: bob })).data,
+  (items) => items.some((item) => item.type === 6 && item.referenceId === first.id),
+), 'bạn bè nhận notification live có deep-link đúng phiên');
 
 const broadcaster = await connect(alice);
 const viewer = await connect(bob);
@@ -92,12 +105,34 @@ check(second.status === 1, 'moderator mở lại quyền và user live lại đ�
 const stopped = (await request(`/lives/${second.id}/stop`, { token: alice, method: 'PUT' })).data;
 const minutes = (new Date(stopped.recordingExpiresAt) - Date.now()) / 60000;
 check(minutes > 14 && minutes <= 15.1, 'hạn bản phát lại lấy từ shared contract là 15 phút');
-const form = new FormData();
-form.append('recording', new Blob(['webm-integration-fixture'], { type: 'video/webm' }), 'integration.webm');
-const uploaded = (await request(`/lives/${second.id}/recording`, { token: alice, method: 'POST', form })).data;
-check(Boolean(uploaded.recordingUrl), 'upload bản ghi live sau khi kết thúc');
+const recording = new Blob([new Uint8Array((5 * 1024 * 1024) + 19)], { type: 'video/webm' });
+const uploadTicket = (await request(`/lives/${second.id}/recording/uploads`, { token: alice, method: 'POST', body: {
+  fileName: 'integration.webm', contentType: recording.type, totalSize: recording.size, totalChunks: 2,
+} })).data;
+for (let index = 0; index < uploadTicket.totalChunks; index += 1) {
+  const start = index * uploadTicket.chunkSizeBytes;
+  const form = new FormData();
+  form.append('chunk', recording.slice(start, Math.min(start + uploadTicket.chunkSizeBytes, recording.size)), `chunk-${index}.part`);
+  await request(`/lives/${second.id}/recording/uploads/${uploadTicket.uploadId}/chunks/${index}`, { token: alice, method: 'POST', form });
+}
+const uploaded = (await request(`/lives/${second.id}/recording/uploads/${uploadTicket.uploadId}/complete`, { token: alice, method: 'POST' })).data;
+check(Boolean(uploaded.recordingUrl), 'upload bản ghi lớn tuần tự theo nhiều chunk');
+const beforePrepareExpiry = new Date(uploaded.recordingExpiresAt).getTime();
+await new Promise((resolve) => setTimeout(resolve, 20));
+const prepared = (await request(`/lives/${second.id}/prepare-conversion`, { token: alice, method: 'POST' })).data;
+check(new Date(prepared.recordingExpiresAt).getTime() > beforePrepareExpiry, 'mở modal đăng bài reset thời hạn bản tạm thêm 15 phút');
 const converted = (await request(`/lives/${second.id}/convert-to-post`, { token: alice, method: 'POST', body: { content: 'Live replay integration post', privacy: 2 } })).data;
 check(Boolean(converted.postId) && converted.live.recordingExpiresAt === null, 'chuyển bản ghi thành video post và bỏ hạn xóa');
+await request(`/posts/${converted.postId}`, { token: alice, method: 'DELETE' });
+await request(`/lives/${second.id}`, { token: alice, method: 'DELETE' });
+check((await request(`/lives/${second.id}`, { token: alice, expected: 404 })).status === 404, 'test tự dọn post và live đã chuyển đổi, không để lại dữ liệu rác trên bảng tin');
+
+const discardSession = (await request('/lives', { token: alice, method: 'POST', body: { title: 'Discard replay integration', privacy: 1 } })).data;
+await request(`/lives/${discardSession.id}/stop`, { token: alice, method: 'PUT' });
+await request(`/lives/${discardSession.id}`, { token: alice, method: 'DELETE' });
+check((await request(`/lives/${discardSession.id}`, { token: alice, expected: 410 })).status === 410, 'hủy đăng ẩn bản phát lại ngay với chủ sở hữu');
+const retainedEvidence = (await request('/admin/lives', { token: admin })).data.find((item) => item.id === discardSession.id);
+check(Boolean(retainedEvidence?.evidenceExpiresAt), 'admin vẫn truy cập metadata/bằng chứng trong cửa sổ 7 ngày');
 
 await Promise.allSettled([broadcaster.stop(), viewer.stop(), moderator.stop()]);
 console.log(`LIVE_INTEGRATION_OK ${results.length}`);

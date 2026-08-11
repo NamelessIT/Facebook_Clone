@@ -46,9 +46,17 @@ public class EnumContractTests
     {
         Assert.Equal(300000, SharedConstants.Timers.AdminUsersRefreshMs);
         Assert.Equal(15, SharedConstants.Live.ReplayLifetimeMinutes);
+        Assert.Equal(524288000, SharedConstants.Live.MaxRecordingSizeBytes);
+        Assert.Equal(5000, SharedConstants.Live.DiscoveryPollIntervalMs);
         Assert.Equal(500, SharedConstants.Live.CommentMaxLength);
         Assert.Equal(900000, SharedConstants.Timers.PresenceHeartbeatMs);
         Assert.Equal(1000, SharedConstants.Limits.MessageMaxLength);
         Assert.Equal(800, SharedConstants.Localization.MaxTranslationChunkChars);
+    }
+
+    [Fact]
+    public void Live_notification_type_is_stable()
+    {
+        Assert.Equal(6, (int)NotificationType.LiveStarted);
     }
 }

@@ -2,6 +2,7 @@ using FacebookClone.API.Common;
 using FacebookClone.API.Hubs;
 using FacebookClone.API.Services;
 using FacebookClone.Domain.Enums;
+using FacebookClone.Domain.Policies;
 using FacebookClone.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,8 @@ public class AdminLivesController(AppDbContext db, LiveAccessService access, IHu
                 x.Id, x.OwnerId, OwnerName = x.Owner.FirstName + " " + x.Owner.LastName, x.Owner.Email,
                 x.Owner.IsLiveSuspended, x.Owner.LiveSuspensionReason, x.Title, x.Description,
                 Privacy = (int)x.Privacy, x.IsShopping, Status = (int)x.Status, x.StartedAt, x.EndedAt,
-                x.RecordingUrl, x.RecordingExpiresAt, x.ConvertedPostId, x.EndReason
+                x.RecordingUrl, x.RecordingExpiresAt, x.EvidenceExpiresAt, x.IsEvidenceOnHold,
+                x.ConvertedPostId, x.EndReason
             }).ToListAsync();
         return Ok(new { success = true, data = sessions });
     }
@@ -41,24 +43,47 @@ public class AdminLivesController(AppDbContext db, LiveAccessService access, IHu
             .FirstOrDefaultAsync();
         if (session == null) return NotFound();
         session.Owner = await db.Users.FirstAsync(x => x.Id == session.OwnerId);
-        if (session.Status != LiveSessionStatus.Live) return Conflict(new { success = false, message = "Chỉ có thể dừng một phiên đang live." });
+        if (session.Status == LiveSessionStatus.Terminated)
+            return Conflict(new { success = false, message = "Phiên live này đã bị kiểm duyệt." });
+        var wasLive = session.Status == LiveSessionStatus.Live;
         var now = DateTime.UtcNow;
         session.Status = LiveSessionStatus.Terminated;
         session.EndedAt = now;
         session.UpdatedAt = now;
         session.EndedByUserId = reviewerId;
         session.EndReason = request.Reason.Trim();
-        session.RecordingUrl = null;
         session.RecordingExpiresAt = null;
+        session.EvidenceExpiresAt ??= LiveSessionPolicy.EvidenceExpiresAt(session.EndedAt ?? now);
+        session.IsEvidenceOnHold = true;
         session.Owner.IsLiveSuspended = true;
         session.Owner.LiveSuspensionReason = request.Reason.Trim();
         session.Owner.LiveSuspendedAt = now;
         session.Owner.UpdatedAt = now;
         await db.SaveChangesAsync();
         await transaction.CommitAsync();
-        await hub.Clients.Group(LiveHub.SessionGroup(id)).SendAsync("LiveTerminated", request.Reason.Trim());
+        if (wasLive)
+            await hub.Clients.Group(LiveHub.SessionGroup(id)).SendAsync("LiveTerminated", request.Reason.Trim());
         await hub.Clients.User(session.OwnerId.ToString()).SendAsync("LiveAccessSuspended", request.Reason.Trim());
-        return Ok(new { success = true, message = "Đã dừng live và tạm khóa quyền live của chủ sở hữu." });
+        return Ok(new { success = true, message = wasLive
+            ? "Đã dừng live, giữ bằng chứng và tạm khóa quyền live của chủ sở hữu."
+            : "Đã giữ bằng chứng và khóa quyền live của chủ sở hữu sau kiểm duyệt." });
+    }
+
+    [HttpPut("{id:guid}/evidence-hold")]
+    public async Task<IActionResult> SetEvidenceHold(Guid id, [FromBody] EvidenceHoldRequest request)
+    {
+        var reviewerId = UserContext.GetUserId(User);
+        if (!await access.HasPermissionAsync(reviewerId, "lives.moderate")) return Forbid();
+        var session = await db.LiveSessions.FirstOrDefaultAsync(x => x.Id == id);
+        if (session == null) return NotFound();
+        session.IsEvidenceOnHold = request.Hold;
+        if (request.Hold)
+            session.EvidenceExpiresAt ??= LiveSessionPolicy.EvidenceExpiresAt(session.EndedAt ?? DateTime.UtcNow);
+        else if (session.EvidenceExpiresAt is null || session.EvidenceExpiresAt <= DateTime.UtcNow)
+            session.EvidenceExpiresAt = DateTime.UtcNow.AddDays(1);
+        session.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+        return Ok(new { success = true, data = new { session.Id, session.IsEvidenceOnHold, session.EvidenceExpiresAt } });
     }
 
     [HttpPost("users/{userId:guid}/restore")]
@@ -72,6 +97,15 @@ public class AdminLivesController(AppDbContext db, LiveAccessService access, IHu
         user.LiveSuspensionReason = null;
         user.LiveSuspendedAt = null;
         user.UpdatedAt = DateTime.UtcNow;
+        var heldSessions = await db.LiveSessions
+            .Where(x => x.OwnerId == userId && x.IsEvidenceOnHold)
+            .ToListAsync();
+        foreach (var session in heldSessions)
+        {
+            session.IsEvidenceOnHold = false;
+            if (session.EvidenceExpiresAt is null || session.EvidenceExpiresAt <= DateTime.UtcNow)
+                session.EvidenceExpiresAt = DateTime.UtcNow.AddDays(1);
+        }
         await db.SaveChangesAsync();
         await hub.Clients.User(userId.ToString()).SendAsync("LiveAccessRestored");
         return Ok(new { success = true, message = "Đã mở lại quyền live sau kiểm duyệt." });
@@ -79,3 +113,4 @@ public class AdminLivesController(AppDbContext db, LiveAccessService access, IHu
 }
 
 public sealed record ModerateLiveRequest(string Reason);
+public sealed record EvidenceHoldRequest(bool Hold);

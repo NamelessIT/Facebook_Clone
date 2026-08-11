@@ -1,10 +1,11 @@
 import { useNavigate, Link } from 'react-router-dom';
-import { Bell, ThumbsUp, MessageSquare, UserPlus, MessageCircle, UserCheck } from 'lucide-react';
+import { Bell, ThumbsUp, MessageSquare, UserPlus, MessageCircle, Radio, UserCheck } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS, vi } from 'date-fns/locale';
 import Avatar from '../common/Avatar';
 import { useLocalization } from '../../contexts/useLocalization';
 import './NotificationPanel.css';
+import { NotificationType } from '../../shared/generated/enums';
 
 const NOTIFICATION_TYPE = {
   LIKE: 1,
@@ -12,6 +13,7 @@ const NOTIFICATION_TYPE = {
   FRIEND_REQUEST: 3,
   MESSAGE: 4,
   FRIEND_ACCEPTED: 5,
+  LIVE_STARTED: NotificationType.LiveStarted,
 };
 
 const getNotificationIcon = (type) => {
@@ -26,6 +28,8 @@ const getNotificationIcon = (type) => {
       return { icon: MessageCircle, className: 'notification-icon--message' };
     case NOTIFICATION_TYPE.FRIEND_ACCEPTED:
       return { icon: UserCheck, className: 'notification-icon--friend' };
+    case NOTIFICATION_TYPE.LIVE_STARTED:
+      return { icon: Radio, className: 'notification-icon--live' };
     default:
       return { icon: Bell, className: 'notification-icon--like' };
   }
@@ -44,6 +48,8 @@ const getNotificationText = (notification, t) => {
       return { name: actorName, action: t('notification.sentMessage') };
     case NOTIFICATION_TYPE.FRIEND_ACCEPTED:
       return { name: actorName, action: t('notification.acceptedFriendRequest') };
+    case NOTIFICATION_TYPE.LIVE_STARTED:
+      return { name: actorName, action: ' đang phát trực tiếp. Nhấn để xem ngay.' };
     default:
       return { name: actorName, action: t('notification.performedAction') };
   }
@@ -67,6 +73,8 @@ const getNotificationLink = (notification) => {
       return '/friends';
     case NOTIFICATION_TYPE.MESSAGE:
       return `/messages/${notification.actor?.id || ''}`;
+    case NOTIFICATION_TYPE.LIVE_STARTED:
+      return `/live?session=${notification.referenceId}`;
     default:
       return '/';
   }

@@ -42,7 +42,8 @@ public enum NotificationType
     Comment = 2,
     FriendRequest = 3,
     Message = 4,
-    FriendAccepted = 5
+    FriendAccepted = 5,
+    LiveStarted = 6
 }
 
 public enum ConversationType

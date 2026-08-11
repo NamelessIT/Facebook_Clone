@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Clock3, Eye, Loader2, MessageCircle, Radio, Save, Send, ShieldAlert, UploadCloud, VideoOff } from 'lucide-react';
+import { Clock3, Eye, FileVideo2, Loader2, MessageCircle, Radio, Save, Send, ShieldAlert, Trash2, UploadCloud, VideoOff } from 'lucide-react';
 import toast from '../../shared/appToast';
 import liveService from '../../services/liveService';
 import { getImageUrl } from '../../utils/formatUrl';
@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LIVE } from '../../shared/generated/constants';
 import './LiveRoom.css';
@@ -19,7 +20,7 @@ const PRIVACY_OPTIONS = [
 
 const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMode = false }) => {
+const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, moderationMode = false }) => {
   const [session, setSession] = useState(initialSession);
   const [viewerCount, setViewerCount] = useState(initialSession?.viewerCount || 0);
   const [phase, setPhase] = useState(initialSession?.status === 1 ? 'connecting' : 'replay');
@@ -28,6 +29,9 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMod
   const [commentText, setCommentText] = useState('');
   const [commentSending, setCommentSending] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(null);
+  const [conversionOpen, setConversionOpen] = useState(false);
+  const [conversionPrivacy, setConversionPrivacy] = useState(String(initialSession?.privacy || 1));
+  const [conversionBusy, setConversionBusy] = useState(false);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const connectionRef = useRef(null);
@@ -44,6 +48,20 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMod
 
   useEffect(() => { onUpdatedRef.current = onUpdated; }, [onUpdated]);
   useEffect(() => { onOpenChangeRef.current = onOpenChange; }, [onOpenChange]);
+
+  useEffect(() => {
+    if (!open || !isOwner || session?.status !== 2 || session?.convertedPostId || !session?.recordingExpiresAt) return undefined;
+    const delay = new Date(session.recordingExpiresAt).getTime() - Date.now();
+    if (delay <= 0) return undefined;
+    const timer = window.setTimeout(async () => {
+      try {
+        await liveService.discard(session.id);
+        onDeleted?.(session.id);
+        onOpenChangeRef.current(false);
+      } catch { /* background cleanup remains authoritative */ }
+    }, delay + 750);
+    return () => window.clearTimeout(timer);
+  }, [isOwner, onDeleted, open, session?.convertedPostId, session?.id, session?.recordingExpiresAt, session?.status]);
 
   const mergeComments = useCallback((incoming) => {
     const rows = Array.isArray(incoming) ? incoming : [incoming];
@@ -90,6 +108,31 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMod
     if (!connection) return;
     try { await connection.invoke('LeaveSession'); } catch { /* connection may already be gone */ }
     try { await connection.stop(); } catch { /* no-op */ }
+  }, []);
+
+  const finishRecorder = useCallback(async () => {
+    const recorder = recorderRef.current;
+    recorderRef.current = null;
+    if (!recorder) return null;
+    const createBlob = () => recordedChunksRef.current.length
+      ? new Blob(recordedChunksRef.current, { type: recorder.mimeType || 'video/webm' })
+      : null;
+    if (recorder.state === 'inactive') {
+      await new Promise((resolve) => window.setTimeout(resolve, 100));
+      return createBlob();
+    }
+    return await new Promise((resolve) => {
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        window.setTimeout(() => resolve(createBlob()), 0);
+      };
+      recorder.addEventListener('stop', finish, { once: true });
+      try { recorder.requestData(); } catch { /* recorder can become inactive between checks */ }
+      recorder.stop();
+      window.setTimeout(finish, 2000);
+    });
   }, []);
 
   const createPeer = useCallback((targetConnectionId) => {
@@ -175,12 +218,25 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMod
           if (!isOwner) toast('Live đã kết thúc.');
           closeMedia();
         });
-        connection.on('LiveTerminated', (reason) => {
+        connection.on('LiveTerminated', async (reason) => {
+          const evidenceBlob = isOwner ? await finishRecorder() : null;
           setSession((current) => ({ ...current, status: 3, endReason: reason }));
           setPhase('terminated');
           closeMedia();
           toast.error(`Live bị dừng bởi kiểm duyệt viên: ${reason}`);
-          window.setTimeout(() => onOpenChangeRef.current(false), 1200);
+          if (isOwner && evidenceBlob?.size) {
+            try {
+              setUploadProgress({ percent: 0, loaded: 0, total: evidenceBlob.size, chunkIndex: 0, totalChunks: 1 });
+              await liveService.uploadRecording(session.id, evidenceBlob, (event) => {
+                if (event.total) setUploadProgress({ ...event, percent: Math.round((event.loaded / event.total) * 100) });
+              });
+            } catch {
+              toast.error('Không thể tải đủ bản ghi phục vụ kiểm duyệt. Phiên live vẫn đã bị khóa.');
+            } finally {
+              setUploadProgress(null);
+            }
+          }
+          window.setTimeout(() => onOpenChangeRef.current(false), 500);
         });
         connection.onreconnected(async () => {
           try {
@@ -212,32 +268,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMod
         closeConnection();
       }
     };
-  }, [closeConnection, closeMedia, createPeer, isOwner, loadComments, mergeComments, open, session?.id, session?.status]);
-
-  const finishRecorder = async () => {
-    const recorder = recorderRef.current;
-    recorderRef.current = null;
-    if (!recorder) return null;
-    const createBlob = () => recordedChunksRef.current.length
-      ? new Blob(recordedChunksRef.current, { type: recorder.mimeType || 'video/webm' })
-      : null;
-    if (recorder.state === 'inactive') {
-      await new Promise((resolve) => window.setTimeout(resolve, 100));
-      return createBlob();
-    }
-    return await new Promise((resolve) => {
-      let settled = false;
-      const finish = () => {
-        if (settled) return;
-        settled = true;
-        window.setTimeout(() => resolve(createBlob()), 0);
-      };
-      recorder.addEventListener('stop', finish, { once: true });
-      try { recorder.requestData(); } catch { /* recorder can become inactive between checks */ }
-      recorder.stop();
-      window.setTimeout(finish, 2000);
-    });
-  };
+  }, [closeConnection, closeMedia, createPeer, finishRecorder, isOwner, loadComments, mergeComments, open, session?.id, session?.status]);
 
   const stopBroadcast = async () => {
     try {
@@ -246,9 +277,9 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMod
       let updated = response.data.data;
       if (blob?.size) {
         pendingRecordingRef.current = blob;
-        setUploadProgress(0);
+        setUploadProgress({ percent: 0, loaded: 0, total: blob.size, chunkIndex: 0, totalChunks: 1 });
         updated = (await liveService.uploadRecording(session.id, blob, (event) => {
-          if (event.total) setUploadProgress(Math.round((event.loaded / event.total) * 100));
+          if (event.total) setUploadProgress({ ...event, percent: Math.round((event.loaded / event.total) * 100) });
         })).data.data;
         pendingRecordingRef.current = null;
       }
@@ -259,7 +290,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMod
       setSession(updated);
       setPhase('replay');
       onUpdated?.(updated);
-      toast.success(`Đã kết thúc live. Bản phát lại sẽ tự xóa sau ${LIVE.replayLifetimeMinutes} phút.`);
+      toast.success(`Đã kết thúc live. Quyền đăng replay hết sau ${LIVE.replayLifetimeMinutes} phút; bằng chứng an toàn được giữ tối đa ${LIVE.evidenceRetentionDays} ngày.`);
     } catch (error) {
       setUploadProgress(null);
       toast.apiError(error, 'Live đã đóng nhưng chưa thể lưu bản ghi. Hãy thử tải lại bản ghi.', { context: 'live.stop' });
@@ -270,9 +301,9 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMod
     const blob = pendingRecordingRef.current;
     if (!blob?.size) return;
     try {
-      setUploadProgress(0);
+      setUploadProgress({ percent: 0, loaded: 0, total: blob.size, chunkIndex: 0, totalChunks: 1 });
       const updated = (await liveService.uploadRecording(session.id, blob, (event) => {
-        if (event.total) setUploadProgress(Math.round((event.loaded / event.total) * 100));
+        if (event.total) setUploadProgress({ ...event, percent: Math.round((event.loaded / event.total) * 100) });
       })).data.data;
       pendingRecordingRef.current = null;
       setSession(updated);
@@ -309,17 +340,45 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMod
     } catch (error) { toast.apiError(error, 'Không thể đổi quyền riêng tư.', { context: 'live.privacy' }); }
   };
 
-  const convertToPost = async () => {
+  const openConversion = async () => {
+    setConversionBusy(true);
     try {
-      const response = await liveService.convertToPost(session.id, { content: postContent, privacy: session.privacy });
+      const updated = (await liveService.prepareConversion(session.id)).data.data;
+      setSession(updated);
+      setConversionPrivacy(String(updated.privacy));
+      setConversionOpen(true);
+      onUpdated?.(updated);
+    } catch (error) { toast.apiError(error, 'Bản live đã hết hạn hoặc không còn sẵn sàng để đăng.', { context: 'live.convert.prepare' }); }
+    finally { setConversionBusy(false); }
+  };
+
+  const discardReplay = async () => {
+    setConversionBusy(true);
+    try {
+      await liveService.discard(session.id);
+      setConversionOpen(false);
+      onDeleted?.(session.id);
+      onOpenChangeRef.current(false);
+      toast.success(`Đã hủy đăng. Bản ghi đã ẩn khỏi tài khoản và chỉ được giữ tối đa ${LIVE.evidenceRetentionDays} ngày để phục vụ kiểm duyệt.`);
+    } catch (error) { toast.apiError(error, 'Không thể xóa bản ghi live tạm.', { context: 'live.discard' }); }
+    finally { setConversionBusy(false); }
+  };
+
+  const convertToPost = async () => {
+    setConversionBusy(true);
+    try {
+      const response = await liveService.convertToPost(session.id, { content: postContent, privacy: Number(conversionPrivacy) });
       setSession(response.data.data.live);
       onUpdated?.(response.data.data.live);
+      setConversionOpen(false);
       toast.success('Đã chuyển bản ghi live thành bài viết video.');
     } catch (error) { toast.apiError(error, 'Không thể chuyển live thành bài viết.', { context: 'live.convert' }); }
+    finally { setConversionBusy(false); }
   };
 
   const replayUrl = session?.recordingUrl ? getImageUrl(session.recordingUrl) : null;
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="live-room-dialog" onInteractOutside={(event) => isOwner && session?.status === 1 && event.preventDefault()}>
         <main className="live-room-main">
@@ -333,7 +392,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMod
             )}
             {session?.status === 1 && <Badge variant="destructive" className="live-room-status"><Radio /> LIVE</Badge>}
             <span className="live-room-viewers"><Eye size={15} /> {viewerCount}</span>
-            {uploadProgress !== null && <div className="live-upload-progress"><UploadCloud /><strong>Đang tải bản ghi {uploadProgress}%</strong><span style={{ width: `${uploadProgress}%` }} /></div>}
+            {uploadProgress !== null && <div className="live-upload-progress"><UploadCloud /><strong>Đang tải bản ghi {uploadProgress.percent}%</strong><small>{Math.round(uploadProgress.loaded / 1024 / 1024)} / {Math.max(1, Math.ceil(uploadProgress.total / 1024 / 1024))} MB · chunk {Math.min(uploadProgress.chunkIndex + 1, uploadProgress.totalChunks)}/{uploadProgress.totalChunks}</small><span style={{ width: `${uploadProgress.percent}%` }} /></div>}
           </div>
           <div className="live-room-details">
             <DialogHeader>
@@ -352,8 +411,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMod
             {isOwner && session?.status === 2 && session.recordingUrl && !session.convertedPostId && (
               <div className="live-replay-actions">
                 <p><Clock3 size={16} /> Bản phát lại tự xóa lúc {new Date(session.recordingExpiresAt).toLocaleTimeString('vi-VN')}.</p>
-                <Input value={postContent} onChange={(event) => setPostContent(event.target.value)} placeholder="Nội dung bài viết" />
-                <Button onClick={convertToPost}><Save /> Đăng bản live thành video post</Button>
+                <Button onClick={openConversion} disabled={conversionBusy}><Save /> Đăng bản live thành video post</Button>
               </div>
             )}
             {isOwner && session?.status === 2 && !session.recordingUrl && pendingRecordingRef.current && (
@@ -384,6 +442,17 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, moderationMod
         </aside>
       </DialogContent>
     </Dialog>
+    <Dialog open={conversionOpen} onOpenChange={(value) => value ? setConversionOpen(true) : discardReplay()}>
+      <DialogContent className="live-conversion-dialog" onInteractOutside={(event) => event.preventDefault()}>
+        <DialogHeader><DialogTitle>Đăng bản live thành video</DialogTitle><DialogDescription>Bản tạm được gia hạn thêm {LIVE.replayLifetimeMinutes} phút trong lúc bạn hoàn thiện bài viết.</DialogDescription></DialogHeader>
+        <div className="live-conversion-preview"><FileVideo2 /><div><strong>{session?.title}</strong><span>Video live đã upload an toàn theo từng chunk.</span></div></div>
+        <label className="live-conversion-field"><span>Nội dung bài viết</span><Input value={postContent} onChange={(event) => setPostContent(event.target.value)} maxLength={500} placeholder="Bạn muốn nói gì về video này?" /></label>
+        <label className="live-conversion-field"><span>Đối tượng xem bài viết</span><Select value={conversionPrivacy} onValueChange={setConversionPrivacy}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>{PRIVACY_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select></label>
+        {uploadProgress !== null && <Progress value={uploadProgress.percent} />}
+        <DialogFooter className="live-conversion-actions"><Button variant="destructive" onClick={discardReplay} disabled={conversionBusy}><Trash2 /> Hủy và xóa video</Button><Button onClick={convertToPost} disabled={conversionBusy}>{conversionBusy ? <Loader2 className="live-spin" /> : <Save />} Đăng bài viết</Button></DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 };
 

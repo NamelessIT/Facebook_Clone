@@ -17,6 +17,8 @@ public class LiveSession
     public DateTime? EndedAt { get; set; }
     public string? RecordingUrl { get; set; }
     public DateTime? RecordingExpiresAt { get; set; }
+    public DateTime? EvidenceExpiresAt { get; set; }
+    public bool IsEvidenceOnHold { get; set; }
     public Guid? ConvertedPostId { get; set; }
     public Post? ConvertedPost { get; set; }
     public Guid? EndedByUserId { get; set; }
