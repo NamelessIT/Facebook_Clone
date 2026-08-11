@@ -11,7 +11,7 @@ public class LiveSessionPolicyTests
     public void ReplayExpiresExactlyThirtyMinutesAfterLiveEnds()
     {
         var endedAt = new DateTime(2026, 8, 10, 4, 0, 0, DateTimeKind.Utc);
-        Assert.Equal(endedAt.AddMinutes(30), LiveSessionPolicy.ReplayExpiresAt(endedAt));
+        Assert.Equal(endedAt.AddMinutes(15), LiveSessionPolicy.ReplayExpiresAt(endedAt));
     }
 
     [Fact]

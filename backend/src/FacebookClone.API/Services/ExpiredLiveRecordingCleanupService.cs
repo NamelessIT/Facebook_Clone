@@ -1,4 +1,5 @@
 using FacebookClone.Infrastructure;
+using FacebookClone.Domain.Constants;
 using Microsoft.EntityFrameworkCore;
 
 namespace FacebookClone.API.Services;
@@ -10,7 +11,7 @@ public class ExpiredLiveRecordingCleanupService(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(SharedConstants.Live.CleanupIntervalSeconds));
         while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
         {
             try

@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { LIVE } from '../../shared/generated/constants';
 import './DiscoveryPages.css';
 
 const categories = ['Tất cả', 'Đang live', 'Bán hàng', 'Bản phát lại'];
@@ -67,7 +68,7 @@ const LivePage = () => {
   return (
     <section className="discovery-page discovery-page--wide live-page">
       <div className="discovery-hero live-hero">
-        <div><Badge variant="destructive"><Radio /> Trực tiếp</Badge><h1>Video trực tiếp</h1><p>Phát live cộng đồng, bán hàng hoặc xem lại trong 30 phút.</p></div>
+        <div><Badge variant="destructive"><Radio /> Trực tiếp</Badge><h1>Video trực tiếp</h1><p>Phát live cộng đồng, bán hàng hoặc xem lại trong {LIVE.replayLifetimeMinutes} phút.</p></div>
         <Button onClick={() => setCreatorOpen(true)}><Video /> Phát trực tiếp</Button>
       </div>
 
@@ -81,7 +82,7 @@ const LivePage = () => {
             <div className="live-thumbnail">
               {stream.recordingUrl ? <video src={getImageUrl(stream.recordingUrl)} muted preload="metadata" /> : <div className="live-thumbnail-placeholder"><Radio /></div>}
               <Badge variant={stream.status === 1 ? 'destructive' : 'secondary'} className="live-badge">{stream.status === 1 ? 'LIVE' : 'XEM LẠI'}</Badge>
-              <span className="live-viewers">{stream.status === 1 ? <><Eye size={14} /> {stream.viewerCount || 0}</> : <><Clock3 size={14} /> 30 phút</>}</span>
+              <span className="live-viewers">{stream.status === 1 ? <><Eye size={14} /> {stream.viewerCount || 0}</> : <><Clock3 size={14} /> {LIVE.replayLifetimeMinutes} phút</>}</span>
               <span className="live-play"><Play fill="currentColor" /></span>
             </div>
             <CardContent className="live-card-content"><div className="live-host-avatar">{stream.ownerName?.charAt(0) || '?'}</div><div><h2>{stream.title}</h2><p>{stream.ownerName}</p><span>{stream.isShopping ? <ShoppingBag size={13} /> : <Users size={13} />} {stream.isShopping ? 'Bán hàng' : 'Cộng đồng'}</span></div></CardContent>

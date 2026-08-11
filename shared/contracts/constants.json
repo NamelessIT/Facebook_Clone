@@ -6,7 +6,8 @@
   },
   "hubs": {
     "chat": "/hubs/chat",
-    "notification": "/hubs/notification"
+    "notification": "/hubs/notification",
+    "live": "/hubs/live"
   },
   "storageKeys": {
     "accessToken": "accessToken",
@@ -39,6 +40,13 @@
     "chatTypingTimeoutMs": 3000,
     "postDeleteUndoSeconds": 10,
     "notInterestedAutoDismissSeconds": 60
+  },
+  "live": {
+    "replayLifetimeMinutes": 15,
+    "commentMaxLength": 500,
+    "commentsPageSize": 100,
+    "commentsPollIntervalMs": 5000,
+    "cleanupIntervalSeconds": 60
   },
   "localization": {
     "defaultLocale": "vi",

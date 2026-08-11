@@ -16,6 +16,7 @@ using FacebookClone.Application.Services.Implementations;
 using FacebookClone.Application.Mappings; // Namespace chứa UserProfile
 using FacebookClone.Infrastructure;
 using FacebookClone.Infrastructure.Repositories;
+using FacebookClone.Domain.Constants;
 using Serilog;
 using Microsoft.OpenApi.Models; // Dùng cho Swagger
 
@@ -312,7 +313,7 @@ try
     app.MapControllers();
     app.MapHub<NotificationHub>("/hubs/notification"); // 👈 Mở cổng cho Frontend kết nối WebSockets
     app.MapHub<ChatHub>("/hubs/chat"); // 👈 Mở cổng Realtime cho Chat
-    app.MapHub<LiveHub>("/hubs/live");
+    app.MapHub<LiveHub>(SharedConstants.Hubs.Live);
     app.Run();
 }
 catch (Exception ex)

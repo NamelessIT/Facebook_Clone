@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using FacebookClone.API.Common;
 using FacebookClone.API.Hubs;
 using FacebookClone.API.Services;
 using FacebookClone.Application.Services.Interfaces;
 using FacebookClone.Domain.Entities;
+using FacebookClone.Domain.Constants;
 using FacebookClone.Domain.Enums;
 using FacebookClone.Domain.Policies;
 using FacebookClone.Infrastructure;
@@ -14,7 +16,12 @@ using Microsoft.EntityFrameworkCore;
 namespace FacebookClone.API.Controllers;
 
 [ApiController, Authorize, Route("api/v1/lives")]
-public class LivesController(AppDbContext db, LiveAccessService access, IFileService files, IHubContext<LiveHub> hub) : ControllerBase
+public class LivesController(
+    AppDbContext db,
+    LiveAccessService access,
+    IFileService files,
+    IHubContext<LiveHub> hub,
+    ILogger<LivesController> logger) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> List([FromQuery] bool includeEnded = true)
@@ -92,12 +99,81 @@ public class LivesController(AppDbContext db, LiveAccessService access, IFileSer
         return Ok(new { success = true, data = ToResponse(session, userId, false) });
     }
 
+    [HttpGet("{id:guid}/comments")]
+    public async Task<IActionResult> GetComments(Guid id, [FromQuery] int limit = SharedConstants.Live.CommentsPageSize)
+    {
+        var userId = UserContext.GetUserId(User);
+        var session = await db.LiveSessions.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        if (session == null) return NotFound(new { success = false, message = "Không tìm thấy phiên live." });
+        if (!await access.CanViewAsync(session, userId)) return Forbid();
+
+        limit = Math.Clamp(limit, 1, SharedConstants.Live.CommentsPageSize);
+        var newest = await db.LiveComments.AsNoTracking()
+            .Where(x => x.LiveSessionId == id)
+            .Include(x => x.User)
+            .OrderByDescending(x => x.CreatedAt)
+            .Take(limit)
+            .ToListAsync();
+        var comments = newest.OrderBy(x => x.CreatedAt).Select(ToCommentResponse).ToList();
+        return Ok(new { success = true, data = comments });
+    }
+
+    [HttpPost("{id:guid}/comments")]
+    public async Task<IActionResult> AddComment(Guid id, [FromBody] AddLiveCommentRequest request)
+    {
+        var userId = UserContext.GetUserId(User);
+        if (request.ClientRequestId == Guid.Empty)
+            return BadRequest(new { success = false, message = "Thiếu mã định danh bình luận." });
+        var content = request.Content?.Trim();
+        if (string.IsNullOrWhiteSpace(content))
+            return BadRequest(new { success = false, message = "Bình luận không được để trống." });
+        if (content.Length > SharedConstants.Live.CommentMaxLength)
+            return BadRequest(new { success = false, message = $"Bình luận tối đa {SharedConstants.Live.CommentMaxLength} ký tự." });
+
+        await using var transaction = await db.Database.BeginTransactionAsync();
+        var session = await db.LiveSessions
+            .FromSqlInterpolated($"SELECT * FROM \"LiveSessions\" WHERE \"Id\" = {id} FOR UPDATE")
+            .FirstOrDefaultAsync();
+        if (session == null) return NotFound(new { success = false, message = "Không tìm thấy phiên live." });
+        if (!await access.CanViewAsync(session, userId)) return Forbid();
+
+        var existing = await db.LiveComments.Include(x => x.User).FirstOrDefaultAsync(x =>
+            x.LiveSessionId == id && x.UserId == userId && x.ClientRequestId == request.ClientRequestId);
+        if (existing != null)
+        {
+            await transaction.CommitAsync();
+            return Ok(new { success = true, data = ToCommentResponse(existing), duplicate = true });
+        }
+        if (session.Status != LiveSessionStatus.Live)
+            return Conflict(new { success = false, message = "Live đã đóng nên không nhận thêm bình luận." });
+
+        var user = await db.Users.FirstOrDefaultAsync(x => x.Id == userId && !x.IsDeleted);
+        if (user == null || user.IsBanned) return Unauthorized();
+        var comment = new LiveComment
+        {
+            Id = Guid.NewGuid(), LiveSessionId = id, UserId = userId, User = user,
+            ClientRequestId = request.ClientRequestId, Content = content, CreatedAt = DateTime.UtcNow
+        };
+        db.LiveComments.Add(comment);
+        await db.SaveChangesAsync();
+        await transaction.CommitAsync();
+
+        var response = ToCommentResponse(comment);
+        try { await hub.Clients.Group(LiveHub.SessionGroup(id)).SendAsync("LiveCommentAdded", response); }
+        catch (Exception ex) { logger.LogWarning(ex, "Live comment {CommentId} persisted but realtime delivery failed", comment.Id); }
+        return Ok(new { success = true, data = response });
+    }
+
     [HttpPut("{id:guid}/stop")]
     public async Task<IActionResult> Stop(Guid id)
     {
         var userId = UserContext.GetUserId(User);
-        var session = await db.LiveSessions.Include(x => x.Owner).FirstOrDefaultAsync(x => x.Id == id);
+        await using var transaction = await db.Database.BeginTransactionAsync();
+        var session = await db.LiveSessions
+            .FromSqlInterpolated($"SELECT * FROM \"LiveSessions\" WHERE \"Id\" = {id} FOR UPDATE")
+            .FirstOrDefaultAsync();
         if (session == null) return NotFound();
+        session.Owner = await db.Users.FirstAsync(x => x.Id == session.OwnerId);
         if (session.OwnerId != userId) return Forbid();
         if (session.Status != LiveSessionStatus.Live) return Ok(new { success = true, data = ToResponse(session, userId, false) });
         var now = DateTime.UtcNow;
@@ -106,6 +182,7 @@ public class LivesController(AppDbContext db, LiveAccessService access, IFileSer
         session.UpdatedAt = now;
         session.RecordingExpiresAt = LiveSessionPolicy.ReplayExpiresAt(now);
         await db.SaveChangesAsync();
+        await transaction.CommitAsync();
         await hub.Clients.Group(LiveHub.SessionGroup(id)).SendAsync("LiveEnded", session.RecordingExpiresAt);
         return Ok(new { success = true, data = ToResponse(session, userId, false) });
     }
@@ -160,8 +237,22 @@ public class LivesController(AppDbContext db, LiveAccessService access, IFileSer
         x.RecordingUrl, x.RecordingExpiresAt, x.ConvertedPostId, x.EndReason,
         ViewerCount = LiveHub.GetViewerCount(x.Id), IsOwner = x.OwnerId == currentUserId, CanModerate = moderator
     };
+
+    private static object ToCommentResponse(LiveComment x) => new
+    {
+        x.Id, x.ClientRequestId, x.Content, x.CreatedAt,
+        Author = new { x.User.Id, x.User.FullName, x.User.AvatarUrl }
+    };
 }
 
 public sealed record StartLiveRequest(string Title, string? Description, PostPrivacy Privacy = PostPrivacy.Public, bool IsShopping = false);
 public sealed record ChangeLivePrivacyRequest(PostPrivacy Privacy);
 public sealed record ConvertLiveToPostRequest(string? Content, PostPrivacy? Privacy);
+public sealed class AddLiveCommentRequest
+{
+    [Required]
+    public Guid ClientRequestId { get; init; }
+
+    [Required, StringLength(SharedConstants.Live.CommentMaxLength)]
+    public string Content { get; init; } = string.Empty;
+}

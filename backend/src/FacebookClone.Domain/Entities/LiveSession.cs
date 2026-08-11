@@ -21,4 +21,5 @@ public class LiveSession
     public Post? ConvertedPost { get; set; }
     public Guid? EndedByUserId { get; set; }
     public string? EndReason { get; set; }
+    public ICollection<LiveComment> Comments { get; set; } = new List<LiveComment>();
 }

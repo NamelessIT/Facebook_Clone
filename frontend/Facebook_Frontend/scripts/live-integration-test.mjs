@@ -40,9 +40,11 @@ const viewer = await connect(bob);
 const viewerJoined = deferred();
 const offerReceived = deferred();
 const privacyChanged = deferred();
+const commentAdded = deferred();
 const broadcasterKicked = deferred();
 const viewerKicked = deferred();
 broadcaster.on('ViewerJoined', (connectionId) => viewerJoined.resolve(connectionId));
+broadcaster.on('LiveCommentAdded', (comment) => commentAdded.resolve(comment));
 viewer.on('ReceiveOffer', (connectionId, offer) => offerReceived.resolve({ connectionId, offer }));
 viewer.on('LivePrivacyChanged', (privacy) => privacyChanged.resolve(privacy));
 broadcaster.on('LiveTerminated', (reason) => broadcasterKicked.resolve(reason));
@@ -54,6 +56,13 @@ check(Boolean(viewerConnectionId), 'viewer tham gia live realtime');
 await broadcaster.invoke('SendOffer', viewerConnectionId, { type: 'offer', sdp: 'integration-test' });
 const offer = await timeout(offerReceived.promise, 'offer relay');
 check(offer.offer.sdp === 'integration-test', 'SignalR relay WebRTC offer broadcaster → viewer');
+
+const commentRequestId = crypto.randomUUID();
+const savedComment = (await request(`/lives/${first.id}/comments`, { token: bob, method: 'POST', body: { clientRequestId: commentRequestId, content: 'Bình luận integration không bị hụt' } })).data;
+check((await timeout(commentAdded.promise, 'live comment realtime')).id === savedComment.id, 'bình luận lưu DB trước rồi phát realtime');
+const duplicateComment = await request(`/lives/${first.id}/comments`, { token: bob, method: 'POST', body: { clientRequestId: commentRequestId, content: 'Bình luận integration không bị hụt' } });
+check(duplicateComment.duplicate === true && duplicateComment.data.id === savedComment.id, 'retry bình luận idempotent không tạo bản sao');
+check((await request(`/lives/${first.id}/comments`, { token: bob })).data.some((item) => item.id === savedComment.id), 'polling REST đọc lại được bình luận đã lưu');
 
 await request(`/lives/${first.id}/privacy`, { token: alice, method: 'PUT', body: { privacy: 2 } });
 check(await timeout(privacyChanged.promise, 'privacy event') === 2, 'đổi quyền riêng tư ngay khi đang live');
@@ -73,6 +82,7 @@ const kicked = await Promise.all([
   timeout(moderatorKicked.promise, 'moderator kicked'),
 ]);
 check(kicked.every((reason) => reason === 'Integration community review'), 'broadcaster và mọi viewer nhận lệnh kick realtime');
+check((await request(`/lives/${first.id}/comments`, { token: bob, method: 'POST', body: { clientRequestId: crypto.randomUUID(), content: 'Không được nhận sau khi đóng' }, expected: 409 })).status === 409, 'live đã đóng từ chối bình luận mới');
 check((await request('/lives', { token: alice, method: 'POST', body: { title: 'Blocked live', privacy: 1 }, expected: 423 })).status === 423, 'chỉ quyền live của broadcaster bị tạm khóa');
 check(Array.isArray((await request('/lives', { token: alice })).data), 'tài khoản bị khóa live vẫn dùng API khác');
 
@@ -81,7 +91,7 @@ const second = (await request('/lives', { token: alice, method: 'POST', body: { 
 check(second.status === 1, 'moderator mở lại quyền và user live lại được');
 const stopped = (await request(`/lives/${second.id}/stop`, { token: alice, method: 'PUT' })).data;
 const minutes = (new Date(stopped.recordingExpiresAt) - Date.now()) / 60000;
-check(minutes > 29 && minutes <= 30.1, 'hạn bản phát lại là 30 phút');
+check(minutes > 14 && minutes <= 15.1, 'hạn bản phát lại lấy từ shared contract là 15 phút');
 const form = new FormData();
 form.append('recording', new Blob(['webm-integration-fixture'], { type: 'video/webm' }), 'integration.webm');
 const uploaded = (await request(`/lives/${second.id}/recording`, { token: alice, method: 'POST', form })).data;

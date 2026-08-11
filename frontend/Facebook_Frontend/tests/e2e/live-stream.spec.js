@@ -30,6 +30,10 @@ test('broadcasts fake camera media to a second user and saves a replay', async (
       tracks: video.srcObject?.getTracks().filter((track) => track.readyState === 'live').length || 0,
     })), { timeout: 15_000 }).toEqual({ readyState: 4, tracks: 2 });
 
+    await viewer.getByLabel('Bình luận live').fill('Bình luận realtime từ Bob');
+    await viewer.getByRole('button', { name: 'Gửi bình luận' }).click();
+    await expect(broadcaster.getByText('Bình luận realtime từ Bob')).toBeVisible({ timeout: 10_000 });
+
     await broadcaster.getByRole('combobox').click();
     await broadcaster.getByRole('option', { name: 'Bạn bè' }).click();
     await expect.poll(async () => viewer.locator('.live-room-stage video').evaluate((video) =>

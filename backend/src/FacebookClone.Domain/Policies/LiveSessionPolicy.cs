@@ -1,11 +1,12 @@
 using FacebookClone.Domain.Entities;
 using FacebookClone.Domain.Enums;
+using FacebookClone.Domain.Constants;
 
 namespace FacebookClone.Domain.Policies;
 
 public static class LiveSessionPolicy
 {
-    public static readonly TimeSpan ReplayLifetime = TimeSpan.FromMinutes(30);
+    public static readonly TimeSpan ReplayLifetime = TimeSpan.FromMinutes(SharedConstants.Live.ReplayLifetimeMinutes);
 
     public static DateTime ReplayExpiresAt(DateTime endedAt) => endedAt.Add(ReplayLifetime);
 

@@ -35,8 +35,12 @@ public class AdminLivesController(AppDbContext db, LiveAccessService access, IHu
         var reviewerId = UserContext.GetUserId(User);
         if (!await access.HasPermissionAsync(reviewerId, "lives.moderate")) return Forbid();
         if (string.IsNullOrWhiteSpace(request.Reason)) return BadRequest(new { success = false, message = "Cần nhập lý do kiểm duyệt." });
-        var session = await db.LiveSessions.Include(x => x.Owner).FirstOrDefaultAsync(x => x.Id == id);
+        await using var transaction = await db.Database.BeginTransactionAsync();
+        var session = await db.LiveSessions
+            .FromSqlInterpolated($"SELECT * FROM \"LiveSessions\" WHERE \"Id\" = {id} FOR UPDATE")
+            .FirstOrDefaultAsync();
         if (session == null) return NotFound();
+        session.Owner = await db.Users.FirstAsync(x => x.Id == session.OwnerId);
         if (session.Status != LiveSessionStatus.Live) return Conflict(new { success = false, message = "Chỉ có thể dừng một phiên đang live." });
         var now = DateTime.UtcNow;
         session.Status = LiveSessionStatus.Terminated;
@@ -51,6 +55,7 @@ public class AdminLivesController(AppDbContext db, LiveAccessService access, IHu
         session.Owner.LiveSuspendedAt = now;
         session.Owner.UpdatedAt = now;
         await db.SaveChangesAsync();
+        await transaction.CommitAsync();
         await hub.Clients.Group(LiveHub.SessionGroup(id)).SendAsync("LiveTerminated", request.Reason.Trim());
         await hub.Clients.User(session.OwnerId.ToString()).SendAsync("LiveAccessSuspended", request.Reason.Trim());
         return Ok(new { success = true, message = "Đã dừng live và tạm khóa quyền live của chủ sở hữu." });

@@ -64,17 +64,6 @@
 .live-play--large { width: 58px; height: 58px; }
 .live-create-form { display: grid; gap: 18px; }
 .live-mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.live-room-dialog { overflow: hidden; }
-.live-room-stage { position: relative; width: calc(100% + 2rem); aspect-ratio: 16 / 9; margin: -1rem -1rem 0; overflow: hidden; background: #050505; }
-.live-room-stage video { width: 100%; height: 100%; object-fit: contain; background: #050505; }
-.live-room-status { position: absolute; top: 14px; left: 14px; }
-.live-room-viewers { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; border-radius: 999px; background: rgb(0 0 0 / 72%); color: white; font-size: 12px; }
-.live-room-placeholder { display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #a1a1aa; }
-.live-room-placeholder svg { width: 52px; height: 52px; }
-.live-room-controls { display: flex; justify-content: space-between; gap: 12px; }
-.live-replay-actions { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--muted); }
-.live-replay-actions p, .live-moderation-note { display: flex; align-items: center; gap: 7px; margin: 0; color: var(--muted-foreground); font-size: 13px; }
-.live-moderation-note { color: var(--destructive); }
 
 .marketplace-results-heading,
 .marketplace-results-heading > div,

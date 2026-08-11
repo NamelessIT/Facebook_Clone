@@ -45,6 +45,8 @@ public class EnumContractTests
     public void Shared_constants_are_stable()
     {
         Assert.Equal(300000, SharedConstants.Timers.AdminUsersRefreshMs);
+        Assert.Equal(15, SharedConstants.Live.ReplayLifetimeMinutes);
+        Assert.Equal(500, SharedConstants.Live.CommentMaxLength);
         Assert.Equal(900000, SharedConstants.Timers.PresenceHeartbeatMs);
         Assert.Equal(1000, SharedConstants.Limits.MessageMaxLength);
         Assert.Equal(800, SharedConstants.Localization.MaxTranslationChunkChars);

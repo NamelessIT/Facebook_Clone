@@ -8,7 +8,7 @@ JSON here, then regenerate. Never hand-edit generated files.
 | Contract | Generates |
 |----------|-----------|
 | `enums.json` | `backend/.../Domain/Enums/Generated/Enums.g.cs` + `StringConstants.g.cs` (namespace `FacebookClone.Domain.Enums`) and `frontend/.../src/shared/generated/enums.js` |
-| `constants.json` | `frontend/.../src/shared/generated/constants.js` |
+| `constants.json` | `backend/.../Domain/Constants/Generated/Constants.g.cs` + `frontend/.../src/shared/generated/constants.js` |
 
 The backend enums live in the **same namespace** as before, so all existing C#
 references keep working — the generated files simply replace the old hand-written
@@ -28,4 +28,5 @@ python scripts/generate_shared_contracts.py --check
 
 - Enum values MUST stay in sync with the DB — changing a number is a breaking change.
 - Add a new enum member? Edit `enums.json`, regenerate, rebuild BE + FE.
+- Shared live limits and timers belong in `constants.json`; never duplicate them in C# or JSX.
 - Frontend imports: `import { PostPrivacy } from "@/shared/generated/enums"` (or relative path).

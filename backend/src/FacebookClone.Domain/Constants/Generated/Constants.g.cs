@@ -13,6 +13,7 @@ public static class SharedConstants
     {
         public const string Chat = "/hubs/chat";
         public const string Notification = "/hubs/notification";
+        public const string Live = "/hubs/live";
     }
 
     public static class StorageKeys
@@ -51,6 +52,15 @@ public static class SharedConstants
         public const int ChatTypingTimeoutMs = 3000;
         public const int PostDeleteUndoSeconds = 10;
         public const int NotInterestedAutoDismissSeconds = 60;
+    }
+
+    public static class Live
+    {
+        public const int ReplayLifetimeMinutes = 15;
+        public const int CommentMaxLength = 500;
+        public const int CommentsPageSize = 100;
+        public const int CommentsPollIntervalMs = 5000;
+        public const int CleanupIntervalSeconds = 60;
     }
 
     public static class Localization

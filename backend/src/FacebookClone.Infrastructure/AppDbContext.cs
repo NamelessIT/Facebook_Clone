@@ -35,6 +35,7 @@ public class AppDbContext : DbContext
     public DbSet<LocaleLanguage> LocaleLanguages { get; set; }
     public DbSet<LocalizationEntry> LocalizationEntries { get; set; }
     public DbSet<LiveSession> LiveSessions { get; set; }
+    public DbSet<LiveComment> LiveComments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

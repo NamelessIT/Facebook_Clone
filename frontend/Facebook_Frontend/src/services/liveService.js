@@ -8,11 +8,13 @@ const liveService = {
   get: (id) => axiosClient.get(`/lives/${id}`),
   start: (payload) => axiosClient.post('/lives', payload),
   changePrivacy: (id, privacy) => axiosClient.put(`/lives/${id}/privacy`, { privacy }),
+  getComments: (id, limit) => axiosClient.get(`/lives/${id}/comments`, { params: { limit } }),
+  addComment: (id, payload) => axiosClient.post(`/lives/${id}/comments`, payload),
   stop: (id) => axiosClient.put(`/lives/${id}/stop`),
-  uploadRecording: (id, blob) => {
+  uploadRecording: (id, blob, onUploadProgress) => {
     const form = new FormData();
     form.append('recording', blob, `live-${id}.webm`);
-    return axiosClient.post(`/lives/${id}/recording`, form);
+    return axiosClient.post(`/lives/${id}/recording`, form, { onUploadProgress });
   },
   convertToPost: (id, payload) => axiosClient.post(`/lives/${id}/convert-to-post`, payload),
   createConnection: () => new signalR.HubConnectionBuilder()
