@@ -132,7 +132,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
       toast.success(t('post.deleted'));
       onPostUpdated?.();
     } catch (error) {
-      toast.apiError(error, t('post.deleteFailed'), { context: 'posts.delete' });
+      toast.apiError(error, t('post.deleteFailed'), { context: "posts.delete" });
       setIsDeletionPending(false);
       setDeletionTimeRemaining(TIMERS.postDeleteUndoSeconds);
     } finally {
@@ -173,7 +173,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
       setShowCollectionModal(true);
       toast.success(translateCatalogKey('ui.components.post.postactionmenu.a-luu-bai-viet.65dd7752'));
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.components.post.postitem.luu-bai-viet-that-bai.b085dd6a'), { context: 'saved.post.add' });
+      toast.apiError(error, translateCatalogKey('ui.components.post.postitem.luu-bai-viet-that-bai.b085dd6a'), { context: "saved.post.add" });
     }
   };
 
@@ -215,7 +215,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
         toast.success(shouldRemainSaved ? translateCatalogKey('saved.collectionUpdated') : t('saved.unsaved'));
       }
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.components.post.postitem.thao-tac-that-bai.5581e390'), { context: 'saved.collections.update' });
+      toast.apiError(error, translateCatalogKey('ui.components.post.postitem.thao-tac-that-bai.5581e390'), { context: "saved.collections.update" });
     }
 
     setShowCollectionModal(false);
@@ -315,7 +315,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
     try {
       await postService.reactPost(post.id, reactionId); 
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.components.post.postdetailmodal.khong-the-tha-cam-xuc.72436747'), { context: 'posts.reaction' });
+      toast.apiError(error, translateCatalogKey('ui.components.post.postdetailmodal.khong-the-tha-cam-xuc.72436747'), { context: "posts.reaction" });
       setMyReaction(prevReaction);
       setReactionCount(prevCount);
       setTopReactions(prevTop);

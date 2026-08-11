@@ -3,6 +3,7 @@ import { Toaster, resolveValue } from 'react-hot-toast';
 import toast from '../../shared/appToast';
 import { useLocalization } from '../../contexts/useLocalization';
 import './NotificationCenter.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const TYPE_CONFIG = {
   success: { Icon: CheckCircle2, titleKey: 'notification.success', className: 'app-toast--success' },
@@ -37,7 +38,7 @@ const NotificationCenter = () => {
               <div className="app-toast-message">{message}</div>
               {item.type === 'error' && diagnostics && (
                 <div className="app-toast-debug">
-                  {diagnostics.status && <span>HTTP <code>{diagnostics.status}</code></span>}
+                  {diagnostics.status && <span>{"HTTP"} <code>{diagnostics.status}</code></span>}
                   {diagnostics.errorCode && <span>{t('notification.errorCode')} <code>{diagnostics.errorCode}</code></span>}
                   {diagnostics.correlationId && <span>{t('notification.requestId')} <code>{diagnostics.correlationId}</code></span>}
                   {diagnostics.endpoint && <span className="app-toast-debug-endpoint"><code>{diagnostics.method}</code> {diagnostics.endpoint}</span>}

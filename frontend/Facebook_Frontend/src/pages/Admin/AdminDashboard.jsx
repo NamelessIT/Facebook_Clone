@@ -11,7 +11,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     adminService.getDashboard()
       .then((response) => setData(response.data.data))
-      .catch((error) => toast.apiError(error, translateCatalogKey('admin.dashboard.loadFailed'), { context: 'admin.dashboard.load' }))
+      .catch((error) => toast.apiError(error, translateCatalogKey('admin.dashboard.loadFailed'), { context: "admin.dashboard.load" }))
       .finally(() => setLoading(false));
   }, []);
 

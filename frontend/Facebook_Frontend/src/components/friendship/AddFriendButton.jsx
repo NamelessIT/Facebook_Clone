@@ -63,7 +63,7 @@ const AddFriendButton = ({ targetUserId, initialStatus }) => {
           break;
       }
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'), { context: 'friends.action' });
+      toast.apiError(error, translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'), { context: "friends.action" });
     } finally {
       setLoading(false);
     }

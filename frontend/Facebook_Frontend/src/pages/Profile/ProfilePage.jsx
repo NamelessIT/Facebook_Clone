@@ -213,7 +213,7 @@ const ProfilePage = () => {
       toast.success(translateCatalogKey('ui.pages.profile.profilepage.a-cap-nhat-anh-ai-dien-va-ang-bai-vi.333e8524'));
       fetchPosts(1);
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.pages.profile.profilepage.cap-nhat-anh-ai-dien-that-bai.3eeaf866'), { context: 'profile.avatar.update' });
+      toast.apiError(error, translateCatalogKey('ui.pages.profile.profilepage.cap-nhat-anh-ai-dien-that-bai.3eeaf866'), { context: "profile.avatar.update" });
     } finally {
       setAvatarUploading(false);
     }
@@ -247,7 +247,7 @@ const ProfilePage = () => {
       toast.success(translateCatalogKey('ui.pages.profile.profilepage.a-cap-nhat-anh-bia-va-ang-bai-viet.44f6e757'));
       fetchPosts(1);
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.pages.profile.profilepage.cap-nhat-anh-bia-that-bai.5d4e9dab'), { context: 'profile.cover.update' });
+      toast.apiError(error, translateCatalogKey('ui.pages.profile.profilepage.cap-nhat-anh-bia-that-bai.5d4e9dab'), { context: "profile.cover.update" });
     } finally {
       setCoverUploading(false);
     }
@@ -463,8 +463,8 @@ const ProfilePage = () => {
                     <MessageCircle size={16} />
                     {translateCatalogKey('friends.message')}
                   </button>
-                  <button className="pp-btn pp-btn--secondary" onClick={() => setReportOpen(true)} title="Báo cáo người dùng">
-                    <Flag size={16} /> Báo cáo
+                  <button className="pp-btn pp-btn--secondary" onClick={() => setReportOpen(true)} title={translateCatalogKey('ui.pages.profile.profilepage.bao-cao-nguoi-dung.9f2fbb5c')}>
+                    <Flag size={16} /> {translateCatalogKey('common.report')}
                   </button>
                 </>
               )}

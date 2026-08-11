@@ -7,6 +7,7 @@ import { LIMITS } from "../../shared/generated/constants";
 import "./SearchBar.css";
 import { useLocalization } from "../../contexts/useLocalization";
 import toast from '../../shared/appToast';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const SearchBar = ({ onNavigate }) => {
   const [query, setQuery] = useState("");
@@ -46,7 +47,7 @@ const SearchBar = ({ onNavigate }) => {
         setShowDropdown(users.length > 0);
       } catch (error) {
         setSuggestions([]);
-        toast.apiError(error, t('search.loadFailed'), { id: 'search-suggestions-error', context: 'search.suggestions' });
+        toast.apiError(error, t('search.loadFailed'), { id: "search-suggestions-error", context: "search.suggestions" });
       } finally {
         setLoading(false);
       }

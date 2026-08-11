@@ -5,6 +5,7 @@ import LiveRoom from './LiveRoom';
 import Avatar from '../common/Avatar';
 import { LIVE } from '../../shared/generated/constants';
 import './ActiveLiveBanner.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const ActiveLiveBanner = ({ ownerId, limit = 3 }) => {
   const [sessions, setSessions] = useState([]);
@@ -40,14 +41,14 @@ const ActiveLiveBanner = ({ ownerId, limit = 3 }) => {
 
   return (
     <>
-      <section className={`active-live-banner${ownerId ? ' active-live-banner--profile' : ''}`} aria-label="Đang phát trực tiếp">
-        <header><span><Radio /> Đang phát trực tiếp</span><small>{visible.length} phiên</small></header>
+      <section className={`active-live-banner${ownerId ? ' active-live-banner--profile' : ''}`} aria-label={translateCatalogKey('ui.components.live.activelivebanner.ang-phat-truc-tiep.7a5192c6')}>
+        <header><span><Radio /> {translateCatalogKey('ui.components.live.activelivebanner.ang-phat-truc-tiep.7a5192c6')}</span><small>{visible.length} {translateCatalogKey('ui.components.live.activelivebanner.phien.f11366de')}</small></header>
         <div className="active-live-list">
           {visible.map((session) => (
             <button type="button" className="active-live-item" key={session.id} onClick={() => setSelected(session)}>
               <div className="active-live-avatar"><Avatar src={session.avatarUrl} className="w-11 h-11" /><span /></div>
               <div className="active-live-copy"><strong>{session.title}</strong><span>{session.ownerName}</span></div>
-              <div className="active-live-meta">{session.isShopping ? <ShoppingBag /> : <Eye />} {session.isShopping ? 'Bán hàng' : session.viewerCount || 0}</div>
+              <div className="active-live-meta">{session.isShopping ? <ShoppingBag /> : <Eye />} {session.isShopping ? "Bán hàng" : session.viewerCount || 0}</div>
             </button>
           ))}
         </div>

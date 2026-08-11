@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocalization } from "../../contexts/useLocalization";
 import "./HomePage.css";
 import toast from '../../shared/appToast';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -22,7 +23,7 @@ const HomePage = () => {
   const fetchPosts = useCallback(() => {
     postService.getFeed()
       .then((res) => setPosts(res.data.data))
-      .catch((error) => toast.apiError(error, t('post.loadFailed'), { id: 'home-feed-load-error', context: 'posts.feed.load' }));
+      .catch((error) => toast.apiError(error, t('post.loadFailed'), { id: "home-feed-load-error", context: "posts.feed.load" }));
   }, [t]);
 
   useEffect(() => {

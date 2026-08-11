@@ -19,7 +19,7 @@ const getApiErrorMessage = (error, fallback) => {
   const data = error.response.data;
   const serverMessage = data?.message || data?.title || data?.error || data?.errorCode;
 
-  if (status === 401) return serverMessage || translateCatalogKey('auth.invalidCredentials');
+  if (status === 401) return translateCatalogKey('auth.invalidCredentials');
   if (status === 403) return serverMessage || translateCatalogKey('auth.accessDenied');
   if (status >= 500) return serverMessage || translateCatalogKey('auth.serverError');
   return serverMessage || fallback;
@@ -27,8 +27,8 @@ const getApiErrorMessage = (error, fallback) => {
 
 const LoginPage = ({ mode = "user" }) => {
   const isAdminLogin = mode === "admin";
-  const [email, setEmail] = useState(isAdminLogin ? "admin@fbclone.com" : "alice@fbclone.com");
-  const [password, setPassword] = useState(isAdminLogin ? "Admin@123" : "123456");
+  const [email, setEmail] = useState(isAdminLogin ? "" : "alice@fbclone.com");
+  const [password, setPassword] = useState(isAdminLogin ? "" : "123456");
   const [error, setError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -79,7 +79,7 @@ const LoginPage = ({ mode = "user" }) => {
 
       if (isAdminLogin && !loggedInUser?.isAdmin) {
         await logout();
-        const message = "Tài khoản này không có quyền quản trị.";
+        const message = translateCatalogKey('auth.adminAccessRequired');
         setError(message);
         toast.error(message, { id: loadingToast, duration: 6000 });
         return;
@@ -90,7 +90,7 @@ const LoginPage = ({ mode = "user" }) => {
     } catch (err) {
       const message = getApiErrorMessage(err, translateCatalogKey('ui.pages.login.index.ang-nhap-that-bai-kiem-tra-lai-thong.b27685a6'));
       setError(message);
-      toast.apiError(err, message, { id: loadingToast, duration: 8000, context: isAdminLogin ? 'auth.admin.login' : 'auth.user.login' });
+      toast.apiError(err, message, { id: loadingToast, duration: 8000, context: isAdminLogin ? "auth.admin.login" : "auth.user.login" });
     } finally {
       setIsLoggingIn(false);
     }
@@ -129,7 +129,7 @@ const LoginPage = ({ mode = "user" }) => {
     } catch (err) {
       const message = getApiErrorMessage(err, translateCatalogKey('ui.pages.login.index.ang-ky-that-bai-email-co-the-a-ton-t.409f0ce9'));
       setRegError(message);
-      toast.apiError(err, message, { id: loadingToast, duration: 8000, context: 'auth.register' });
+      toast.apiError(err, message, { id: loadingToast, duration: 8000, context: "auth.register" });
     } finally {
       setIsRegistering(false);
     }
@@ -201,8 +201,8 @@ const LoginPage = ({ mode = "user" }) => {
           {isAdminLogin ? (
             <div className="admin-login-brand">
               <span>Admin Panel</span>
-              <h1>Facebook Clone Admin</h1>
-              <p>Đăng nhập bằng tài khoản quản trị để vào bảng quản lý hệ thống.</p>
+              <h1>{translateCatalogKey('ui.pages.login.index.facebook-clone-admin.db931840')}</h1>
+                <p>{translateCatalogKey('auth.adminLoginDescription')}</p>
             </div>
           ) : (
             <>
@@ -223,8 +223,8 @@ const LoginPage = ({ mode = "user" }) => {
             <CardContent className="login-card-content">
             {isAdminLogin && (
               <div className="admin-login-card-header">
-                <h2>Đăng nhập quản trị</h2>
-                <p>Trang admin là khu quản lý riêng, không mở giao diện Facebook người dùng.</p>
+                <h2>{translateCatalogKey('auth.adminLoginTitle')}</h2>
+                <p>{translateCatalogKey('auth.adminLoginHint')}</p>
               </div>
             )}
             {error && <div className="login-error">{error}</div>}

@@ -79,7 +79,7 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }) => {
       const res = await friendshipService.getFriends();
       if (res.data?.data) setFriendsList(res.data.data);
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('friends.loadFailed'), { context: 'posts.create.friends' });
+      toast.apiError(error, translateCatalogKey('friends.loadFailed'), { context: "posts.create.friends" });
     }
   };
 
@@ -137,7 +137,7 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }) => {
       onSuccess(); 
       onClose();   
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.components.post.createpostmodal.ang-bai-that-bai.0be6e313'), { context: 'posts.create' });
+      toast.apiError(error, translateCatalogKey('ui.components.post.createpostmodal.ang-bai-that-bai.0be6e313'), { context: "posts.create" });
     } finally {
       setLoading(false);
     }

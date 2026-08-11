@@ -132,7 +132,7 @@ const CardSavedPost = ({ post, onUnsave, collections = [], onSaveToCollection, o
       setSelectedCollectionIds(res.data?.data?.collectionIds ?? []);
       setShowCollectionModal(true);
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.components.post.cardsavedpost.khong-the-tai-trang-thai-bo-suu-tap.b72d487b'), { context: 'saved.collectionState.load' });
+      toast.apiError(error, translateCatalogKey('ui.components.post.cardsavedpost.khong-the-tai-trang-thai-bo-suu-tap.b72d487b'), { context: "saved.collectionState.load" });
     }
   };
 

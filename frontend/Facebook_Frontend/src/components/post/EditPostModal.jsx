@@ -62,7 +62,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
         onPostUpdated?.();
         onClose();
       } catch (error) {
-        toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: 'posts.privacy.update' });
+        toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: "posts.privacy.update" });
       } finally {
         setSaving(false);
       }
@@ -96,7 +96,7 @@ const EditPostModal = ({ post, onClose, onPostUpdated, privacyOnly = false }) =>
       onPostUpdated?.();
       onClose();
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: 'posts.update' });
+      toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: "posts.update" });
     } finally {
       setSaving(false);
     }

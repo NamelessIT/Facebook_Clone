@@ -34,7 +34,7 @@ const PrivacySettings = () => {
       await userService.updatePrivacy(form);
       toast.success(translateCatalogKey('ui.pages.settings.privacysettings.cap-nhat-quyen-rieng-tu-thanh-cong.5b9a2ccf'));
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: 'settings.privacy.update' });
+      toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: "settings.privacy.update" });
     } finally {
       setLoading(false);
     }

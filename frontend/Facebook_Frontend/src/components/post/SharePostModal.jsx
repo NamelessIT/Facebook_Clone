@@ -31,7 +31,7 @@ const SharePostModal = ({ post, isOpen, onClose, onShared }) => {
       onClose();
       onShared?.();
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.components.post.sharepostmodal.chia-se-that-bai.dd30f06b'), { context: 'posts.share' });
+      toast.apiError(error, translateCatalogKey('ui.components.post.sharepostmodal.chia-se-that-bai.dd30f06b'), { context: "posts.share" });
     }
   });
 

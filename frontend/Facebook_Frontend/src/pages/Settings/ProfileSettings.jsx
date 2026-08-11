@@ -42,7 +42,7 @@ const ProfileSettings = () => {
       await userService.updateProfile(formData);
       toast.success(translateCatalogKey('ui.pages.settings.profilesettings.cap-nhat-ho-so-thanh-cong.94b910c2'));
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: 'settings.profile.update' });
+      toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: "settings.profile.update" });
     } finally {
       setLoading(false);
     }

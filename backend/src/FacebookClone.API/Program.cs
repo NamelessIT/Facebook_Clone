@@ -158,6 +158,7 @@ try
     builder.Services.AddScoped<IInternalTranslationService, InternalTranslationService>();
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped<LiveAccessService>();
+    builder.Services.AddScoped<MarketplaceSettingsService>();
     builder.Services.AddScoped<LiveRecordingStorageService>();
     builder.Services.AddHostedService<ExpiredLiveRecordingCleanupService>();
 

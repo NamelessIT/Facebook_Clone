@@ -8,6 +8,7 @@ import Avatar from '../../components/common/Avatar';
 import ChatWindow from '../../components/Chat/ChatWindow';
 import { useLocalization } from '../../contexts/useLocalization';
 import './ChatListPage.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const ChatListPage = () => {
   const { friendId } = useParams();
@@ -30,7 +31,7 @@ const ChatListPage = () => {
         const data = res.data?.data || [];
         setFriends(data);
       } catch (error) {
-        toast.apiError(error, t('chat.loadFriendsFailed'), { context: 'chat.friends.load' });
+        toast.apiError(error, t('chat.loadFriendsFailed'), { context: "chat.friends.load" });
       } finally {
         setLoading(false);
       }

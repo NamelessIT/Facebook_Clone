@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using FacebookClone.API.Common;
+using FacebookClone.API.Services;
 using FacebookClone.Application.Services.Interfaces;
 using FacebookClone.Domain.Entities;
 using FacebookClone.Domain.Enums;
@@ -12,7 +13,10 @@ using Microsoft.EntityFrameworkCore;
 namespace FacebookClone.API.Controllers;
 
 [ApiController, Authorize, Route("api/v1/marketplace")]
-public class MarketplaceController(AppDbContext db, IFileService files) : ControllerBase
+public class MarketplaceController(
+    AppDbContext db,
+    IFileService files,
+    MarketplaceSettingsService marketplaceSettings) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> List([FromQuery] string? search = null, [FromQuery] string? category = null)
@@ -47,10 +51,10 @@ public class MarketplaceController(AppDbContext db, IFileService files) : Contro
     }
 
     [HttpGet("terms")]
-    public IActionResult Terms() => Ok(new { success = true, data = new
+    public async Task<IActionResult> Terms() => Ok(new { success = true, data = new
     {
         version = MarketplacePolicy.CurrentTermsVersion,
-        displayFee = MarketplacePolicy.DisplayFeeVnd,
+        displayFee = await marketplaceSettings.GetDisplayFeeAsync(HttpContext.RequestAborted),
         currency = "VND",
         path = "/marketplace-terms.md"
     }});
@@ -71,12 +75,13 @@ public class MarketplaceController(AppDbContext db, IFileService files) : Contro
             return BadRequest(new { success = false, message = "Danh mục sản phẩm không hợp lệ." });
 
         var now = DateTime.UtcNow;
+        var displayFee = await marketplaceSettings.GetDisplayFeeAsync(HttpContext.RequestAborted);
         var listing = new MarketplaceListing
         {
             Id = Guid.NewGuid(), SellerId = userId, Title = request.Title.Trim(), Description = request.Description.Trim(),
             Price = request.Price, Category = request.Category, Condition = request.Condition.Trim(), Location = request.Location.Trim(),
             ImageUrl = await files.UploadImageAsync(request.Image, "marketplace"), Status = MarketplaceListingStatus.PendingReview,
-            DisplayFee = MarketplacePolicy.DisplayFeeVnd, TermsVersion = MarketplacePolicy.CurrentTermsVersion,
+            DisplayFee = displayFee, TermsVersion = MarketplacePolicy.CurrentTermsVersion,
             TermsAcceptedAt = now, CreatedAt = now, UpdatedAt = now
         };
         db.MarketplaceListings.Add(listing);
@@ -112,7 +117,7 @@ public class MarketplaceController(AppDbContext db, IFileService files) : Contro
             favorites = await db.MarketplaceFavorites.CountAsync(x => ids.Contains(x.ListingId)),
             reports,
             displayFees = await query.SumAsync(x => (decimal?)x.DisplayFee) ?? 0,
-            feePerListing = MarketplacePolicy.DisplayFeeVnd
+            feePerListing = await marketplaceSettings.GetDisplayFeeAsync(HttpContext.RequestAborted)
         }});
     }
 

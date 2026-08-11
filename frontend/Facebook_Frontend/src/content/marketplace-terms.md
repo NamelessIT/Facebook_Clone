@@ -1,7 +1,7 @@
 # Điều khoản trưng bày sản phẩm trên Marketplace
 
 **Phiên bản:** 2026-08-11  
-**Phí trưng bày hiện tại:** 10.000 ₫ cho mỗi mặt hàng được gửi kiểm duyệt.
+**Phí trưng bày hiện tại:** được hiển thị trong biểu mẫu đăng mặt hàng và do quản trị viên hệ thống cấu hình.
 
 ## 1. Phạm vi dịch vụ
 

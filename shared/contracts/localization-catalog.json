@@ -269,13 +269,17 @@
       "key": "notification.loadFailed",
       "sourceText": "Không thể tải thông báo.",
       "context": "Lỗi tải danh sách thông báo",
-      "translations": { "en": "Could not load notifications." }
+      "translations": {
+        "en": "Could not load notifications."
+      }
     },
     {
       "key": "notification.markReadFailed",
       "sourceText": "Không thể cập nhật trạng thái thông báo.",
       "context": "Lỗi đánh dấu thông báo đã đọc",
-      "translations": { "en": "Could not update the notification status." }
+      "translations": {
+        "en": "Could not update the notification status."
+      }
     },
     {
       "key": "notification.httpStatus",
@@ -5151,318 +5155,1263 @@
     },
     {
       "key": "admin.users.createAccount",
-      "sourceText": "T\u1ea1o t\u00e0i kho\u1ea3n",
-      "context": "N\u00fat v\u00e0 ti\u00eau \u0111\u1ec1 modal t\u1ea1o account t\u1eeb admin",
-      "translations": { "en": "Create account" }
+      "sourceText": "Tạo tài khoản",
+      "context": "Nút và tiêu đề modal tạo account từ admin",
+      "translations": {
+        "en": "Create account"
+      }
     },
     {
       "key": "admin.users.createHierarchyHint",
-      "sourceText": "Ch\u1ec9 c\u00f3 th\u1ec3 t\u1ea1o account v\u00e0 g\u00e1n role th\u1ea5p h\u01a1n role cao nh\u1ea5t c\u1ee7a b\u1ea1n.",
-      "context": "M\u00f4 t\u1ea3 quy t\u1eafc ph\u00e2n c\u1ea5p khi t\u1ea1o account",
-      "translations": { "en": "You can only create accounts with roles below your highest role." }
+      "sourceText": "Chỉ có thể tạo account và gán role thấp hơn role cao nhất của bạn.",
+      "context": "Mô tả quy tắc phân cấp khi tạo account",
+      "translations": {
+        "en": "You can only create accounts with roles below your highest role."
+      }
     },
     {
       "key": "admin.users.firstName",
-      "sourceText": "T\u00ean",
-      "context": "Form t\u1ea1o account",
-      "translations": { "en": "First name" }
+      "sourceText": "Tên",
+      "context": "Form tạo account",
+      "translations": {
+        "en": "First name"
+      }
     },
     {
       "key": "admin.users.lastName",
-      "sourceText": "H\u1ecd",
-      "context": "Form t\u1ea1o account",
-      "translations": { "en": "Last name" }
+      "sourceText": "Họ",
+      "context": "Form tạo account",
+      "translations": {
+        "en": "Last name"
+      }
     },
     {
       "key": "admin.users.usernameEmail",
-      "sourceText": "T\u00ean \u0111\u0103ng nh\u1eadp (email)",
-      "context": "Form t\u1ea1o account",
-      "translations": { "en": "Username (email)" }
+      "sourceText": "Tên đăng nhập (email)",
+      "context": "Form tạo account",
+      "translations": {
+        "en": "Username (email)"
+      }
     },
     {
       "key": "admin.users.initialPassword",
-      "sourceText": "M\u1eadt kh\u1ea9u ban \u0111\u1ea7u",
-      "context": "Form t\u1ea1o account",
-      "translations": { "en": "Initial password" }
+      "sourceText": "Mật khẩu ban đầu",
+      "context": "Form tạo account",
+      "translations": {
+        "en": "Initial password"
+      }
     },
     {
       "key": "admin.users.passwordRules",
-      "sourceText": "T\u1ed1i thi\u1ec3u {{count}} k\u00fd t\u1ef1, c\u00f3 ch\u1eef hoa, ch\u1eef th\u01b0\u1eddng v\u00e0 s\u1ed1.",
-      "context": "Quy t\u1eafc m\u1eadt kh\u1ea9u account",
-      "translations": { "en": "At least {{count}} characters with uppercase, lowercase and a number." }
+      "sourceText": "Tối thiểu {{count}} ký tự, có chữ hoa, chữ thường và số.",
+      "context": "Quy tắc mật khẩu account",
+      "translations": {
+        "en": "At least {{count}} characters with uppercase, lowercase and a number."
+      }
     },
     {
       "key": "admin.users.passwordOneTimeHint",
-      "sourceText": "M\u1eadt kh\u1ea9u ch\u1ec9 hi\u1ec3n th\u1ecb m\u1ed9t l\u1ea7n sau khi t\u1ea1o. H\u00e3y c\u1ea5p l\u1ea1i cho ng\u01b0\u1eddi s\u1eed d\u1ee5ng qua k\u00eanh an to\u00e0n.",
-      "context": "C\u1ea3nh b\u00e1o m\u1eadt kh\u1ea9u ban \u0111\u1ea7u",
-      "translations": { "en": "The password is shown once after creation. Share it through a secure channel." }
+      "sourceText": "Mật khẩu chỉ hiển thị một lần sau khi tạo. Hãy cấp lại cho người sử dụng qua kênh an toàn.",
+      "context": "Cảnh báo mật khẩu ban đầu",
+      "translations": {
+        "en": "The password is shown once after creation. Share it through a secure channel."
+      }
     },
     {
       "key": "admin.users.assignLowerRoles",
-      "sourceText": "Role \u0111\u01b0\u1ee3c ph\u00e9p g\u00e1n",
-      "context": "Danh s\u00e1ch role trong form t\u1ea1o account",
-      "translations": { "en": "Assignable roles" }
+      "sourceText": "Role được phép gán",
+      "context": "Danh sách role trong form tạo account",
+      "translations": {
+        "en": "Assignable roles"
+      }
     },
     {
       "key": "admin.users.createValidation",
-      "sourceText": "Nh\u1eadp \u0111\u1ee7 th\u00f4ng tin, m\u1eadt kh\u1ea9u h\u1ee3p l\u1ec7 v\u00e0 ch\u1ecdn \u00edt nh\u1ea5t m\u1ed9t role.",
-      "context": "L\u1ed7i validation t\u1ea1o account",
-      "translations": { "en": "Complete all fields, use a valid password and select at least one role." }
+      "sourceText": "Nhập đủ thông tin, mật khẩu hợp lệ và chọn ít nhất một role.",
+      "context": "Lỗi validation tạo account",
+      "translations": {
+        "en": "Complete all fields, use a valid password and select at least one role."
+      }
     },
     {
       "key": "admin.users.createSuccess",
-      "sourceText": "\u0110\u00e3 t\u1ea1o t\u00e0i kho\u1ea3n.",
-      "context": "Toast t\u1ea1o account th\u00e0nh c\u00f4ng",
-      "translations": { "en": "Account created." }
+      "sourceText": "Đã tạo tài khoản.",
+      "context": "Toast tạo account thành công",
+      "translations": {
+        "en": "Account created."
+      }
     },
     {
       "key": "admin.users.createFailed",
-      "sourceText": "Kh\u00f4ng th\u1ec3 t\u1ea1o t\u00e0i kho\u1ea3n.",
-      "context": "Toast t\u1ea1o account th\u1ea5t b\u1ea1i",
-      "translations": { "en": "Could not create account." }
+      "sourceText": "Không thể tạo tài khoản.",
+      "context": "Toast tạo account thất bại",
+      "translations": {
+        "en": "Could not create account."
+      }
     },
     {
       "key": "admin.users.accountReady",
-      "sourceText": "T\u00e0i kho\u1ea3n \u0111\u00e3 s\u1eb5n s\u00e0ng",
-      "context": "Ti\u00eau \u0111\u1ec1 hi\u1ec3n th\u1ecb credentials",
-      "translations": { "en": "Account is ready" }
+      "sourceText": "Tài khoản đã sẵn sàng",
+      "context": "Tiêu đề hiển thị credentials",
+      "translations": {
+        "en": "Account is ready"
+      }
     },
     {
       "key": "admin.users.credentialsWarning",
-      "sourceText": "H\u00e3y l\u01b0u th\u00f4ng tin n\u00e0y ngay. M\u1eadt kh\u1ea9u s\u1ebd kh\u00f4ng \u0111\u01b0\u1ee3c hi\u1ec3n th\u1ecb l\u1ea1i.",
-      "context": "C\u1ea3nh b\u00e1o sau khi t\u1ea1o account",
-      "translations": { "en": "Save these credentials now. The password will not be shown again." }
+      "sourceText": "Hãy lưu thông tin này ngay. Mật khẩu sẽ không được hiển thị lại.",
+      "context": "Cảnh báo sau khi tạo account",
+      "translations": {
+        "en": "Save these credentials now. The password will not be shown again."
+      }
     },
     {
       "key": "admin.users.username",
-      "sourceText": "T\u00ean \u0111\u0103ng nh\u1eadp",
+      "sourceText": "Tên đăng nhập",
       "context": "Nhãn credentials",
-      "translations": { "en": "Username" }
+      "translations": {
+        "en": "Username"
+      }
     },
     {
       "key": "admin.users.password",
-      "sourceText": "M\u1eadt kh\u1ea9u",
+      "sourceText": "Mật khẩu",
       "context": "Nhãn credentials",
-      "translations": { "en": "Password" }
+      "translations": {
+        "en": "Password"
+      }
     },
     {
       "key": "admin.users.copyCredentials",
-      "sourceText": "Sao ch\u00e9p th\u00f4ng tin",
-      "context": "N\u00fat sao ch\u00e9p credentials",
-      "translations": { "en": "Copy credentials" }
+      "sourceText": "Sao chép thông tin",
+      "context": "Nút sao chép credentials",
+      "translations": {
+        "en": "Copy credentials"
+      }
     },
     {
       "key": "admin.users.credentialsCopied",
-      "sourceText": "\u0110\u00e3 sao ch\u00e9p th\u00f4ng tin \u0111\u0103ng nh\u1eadp.",
-      "context": "Toast sao ch\u00e9p credentials",
-      "translations": { "en": "Credentials copied." }
+      "sourceText": "Đã sao chép thông tin đăng nhập.",
+      "context": "Toast sao chép credentials",
+      "translations": {
+        "en": "Credentials copied."
+      }
     },
     {
       "key": "admin.users.savedCredentials",
-      "sourceText": "T\u00f4i \u0111\u00e3 l\u01b0u",
-      "context": "N\u00fat \u0111\u00f3ng credentials",
-      "translations": { "en": "I have saved them" }
+      "sourceText": "Tôi đã lưu",
+      "context": "Nút đóng credentials",
+      "translations": {
+        "en": "I have saved them"
+      }
     },
     {
       "key": "admin.users.togglePassword",
-      "sourceText": "Hi\u1ec7n ho\u1eb7c \u1ea9n m\u1eadt kh\u1ea9u",
-      "context": "Aria label n\u00fat m\u1eadt kh\u1ea9u",
-      "translations": { "en": "Show or hide password" }
+      "sourceText": "Hiện hoặc ẩn mật khẩu",
+      "context": "Aria label nút mật khẩu",
+      "translations": {
+        "en": "Show or hide password"
+      }
     },
     {
       "key": "admin.account.changePassword",
-      "sourceText": "\u0110\u1ed5i m\u1eadt kh\u1ea9u",
-      "context": "T\u00e0i kho\u1ea3n admin",
-      "translations": { "en": "Change password" }
+      "sourceText": "Đổi mật khẩu",
+      "context": "Tài khoản admin",
+      "translations": {
+        "en": "Change password"
+      }
     },
     {
       "key": "admin.account.currentPassword",
-      "sourceText": "M\u1eadt kh\u1ea9u hi\u1ec7n t\u1ea1i",
-      "context": "Form \u0111\u1ed5i m\u1eadt kh\u1ea9u",
-      "translations": { "en": "Current password" }
+      "sourceText": "Mật khẩu hiện tại",
+      "context": "Form đổi mật khẩu",
+      "translations": {
+        "en": "Current password"
+      }
     },
     {
       "key": "admin.account.newPassword",
-      "sourceText": "M\u1eadt kh\u1ea9u m\u1edbi",
-      "context": "Form \u0111\u1ed5i m\u1eadt kh\u1ea9u",
-      "translations": { "en": "New password" }
+      "sourceText": "Mật khẩu mới",
+      "context": "Form đổi mật khẩu",
+      "translations": {
+        "en": "New password"
+      }
     },
     {
       "key": "admin.account.confirmPassword",
-      "sourceText": "Nh\u1eadp l\u1ea1i m\u1eadt kh\u1ea9u m\u1edbi",
-      "context": "Form \u0111\u1ed5i m\u1eadt kh\u1ea9u",
-      "translations": { "en": "Confirm new password" }
+      "sourceText": "Nhập lại mật khẩu mới",
+      "context": "Form đổi mật khẩu",
+      "translations": {
+        "en": "Confirm new password"
+      }
     },
     {
       "key": "admin.account.passwordMismatch",
-      "sourceText": "M\u1eadt kh\u1ea9u x\u00e1c nh\u1eadn kh\u00f4ng kh\u1edbp.",
-      "context": "Validation \u0111\u1ed5i m\u1eadt kh\u1ea9u",
-      "translations": { "en": "Password confirmation does not match." }
+      "sourceText": "Mật khẩu xác nhận không khớp.",
+      "context": "Validation đổi mật khẩu",
+      "translations": {
+        "en": "Password confirmation does not match."
+      }
     },
     {
       "key": "admin.account.passwordChanged",
-      "sourceText": "\u0110\u00e3 \u0111\u1ed5i m\u1eadt kh\u1ea9u. Vui l\u00f2ng \u0111\u0103ng nh\u1eadp l\u1ea1i.",
-      "context": "Toast \u0111\u1ed5i m\u1eadt kh\u1ea9u",
-      "translations": { "en": "Password changed. Please sign in again." }
+      "sourceText": "Đã đổi mật khẩu. Vui lòng đăng nhập lại.",
+      "context": "Toast đổi mật khẩu",
+      "translations": {
+        "en": "Password changed. Please sign in again."
+      }
     },
     {
       "key": "admin.account.passwordChangeFailed",
-      "sourceText": "Kh\u00f4ng th\u1ec3 \u0111\u1ed5i m\u1eadt kh\u1ea9u.",
-      "context": "Toast \u0111\u1ed5i m\u1eadt kh\u1ea9u",
-      "translations": { "en": "Could not change password." }
+      "sourceText": "Không thể đổi mật khẩu.",
+      "context": "Toast đổi mật khẩu",
+      "translations": {
+        "en": "Could not change password."
+      }
     },
     {
       "key": "admin.account.passwordSignInAgain",
-      "sourceText": "Sau khi \u0111\u1ed5i m\u1eadt kh\u1ea9u, t\u1ea5t c\u1ea3 phi\u00ean s\u1ebd b\u1ecb thu h\u1ed3i v\u00e0 b\u1ea1n c\u1ea7n \u0111\u0103ng nh\u1eadp l\u1ea1i.",
-      "context": "C\u1ea3nh b\u00e1o \u0111\u1ed5i m\u1eadt kh\u1ea9u",
-      "translations": { "en": "Changing your password revokes all sessions and requires you to sign in again." }
+      "sourceText": "Sau khi đổi mật khẩu, tất cả phiên sẽ bị thu hồi và bạn cần đăng nhập lại.",
+      "context": "Cảnh báo đổi mật khẩu",
+      "translations": {
+        "en": "Changing your password revokes all sessions and requires you to sign in again."
+      }
     },
     {
       "key": "comment.loadFailed",
       "sourceText": "Không thể tải bình luận.",
       "context": "Lỗi tải bình luận bài viết",
-      "translations": { "en": "Could not load comments." }
+      "translations": {
+        "en": "Could not load comments."
+      }
     },
     {
       "key": "admin.dashboard.loadFailed",
       "sourceText": "Không thể tải dashboard quản trị.",
       "context": "Lỗi tải dashboard admin",
-      "translations": { "en": "Could not load the admin dashboard." }
+      "translations": {
+        "en": "Could not load the admin dashboard."
+      }
     },
     {
       "key": "reels.loadFailed",
       "sourceText": "Không thể tải Reels.",
       "context": "Lỗi tải danh sách Reel",
-      "translations": { "en": "Could not load Reels." }
+      "translations": {
+        "en": "Could not load Reels."
+      }
     },
     {
       "key": "search.loadFailed",
       "sourceText": "Không thể tải kết quả tìm kiếm.",
       "context": "Lỗi tìm kiếm user hoặc bài viết",
-      "translations": { "en": "Could not load search results." }
+      "translations": {
+        "en": "Could not load search results."
+      }
     },
     {
       "key": "admin.security.persistenceNote",
-      "sourceText": "IP b\u1ecb ch\u1eb7n th\u1ee7 c\u00f4ng \u0111\u01b0\u1ee3c l\u01b0u trong PostgreSQL v\u00e0 cache Redis; danh s\u00e1ch v\u1eabn c\u00f2n sau khi backend kh\u1edfi \u0111\u1ed9ng l\u1ea1i.",
+      "sourceText": "IP bị chặn thủ công được lưu trong PostgreSQL và cache Redis; danh sách vẫn còn sau khi backend khởi động lại.",
       "context": "Ghi chu luu tru blacklist IP",
-      "translations": { "en": "Manually blocked IPs are stored in PostgreSQL and cached in Redis; the list survives backend restarts." }
+      "translations": {
+        "en": "Manually blocked IPs are stored in PostgreSQL and cached in Redis; the list survives backend restarts."
+      }
     },
     {
-      "key": "common.search", "sourceText": "Tìm kiếm", "context": "Lệnh tìm kiếm", "translations": { "en": "Search" }
+      "key": "common.refresh",
+      "sourceText": "Làm mới",
+      "context": "Lệnh tải lại dữ liệu",
+      "translations": {
+        "en": "Refresh"
+      }
     },
     {
-      "key": "common.refresh", "sourceText": "Làm mới", "context": "Lệnh tải lại dữ liệu", "translations": { "en": "Refresh" }
+      "key": "admin.security.suspiciousIps",
+      "sourceText": "IP nghi ngờ",
+      "context": "Tab điều tra security",
+      "translations": {
+        "en": "Suspicious IPs"
+      }
     },
     {
-      "key": "admin.security.suspiciousIps", "sourceText": "IP nghi ngờ", "context": "Tab điều tra security", "translations": { "en": "Suspicious IPs" }
+      "key": "admin.security.investigationTitle",
+      "sourceText": "Điều tra truy cập bất thường",
+      "context": "Tiêu đề bảng IP nghi ngờ",
+      "translations": {
+        "en": "Suspicious access investigation"
+      }
     },
     {
-      "key": "admin.security.investigationTitle", "sourceText": "Điều tra truy cập bất thường", "context": "Tiêu đề bảng IP nghi ngờ", "translations": { "en": "Suspicious access investigation" }
+      "key": "admin.security.investigationSubtitle",
+      "sourceText": "Xếp hạng dựa trên request rate, lỗi, đăng nhập thất bại và tín hiệu tấn công trong 24 giờ gần nhất.",
+      "context": "Mô tả telemetry security",
+      "translations": {
+        "en": "Ranked by request rate, errors, failed logins, and attack signals from the last 24 hours."
+      }
     },
     {
-      "key": "admin.security.investigationSubtitle", "sourceText": "Xếp hạng dựa trên request rate, lỗi, đăng nhập thất bại và tín hiệu tấn công trong 24 giờ gần nhất.", "context": "Mô tả telemetry security", "translations": { "en": "Ranked by request rate, errors, failed logins, and attack signals from the last 24 hours." }
+      "key": "admin.security.searchIpIdentity",
+      "sourceText": "Tìm IP, email hoặc user ID...",
+      "context": "Placeholder tìm IP nghi ngờ",
+      "translations": {
+        "en": "Search IP, email, or user ID..."
+      }
     },
     {
-      "key": "admin.security.searchIpIdentity", "sourceText": "Tìm IP, email hoặc user ID...", "context": "Placeholder tìm IP nghi ngờ", "translations": { "en": "Search IP, email, or user ID..." }
+      "key": "admin.security.allRiskLevels",
+      "sourceText": "Tất cả mức rủi ro",
+      "context": "Bộ lọc risk",
+      "translations": {
+        "en": "All risk levels"
+      }
     },
     {
-      "key": "admin.security.allRiskLevels", "sourceText": "Tất cả mức rủi ro", "context": "Bộ lọc risk", "translations": { "en": "All risk levels" }
+      "key": "admin.security.mediumAndAbove",
+      "sourceText": "Từ trung bình",
+      "context": "Bộ lọc risk",
+      "translations": {
+        "en": "Medium and above"
+      }
     },
     {
-      "key": "admin.security.mediumAndAbove", "sourceText": "Từ trung bình", "context": "Bộ lọc risk", "translations": { "en": "Medium and above" }
+      "key": "admin.security.highAndAbove",
+      "sourceText": "Từ cao",
+      "context": "Bộ lọc risk",
+      "translations": {
+        "en": "High and above"
+      }
     },
     {
-      "key": "admin.security.highAndAbove", "sourceText": "Từ cao", "context": "Bộ lọc risk", "translations": { "en": "High and above" }
+      "key": "admin.security.criticalOnly",
+      "sourceText": "Chỉ nghiêm trọng",
+      "context": "Bộ lọc risk",
+      "translations": {
+        "en": "Critical only"
+      }
     },
     {
-      "key": "admin.security.criticalOnly", "sourceText": "Chỉ nghiêm trọng", "context": "Bộ lọc risk", "translations": { "en": "Critical only" }
+      "key": "admin.security.noSuspiciousIps",
+      "sourceText": "Chưa ghi nhận IP phù hợp với bộ lọc.",
+      "context": "Empty state IP nghi ngờ",
+      "translations": {
+        "en": "No IP addresses match the current filter."
+      }
     },
     {
-      "key": "admin.security.noSuspiciousIps", "sourceText": "Chưa ghi nhận IP phù hợp với bộ lọc.", "context": "Empty state IP nghi ngờ", "translations": { "en": "No IP addresses match the current filter." }
+      "key": "admin.security.suspiciousLoadError",
+      "sourceText": "Không thể tải dữ liệu điều tra IP.",
+      "context": "Lỗi API suspicious IP",
+      "translations": {
+        "en": "Could not load suspicious IP investigation data."
+      }
     },
     {
-      "key": "admin.security.suspiciousLoadError", "sourceText": "Không thể tải dữ liệu điều tra IP.", "context": "Lỗi API suspicious IP", "translations": { "en": "Could not load suspicious IP investigation data." }
+      "key": "admin.security.risk",
+      "sourceText": "Rủi ro",
+      "context": "Cột risk",
+      "translations": {
+        "en": "Risk"
+      }
     },
     {
-      "key": "admin.security.risk", "sourceText": "Rủi ro", "context": "Cột risk", "translations": { "en": "Risk" }
+      "key": "admin.security.activity",
+      "sourceText": "Hoạt động",
+      "context": "Cột activity",
+      "translations": {
+        "en": "Activity"
+      }
     },
     {
-      "key": "admin.security.activity", "sourceText": "Hoạt động", "context": "Cột activity", "translations": { "en": "Activity" }
+      "key": "admin.security.identity",
+      "sourceText": "Danh tính liên quan",
+      "context": "Cột identity",
+      "translations": {
+        "en": "Associated identity"
+      }
     },
     {
-      "key": "admin.security.identity", "sourceText": "Danh tính liên quan", "context": "Cột identity", "translations": { "en": "Associated identity" }
+      "key": "admin.security.signals",
+      "sourceText": "Tín hiệu",
+      "context": "Cột threat signals",
+      "translations": {
+        "en": "Signals"
+      }
     },
     {
-      "key": "admin.security.signals", "sourceText": "Tín hiệu", "context": "Cột threat signals", "translations": { "en": "Signals" }
+      "key": "admin.security.topEndpoints",
+      "sourceText": "Endpoint chính",
+      "context": "Cột endpoint",
+      "translations": {
+        "en": "Top endpoints"
+      }
     },
     {
-      "key": "admin.security.topEndpoints", "sourceText": "Endpoint chính", "context": "Cột endpoint", "translations": { "en": "Top endpoints" }
+      "key": "admin.security.lastSeen",
+      "sourceText": "Lần cuối",
+      "context": "Thời gian IP hoạt động",
+      "translations": {
+        "en": "Last seen"
+      }
     },
     {
-      "key": "admin.security.lastSeen", "sourceText": "Lần cuối", "context": "Thời gian IP hoạt động", "translations": { "en": "Last seen" }
+      "key": "admin.security.requestsPerMinute",
+      "sourceText": "request/phút",
+      "context": "Đơn vị request rate",
+      "translations": {
+        "en": "requests/min"
+      }
     },
     {
-      "key": "admin.security.requestsPerMinute", "sourceText": "request/phút", "context": "Đơn vị request rate", "translations": { "en": "requests/min" }
+      "key": "admin.security.requestsPerHour",
+      "sourceText": "request/giờ",
+      "context": "Đơn vị request rate",
+      "translations": {
+        "en": "requests/hour"
+      }
     },
     {
-      "key": "admin.security.requestsPerHour", "sourceText": "request/giờ", "context": "Đơn vị request rate", "translations": { "en": "requests/hour" }
+      "key": "admin.security.errors",
+      "sourceText": "lỗi",
+      "context": "Tỷ lệ response lỗi",
+      "translations": {
+        "en": "errors"
+      }
     },
     {
-      "key": "admin.security.errors", "sourceText": "lỗi", "context": "Tỷ lệ response lỗi", "translations": { "en": "errors" }
+      "key": "admin.security.anonymous",
+      "sourceText": "Chưa xác định",
+      "context": "IP chưa gắn user",
+      "translations": {
+        "en": "Unidentified"
+      }
     },
     {
-      "key": "admin.security.anonymous", "sourceText": "Chưa xác định", "context": "IP chưa gắn user", "translations": { "en": "Unidentified" }
+      "key": "admin.security.noStrongSignals",
+      "sourceText": "Chưa có tín hiệu mạnh",
+      "context": "IP risk thấp",
+      "translations": {
+        "en": "No strong signals"
+      }
     },
     {
-      "key": "admin.security.noStrongSignals", "sourceText": "Chưa có tín hiệu mạnh", "context": "IP risk thấp", "translations": { "en": "No strong signals" }
+      "key": "admin.security.alreadyBlocked",
+      "sourceText": "Đã chặn",
+      "context": "IP đã nằm trong blacklist",
+      "translations": {
+        "en": "Blocked"
+      }
     },
     {
-      "key": "admin.security.alreadyBlocked", "sourceText": "Đã chặn", "context": "IP đã nằm trong blacklist", "translations": { "en": "Blocked" }
+      "key": "admin.security.reviewAndBlock",
+      "sourceText": "Xem xét chặn",
+      "context": "Chuẩn bị block IP nghi ngờ",
+      "translations": {
+        "en": "Review and block"
+      }
     },
     {
-      "key": "admin.security.reviewAndBlock", "sourceText": "Xem xét chặn", "context": "Chuẩn bị block IP nghi ngờ", "translations": { "en": "Review and block" }
+      "key": "admin.security.investigationBlockReason",
+      "sourceText": "Chặn sau điều tra bảo mật, điểm rủi ro {value0}/100",
+      "context": "Lý do block tự điền",
+      "translations": {
+        "en": "Blocked after security investigation, risk score {value0}/100"
+      }
     },
     {
-      "key": "admin.security.investigationBlockReason", "sourceText": "Chặn sau điều tra bảo mật, điểm rủi ro {value0}/100", "context": "Lý do block tự điền", "translations": { "en": "Blocked after security investigation, risk score {value0}/100" }
+      "key": "admin.security.risk.low",
+      "sourceText": "Thấp",
+      "context": "Risk level",
+      "translations": {
+        "en": "Low"
+      }
     },
     {
-      "key": "admin.security.risk.low", "sourceText": "Thấp", "context": "Risk level", "translations": { "en": "Low" }
+      "key": "admin.security.risk.medium",
+      "sourceText": "Trung bình",
+      "context": "Risk level",
+      "translations": {
+        "en": "Medium"
+      }
     },
     {
-      "key": "admin.security.risk.medium", "sourceText": "Trung bình", "context": "Risk level", "translations": { "en": "Medium" }
+      "key": "admin.security.risk.high",
+      "sourceText": "Cao",
+      "context": "Risk level",
+      "translations": {
+        "en": "High"
+      }
     },
     {
-      "key": "admin.security.risk.high", "sourceText": "Cao", "context": "Risk level", "translations": { "en": "High" }
+      "key": "admin.security.risk.critical",
+      "sourceText": "Nghiêm trọng",
+      "context": "Risk level",
+      "translations": {
+        "en": "Critical"
+      }
     },
     {
-      "key": "admin.security.risk.critical", "sourceText": "Nghiêm trọng", "context": "Risk level", "translations": { "en": "Critical" }
+      "key": "admin.security.signal.suspiciousPayload",
+      "sourceText": "Payload đáng ngờ",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Suspicious payload"
+      }
     },
     {
-      "key": "admin.security.signal.suspiciousPayload", "sourceText": "Payload đáng ngờ", "context": "Threat signal", "translations": { "en": "Suspicious payload" }
+      "key": "admin.security.signal.bruteForce",
+      "sourceText": "Thử mật khẩu hàng loạt",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Brute force"
+      }
     },
     {
-      "key": "admin.security.signal.bruteForce", "sourceText": "Thử mật khẩu hàng loạt", "context": "Threat signal", "translations": { "en": "Brute force" }
+      "key": "admin.security.signal.rateLimit",
+      "sourceText": "Vượt rate limit",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Rate-limit violations"
+      }
     },
     {
-      "key": "admin.security.signal.rateLimit", "sourceText": "Vượt rate limit", "context": "Threat signal", "translations": { "en": "Rate-limit violations" }
+      "key": "admin.security.signal.failedLogin",
+      "sourceText": "Đăng nhập thất bại",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Failed logins"
+      }
     },
     {
-      "key": "admin.security.signal.failedLogin", "sourceText": "Đăng nhập thất bại", "context": "Threat signal", "translations": { "en": "Failed logins" }
+      "key": "admin.security.signal.highRequestRate",
+      "sourceText": "Request rate rất cao",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Very high request rate"
+      }
     },
     {
-      "key": "admin.security.signal.highRequestRate", "sourceText": "Request rate rất cao", "context": "Threat signal", "translations": { "en": "Very high request rate" }
+      "key": "admin.security.signal.elevatedRequestRate",
+      "sourceText": "Request rate tăng cao",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Elevated request rate"
+      }
     },
     {
-      "key": "admin.security.signal.elevatedRequestRate", "sourceText": "Request rate tăng cao", "context": "Threat signal", "translations": { "en": "Elevated request rate" }
+      "key": "admin.security.signal.highErrorRate",
+      "sourceText": "Tỷ lệ lỗi cao",
+      "context": "Threat signal",
+      "translations": {
+        "en": "High error rate"
+      }
     },
     {
-      "key": "admin.security.signal.highErrorRate", "sourceText": "Tỷ lệ lỗi cao", "context": "Threat signal", "translations": { "en": "High error rate" }
+      "key": "admin.security.signal.endpointScanning",
+      "sourceText": "Dò quét endpoint",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Endpoint scanning"
+      }
     },
     {
-      "key": "admin.security.signal.endpointScanning", "sourceText": "Dò quét endpoint", "context": "Threat signal", "translations": { "en": "Endpoint scanning" }
+      "key": "admin.security.signal.scannerUserAgent",
+      "sourceText": "Công cụ quét bảo mật",
+      "context": "Threat signal",
+      "translations": {
+        "en": "Security scanner user agent"
+      }
     },
     {
-      "key": "admin.security.signal.scannerUserAgent", "sourceText": "Công cụ quét bảo mật", "context": "Threat signal", "translations": { "en": "Security scanner user agent" }
-    }
+      "key": "auth.adminAccessRequired",
+      "sourceText": "Tài khoản này không có quyền truy cập trang quản trị.",
+      "context": "Admin login authorization error",
+      "translations": {
+        "en": "This account cannot access the admin area."
+      }
+    },
+    {
+      "key": "auth.adminLoginTitle",
+      "sourceText": "Đăng nhập quản trị",
+      "context": "Admin login heading",
+      "translations": {
+        "en": "Admin sign in"
+      }
+    },
+    {
+      "key": "auth.adminLoginDescription",
+      "sourceText": "Đăng nhập bằng tài khoản có vai trò quản trị hoặc kiểm duyệt để vào bảng điều hành.",
+      "context": "Admin login description",
+      "translations": {
+        "en": "Sign in with an administrator or moderator account to open the control panel."
+      }
+    },
+    {
+      "key": "auth.adminLoginHint",
+      "sourceText": "Dùng email và mật khẩu của chính tài khoản được cấp quyền; mật khẩu quản trị mẫu không áp dụng cho tài khoản khác.",
+      "context": "Admin login credential hint",
+      "translations": {
+        "en": "Use the email and password of the authorized account; the sample administrator password does not apply to other accounts."
+      }
+    },
+    {
+      "key": "admin.access.loadFailed",
+      "sourceText": "Không thể xác minh quyền truy cập quản trị.",
+      "context": "Admin access bootstrap error",
+      "translations": {
+        "en": "Could not verify admin access."
+      }
+    },
+    {
+      "key": "admin.lives.title",
+      "sourceText": "Kiểm duyệt Live",
+      "context": "Admin navigation",
+      "translations": {
+        "en": "Live moderation"
+      }
+    },
+    {
+      "key": "admin.marketplace.title",
+      "sourceText": "Marketplace",
+      "context": "Admin navigation",
+      "translations": {
+        "en": "Marketplace"
+      }
+    },
+    {
+      "key": "admin.reports.title",
+      "sourceText": "Báo cáo vi phạm",
+      "context": "Admin navigation",
+      "translations": {
+        "en": "Violation reports"
+      }
+    },
+    {
+      "key": "admin.settings.title",
+      "sourceText": "Cấu hình hệ thống",
+      "context": "Admin settings title",
+      "translations": {
+        "en": "System settings"
+      }
+    },
+    {
+      "key": "admin.settings.subtitle",
+      "sourceText": "Quản lý các chính sách vận hành dùng chung cho toàn hệ thống.",
+      "context": "Admin settings subtitle",
+      "translations": {
+        "en": "Manage shared operational policies for the system."
+      }
+    },
+    {
+      "key": "admin.settings.marketplaceTitle",
+      "sourceText": "Chính sách Marketplace",
+      "context": "Admin Marketplace settings section",
+      "translations": {
+        "en": "Marketplace policy"
+      }
+    },
+    {
+      "key": "admin.settings.marketplaceSubtitle",
+      "sourceText": "Cấu hình mức phí được ghi nhận khi thương nhân gửi một mặt hàng mới để kiểm duyệt.",
+      "context": "Admin Marketplace settings subtitle",
+      "translations": {
+        "en": "Configure the fee recorded when a merchant submits a new listing for review."
+      }
+    },
+    {
+      "key": "admin.settings.marketplaceDisplayFee",
+      "sourceText": "Phí trưng bày cho mỗi mặt hàng",
+      "context": "Marketplace fee field",
+      "translations": {
+        "en": "Display fee per listing"
+      }
+    },
+    {
+      "key": "admin.settings.marketplaceDisplayFeeHint",
+      "sourceText": "Giá trị cho phép từ {{min}} đến {{max}}. Mức mới chỉ áp dụng cho mặt hàng đăng sau khi lưu.",
+      "context": "Marketplace fee field hint",
+      "translations": {
+        "en": "Allowed range: {{min}} to {{max}}. The new amount only applies to listings submitted after saving."
+      }
+    },
+    {
+      "key": "admin.settings.marketplaceFeePreview",
+      "sourceText": "Mức phí sẽ hiển thị",
+      "context": "Marketplace fee preview",
+      "translations": {
+        "en": "Displayed fee"
+      }
+    },
+    {
+      "key": "admin.settings.marketplaceFeePolicy",
+      "sourceText": "Facebook Clone không thu hoa hồng giao dịch. Đây là phí trưng bày được chốt tại thời điểm gửi kiểm duyệt.",
+      "context": "Marketplace fee policy",
+      "translations": {
+        "en": "Facebook Clone does not charge a transaction commission. This display fee is fixed when the listing is submitted for review."
+      }
+    },
+    {
+      "key": "admin.settings.marketplaceFeeInvalid",
+      "sourceText": "Phí trưng bày phải nằm trong khoảng {{min}} đến {{max}}.",
+      "context": "Marketplace fee validation",
+      "translations": {
+        "en": "The display fee must be between {{min}} and {{max}}."
+      }
+    },
+    {
+      "key": "admin.settings.loadFailed",
+      "sourceText": "Không thể tải cấu hình hệ thống.",
+      "context": "Admin settings load error",
+      "translations": {
+        "en": "Could not load system settings."
+      }
+    },
+    {
+      "key": "admin.settings.saved",
+      "sourceText": "Đã lưu cấu hình hệ thống.",
+      "context": "Admin settings save success",
+      "translations": {
+        "en": "System settings saved."
+      }
+    },
+    {
+      "key": "admin.settings.saveFailed",
+      "sourceText": "Không thể lưu cấu hình hệ thống.",
+      "context": "Admin settings save error",
+      "translations": {
+        "en": "Could not save system settings."
+      }
+    },
+    {
+      "key": "roles.super_admin.displayName",
+      "sourceText": "Quản trị viên cấp cao",
+      "context": "RBAC role display name",
+      "translations": {
+        "en": "Super Admin"
+      }
+    },
+    {
+      "key": "roles.admin.displayName",
+      "sourceText": "Quản trị viên",
+      "context": "RBAC role display name",
+      "translations": {
+        "en": "Admin"
+      }
+    },
+    {
+      "key": "roles.moderator.displayName",
+      "sourceText": "Kiểm duyệt viên",
+      "context": "RBAC role display name",
+      "translations": {
+        "en": "Moderator"
+      }
+    },
+    {
+      "key": "roles.user.displayName",
+      "sourceText": "Người dùng",
+      "context": "RBAC role display name",
+      "translations": {
+        "en": "User"
+      }
+    },
+    {
+      "key": "permissions.modules.dashboard",
+      "sourceText": "Bảng điều khiển",
+      "context": "Permission module",
+      "translations": {
+        "en": "Dashboard"
+      }
+    },
+    {
+      "key": "permissions.modules.users",
+      "sourceText": "Người dùng",
+      "context": "Permission module",
+      "translations": {
+        "en": "Users"
+      }
+    },
+    {
+      "key": "permissions.modules.roles",
+      "sourceText": "Vai trò và quyền",
+      "context": "Permission module",
+      "translations": {
+        "en": "Roles and permissions"
+      }
+    },
+    {
+      "key": "permissions.modules.posts",
+      "sourceText": "Bài viết",
+      "context": "Permission module",
+      "translations": {
+        "en": "Posts"
+      }
+    },
+    {
+      "key": "permissions.modules.reels",
+      "sourceText": "Reels",
+      "context": "Permission module",
+      "translations": {
+        "en": "Reels"
+      }
+    },
+    {
+      "key": "permissions.modules.lives",
+      "sourceText": "Phát trực tiếp",
+      "context": "Permission module",
+      "translations": {
+        "en": "Live streaming"
+      }
+    },
+    {
+      "key": "permissions.modules.marketplace",
+      "sourceText": "Marketplace",
+      "context": "Permission module",
+      "translations": {
+        "en": "Marketplace"
+      }
+    },
+    {
+      "key": "permissions.modules.reports",
+      "sourceText": "Báo cáo vi phạm",
+      "context": "Permission module",
+      "translations": {
+        "en": "Reports"
+      }
+    },
+    {
+      "key": "permissions.modules.security",
+      "sourceText": "Bảo mật",
+      "context": "Permission module",
+      "translations": {
+        "en": "Security"
+      }
+    },
+    {
+      "key": "permissions.modules.localization",
+      "sourceText": "Ngôn ngữ và bản dịch",
+      "context": "Permission module",
+      "translations": {
+        "en": "Localization"
+      }
+    },
+    {
+      "key": "permissions.modules.settings",
+      "sourceText": "Cấu hình hệ thống",
+      "context": "Permission module",
+      "translations": {
+        "en": "System settings"
+      }
+    },
+    {
+      "key": "permissions.dashboard.view.description",
+      "sourceText": "Xem bảng điều khiển quản trị",
+      "context": "Permission description",
+      "translations": {
+        "en": "View admin dashboard"
+      }
+    },
+    {
+      "key": "permissions.users.view.description",
+      "sourceText": "Xem danh sách người dùng",
+      "context": "Permission description",
+      "translations": {
+        "en": "View users"
+      }
+    },
+    {
+      "key": "permissions.users.manage.description",
+      "sourceText": "Tạo, khóa, mở khóa và xóa người dùng",
+      "context": "Permission description",
+      "translations": {
+        "en": "Create, ban, unban and delete users"
+      }
+    },
+    {
+      "key": "permissions.roles.view.description",
+      "sourceText": "Xem vai trò và quyền hạn",
+      "context": "Permission description",
+      "translations": {
+        "en": "View roles and permissions"
+      }
+    },
+    {
+      "key": "permissions.roles.manage.description",
+      "sourceText": "Gán vai trò và quản lý quyền hạn",
+      "context": "Permission description",
+      "translations": {
+        "en": "Assign roles and manage permissions"
+      }
+    },
+    {
+      "key": "permissions.posts.view.description",
+      "sourceText": "Xem bài viết trong trang quản trị",
+      "context": "Permission description",
+      "translations": {
+        "en": "View posts in admin"
+      }
+    },
+    {
+      "key": "permissions.posts.manage.description",
+      "sourceText": "Kiểm duyệt bài viết",
+      "context": "Permission description",
+      "translations": {
+        "en": "Moderate posts"
+      }
+    },
+    {
+      "key": "permissions.posts.delete.description",
+      "sourceText": "Xóa hoặc ẩn bài viết",
+      "context": "Permission description",
+      "translations": {
+        "en": "Delete or hide posts"
+      }
+    },
+    {
+      "key": "permissions.posts.restore.description",
+      "sourceText": "Khôi phục bài viết đã xóa",
+      "context": "Permission description",
+      "translations": {
+        "en": "Restore deleted posts"
+      }
+    },
+    {
+      "key": "permissions.posts.ban_author.description",
+      "sourceText": "Khóa tác giả từ thao tác kiểm duyệt bài viết",
+      "context": "Permission description",
+      "translations": {
+        "en": "Ban an author from a post moderation action"
+      }
+    },
+    {
+      "key": "permissions.reels.view.description",
+      "sourceText": "Xem Reels trong trang quản trị",
+      "context": "Permission description",
+      "translations": {
+        "en": "View reels in admin"
+      }
+    },
+    {
+      "key": "permissions.reels.manage.description",
+      "sourceText": "Kiểm duyệt Reels",
+      "context": "Permission description",
+      "translations": {
+        "en": "Moderate reels"
+      }
+    },
+    {
+      "key": "permissions.reels.delete.description",
+      "sourceText": "Xóa hoặc ẩn Reels",
+      "context": "Permission description",
+      "translations": {
+        "en": "Delete or hide reels"
+      }
+    },
+    {
+      "key": "permissions.reels.restore.description",
+      "sourceText": "Khôi phục Reels đã xóa",
+      "context": "Permission description",
+      "translations": {
+        "en": "Restore deleted reels"
+      }
+    },
+    {
+      "key": "permissions.reels.ban_author.description",
+      "sourceText": "Khóa tác giả từ thao tác kiểm duyệt Reels",
+      "context": "Permission description",
+      "translations": {
+        "en": "Ban an author from a reel moderation action"
+      }
+    },
+    {
+      "key": "permissions.lives.view.description",
+      "sourceText": "Xem mọi phiên live, bao gồm phiên riêng tư",
+      "context": "Permission description",
+      "translations": {
+        "en": "View every live session, including private sessions"
+      }
+    },
+    {
+      "key": "permissions.lives.moderate.description",
+      "sourceText": "Dừng phiên live và tạm khóa quyền phát live",
+      "context": "Permission description",
+      "translations": {
+        "en": "Terminate live sessions and suspend live access"
+      }
+    },
+    {
+      "key": "permissions.lives.restore.description",
+      "sourceText": "Mở lại quyền live sau khi kiểm duyệt",
+      "context": "Permission description",
+      "translations": {
+        "en": "Restore live access after review"
+      }
+    },
+    {
+      "key": "permissions.marketplace.view.description",
+      "sourceText": "Xem mặt hàng và thống kê thương nhân",
+      "context": "Permission description",
+      "translations": {
+        "en": "View marketplace listings and merchant statistics"
+      }
+    },
+    {
+      "key": "permissions.marketplace.manage.description",
+      "sourceText": "Duyệt, từ chối và gỡ mặt hàng",
+      "context": "Permission description",
+      "translations": {
+        "en": "Approve, reject and remove marketplace listings"
+      }
+    },
+    {
+      "key": "permissions.marketplace.suspend_seller.description",
+      "sourceText": "Khóa và mở lại quyền bán hàng Marketplace",
+      "context": "Permission description",
+      "translations": {
+        "en": "Suspend and restore marketplace seller access"
+      }
+    },
+    {
+      "key": "permissions.reports.view.description",
+      "sourceText": "Xem báo cáo của người dùng trên mọi loại nội dung",
+      "context": "Permission description",
+      "translations": {
+        "en": "View user reports across all content modules"
+      }
+    },
+    {
+      "key": "permissions.reports.manage.description",
+      "sourceText": "Xử lý báo cáo và áp dụng hình thức kiểm duyệt theo chức năng",
+      "context": "Permission description",
+      "translations": {
+        "en": "Review reports and apply feature-scoped moderation actions"
+      }
+    },
+    {
+      "key": "permissions.security.view.description",
+      "sourceText": "Xem sự kiện và dữ liệu bảo mật",
+      "context": "Permission description",
+      "translations": {
+        "en": "View security events"
+      }
+    },
+    {
+      "key": "permissions.security.manage.description",
+      "sourceText": "Quản lý danh sách chặn và thao tác bảo mật",
+      "context": "Permission description",
+      "translations": {
+        "en": "Manage block lists and security actions"
+      }
+    },
+    {
+      "key": "permissions.localization.view.description",
+      "sourceText": "Xem danh mục ngôn ngữ và bản dịch",
+      "context": "Permission description",
+      "translations": {
+        "en": "View localization entries"
+      }
+    },
+    {
+      "key": "permissions.localization.manage.description",
+      "sourceText": "Tạo và cập nhật bản dịch",
+      "context": "Permission description",
+      "translations": {
+        "en": "Create and update translations"
+      }
+    },
+    {
+      "key": "permissions.settings.manage.description",
+      "sourceText": "Quản lý cấu hình vận hành toàn hệ thống",
+      "context": "Permission description",
+      "translations": {
+        "en": "Manage system settings"
+      }
+    },
+    {"key":"ui.components.live.activelivebanner.ang-phat-truc-tiep.7a5192c6","sourceText":"Đang phát trực tiếp","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/ActiveLiveBanner.jsx","translations":{}},
+    {"key":"ui.components.live.activelivebanner.phien.f11366de","sourceText":"phiên","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/ActiveLiveBanner.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.chu-phong-a-oi-quyen-rieng-tu-ban-a-.bd8e7c18","sourceText":"Chủ phòng đã đổi quyền riêng tư. Bạn đã rời khỏi live.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.khong-the-tai-u-ban-ghi-phuc-vu-kiem.af7aae49","sourceText":"Không thể tải đủ bản ghi phục vụ kiểm duyệt. Phiên live vẫn đã bị khóa.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.a-tai-ban-ghi-live-len-thanh-cong.2d0020d9","sourceText":"Đã tải bản ghi live lên thành công.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.live-a-ong-nen-khong-nhan-them-binh-.908f3ee7","sourceText":"Live đã đóng nên không nhận thêm bình luận.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.a-thay-oi-quyen-rieng-tu-ngay-trong-.921afdde","sourceText":"Đã thay đổi quyền riêng tư ngay trong lúc live.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.a-chuyen-ban-ghi-live-thanh-bai-viet.b5a234de","sourceText":"Đã chuyển bản ghi live thành bài viết video.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.khong-co-ban-phat-lai.fa9788d4","sourceText":"Không có bản phát lại","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.ang-tai-ban-ghi.fcbe1918","sourceText":"Đang tải bản ghi","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.ket-thuc-live.9f2c3f0f","sourceText":"Kết thúc live","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.ban-phat-lai-tu-xoa-luc.a8124f9b","sourceText":"Bản phát lại tự xóa lúc","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.ang-ban-live-thanh-video-post.f0e2fcdf","sourceText":"Đăng bản live thành video post","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.tai-lai-ban-ghi.9c262c1c","sourceText":"Tải lại bản ghi","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.kiem-duyet-vien-ang-xem-voi-quyen-bo.50cffabd","sourceText":"Kiểm duyệt viên đang xem với quyền bỏ qua chế độ riêng tư.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.bao-cao-live.6a418503","sourceText":"Báo cáo live","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.binh-luan-truc-tiep.315bb5df","sourceText":"Bình luận trực tiếp","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.chua-co-binh-luan-hay-bat-au-cuoc-tr.198924cb","sourceText":"Chưa có bình luận. Hãy bắt đầu cuộc trò chuyện.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.viet-binh-luan.bdb5efe2","sourceText":"Viết bình luận…","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.binh-luan-live.deec6931","sourceText":"Bình luận live","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.gui-binh-luan.305f446f","sourceText":"Gửi bình luận","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.live-a-ong-binh-luan-moi-a-uoc-ngat.1fd05df1","sourceText":"Live đã đóng, bình luận mới đã được ngắt.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.ang-ban-live-thanh-video.6052d74c","sourceText":"Đăng bản live thành video","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.ban-tam-uoc-gia-han-them.89ad5e9c","sourceText":"Bản tạm được gia hạn thêm","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.phut-trong-luc-ban-hoan-thien-bai-vi.27e998e4","sourceText":"phút trong lúc bạn hoàn thiện bài viết.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.video-live-a-upload-an-toan-theo-tun.7a3eef0f","sourceText":"Video live đã upload an toàn theo từng chunk.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.noi-dung-bai-viet.ed49ab20","sourceText":"Nội dung bài viết","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.ban-muon-noi-gi-ve-video-nay.67722e78","sourceText":"Bạn muốn nói gì về video này?","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.oi-tuong-xem-bai-viet.63a9c29f","sourceText":"Đối tượng xem bài viết","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.huy-va-xoa-video.c4b87453","sourceText":"Hủy và xóa video","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.ang-bai-viet.3559d657","sourceText":"Đăng bài viết","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/live/LiveRoom.jsx","translations":{}},
+    {"key":"ui.components.moderation.reportdialog.bao-cao-a-uoc-gui-toi-oi-ngu-kiem-du.e0cdf97e","sourceText":"Báo cáo đã được gửi tới đội ngũ kiểm duyệt.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/moderation/ReportDialog.jsx","translations":{}},
+    {"key":"ui.components.moderation.reportdialog.bao-cao-khong-tu-ong-ket-luan-vi-pha.ab284bce","sourceText":"Báo cáo không tự động kết luận vi phạm. Kiểm duyệt viên sẽ xem nội dung gốc và lịch sử liên quan.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/moderation/ReportDialog.jsx","translations":{}},
+    {"key":"ui.components.moderation.reportdialog.thong-tin-bo-sung.ccdf241a","sourceText":"Thông tin bổ sung","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/moderation/ReportDialog.jsx","translations":{}},
+    {"key":"ui.components.moderation.reportdialog.mo-ta-thoi-iem-hoac-dau-hieu-vi-pham.05d8383f","sourceText":"Mô tả thời điểm hoặc dấu hiệu vi phạm để kiểm duyệt viên kiểm tra nhanh hơn…","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/moderation/ReportDialog.jsx","translations":{}},
+    {"key":"ui.components.moderation.reportdialog.khong-gui-bao-cao-sai-su-that-hoac-l.966a134a","sourceText":"Không gửi báo cáo sai sự thật hoặc lạm dụng hệ thống báo cáo.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/components/moderation/ReportDialog.jsx","translations":{}},
+    {"key":"ui.pages.admin.admincontent.a-an.47677711","sourceText":"đã ẩn","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminContent.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.a-dung-phien-va-tam-khoa-quyen-live-.888a1e1f","sourceText":"Đã dừng phiên và tạm khóa quyền live của người dùng.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.a-mo-lai-quyen-live-sau-khi-kiem-duy.b5dda96c","sourceText":"Đã mở lại quyền live sau khi kiểm duyệt.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.xem-moi-phien-ke-ca-live-rieng-tu-va.093119ec","sourceText":"Xem mọi phiên, kể cả live riêng tư, và xử lý vi phạm theo thời gian thực.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.tong-phien.d5a15139","sourceText":"Tổng phiên","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.ang-phat.cf413362","sourceText":"Đang phát","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.a-ket-thuc.991d8611","sourceText":"Đã kết thúc","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.ang-khoa-quyen-live.2a92d47a","sourceText":"Đang khóa quyền live","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.tim-nguoi-phat-email-hoac-tieu-e.78aa4dd0","sourceText":"Tìm người phát, email hoặc tiêu đề","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.tat-ca-trang-thai.f6908bd5","sourceText":"Tất cả trạng thái","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.ang-live.04aa34ec","sourceText":"Đang live","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.bi-kiem-duyet.45777665","sourceText":"Bị kiểm duyệt","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.ang-tai.1bff877b","sourceText":"Đang tải…","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.nguoi-phat.c8dd6504","sourceText":"Người phát","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.email-tai-khoan.62fc12e1","sourceText":"Email tài khoản","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.loai-noi-dung.c293c0ec","sourceText":"Loại nội dung","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.bat-au-luc.11b76241","sourceText":"Bắt đầu lúc","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.luu-bang-chung-en.286cea2d","sourceText":"Lưu bằng chứng đến","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.quyen-live-ang-bi-khoa.bdba0153","sourceText":"Quyền live đang bị khóa:","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.hanh-ong-kiem-duyet.ea8de085","sourceText":"Hành động kiểm duyệt","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.mo-lai-quyen-live.607da45b","sourceText":"Mở lại quyền live","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.phien-a-ong-khong-con-hanh-ong-realt.98ff99d9","sourceText":"Phiên đã đóng · không còn hành động realtime","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminlives.khong-co-phien-live-phu-hop.084af130","sourceText":"Không có phiên live phù hợp.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLives.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.a-cap-nhat-kiem-duyet-mat-hang.67a2558c","sourceText":"Đã cập nhật kiểm duyệt mặt hàng.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.can-nhap-ly-do-khoa-quyen-ban-hang.b10a29c4","sourceText":"Cần nhập lý do khóa quyền bán hàng.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.quan-ly-marketplace.98e5a955","sourceText":"Quản lý Marketplace","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.duyet-mat-hang-xem-hieu-qua-trung-ba.c9b00eb1","sourceText":"Duyệt mặt hàng, xem hiệu quả trưng bày và quản lý quyền bán hàng.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.tim-mat-hang-thuong-nhan-hoac-email.6e6111be","sourceText":"Tìm mặt hàng, thương nhân hoặc email","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.thuong-nhan.892dfa84","sourceText":"Thương nhân","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.danh-muc.7b6a7c7c","sourceText":"Danh mục","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.tuong-tac.1353b29a","sourceText":"Tương tác","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.xem.b2073190","sourceText":"xem ·","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{"en":"xem ·"}},
+    {"key":"ui.pages.admin.adminmarketplace.luu.dd86a159","sourceText":"lưu ·","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.bao-cao.2686a33b","sourceText":"báo cáo","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.phi-trung-bay.36766ee9","sourceText":"Phí trưng bày","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.ieu-khoan.1ecef831","sourceText":"· Điều khoản","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.thong-ke.eca4b0de","sourceText":"Thống kê","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.duyet.d8107c5d","sourceText":"Duyệt","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.go.06a6fa40","sourceText":"Gỡ","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.ghi-chu-kiem-duyet.f3a4757d","sourceText":"Ghi chú kiểm duyệt","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.giai-thich-quyet-inh-cho-thuong-nhan.1db8593a","sourceText":"Giải thích quyết định cho thương nhân…","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.thong-ke-thuong-nhan.c673e7c9","sourceText":"Thống kê thương nhân","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.ly-do-quan-ly-quyen-ban-hang.610ce634","sourceText":"Lý do quản lý quyền bán hàng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminmarketplace.bat-buoc-khi-khoa-quyen-ban-hang.dbec51e6","sourceText":"Bắt buộc khi khóa quyền bán hàng…","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminMarketplace.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.trung-tam-bao-cao.6bdb50fc","sourceText":"Trung tâm báo cáo","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.tap-trung-bao-cao-post-reel-live-mar.cb96e863","sourceText":"Tập trung báo cáo Post, Reel, Live, Marketplace và người dùng trong một hàng đợi.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.bao-cao-ang-mo.48a220de","sourceText":"Báo cáo đang mở","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.live-can-giu-bang-chung.651c1210","sourceText":"Live cần giữ bằng chứng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.a-xu-ly.dbbff0bf","sourceText":"Đã xử lý","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.tim-oi-tuong-chu-so-huu-nguoi-bao-ca.a396de2a","sourceText":"Tìm đối tượng, chủ sở hữu, người báo cáo…","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.ang-mo.c923e127","sourceText":"Đang mở","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.moi-trang-thai.6193c7a2","sourceText":"Mọi trạng thái","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.moi-noi-dung.ae293757","sourceText":"Mọi nội dung","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.chu-so-huu.fba345c9","sourceText":"Chủ sở hữu","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.nguoi-bao-cao.182f7777","sourceText":"Người báo cáo","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.xem-oi-tuong.0f4bc379","sourceText":"Xem đối tượng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.xu-ly.3b24d1d9","sourceText":"Xử lý","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.xu-ly-bao-cao.24cdb85e","sourceText":"Xử lý báo cáo","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.chu-so-huu.2136a594","sourceText":"· Chủ sở hữu:","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.hinh-thuc-xu-ly.ae65e04f","sourceText":"Hình thức xử lý","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.chon-muc-xu-ly.f9f9a4a3","sourceText":"Chọn mức xử lý","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.can-cu-va-ghi-chu.e4c166b1","sourceText":"Căn cứ và ghi chú","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.ghi-ro-bang-chung-va-ly-do-ua-ra-quy.65dcd09f","sourceText":"Ghi rõ bằng chứng và lý do đưa ra quyết định…","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.khoa-theo-module-chi-vo-hieu-hoa-tin.efd52b34","sourceText":"Khóa theo module chỉ vô hiệu hóa tính năng tương ứng; “Khóa toàn bộ tài khoản” là mức xử lý nặng nhất.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.khong-vi-pham.d8d633eb","sourceText":"Không vi phạm","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.admin.adminreports.ap-dung-xu-ly.fc487f68","sourceText":"Áp dụng xử lý","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminReports.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.truc-tiep.4394cf43","sourceText":"Trực tiếp","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.phat-live-cong-ong-ban-hang-hoac-xem.32e2f95e","sourceText":"Phát live cộng đồng, bán hàng hoặc xem lại trong","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.phut.dd2b6cfc","sourceText":"phút.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.tim-live-hoac-nguoi-phat.09d85a1e","sourceText":"Tìm live hoặc người phát","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.phien-live.d44855e3","sourceText":"Phiên live","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.a-ang.838b811c","sourceText":"Đã đăng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.phut.20b6328e","sourceText":"phút","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.chua-co-phien-live-phu-hop.6ae43c23","sourceText":"Chưa có phiên live phù hợp.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.tao-phien-livestream.1a10231a","sourceText":"Tạo phiên livestream","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.ban-co-the-oi-quyen-rieng-tu-ngay-ca.d824b54a","sourceText":"Bạn có thể đổi quyền riêng tư ngay cả khi đang phát.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.cong-ong.549154d6","sourceText":"Cộng đồng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.ban-hang.7ffa61c5","sourceText":"Bán hàng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.tieu-e-livestream.e2fab44d","sourceText":"Tiêu đề livestream","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.livepage.mo-ta-khong-bat-buoc.f1a3c0b2","sourceText":"Mô tả (không bắt buộc)","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/LivePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.ban-can-ong-y-ieu-khoan-trung-bay-tr.fa8c6150","sourceText":"Bạn cần đồng ý điều khoản trưng bày trước khi đăng.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.vui-long-chon-anh-san-pham.83d01bd8","sourceText":"Vui lòng chọn ảnh sản phẩm.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.a-gui-mat-hang-e-kiem-duyet-mat-hang.c190a62b","sourceText":"Đã gửi mặt hàng để kiểm duyệt. Mặt hàng sẽ hiển thị sau khi được duyệt.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.cho-cong-ong.fba5c6ac","sourceText":"Chợ cộng đồng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.mua-ban-gan-ban-ro-rang-va-de-dang.dd1eaf31","sourceText":"Mua bán gần bạn, rõ ràng và dễ dàng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.kham-pha-mat-hang-a-kiem-duyet-xem-a.ccb9cf38","sourceText":"Khám phá mặt hàng đã kiểm duyệt, xem đầy đủ giá, tình trạng và khu vực trước khi liên hệ người bán.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.mat-hang-ang-hien-thi.77a69f49","sourceText":"mặt hàng đang hiển thị","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.khong-thu-hoa-hong-giao-dich.9a6c23c8","sourceText":"Không thu hoa hồng giao dịch","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.gian-hang-cua-toi.0ffd0247","sourceText":"Gian hàng của tôi","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.ang-mat-hang.f3b85fa4","sourceText":"Đăng mặt hàng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.tim-mat-hang.53dee24a","sourceText":"Tìm mặt hàng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.tim-theo-ten-san-pham-nguoi-ban-hoac.eae31587","sourceText":"Tìm theo tên sản phẩm, người bán hoặc khu vực.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.tim-kiem-marketplace.2b139963","sourceText":"Tìm kiếm Marketplace","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.vi-du-macbook-quan-1.213ed6f2","sourceText":"Ví dụ: MacBook, Quận 1…","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.danh-muc-san-pham.4c246ef8","sourceText":"Danh mục sản phẩm","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.san-pham-danh-cho-ban.f0f15b53","sourceText":"Sản phẩm dành cho bạn","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.chi-hien-thi-mat-hang-a-qua-kiem-duy.43a68ee4","sourceText":"Chỉ hiển thị mặt hàng đã qua kiểm duyệt.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.san-pham.ffbd4a98","sourceText":"sản phẩm","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.ang-tai-marketplace.75a76560","sourceText":"Đang tải Marketplace…","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.luu-san-pham.21e6c3be","sourceText":"Lưu sản phẩm","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.gia-ban.7aa6c5e9","sourceText":"Giá bán","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.khu-vuc.6252a860","sourceText":"Khu vực","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.khong-tim-thay-san-pham-phu-hop.02550dfb","sourceText":"Không tìm thấy sản phẩm phù hợp.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.chi-tiet-mat-hang-a-kiem-duyet.99a86fb8","sourceText":"Chi tiết mặt hàng đã kiểm duyệt","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.ang-ngay.d3a2a66e","sourceText":"Đăng ngày","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.tai.2506d938","sourceText":"tại","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.gia-nguoi-ban-e-xuat.e2e2b769","sourceText":"Giá người bán đề xuất","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.mo-ta-san-pham.925518eb","sourceText":"Mô tả sản phẩm","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.tinh-trang.74ef7b01","sourceText":"Tình trạng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.luot-xem.e55f6dfe","sourceText":"Lượt xem","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.nguoi-ban.f646cc19","sourceText":"Người bán","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.giao-dich-qua-lien-he-truc-tiep.efe7416b","sourceText":"Giao dịch qua liên hệ trực tiếp","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.lien-he-nguoi-ban.8c669b8e","sourceText":"Liên hệ người bán","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.bao-cao-mat-hang.8326c251","sourceText":"Báo cáo mặt hàng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.khong-chuyen-tien-truoc-khi-xac-minh.85640d0a","sourceText":"Không chuyển tiền trước khi xác minh sản phẩm và người bán.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.ang-mat-hang-moi.ad78a2c9","sourceText":"Đăng mặt hàng mới","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.mat-hang-se-o-trang-thai-cho-cho-toi.844ae97f","sourceText":"Mặt hàng sẽ ở trạng thái chờ cho tới khi kiểm duyệt viên chấp thuận.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.xem-truoc-san-pham.55bb3d71","sourceText":"Xem trước sản phẩm","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.them-anh-san-pham.1de94419","sourceText":"Thêm ảnh sản phẩm","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.png-jpg-gif-toi-a-10-mb.ec95c88f","sourceText":"PNG/JPG/GIF, tối đa 10 MB","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.ten-mat-hang.389c8aef","sourceText":"Tên mặt hàng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.gia-ban.cc86cfad","sourceText":"Giá bán (₫)","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.chon-danh-muc.19cd16f2","sourceText":"Chọn danh mục","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.chon-tinh-trang.d0d3dc4a","sourceText":"Chọn tình trạng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.mo-ta-chi-tiet.1ac03d2d","sourceText":"Mô tả chi tiết","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.phi-trung-bay.13282c06","sourceText":"Phí trưng bày:","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.facebook-clone-khong-thu-hoa-hong-gi.b4417b85","sourceText":"Facebook Clone không thu hoa hồng giao dịch. Bản demo chỉ ghi nhận phí, chưa thực hiện thanh toán.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.toi-a-oc-va-ong-y.842c3e12","sourceText":"Tôi đã đọc và đồng ý","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.ieu-khoan-trung-bay-phien-ban.5845f5cf","sourceText":"Điều khoản trưng bày phiên bản","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.gui-kiem-duyet.d0512043","sourceText":"Gửi kiểm duyệt","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.ieu-khoan-marketplace.76aefd32","sourceText":"Điều khoản Marketplace","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.phien-ban-bat-buoc-khi-gui-mat-hang-.201180a8","sourceText":"Phiên bản bắt buộc khi gửi mặt hàng kiểm duyệt.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.thong-ke-hieu-qua-trung-bay-va-trang.274bb343","sourceText":"Thống kê hiệu quả trưng bày và trạng thái kiểm duyệt mặt hàng.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.anh-dau-a-ban.3820ffce","sourceText":"Đánh dấu đã bán","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.memoriespage.khong-the-tai-ky-niem-luc-nay-vui-lo.70cfd0b3","sourceText":"Không thể tải kỷ niệm lúc này. Vui lòng thử lại sau.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MemoriesPage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.memoriespage.on-lai-nhung-khoanh-khac.019e32f9","sourceText":"Ôn lại những khoảnh khắc","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MemoriesPage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.memoriespage.nhung-bai-viet-ang-nho-cua-ban-uoc-t.19a18778","sourceText":"Những bài viết đáng nhớ của bạn được tổng hợp tại đây.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MemoriesPage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.memoriespage.ang-tim-ky-niem-cua-ban.59580bee","sourceText":"Đang tìm kỷ niệm của bạn…","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MemoriesPage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.memoriespage.chua-tai-uoc-ky-niem.23787af4","sourceText":"Chưa tải được kỷ niệm","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MemoriesPage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.memoriespage.chua-co-ky-niem-cho-hom-nay.2c9f17e2","sourceText":"Chưa có kỷ niệm cho hôm nay","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MemoriesPage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.memoriespage.hay-tiep-tuc-chia-se-e-tao-them-nhie.c21d6975","sourceText":"Hãy tiếp tục chia sẻ để tạo thêm nhiều kỷ niệm đẹp.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MemoriesPage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.memoriespage.bai-viet-cung-ngay-tu-nhung-nam-truo.b8286151","sourceText":"Bài viết cùng ngày từ những năm trước sẽ tự động xuất hiện ở đây.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MemoriesPage.jsx","translations":{}},
+    {"key":"ui.pages.login.index.facebook-clone-admin.db931840","sourceText":"Facebook Clone Admin","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Login/index.jsx","translations":{"en":"Facebook Clone Admin"}},
+    {"key":"ui.pages.profile.profilepage.bao-cao-nguoi-dung.9f2fbb5c","sourceText":"Báo cáo người dùng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Profile/ProfilePage.jsx","translations":{}},
+    {"key":"ui.components.live.liveroom.live-bi-dung-boi-kiem-duyet-vien-val.a5f1b1dd","sourceText":"Live bị dừng bởi kiểm duyệt viên: {{value0}}","context":"Live moderation notification","translations":{"en":"The live was stopped by a moderator: {{value0}}"}},
+    {"key":"ui.components.live.liveroom.a-ket-thuc-live-quyen-ang-replay-het.c35c2b87","sourceText":"Đã kết thúc live. Quyền đăng replay hết hạn sau {{value0}} phút; bằng chứng được giữ {{value1}} ngày.","context":"Live replay retention notification","translations":{"en":"Live ended. Replay publishing expires in {{value0}} minutes; evidence is retained for {{value1}} days."}},
+    {"key":"ui.components.live.liveroom.a-huy-ang-ban-ghi-a-an-khoi-tai-khoa.f96c9517","sourceText":"Đã hủy đăng. Bản ghi đã ẩn khỏi tài khoản và được giữ làm bằng chứng tối đa {{value0}} ngày.","context":"Discarded live replay notification","translations":{"en":"Publishing was cancelled. The recording is hidden from the account and retained as evidence for up to {{value0}} days."}},
+    {"key":"ui.pages.admin.adminreports.value0.29e6e12d","sourceText":" · {{value0}}","context":"Report detail suffix","translations":{"en":" · {{value0}}"}},
+    {"key":"ui.pages.discovery.livepage.value0-phien.0234bb95","sourceText":"{{value0}} phiên","context":"Live session count","translations":{"en":"{{value0}} sessions"}},
+    {"key":"ui.pages.discovery.memoriespage.value0-ky-niem-ang-cho-ban-xem-lai.d65a1ea3","sourceText":"{{value0}} kỷ niệm đang chờ bạn xem lại.","context":"Memories count","translations":{"en":"{{value0}} memories are waiting for you."}},
+    {"key":"ui.pages.discovery.memoriespage.value0-nam-truoc.1c73b883","sourceText":"{{value0}} năm trước","context":"Memory age","translations":{"en":"{{value0}} years ago"}},
+    {"key":"ui.pages.admin.admincontent.nguoi-dung-chua-xac-inh.66db7244","sourceText":"Người dùng chưa xác định","context":"Fallback author name in admin content","translations":{"en":"Unknown user"}}
   ]
 }

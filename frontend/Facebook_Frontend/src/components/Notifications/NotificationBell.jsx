@@ -46,7 +46,7 @@ const NotificationBell = () => {
         setUnreadCount(count);
       }
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('notification.loadFailed'), { id: 'notifications-load-error', context: 'notifications.load' });
+      toast.apiError(error, translateCatalogKey('notification.loadFailed'), { id: "notifications-load-error", context: "notifications.load" });
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ const NotificationBell = () => {
       );
       setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('notification.markReadFailed'), { context: 'notifications.markRead' });
+      toast.apiError(error, translateCatalogKey('notification.markReadFailed'), { context: "notifications.markRead" });
     }
   };
 
@@ -105,7 +105,7 @@ const NotificationBell = () => {
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0);
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('notification.markReadFailed'), { context: 'notifications.markAllRead' });
+      toast.apiError(error, translateCatalogKey('notification.markReadFailed'), { context: "notifications.markAllRead" });
     }
   };
 

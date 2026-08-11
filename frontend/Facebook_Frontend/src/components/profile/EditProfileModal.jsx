@@ -86,7 +86,7 @@ const EditProfileModal = ({ user, onClose, onUpdated }) => {
       });
       onClose();
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: 'profile.update' });
+      toast.apiError(error, translateCatalogKey('settings.updateFailed'), { context: "profile.update" });
     } finally {
       setSaving(false);
     }

@@ -18,7 +18,7 @@ const checkedObjectKeys = new Set([
   'label', 'description', 'title', 'placeholder', 'message', 'detail',
   'confirmText', 'cancelText',
 ]);
-const ignoredText = new Set(['Facebook', 'Reels', 'Messenger', 'Admin Panel', 's', 'MB', 'MB)']);
+const ignoredText = new Set(['Facebook', 'Reels', 'Messenger', 'Admin Panel', 'HTTP', 'LIVE', 's', 'MB', 'MB)', 'MB · chunk']);
 const ignoredControlValues = new Set([
   '2-digit', 'error', 'loading', 'prompt', 'posts', 'events', 'blocked',
 ]);
@@ -78,11 +78,13 @@ for (const file of files) {
       const attribute = nodePath.findParent((parent) => parent.isJSXAttribute());
       const expression = nodePath.findParent((parent) => parent.isJSXExpressionContainer());
       const isCheckedAttribute = attribute && checkedAttributes.has(attribute.node.name?.name);
-      const isRenderedExpression = !attribute && expression && !expression.parentPath.isJSXAttribute();
+      const isRenderedExpression = !attribute && expression?.node.expression === nodePath.node;
       const callee = call?.node.callee;
+      if (callee?.type === 'MemberExpression' && callee.object?.name === 'toast') return;
       const isUiCall = (callee?.type === 'MemberExpression' && callee.object?.name === 'toast')
         || (callee?.type === 'Identifier' && ['getApiErrorMessage', 'setError'].includes(callee.name));
-      if ((isCheckedAttribute || isRenderedExpression || isUiCall) && isHumanText(nodePath.node.value)) {
+      const isFirstUiArgument = isUiCall && call.node.arguments[0] === nodePath.node;
+      if ((!isCheckedAttribute && (isRenderedExpression || isFirstUiArgument)) && isHumanText(nodePath.node.value)) {
         report(file, nodePath.node, 'dynamic-string', nodePath.node.value);
       }
     },

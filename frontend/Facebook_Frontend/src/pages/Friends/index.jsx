@@ -38,7 +38,7 @@ const FriendsPage = () => {
       const res = await friendshipService.getFriendRequests();
       setRequests(res.data?.data || []);
     } catch (error) {
-      toast.apiError(error, t('friends.loadFailed'), { context: 'friends.load' });
+      toast.apiError(error, t('friends.loadFailed'), { context: "friends.load" });
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,7 @@ const FriendsPage = () => {
       }
     } catch (error) {
       setDiscoverUsers([]);
-      toast.apiError(error, t('friends.loadFailed'), { context: 'friends.discover' });
+      toast.apiError(error, t('friends.loadFailed'), { context: "friends.discover" });
     } finally {
       setDiscoverLoading(false);
     }
@@ -81,7 +81,7 @@ const FriendsPage = () => {
       toast.success(translateCatalogKey('ui.components.friendship.addfriendbutton.a-chap-nhan-loi-moi-ket-ban.daba23c8'));
       setRequests((prev) => prev.filter((r) => r.userId !== request.userId));
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'), { context: 'friends.accept' });
+      toast.apiError(error, translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'), { context: "friends.accept" });
     } finally {
       setProcessingId(null);
     }
@@ -94,7 +94,7 @@ const FriendsPage = () => {
       toast.success(translateCatalogKey('ui.pages.friends.index.a-tu-choi-loi-moi-ket-ban.aab667dd'));
       setRequests((prev) => prev.filter((r) => r.userId !== request.userId));
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'), { context: 'friends.reject' });
+      toast.apiError(error, translateCatalogKey('ui.components.friendship.addfriendbutton.co-loi-xay-ra.8aae9f86'), { context: "friends.reject" });
     } finally {
       setProcessingId(null);
     }

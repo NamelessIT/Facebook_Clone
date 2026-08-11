@@ -29,7 +29,7 @@ const PostDetailPage = () => {
         if (!cancelled) {
           const message = err.response?.data?.message || translateCatalogKey('post.loadFailed');
           setError(message);
-          toast.apiError(err, translateCatalogKey('post.loadFailed'), { context: 'posts.detail.load' });
+          toast.apiError(err, translateCatalogKey('post.loadFailed'), { context: "posts.detail.load" });
         }
       } finally {
         if (!cancelled) setLoading(false);

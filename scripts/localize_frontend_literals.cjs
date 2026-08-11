@@ -16,7 +16,7 @@ const checkedObjectKeys = new Set([
   'label', 'description', 'title', 'placeholder', 'message', 'detail',
   'confirmText', 'cancelText',
 ]);
-const ignoredText = new Set(['Facebook', 'Reels', 'Messenger', 'Admin Panel', 's', 'MB', 'MB)']);
+const ignoredText = new Set(['Facebook', 'Reels', 'Messenger', 'Admin Panel', 'HTTP', 'LIVE', 's', 'MB', 'MB)', 'MB · chunk']);
 const ignoredControlValues = new Set([
   '2-digit', 'error', 'loading', 'prompt', 'posts', 'events', 'blocked',
 ]);
@@ -112,16 +112,17 @@ for (const file of files) {
 
   const isDynamicUiContext = (nodePath) => {
     const attribute = nodePath.findParent((parent) => parent.isJSXAttribute());
-    if (attribute) return checkedAttributes.has(attribute.node.name?.name);
+    if (attribute) return false;
 
     const expression = nodePath.findParent((parent) => parent.isJSXExpressionContainer());
-    if (expression && !expression.parentPath.isJSXAttribute()) return true;
+    if (expression?.node.expression === nodePath.node) return true;
 
     const call = nodePath.findParent((parent) => parent.isCallExpression());
     if (!call) return false;
     const callee = call.node.callee;
-    return (callee.type === 'MemberExpression' && callee.object?.name === 'toast')
+    const isUiCall = (callee.type === 'MemberExpression' && callee.object?.name === 'toast')
       || (callee.type === 'Identifier' && ['getApiErrorMessage', 'setError'].includes(callee.name));
+    return isUiCall && call.node.arguments[0] === nodePath.node;
   };
 
   const addEdit = (nodePath, node, value, replacementFor) => {
@@ -135,6 +136,8 @@ for (const file of files) {
   traverse(ast, {
     StringLiteral(nodePath) {
       if (isAlreadyTranslated(nodePath) || !isDynamicUiContext(nodePath)) return;
+      const call = nodePath.findParent((parent) => parent.isCallExpression());
+      if (call?.node.callee?.type === 'MemberExpression' && call.node.callee.object?.name === 'toast') return;
       addEdit(nodePath, nodePath.node, nodePath.node.value, (key) => `translateCatalogKey('${key}')`);
     },
     TemplateLiteral(nodePath) {
@@ -169,7 +172,14 @@ for (const file of files) {
         : valueNode?.type === 'JSXExpressionContainer' ? staticText(valueNode.expression) : null;
       if (!value || !isHumanText(value)) return;
       const target = valueNode.type === 'JSXExpressionContainer' ? valueNode.expression : valueNode;
-      addEdit(nodePath, target, value, (key) => `{translateCatalogKey('${key}')}`);
+      addEdit(
+        nodePath,
+        target,
+        value,
+        (key) => valueNode.type === 'JSXExpressionContainer'
+          ? `translateCatalogKey('${key}')`
+          : `{translateCatalogKey('${key}')}`,
+      );
     },
     ObjectProperty(nodePath) {
       const keyName = nodePath.node.key?.name || nodePath.node.key?.value;

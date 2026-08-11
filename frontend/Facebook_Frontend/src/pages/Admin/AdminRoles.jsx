@@ -31,7 +31,7 @@ const AdminRoles = () => {
       setPermissions(rolesResponse.data.data.permissions);
       setUsers(usersResponse.data.data);
     } catch (error) {
-      toast.apiError(error, t('admin.roles.loadFailed'), { context: 'admin.roles.load' });
+      toast.apiError(error, t('admin.roles.loadFailed'), { context: "admin.roles.load" });
     } finally {
       setLoading(false);
     }
@@ -48,6 +48,12 @@ const AdminRoles = () => {
       return acc;
     }, {});
   }, [permissions]);
+  const permissionDescription = (permission) => t(
+    `permissions.${permission.key}.description`,
+    permission.description,
+  );
+  const permissionModule = (module) => t(`permissions.modules.${module}`, module);
+  const roleDisplayName = (role) => t(`roles.${role.name}.displayName`, role.displayName);
 
   const openCreateRoleModal = () => {
     setEditingRoleId(null);
@@ -102,14 +108,14 @@ const AdminRoles = () => {
       closeRoleModal();
       load();
     } catch (error) {
-      toast.apiError(error, t('admin.roles.saveFailed'), { context: editingRoleId ? 'admin.roles.update' : 'admin.roles.create' });
+      toast.apiError(error, t('admin.roles.saveFailed'), { context: editingRoleId ? "admin.roles.update" : "admin.roles.create" });
     }
   };
 
   const handleDeleteRole = async (role) => {
     const accepted = await confirm({
       title: t('admin.roles.deleteTitle'),
-      message: t('admin.roles.deleteMessage', undefined, { name: role.displayName }),
+      message: t('admin.roles.deleteMessage', undefined, { name: roleDisplayName(role) }),
       detail: t('admin.roles.deleteDetail'),
       confirmText: t('admin.roles.deleteAction'),
     });
@@ -119,7 +125,7 @@ const AdminRoles = () => {
       toast.success(t('admin.roles.deleted'));
       load();
     } catch (error) {
-      toast.apiError(error, t('admin.roles.deleteFailed'), { context: 'admin.roles.delete' });
+      toast.apiError(error, t('admin.roles.deleteFailed'), { context: "admin.roles.delete" });
     }
   };
 
@@ -133,7 +139,7 @@ const AdminRoles = () => {
       toast.success(t('admin.roles.assignmentUpdated'));
       load();
     } catch (error) {
-      toast.apiError(error, t('admin.roles.assignmentFailed'), { context: 'admin.roles.permissions.update' });
+      toast.apiError(error, t('admin.roles.assignmentFailed'), { context: "admin.roles.permissions.update" });
     }
   };
 
@@ -157,7 +163,7 @@ const AdminRoles = () => {
               <div key={role.id} className="admin-role-card">
                 <div className="admin-card-heading">
                   <div>
-                    <div className="admin-role-title">{role.displayName}</div>
+                    <div className="admin-role-title">{roleDisplayName(role)}</div>
                     <div className="admin-role-meta">
                       {role.name} - {t('admin.roles.level')} {role.level} - {t('admin.roles.usersCount', undefined, { count: role.userCount })}
                     </div>
@@ -196,11 +202,11 @@ const AdminRoles = () => {
           <div className="admin-permission-modules">
             {Object.entries(permissionsByModule).map(([module, items]) => (
               <div key={module} className="admin-permission-module">
-                <h3>{module}</h3>
+                <h3>{permissionModule(module)}</h3>
                 {items.map((permission) => (
                   <div key={permission.id} className="admin-permission-row">
                     <code>{permission.key}</code>
-                    <span>{permission.description}</span>
+                    <span>{permissionDescription(permission)}</span>
                   </div>
                 ))}
               </div>
@@ -249,7 +255,7 @@ const AdminRoles = () => {
                       {(user.roles || []).length > 0 ? (
                         user.roles.map((role) => (
                           <span key={role.id} className="badge badge--admin">
-                            {role.displayName}
+                            {roleDisplayName(role)}
                           </span>
                         ))
                       ) : (
@@ -265,7 +271,7 @@ const AdminRoles = () => {
                             type="button"
                             onClick={() => handleToggleUserRole(user, role.id)}
                           >
-                            <ShieldCheck size={12} /> {role.displayName}
+                            <ShieldCheck size={12} /> {roleDisplayName(role)}
                           </button>
                         ))}
                       </div>
@@ -312,7 +318,7 @@ const AdminRoles = () => {
             <div className="admin-role-modal-permissions">
               {Object.entries(permissionsByModule).map(([module, items]) => (
                 <div key={module} className="admin-permission-module">
-                  <h3>{module}</h3>
+                  <h3>{permissionModule(module)}</h3>
                   <div className="admin-permission-checks">
                     {items.map((permission) => (
                       <label key={permission.id} className="admin-permission-check">
@@ -321,7 +327,7 @@ const AdminRoles = () => {
                           checked={roleForm.permissionIds.includes(permission.id)}
                           onChange={() => toggleFormPermission(permission.id)}
                         />
-                        <span>{permission.key}</span>
+                        <span><code>{permission.key}</code><small>{permissionDescription(permission)}</small></span>
                       </label>
                     ))}
                   </div>

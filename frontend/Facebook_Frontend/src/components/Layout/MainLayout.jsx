@@ -53,7 +53,7 @@ const MainLayout = () => {
     let cancelled = false;
     friendshipService.getFriends(1, 20)
       .then((res) => { if (!cancelled) setContacts(res.data?.data || []); })
-      .catch((error) => toast.apiError(error, t('friends.loadFailed'), { id: 'layout-contacts-error', context: 'layout.contacts.load' }));
+      .catch((error) => toast.apiError(error, t('friends.loadFailed'), { id: "layout-contacts-error", context: "layout.contacts.load" }));
     return () => { cancelled = true; };
   }, [t]);
 
@@ -64,7 +64,7 @@ const MainLayout = () => {
         .then((res) => setSavedCollections(res.data?.data ?? []))
         .catch((error) => {
           setSavedCollections([]);
-          toast.apiError(error, t('saved.loadFailed'), { id: 'layout-collections-error', context: 'layout.collections.load' });
+          toast.apiError(error, t('saved.loadFailed'), { id: "layout-collections-error", context: "layout.collections.load" });
         });
     }
   }, [isOnSaved, location.search, t]);
@@ -161,8 +161,8 @@ const MainLayout = () => {
         {/* Giữa */}
         <div className="nav-center">
           <Link to="/" className={`nav-tab${location.pathname === '/' ? ' active' : ''}`}><Home size={28} /></Link>
-          <Link to="/live" className={`nav-tab${location.pathname.startsWith('/live') ? ' active' : ''}`} aria-label="Video trực tiếp"><Tv size={28} /></Link>
-          <Link to="/marketplace" className={`nav-tab${location.pathname.startsWith('/marketplace') ? ' active' : ''}`} aria-label="Marketplace"><Store size={28} /></Link>
+          <Link to="/live" className={`nav-tab${location.pathname.startsWith('/live') ? ' active' : ''}`} aria-label={translateCatalogKey('post.liveVideo')}><Tv size={28} /></Link>
+          <Link to="/marketplace" className={`nav-tab${location.pathname.startsWith('/marketplace') ? ' active' : ''}`} aria-label={translateCatalogKey('permissions.modules.marketplace')}><Store size={28} /></Link>
           <Link to="/friends" className={`nav-tab${location.pathname.startsWith('/friends') ? ' active' : ''}`}><Users size={28} /></Link>
           <Link to="/reels" className={`nav-tab${location.pathname.startsWith('/reels') ? ' active' : ''}`}><Film size={28} /></Link>
         </div>
@@ -185,15 +185,15 @@ const MainLayout = () => {
               <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => navigate(`/profile/${user?.id}`)}><UserRound /> {t('nav.profile')}</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => navigate('/settings')}><Settings2 /> {t('settings.title')}</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => navigate('/marketplace')}><Store /> Marketplace</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => navigate('/live')}><Tv /> Video trực tiếp</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => navigate('/marketplace')}><Store /> {translateCatalogKey('permissions.modules.marketplace')}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => navigate('/live')}><Tv /> {translateCatalogKey('post.liveVideo')}</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => navigate('/memories')}><Clock /> {t('nav.memories')}</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => navigate('/saved')}><Bookmark /> {t('nav.saved')}</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => navigate('/messages')}><MessageCircle /> {t('nav.messages')}</DropdownMenuItem>
               {user?.isAdmin && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onSelect={() => navigate('/admin')}><ShieldAlert /> Admin</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => navigate('/admin')}><ShieldAlert /> {translateCatalogKey('ui.components.layout.mainlayout.admin.ac03e484')}</DropdownMenuItem>
                 </>
               )}
             </DropdownMenuContent>

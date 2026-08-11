@@ -73,7 +73,7 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
         setReactorNames(freshPost.reactorNames || []);
         setCommentCount(freshPost.commentsCount || 0);
       } catch (error) {
-        toast.apiError(error, translateCatalogKey('post.loadFailed'), { context: 'posts.detail.refresh' });
+        toast.apiError(error, translateCatalogKey('post.loadFailed'), { context: "posts.detail.refresh" });
       }
     };
 
@@ -244,7 +244,7 @@ const PostDetailModal = ({ post, onClose, onSelectPost, onReactionChanged, onCom
         topReactions: prevTop,
         reactorNames: prevNames,
       });
-      toast.apiError(error, translateCatalogKey('ui.components.post.postdetailmodal.khong-the-tha-cam-xuc.72436747'), { context: 'posts.reaction' });
+      toast.apiError(error, translateCatalogKey('ui.components.post.postdetailmodal.khong-the-tha-cam-xuc.72436747'), { context: "posts.reaction" });
     }
   };
 

@@ -1000,3 +1000,22 @@ table.admin-table tr:hover td { background: #1e2130; }
   .admin-report-list > article { grid-template-columns: 1fr; }
   .admin-report-actions { grid-column: auto; }
 }
+
+/* System settings */
+.admin-system-settings { max-width: 980px; }
+.admin-settings-card { display: grid; gap: 22px; padding: 22px; border: 1px solid var(--border); border-radius: calc(var(--radius) + 4px); background: var(--card); box-shadow: var(--app-shadow-sm); }
+.admin-settings-card-heading { display: flex; align-items: center; gap: 13px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+.admin-settings-card-heading > span { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 12px; background: color-mix(in oklch, var(--primary) 12%, var(--card)); color: var(--primary); }
+.admin-settings-card-heading h2 { margin: 0 0 4px; font-size: 18px; }
+.admin-settings-card-heading p, .admin-settings-field > p, .admin-settings-preview p { margin: 0; color: var(--muted-foreground); font-size: 12px; line-height: 1.55; }
+.admin-settings-field { display: grid; gap: 8px; }
+.admin-settings-input-wrap { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 0 13px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--background); }
+.admin-settings-input-wrap > svg { color: var(--primary); }
+.admin-settings-input-wrap input { border: 0; padding-inline: 0; box-shadow: none; }
+.admin-settings-input-wrap > span { color: var(--muted-foreground); font-size: 12px; font-weight: 700; }
+.admin-settings-preview { display: grid; gap: 5px; padding: 16px; border: 1px solid color-mix(in oklch, var(--primary) 26%, var(--border)); border-radius: var(--radius); background: color-mix(in oklch, var(--primary) 7%, var(--card)); }
+.admin-settings-preview > span { color: var(--muted-foreground); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.admin-settings-preview > strong { color: var(--primary); font-size: 25px; }
+.admin-settings-actions { display: flex; justify-content: flex-end; }
+.admin-permission-check > span { display: grid; gap: 2px; }
+.admin-permission-check small { color: var(--muted-foreground); font-size: 10px; font-weight: 400; line-height: 1.35; }

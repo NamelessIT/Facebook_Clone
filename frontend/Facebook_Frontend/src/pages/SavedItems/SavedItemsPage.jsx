@@ -8,6 +8,7 @@ import savedItemsService from '../../services/savedItemsService';
 import { LIMITS } from '../../shared/generated/constants';
 import { useLocalization } from '../../contexts/useLocalization';
 import './SavedItemsPage.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const PAGE_SIZE = LIMITS.savedItemsPageSize;
 
@@ -31,7 +32,7 @@ const SavedItemsPage = () => {
       setUserCollections(res.data?.data ?? []);
     } catch (error) {
       setUserCollections([]);
-      toast.apiError(error, t('saved.loadFailed'), { context: 'saved.collections.load' });
+      toast.apiError(error, t('saved.loadFailed'), { context: "saved.collections.load" });
     }
   }, [t]);
 
@@ -53,7 +54,7 @@ const SavedItemsPage = () => {
         setPagination(pg ?? { page: 1, totalPages: 1, total: 0 });
       }
     } catch (error) {
-      toast.apiError(error, t('saved.loadFailed'), { context: 'saved.posts.load' });
+      toast.apiError(error, t('saved.loadFailed'), { context: "saved.posts.load" });
     } finally {
       setLoading(false);
     }
@@ -81,7 +82,7 @@ const SavedItemsPage = () => {
       toast.success(t('saved.unsaved'));
       setPosts((prev) => prev.filter((p) => p.id !== postId));
     } catch (error) {
-      toast.apiError(error, t('saved.unsaveFailed'), { context: 'saved.post.remove' });
+      toast.apiError(error, t('saved.unsaveFailed'), { context: "saved.post.remove" });
     }
   };
 
@@ -113,7 +114,7 @@ const SavedItemsPage = () => {
         }
       }
     } catch (error) {
-      toast.apiError(error, t('common.actionFailed'), { context: 'saved.collections.update' });
+      toast.apiError(error, t('common.actionFailed'), { context: "saved.collections.update" });
     }
   };
 

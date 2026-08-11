@@ -155,7 +155,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
         isLikedByCurrentUser: prevLiked,
         likesCount: prevCount,
       });
-      toast.apiError(error, t('common.actionFailed'), { context: 'reels.toggleLike' });
+      toast.apiError(error, t('common.actionFailed'), { context: "reels.toggleLike" });
     }
   };
 
@@ -172,7 +172,7 @@ const ReelsPlayer = ({ reels, initialIndex = 0, onClose, onReelDeleted, onReelUp
         setCurrentIndex(nextIndex);
       }
     } catch (error) {
-      toast.apiError(error, t('reels.deleteFailed'), { context: 'reels.delete' });
+      toast.apiError(error, t('reels.deleteFailed'), { context: "reels.delete" });
     } finally {
       setDeleting(false);
       setShowDeleteConfirm(false);

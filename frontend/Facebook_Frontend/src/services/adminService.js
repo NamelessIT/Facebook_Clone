@@ -72,6 +72,10 @@ const adminService = {
   upsertLocalizationEntries: (entries) => axiosClient.post('/admin/localization/entries/bulk', { entries }),
   deleteLocalizationEntry: (id) => axiosClient.delete(`/admin/localization/entries/${id}`),
   translateLocalization: (data) => axiosClient.post('/admin/localization/translate', data),
+
+  // System settings
+  getMarketplaceSettings: () => axiosClient.get('/admin/settings/marketplace'),
+  updateMarketplaceSettings: (data) => axiosClient.put('/admin/settings/marketplace', data),
 };
 
 export default adminService;

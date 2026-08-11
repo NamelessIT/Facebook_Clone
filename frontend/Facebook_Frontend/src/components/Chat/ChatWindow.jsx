@@ -9,6 +9,7 @@ import Avatar from '../common/Avatar';
 import MessageInput from './MessageInput';
 import { TIMERS } from '../../shared/generated/constants';
 import './ChatWindow.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const formatMessageTime = (dateStr) => {
   const date = new Date(dateStr);
@@ -68,7 +69,7 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
         setPage(1);
         isInitialLoad.current = true;
       } catch (error) {
-        toast.apiError(error, t('chat.loadFailed'), { context: 'chat.messages.load' });
+        toast.apiError(error, t('chat.loadFailed'), { context: "chat.messages.load" });
       } finally {
         setLoading(false);
       }
@@ -150,7 +151,7 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
       setHasMore(data.length >= 20);
       setPage(nextPage);
     } catch (error) {
-      toast.apiError(error, t('chat.loadMoreFailed'), { context: 'chat.messages.loadMore' });
+      toast.apiError(error, t('chat.loadMoreFailed'), { context: "chat.messages.loadMore" });
     } finally {
       setLoading(false);
     }

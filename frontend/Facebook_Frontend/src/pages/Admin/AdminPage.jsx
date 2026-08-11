@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Routes, Route, NavLink, Navigate, useNavigate } from 'react-router-dom';
 import { FileText, Film, Flag, KeyRound, Languages, LayoutDashboard, LogOut, Menu, Radio, Settings2, ShieldAlert, Store, Users, ChevronRight, X } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -10,10 +10,11 @@ import AdminSecurity from './AdminSecurity';
 import AdminContent from './AdminContent';
 import AdminRoles from './AdminRoles';
 import AdminLocalization from './AdminLocalization';
-import SettingsPage from '../Settings/SettingsPage';
 import AdminLives from './AdminLives';
 import AdminMarketplace from './AdminMarketplace';
 import AdminReports from './AdminReports';
+import AdminSettings from './AdminSettings';
+import adminService from '../../services/adminService';
 import './AdminPage.css';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 import { LIMITS } from '../../shared/generated/constants';
@@ -23,17 +24,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const NAV = [
-  { to: '/admin/dashboard', labelKey: 'admin.dashboard.title', Icon: LayoutDashboard },
-  { to: '/admin/users', labelKey: 'admin.users.title', Icon: Users },
-  { to: '/admin/posts', labelKey: 'admin.posts.title', Icon: FileText },
-  { to: '/admin/reels', labelKey: 'admin.reels.title', Icon: Film },
-  { to: '/admin/lives', label: 'Kiểm duyệt Live', Icon: Radio },
-  { to: '/admin/marketplace', label: 'Marketplace', Icon: Store },
-  { to: '/admin/reports', label: 'Báo cáo vi phạm', Icon: Flag },
-  { to: '/admin/roles', labelKey: 'admin.roles.title', Icon: KeyRound },
-  { to: '/admin/localization', labelKey: 'admin.localization.title', Icon: Languages },
-  { to: '/admin/security', labelKey: 'admin.security.title', Icon: ShieldAlert },
-  { to: '/admin/settings', labelKey: 'settings.title', Icon: Settings2 },
+  { to: '/admin/dashboard', labelKey: 'admin.dashboard.title', permission: 'dashboard.view', Icon: LayoutDashboard },
+  { to: '/admin/users', labelKey: 'admin.users.title', permission: 'users.view', Icon: Users },
+  { to: '/admin/posts', labelKey: 'admin.posts.title', permission: 'posts.view', Icon: FileText },
+  { to: '/admin/reels', labelKey: 'admin.reels.title', permission: 'reels.view', Icon: Film },
+  { to: '/admin/lives', labelKey: 'admin.lives.title', permission: 'lives.view', Icon: Radio },
+  { to: '/admin/marketplace', labelKey: 'admin.marketplace.title', permission: 'marketplace.view', Icon: Store },
+  { to: '/admin/reports', labelKey: 'admin.reports.title', permission: 'reports.view', Icon: Flag },
+  { to: '/admin/roles', labelKey: 'admin.roles.title', permission: 'roles.view', Icon: KeyRound },
+  { to: '/admin/localization', labelKey: 'admin.localization.title', permission: 'localization.view', Icon: Languages },
+  { to: '/admin/security', labelKey: 'admin.security.title', permission: 'security.view', Icon: ShieldAlert },
+  { to: '/admin/settings', labelKey: 'admin.settings.title', permission: 'settings.manage', Icon: Settings2 },
 ];
 
 const AdminPage = () => {
@@ -44,7 +45,24 @@ const AdminPage = () => {
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [passwordSubmitting, setPasswordSubmitting] = useState(false);
+  const [adminMe, setAdminMe] = useState(null);
   const displayName = user?.fullName || [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.email || 'Admin';
+  const permissions = useMemo(() => new Set(adminMe?.permissions || []), [adminMe]);
+  const visibleNavigation = useMemo(() => NAV.filter((item) => permissions.has(item.permission)), [permissions]);
+  const defaultAdminPath = visibleNavigation[0]?.to || '/admin/login';
+  const can = (permission) => permissions.has(permission);
+
+  useEffect(() => {
+    let active = true;
+    adminService.getMe()
+      .then((response) => { if (active) setAdminMe(response.data.data); })
+      .catch(async (error) => {
+        toast.apiError(error, translateCatalogKey('admin.access.loadFailed'), { context: "admin.access.load" });
+        await logout();
+        navigate('/admin/login', { replace: true });
+      });
+    return () => { active = false; };
+  }, [logout, navigate]);
 
   const handleLogout = () => {
     logout();
@@ -65,7 +83,7 @@ const AdminPage = () => {
       await logout();
       navigate('/admin/login');
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('admin.account.passwordChangeFailed'), { context: 'admin.password.change' });
+      toast.apiError(error, translateCatalogKey('admin.account.passwordChangeFailed'), { context: "admin.password.change" });
     } finally {
       setPasswordSubmitting(false);
     }
@@ -87,7 +105,7 @@ const AdminPage = () => {
         </div>
 
         <nav className="admin-nav">
-          {NAV.map(({ to, labelKey, label, Icon }) => (
+          {visibleNavigation.map(({ to, labelKey, Icon }) => (
             <NavLink
               key={to}
               to={to}
@@ -97,7 +115,7 @@ const AdminPage = () => {
               onClick={() => setMobileOpen(false)}
             >
               <Icon size={18} />
-              {!collapsed && <span>{label || translateCatalogKey(labelKey)}</span>}
+              {!collapsed && <span>{translateCatalogKey(labelKey)}</span>}
             </NavLink>
           ))}
         </nav>
@@ -106,7 +124,9 @@ const AdminPage = () => {
           {!collapsed && (
             <div className="admin-user-info">
               <span className="admin-user-name">{displayName}</span>
-              <span className="admin-user-role">{translateCatalogKey('ui.pages.admin.adminpage.administrator.36b99f8c')}</span>
+              <span className="admin-user-role">{adminMe?.roles?.[0]
+                ? translateCatalogKey(`roles.${adminMe.roles[0].name}.displayName`)
+                : translateCatalogKey('ui.pages.admin.adminpage.administrator.36b99f8c')}</span>
             </div>
           )}
           <button className="admin-logout-btn" onClick={() => setPasswordModalOpen(true)} title={translateCatalogKey('admin.account.changePassword')}>
@@ -128,20 +148,22 @@ const AdminPage = () => {
             <span>{displayName}</span>
           </div>
         </div>
-        <Routes>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="users" element={<AdminUsers />} />
-          <Route path="posts" element={<AdminContent type="posts" />} />
-          <Route path="reels" element={<AdminContent type="reels" />} />
-          <Route path="lives" element={<AdminLives />} />
-          <Route path="marketplace" element={<AdminMarketplace />} />
-          <Route path="reports" element={<AdminReports />} />
-          <Route path="roles" element={<AdminRoles />} />
-          <Route path="localization" element={<AdminLocalization />} />
-          <Route path="security" element={<AdminSecurity />} />
-          <Route path="settings" element={<SettingsPage />} />
-        </Routes>
+        {!adminMe ? (
+          <div className="admin-empty-state">{translateCatalogKey('common.loading')}</div>
+        ) : <Routes>
+          <Route index element={<Navigate to={defaultAdminPath} replace />} />
+          <Route path="dashboard" element={can('dashboard.view') ? <AdminDashboard /> : <Navigate to={defaultAdminPath} replace />} />
+          <Route path="users" element={can('users.view') ? <AdminUsers /> : <Navigate to={defaultAdminPath} replace />} />
+          <Route path="posts" element={can('posts.view') ? <AdminContent type="posts" /> : <Navigate to={defaultAdminPath} replace />} />
+          <Route path="reels" element={can('reels.view') ? <AdminContent type="reels" /> : <Navigate to={defaultAdminPath} replace />} />
+          <Route path="lives" element={can('lives.view') ? <AdminLives /> : <Navigate to={defaultAdminPath} replace />} />
+          <Route path="marketplace" element={can('marketplace.view') ? <AdminMarketplace /> : <Navigate to={defaultAdminPath} replace />} />
+          <Route path="reports" element={can('reports.view') ? <AdminReports /> : <Navigate to={defaultAdminPath} replace />} />
+          <Route path="roles" element={can('roles.view') ? <AdminRoles /> : <Navigate to={defaultAdminPath} replace />} />
+          <Route path="localization" element={can('localization.view') ? <AdminLocalization /> : <Navigate to={defaultAdminPath} replace />} />
+          <Route path="security" element={can('security.view') ? <AdminSecurity /> : <Navigate to={defaultAdminPath} replace />} />
+          <Route path="settings" element={can('settings.manage') ? <AdminSettings /> : <Navigate to={defaultAdminPath} replace />} />
+        </Routes>}
       </main>
 
       <Dialog open={passwordModalOpen} onOpenChange={(open) => !passwordSubmitting && setPasswordModalOpen(open)}>

@@ -31,7 +31,7 @@ const ReelsHorizontalFeed = () => {
       setReels(res.data?.data || []);
     } catch (error) {
       setReels([]);
-      toast.apiError(error, t('reels.loadFailed'), { id: 'reels-feed-load-error', context: 'reels.feed.load' });
+      toast.apiError(error, t('reels.loadFailed'), { id: "reels-feed-load-error", context: "reels.feed.load" });
     } finally {
       setLoading(false);
     }

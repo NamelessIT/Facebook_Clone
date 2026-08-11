@@ -6,6 +6,7 @@ import PostItem from '../../components/post/PostItem';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import './DiscoveryPages.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const MemoriesPage = () => {
   const { user } = useAuth();
@@ -21,7 +22,7 @@ const MemoriesPage = () => {
       const response = await postService.getUserPosts(user.id, 1, 50);
       setPosts(response.data?.data || []);
     } catch {
-      setError('Không thể tải kỷ niệm lúc này. Vui lòng thử lại sau.');
+      setError(translateCatalogKey('ui.pages.discovery.memoriespage.khong-the-tai-ky-niem-luc-nay-vui-lo.70cfd0b3'));
     } finally {
       setLoading(false);
     }
@@ -49,31 +50,31 @@ const MemoriesPage = () => {
     <section className="discovery-page memories-page">
       <div className="discovery-hero memories-hero">
         <div>
-          <Badge variant="secondary"><Clock3 /> Kỷ niệm</Badge>
-          <h1>Ôn lại những khoảnh khắc</h1>
-          <p>Những bài viết đáng nhớ của bạn được tổng hợp tại đây.</p>
+          <Badge variant="secondary"><Clock3 /> {translateCatalogKey('nav.memories')}</Badge>
+          <h1>{translateCatalogKey('ui.pages.discovery.memoriespage.on-lai-nhung-khoanh-khac.019e32f9')}</h1>
+          <p>{translateCatalogKey('ui.pages.discovery.memoriespage.nhung-bai-viet-ang-nho-cua-ban-uoc-t.19a18778')}</p>
         </div>
         <span className="discovery-date"><CalendarDays /> {todayLabel}</span>
       </div>
 
       {loading && (
         <Card className="discovery-empty-card">
-          <CardHeader><span className="discovery-icon discovery-icon--pulse"><Sparkles /></span><CardTitle>Đang tìm kỷ niệm của bạn…</CardTitle></CardHeader>
+          <CardHeader><span className="discovery-icon discovery-icon--pulse"><Sparkles /></span><CardTitle>{translateCatalogKey('ui.pages.discovery.memoriespage.ang-tim-ky-niem-cua-ban.59580bee')}</CardTitle></CardHeader>
         </Card>
       )}
 
       {!loading && error && (
-        <Card className="discovery-empty-card"><CardHeader><CardTitle>Chưa tải được kỷ niệm</CardTitle><CardDescription>{error}</CardDescription></CardHeader></Card>
+        <Card className="discovery-empty-card"><CardHeader><CardTitle>{translateCatalogKey('ui.pages.discovery.memoriespage.chua-tai-uoc-ky-niem.23787af4')}</CardTitle><CardDescription>{error}</CardDescription></CardHeader></Card>
       )}
 
       {!loading && !error && displayedPosts.length === 0 && (
         <Card className="discovery-empty-card">
           <CardHeader>
             <span className="discovery-icon"><Sparkles /></span>
-            <CardTitle>Chưa có kỷ niệm cho hôm nay</CardTitle>
-            <CardDescription>Hãy tiếp tục chia sẻ để tạo thêm nhiều kỷ niệm đẹp.</CardDescription>
+            <CardTitle>{translateCatalogKey('ui.pages.discovery.memoriespage.chua-co-ky-niem-cho-hom-nay.2c9f17e2')}</CardTitle>
+            <CardDescription>{translateCatalogKey('ui.pages.discovery.memoriespage.hay-tiep-tuc-chia-se-e-tao-them-nhie.c21d6975')}</CardDescription>
           </CardHeader>
-          <CardContent className="discovery-tip"><Images /> Bài viết cùng ngày từ những năm trước sẽ tự động xuất hiện ở đây.</CardContent>
+          <CardContent className="discovery-tip"><Images /> {translateCatalogKey('ui.pages.discovery.memoriespage.bai-viet-cung-ngay-tu-nhung-nam-truo.b8286151')}</CardContent>
         </Card>
       )}
 
@@ -82,15 +83,15 @@ const MemoriesPage = () => {
           <div className="memories-section-heading">
             <span className="discovery-icon"><Sparkles /></span>
             <div>
-              <h2>{exactMemories.length > 0 ? 'Vào ngày này' : 'Khoảnh khắc gần đây'}</h2>
-              <p>{exactMemories.length > 0 ? `${exactMemories.length} kỷ niệm đang chờ bạn xem lại.` : 'Chưa có bài cùng ngày; đây là những chia sẻ gần đây của bạn.'}</p>
+              <h2>{exactMemories.length > 0 ? "Vào ngày này" : "Khoảnh khắc gần đây"}</h2>
+              <p>{exactMemories.length > 0 ? translateCatalogKey('ui.pages.discovery.memoriespage.value0-ky-niem-ang-cho-ban-xem-lai.d65a1ea3', { value0: exactMemories.length }) : "Chưa có bài cùng ngày; đây là những chia sẻ gần đây của bạn."}</p>
             </div>
           </div>
           {displayedPosts.map((post) => {
             const yearsAgo = new Date().getFullYear() - new Date(post.createdAt).getFullYear();
             return (
             <div className="memory-post" key={post.id}>
-              <div className="memory-post-label"><Clock3 size={15} /> {yearsAgo > 0 ? `${yearsAgo} năm trước` : 'Gần đây'}</div>
+              <div className="memory-post-label"><Clock3 size={15} /> {yearsAgo > 0 ? translateCatalogKey('ui.pages.discovery.memoriespage.value0-nam-truoc.1c73b883', { value0: yearsAgo }) : "Gần đây"}</div>
               <PostItem
                 post={post}
                 onPostUpdated={loadMemories}

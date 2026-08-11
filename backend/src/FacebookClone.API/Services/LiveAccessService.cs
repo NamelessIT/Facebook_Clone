@@ -8,12 +8,12 @@ namespace FacebookClone.API.Services;
 public class LiveAccessService(AppDbContext db)
 {
     public async Task<bool> IsModeratorAsync(Guid userId) => await db.Users.AsNoTracking().AnyAsync(u =>
-        u.Id == userId && !u.IsDeleted && (u.IsAdmin || u.UserRoles.Any(ur => ur.Role.Level >= 50 &&
-            ur.Role.RolePermissions.Any(rp => rp.Permission.Key == "lives.view"))));
+        u.Id == userId && !u.IsDeleted && u.UserRoles.Any(ur => ur.Role.Level >= 50 &&
+            ur.Role.RolePermissions.Any(rp => rp.Permission.Key == "lives.view")));
 
     public async Task<bool> HasPermissionAsync(Guid userId, string permission) => await db.Users.AsNoTracking().AnyAsync(u =>
-        u.Id == userId && !u.IsDeleted && (u.IsAdmin || u.UserRoles.Any(ur =>
-            ur.Role.RolePermissions.Any(rp => rp.Permission.Key == permission))));
+        u.Id == userId && !u.IsDeleted && u.UserRoles.Any(ur =>
+            ur.Role.RolePermissions.Any(rp => rp.Permission.Key == permission)));
 
     public async Task<bool> CanViewAsync(LiveSession session, Guid userId, bool moderatorBypass = true)
     {

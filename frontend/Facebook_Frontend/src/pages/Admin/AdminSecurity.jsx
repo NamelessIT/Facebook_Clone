@@ -51,7 +51,7 @@ const AdminSecurity = () => {
     try {
       const r = await adminService.getSecurityEvents(200, eventFilter || undefined);
       setEvents(r.data.data);
-    } catch (error) { toast.apiError(error, translateCatalogKey('ui.pages.admin.adminsecurity.khong-the-tai-su-kien-bao-mat.8f795165'), { context: 'admin.security.events.load' }); }
+    } catch (error) { toast.apiError(error, translateCatalogKey('ui.pages.admin.adminsecurity.khong-the-tai-su-kien-bao-mat.8f795165'), { context: "admin.security.events.load" }); }
     finally { setLoading(false); }
   }, [eventFilter]);
 
@@ -60,7 +60,7 @@ const AdminSecurity = () => {
     try {
       const r = await adminService.getBlockedIps();
       setBlockedIps(r.data.data);
-    } catch (error) { toast.apiError(error, translateCatalogKey('ui.pages.admin.adminsecurity.khong-the-tai-ip-bi-chan.8d06aaeb'), { context: 'admin.security.blockedIps.load' }); }
+    } catch (error) { toast.apiError(error, translateCatalogKey('ui.pages.admin.adminsecurity.khong-the-tai-ip-bi-chan.8d06aaeb'), { context: "admin.security.blockedIps.load" }); }
     finally { setLoading(false); }
   }, []);
 
@@ -74,7 +74,7 @@ const AdminSecurity = () => {
       });
       setSuspiciousIps(response.data.data ?? []);
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('admin.security.suspiciousLoadError'), { context: 'admin.security.suspiciousIps.load' });
+      toast.apiError(error, translateCatalogKey('admin.security.suspiciousLoadError'), { context: "admin.security.suspiciousIps.load" });
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ const AdminSecurity = () => {
       setBlockIp(''); setBlockReason(''); setBlockDuration('');
       await loadBlockedIps();
     } catch (e) {
-      toast.apiError(e, translateCatalogKey('ui.pages.admin.adminsecurity.loi-chan-ip.1f6514a7'), { context: 'admin.security.ip.block' });
+      toast.apiError(e, translateCatalogKey('ui.pages.admin.adminsecurity.loi-chan-ip.1f6514a7'), { context: "admin.security.ip.block" });
     } finally {
       setPendingAction('');
     }
@@ -117,7 +117,7 @@ const AdminSecurity = () => {
       setBlockedIps(current => current.filter(entry => entry.ip !== ip));
       toast.success(response.data?.message || translateCatalogKey('ui.pages.admin.adminsecurity.a-bo-chan-value0.56b83219', { value0: ip }));
       await loadBlockedIps();
-    } catch (error) { toast.apiError(error, translateCatalogKey('ui.pages.admin.adminsecurity.loi-bo-chan-ip.a94bc0b4'), { context: 'admin.security.ip.unblock' }); }
+    } catch (error) { toast.apiError(error, translateCatalogKey('ui.pages.admin.adminsecurity.loi-bo-chan-ip.a94bc0b4'), { context: "admin.security.ip.unblock" }); }
     finally { setPendingAction(''); }
   };
 
@@ -126,7 +126,7 @@ const AdminSecurity = () => {
     try {
       const response = await adminService.resetRateLimit(ip);
       toast.success(response.data?.message || translateCatalogKey('ui.pages.admin.adminsecurity.a-reset-rate-limit-cho-value0.4aca7efa', { value0: ip }));
-    } catch (error) { toast.apiError(error, translateCatalogKey('ui.pages.admin.adminsecurity.loi-reset-rate-limit.42cd1027'), { context: 'admin.security.rateLimit.reset' }); }
+    } catch (error) { toast.apiError(error, translateCatalogKey('ui.pages.admin.adminsecurity.loi-reset-rate-limit.42cd1027'), { context: "admin.security.rateLimit.reset" }); }
     finally { setPendingAction(''); }
   };
 

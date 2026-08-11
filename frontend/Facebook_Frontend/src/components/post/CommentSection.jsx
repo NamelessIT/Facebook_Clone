@@ -8,6 +8,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import toast from '../../shared/appToast';
 import { useLocalization } from "../../contexts/useLocalization";
 import "./CommentSection.css";
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const formatTimeAgo = (dateStr, locale) => {
   try {
@@ -87,7 +88,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
       setPage(pageNum);
     } catch (error) {
       if (!append) setComments([]);
-      toast.apiError(error, t('comment.loadFailed'), { context: 'comments.load' });
+      toast.apiError(error, t('comment.loadFailed'), { context: "comments.load" });
     } finally {
       setLoading(false);
     }
@@ -106,7 +107,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
       fetchComments(1);
       onCommentAdded?.();
     } catch (error) {
-      toast.apiError(error, t('comment.createFailed'), { context: 'comments.create' });
+      toast.apiError(error, t('comment.createFailed'), { context: "comments.create" });
     } finally {
       setPosting(false);
     }
@@ -125,7 +126,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
       fetchComments(1);
       onCommentAdded?.();
     } catch (error) {
-      toast.apiError(error, t('comment.replyFailed'), { context: 'comments.reply' });
+      toast.apiError(error, t('comment.replyFailed'), { context: "comments.reply" });
     } finally {
       setReplyPosting(false);
     }

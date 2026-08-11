@@ -151,7 +151,7 @@ const AdminContent = ({ type }) => {
         ) : (
           <div className="admin-content-groups">
             {groupedItems.map((group) => {
-              const fullName = `${group.author.firstName || ''} ${group.author.lastName || ''}`.trim() || 'Người dùng chưa xác định';
+              const fullName = `${group.author.firstName || ''} ${group.author.lastName || ''}`.trim() || translateCatalogKey('ui.pages.admin.admincontent.nguoi-dung-chua-xac-inh.66db7244');
               const initials = fullName
                 .split(/\s+/)
                 .slice(0, 2)
@@ -168,11 +168,11 @@ const AdminContent = ({ type }) => {
                         {fullName}
                         {group.author.isBanned && <span className="badge badge--banned">{translateCatalogKey('ui.pages.admin.admincontent.da-bi-cam.ff9a4521')}</span>}
                       </div>
-                      <div className="admin-content-email">{group.author.email || 'Không có email'}</div>
+                      <div className="admin-content-email">{group.author.email || "Không có email"}</div>
                     </div>
                     <div className="admin-content-group-summary">
-                      <span><strong>{group.items.length}</strong> {type === 'posts' ? 'bài viết' : 'reels'}</span>
-                      {deletedCount > 0 && <span className="admin-content-group-deleted">{deletedCount} đã ẩn</span>}
+                      <span><strong>{group.items.length}</strong> {type === 'posts' ? "bài viết" : "reels"}</span>
+                      {deletedCount > 0 && <span className="admin-content-group-deleted">{deletedCount} {translateCatalogKey('ui.pages.admin.admincontent.a-an.47677711')}</span>}
                     </div>
                   </header>
 

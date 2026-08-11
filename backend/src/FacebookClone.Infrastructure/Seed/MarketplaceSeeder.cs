@@ -38,7 +38,7 @@ public class MarketplaceSeeder : ISeeder
                 Description = $"{item.Title} được mô tả đúng tình trạng. Vui lòng liên hệ người bán để xác minh và xem thêm hình ảnh trước khi giao dịch.",
                 Price = item.Price, Category = item.Category, Location = item.Location, Condition = item.Condition,
                 ImageUrl = $"https://picsum.photos/seed/fb-market-{index + 1:00}/900/680", Status = MarketplaceListingStatus.Approved,
-                DisplayFee = MarketplacePolicy.DisplayFeeVnd, TermsVersion = MarketplacePolicy.CurrentTermsVersion,
+                DisplayFee = MarketplacePolicy.DefaultDisplayFeeVnd, TermsVersion = MarketplacePolicy.CurrentTermsVersion,
                 TermsAcceptedAt = now.AddDays(-index - 1), CreatedAt = now.AddHours(-index - 1), UpdatedAt = now.AddHours(-index - 1),
                 ReviewedAt = now.AddHours(-index), ModerationNote = "Dữ liệu mẫu đã được duyệt."
             });

@@ -45,7 +45,7 @@ public class AdminController(
         return await db.Users
             .AsNoTracking()
             .Where(u => u.Id == userId && !u.IsDeleted)
-            .AnyAsync(u => u.IsAdmin || u.UserRoles.Any(ur =>
+            .AnyAsync(u => u.UserRoles.Any(ur =>
                 ur.Role.RolePermissions.Any(rp => rp.Permission.Key == permissionKey)));
     }
 
@@ -113,6 +113,7 @@ public class AdminController(
     public async Task<IActionResult> GetDashboard()
     {
         if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("dashboard.view")) return Forbid();
 
         var now = DateTime.UtcNow;
         var onlineCutoff = now.AddMinutes(-SharedConstants.Timers.UserOnlineTtlMinutes);
@@ -219,6 +220,7 @@ public class AdminController(
     public async Task<IActionResult> GetUserCreationOptions()
     {
         if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("users.view")) return Forbid();
         var canCreateUsers = await CurrentUserRoleHasPermission("users.manage");
         var canAssignRoles = await CurrentUserHasPermission("roles.manage");
         if (!canCreateUsers && !canAssignRoles) return Forbid();
@@ -1206,9 +1208,10 @@ public class AdminController(
     // -----------------------------------------------------------------------
 
     [HttpGet("security/events")]
-    public IActionResult GetSecurityEvents([FromQuery] int count = 200, [FromQuery] string? type = null)
+    public async Task<IActionResult> GetSecurityEvents([FromQuery] int count = 200, [FromQuery] string? type = null)
     {
         if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("security.view")) return Forbid();
 
         var events = security.GetRecentEvents(count);
 
@@ -1229,6 +1232,7 @@ public class AdminController(
     public async Task<IActionResult> GetBlockedIps()
     {
         if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("security.view")) return Forbid();
 
         var now = DateTime.UtcNow;
         var persistent = (await blockService.ListAsync(BlockListKind.Blacklist, HttpContext.RequestAborted))
@@ -1249,6 +1253,7 @@ public class AdminController(
     public async Task<IActionResult> BlockIp([FromBody] BlockIpRequest req)
     {
         if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("security.manage")) return Forbid();
 
         if (!TryNormalizeIp(req.Ip, out var ip))
             return BadRequest(new
@@ -1293,6 +1298,7 @@ public class AdminController(
     public async Task<IActionResult> UnblockIp([FromQuery] string ip)
     {
         if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("security.manage")) return Forbid();
         if (!TryGetBlockLookupValue(ip, out var lookupValue))
             return BadRequest(new { success = false, errorCode = "INVALID_IP_ADDRESS", message = "IP address is required." });
 
@@ -1321,9 +1327,10 @@ public class AdminController(
     }
 
     [HttpDelete("security/rate-limit")]
-    public IActionResult ResetRateLimit([FromQuery] string ip)
+    public async Task<IActionResult> ResetRateLimit([FromQuery] string ip)
     {
         if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("security.manage")) return Forbid();
         if (!TryNormalizeIp(ip, out var normalizedIp))
             return BadRequest(new { success = false, errorCode = "INVALID_IP_ADDRESS", message = "Invalid IP address." });
 
@@ -1375,19 +1382,21 @@ public class AdminController(
     }
 
     [HttpGet("security/stats")]
-    public IActionResult GetSecurityStats()
+    public async Task<IActionResult> GetSecurityStats()
     {
         if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("security.view")) return Forbid();
         return Ok(new { success = true, data = security.GetStats() });
     }
 
     [HttpGet("security/suspicious-ips")]
-    public IActionResult GetSuspiciousIps(
+    public async Task<IActionResult> GetSuspiciousIps(
         [FromQuery] string? search = null,
         [FromQuery] int minRiskScore = 0,
         [FromQuery] int limit = 100)
     {
         if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("security.view")) return Forbid();
 
         var data = security.GetSuspiciousIps(search, minRiskScore, limit);
         return Ok(new
@@ -1412,6 +1421,7 @@ public class AdminController(
     public async Task<IActionResult> GetBlockList([FromQuery] BlockListKind? kind = null)
     {
         if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("security.view")) return Forbid();
         var items = await blockService.ListAsync(kind, HttpContext.RequestAborted);
         return Ok(new { success = true, data = items });
     }
@@ -1420,6 +1430,7 @@ public class AdminController(
     public async Task<IActionResult> AddBlockEntry([FromBody] BlockListEntryRequest req)
     {
         if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("security.manage")) return Forbid();
 
         if (string.IsNullOrWhiteSpace(req.Value))
             return BadRequest(new { success = false, message = "Value is required." });
@@ -1440,6 +1451,7 @@ public class AdminController(
     public async Task<IActionResult> RemoveBlockEntry(Guid id)
     {
         if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("security.manage")) return Forbid();
         var ok = await blockService.RemoveAsync(id, HttpContext.RequestAborted);
         if (!ok) return NotFound(new { success = false, message = "Entry not found or already inactive." });
         return Ok(new { success = true, message = "Entry removed." });

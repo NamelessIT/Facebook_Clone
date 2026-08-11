@@ -10,6 +10,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useLocalization } from "../../contexts/useLocalization";
 import "./SearchResultsPage.css";
 import toast from '../../shared/appToast';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const TABS = {
   USERS: "users",
@@ -49,7 +50,7 @@ const SearchResultsPage = () => {
       }
     } catch (error) {
       setUsers([]);
-      toast.apiError(error, t('search.loadFailed'), { id: 'search-users-error', context: 'search.users' });
+      toast.apiError(error, t('search.loadFailed'), { id: "search-users-error", context: "search.users" });
     } finally {
       setUsersLoading(false);
     }
@@ -66,7 +67,7 @@ const SearchResultsPage = () => {
       }
     } catch (error) {
       setPosts([]);
-      toast.apiError(error, t('search.loadFailed'), { id: 'search-posts-error', context: 'search.posts' });
+      toast.apiError(error, t('search.loadFailed'), { id: "search-posts-error", context: "search.posts" });
     } finally {
       setPostsLoading(false);
     }

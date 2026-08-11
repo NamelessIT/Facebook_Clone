@@ -5,6 +5,7 @@ import userService from "../../services/userService";
 import toast from '../../shared/appToast';
 import { useLocalization } from "../../contexts/useLocalization";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const PreferencesSettings = () => {
   const { user } = useAuth();
@@ -46,7 +47,7 @@ const PreferencesSettings = () => {
       await setLocale(form.language);
       toast.success(t('settings.updated'));
     } catch (error) {
-      toast.apiError(error, t('settings.updateFailed'), { context: 'settings.preferences.update' });
+      toast.apiError(error, t('settings.updateFailed'), { context: "settings.preferences.update" });
     } finally {
       setLoading(false);
     }

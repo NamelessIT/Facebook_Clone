@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const PRIVACY_OPTIONS = [
   { value: 0, labelKey: 'privacy.public' },
@@ -50,7 +51,7 @@ const EditReelModal = ({ reel, isOpen, onClose, onSuccess }) => {
       toast.success(t('reels.updateSuccess'));
       onSuccess?.({ ...reel, ...updated, ...form });
     } catch (error) {
-      toast.apiError(error, t('reels.updateFailed'), { context: 'reels.update' });
+      toast.apiError(error, t('reels.updateFailed'), { context: "reels.update" });
     } finally {
       setSaving(false);
     }

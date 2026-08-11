@@ -27,7 +27,7 @@ const reporterToken = await login('bob@fbclone.com', '123456');
 const adminToken = await login('admin@fbclone.com', 'Admin@123');
 
 const terms = (await request('/marketplace/terms', { token: sellerToken })).payload.data;
-assert(terms.displayFee === 10000, 'Listing display fee must be 10,000 VND.');
+assert(Number.isFinite(terms.displayFee) && terms.displayFee >= 0, 'Listing display fee must be a valid non-negative amount.');
 
 const form = new FormData();
 form.set('title', `Smoke marketplace ${Date.now()}`);

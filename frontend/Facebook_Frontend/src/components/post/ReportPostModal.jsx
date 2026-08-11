@@ -35,7 +35,7 @@ const ReportPostModal = ({ postId, onClose }) => {
       toast.success(translateCatalogKey('ui.components.post.reportpostmodal.cam-on-chung-toi-se-xem-xet-bao-cao-.df52d773'));
       onClose();
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.components.post.reportpostmodal.gui-bao-cao-that-bai-vui-long-thu-la.33cadb46'), { context: 'posts.report' });
+      toast.apiError(error, translateCatalogKey('ui.components.post.reportpostmodal.gui-bao-cao-that-bai-vui-long-thu-la.33cadb46'), { context: "posts.report" });
     } finally {
       setLoading(false);
     }

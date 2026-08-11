@@ -13,11 +13,12 @@ import { LIVE } from '../../shared/generated/constants';
 import { ModerationTargetType } from '../../shared/generated/enums';
 import ReportDialog from '../moderation/ReportDialog';
 import './LiveRoom.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const PRIVACY_OPTIONS = [
-  { value: '1', label: 'Công khai' },
-  { value: '2', label: 'Bạn bè' },
-  { value: '3', label: 'Chỉ mình tôi' },
+  { value: '1', labelKey: 'privacy.public' },
+  { value: '2', labelKey: 'privacy.friends' },
+  { value: '3', labelKey: 'privacy.onlyMe' },
 ];
 
 const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
@@ -82,7 +83,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
       mergeComments(response.data.data || []);
     } catch (error) {
       if (error?.response?.status !== 403 && error?.response?.status !== 410)
-        toast.apiError(error, 'Không thể đồng bộ bình luận live.', { context: 'live.comments.load', dedupe: true });
+        toast.apiError(error, "Không thể đồng bộ bình luận live.", { context: "live.comments.load", dedupe: true });
     }
   }, [mergeComments, open, session?.id]);
 
@@ -212,7 +213,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
         });
         connection.on('LiveAccessRevoked', () => {
           closeMedia();
-          toast.error('Chủ phòng đã đổi quyền riêng tư. Bạn đã rời khỏi live.');
+          toast.error(translateCatalogKey('ui.components.live.liveroom.chu-phong-a-oi-quyen-rieng-tu-ban-a-.bd8e7c18'));
           onOpenChangeRef.current(false);
         });
         connection.on('LiveEnded', (recordingExpiresAt) => {
@@ -226,7 +227,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
           setSession((current) => ({ ...current, status: 3, endReason: reason }));
           setPhase('terminated');
           closeMedia();
-          toast.error(`Live bị dừng bởi kiểm duyệt viên: ${reason}`);
+          toast.error(translateCatalogKey('ui.components.live.liveroom.live-bi-dung-boi-kiem-duyet-vien-val.a5f1b1dd', { value0: reason }));
           if (isOwner && evidenceBlob?.size) {
             try {
               setUploadProgress({ percent: 0, loaded: 0, total: evidenceBlob.size, chunkIndex: 0, totalChunks: 1 });
@@ -234,7 +235,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
                 if (event.total) setUploadProgress({ ...event, percent: Math.round((event.loaded / event.total) * 100) });
               });
             } catch {
-              toast.error('Không thể tải đủ bản ghi phục vụ kiểm duyệt. Phiên live vẫn đã bị khóa.');
+              toast.error(translateCatalogKey('ui.components.live.liveroom.khong-the-tai-u-ban-ghi-phuc-vu-kiem.af7aae49'));
             } finally {
               setUploadProgress(null);
             }
@@ -258,7 +259,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
               onUpdatedRef.current?.(stopped);
             } catch { /* best effort rollback avoids an orphan live */ }
           }
-          toast.apiError(error, isOwner ? 'Không thể mở camera/micro hoặc bắt đầu live.' : 'Không thể tham gia live.', { context: 'live.room.connect' });
+          toast.apiError(error, isOwner ? "Không thể mở camera/micro hoặc bắt đầu live." : "Không thể tham gia live.", { context: "live.room.connect" });
           onOpenChangeRef.current(false);
         }
       }
@@ -293,10 +294,10 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
       setSession(updated);
       setPhase('replay');
       onUpdated?.(updated);
-      toast.success(`Đã kết thúc live. Quyền đăng replay hết sau ${LIVE.replayLifetimeMinutes} phút; bằng chứng an toàn được giữ tối đa ${LIVE.evidenceRetentionDays} ngày.`);
+      toast.success(translateCatalogKey('ui.components.live.liveroom.a-ket-thuc-live-quyen-ang-replay-het.c35c2b87', { value0: LIVE.replayLifetimeMinutes, value1: LIVE.evidenceRetentionDays }));
     } catch (error) {
       setUploadProgress(null);
-      toast.apiError(error, 'Live đã đóng nhưng chưa thể lưu bản ghi. Hãy thử tải lại bản ghi.', { context: 'live.stop' });
+      toast.apiError(error, "Live đã đóng nhưng chưa thể lưu bản ghi. Hãy thử tải lại bản ghi.", { context: "live.stop" });
     }
   };
 
@@ -311,8 +312,8 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
       pendingRecordingRef.current = null;
       setSession(updated);
       onUpdated?.(updated);
-      toast.success('Đã tải bản ghi live lên thành công.');
-    } catch (error) { toast.apiError(error, 'Chưa thể tải bản ghi live.', { context: 'live.recording.retry' }); }
+      toast.success(translateCatalogKey('ui.components.live.liveroom.a-tai-ban-ghi-live-len-thanh-cong.2d0020d9'));
+    } catch (error) { toast.apiError(error, "Chưa thể tải bản ghi live.", { context: "live.recording.retry" }); }
     finally { setUploadProgress(null); }
   };
 
@@ -328,8 +329,8 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
     } catch (error) {
       if (error?.response?.status === 409) {
         setSession((current) => ({ ...current, status: 2 }));
-        toast.error('Live đã đóng nên không nhận thêm bình luận.');
-      } else toast.apiError(error, 'Chưa thể gửi bình luận. Hệ thống sẽ tiếp tục đồng bộ danh sách.', { context: 'live.comments.send' });
+        toast.error(translateCatalogKey('ui.components.live.liveroom.live-a-ong-nen-khong-nhan-them-binh-.908f3ee7'));
+      } else toast.apiError(error, "Chưa thể gửi bình luận. Hệ thống sẽ tiếp tục đồng bộ danh sách.", { context: "live.comments.send" });
       await loadComments();
     } finally { setCommentSending(false); }
   };
@@ -339,8 +340,8 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
       const updated = (await liveService.changePrivacy(session.id, Number(value))).data.data;
       setSession(updated);
       onUpdated?.(updated);
-      toast.success('Đã thay đổi quyền riêng tư ngay trong lúc live.');
-    } catch (error) { toast.apiError(error, 'Không thể đổi quyền riêng tư.', { context: 'live.privacy' }); }
+      toast.success(translateCatalogKey('ui.components.live.liveroom.a-thay-oi-quyen-rieng-tu-ngay-trong-.921afdde'));
+    } catch (error) { toast.apiError(error, "Không thể đổi quyền riêng tư.", { context: "live.privacy" }); }
   };
 
   const openConversion = async () => {
@@ -351,7 +352,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
       setConversionPrivacy(String(updated.privacy));
       setConversionOpen(true);
       onUpdated?.(updated);
-    } catch (error) { toast.apiError(error, 'Bản live đã hết hạn hoặc không còn sẵn sàng để đăng.', { context: 'live.convert.prepare' }); }
+    } catch (error) { toast.apiError(error, "Bản live đã hết hạn hoặc không còn sẵn sàng để đăng.", { context: "live.convert.prepare" }); }
     finally { setConversionBusy(false); }
   };
 
@@ -362,8 +363,8 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
       setConversionOpen(false);
       onDeleted?.(session.id);
       onOpenChangeRef.current(false);
-      toast.success(`Đã hủy đăng. Bản ghi đã ẩn khỏi tài khoản và chỉ được giữ tối đa ${LIVE.evidenceRetentionDays} ngày để phục vụ kiểm duyệt.`);
-    } catch (error) { toast.apiError(error, 'Không thể xóa bản ghi live tạm.', { context: 'live.discard' }); }
+      toast.success(translateCatalogKey('ui.components.live.liveroom.a-huy-ang-ban-ghi-a-an-khoi-tai-khoa.f96c9517', { value0: LIVE.evidenceRetentionDays }));
+    } catch (error) { toast.apiError(error, "Không thể xóa bản ghi live tạm.", { context: "live.discard" }); }
     finally { setConversionBusy(false); }
   };
 
@@ -374,8 +375,8 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
       setSession(response.data.data.live);
       onUpdated?.(response.data.data.live);
       setConversionOpen(false);
-      toast.success('Đã chuyển bản ghi live thành bài viết video.');
-    } catch (error) { toast.apiError(error, 'Không thể chuyển live thành bài viết.', { context: 'live.convert' }); }
+      toast.success(translateCatalogKey('ui.components.live.liveroom.a-chuyen-ban-ghi-live-thanh-bai-viet.b5a234de'));
+    } catch (error) { toast.apiError(error, "Không thể chuyển live thành bài viết.", { context: "live.convert" }); }
     finally { setConversionBusy(false); }
   };
 
@@ -391,44 +392,44 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
             ) : replayUrl ? (
               <video src={replayUrl} controls playsInline />
             ) : (
-              <div className="live-room-placeholder"><VideoOff /><span>Không có bản phát lại</span></div>
+              <div className="live-room-placeholder"><VideoOff /><span>{translateCatalogKey('ui.components.live.liveroom.khong-co-ban-phat-lai.fa9788d4')}</span></div>
             )}
-            {session?.status === 1 && <Badge variant="destructive" className="live-room-status"><Radio /> LIVE</Badge>}
+            {session?.status === 1 && <Badge variant="destructive" className="live-room-status"><Radio /> {"LIVE"}</Badge>}
             <span className="live-room-viewers"><Eye size={15} /> {viewerCount}</span>
-            {uploadProgress !== null && <div className="live-upload-progress"><UploadCloud /><strong>Đang tải bản ghi {uploadProgress.percent}%</strong><small>{Math.round(uploadProgress.loaded / 1024 / 1024)} / {Math.max(1, Math.ceil(uploadProgress.total / 1024 / 1024))} MB · chunk {Math.min(uploadProgress.chunkIndex + 1, uploadProgress.totalChunks)}/{uploadProgress.totalChunks}</small><span style={{ width: `${uploadProgress.percent}%` }} /></div>}
+            {uploadProgress !== null && <div className="live-upload-progress"><UploadCloud /><strong>{translateCatalogKey('ui.components.live.liveroom.ang-tai-ban-ghi.fcbe1918')} {uploadProgress.percent}%</strong><small>{Math.round(uploadProgress.loaded / 1024 / 1024)} / {Math.max(1, Math.ceil(uploadProgress.total / 1024 / 1024))} {"MB · chunk"} {Math.min(uploadProgress.chunkIndex + 1, uploadProgress.totalChunks)}/{uploadProgress.totalChunks}</small><span style={{ width: `${uploadProgress.percent}%` }} /></div>}
           </div>
           <div className="live-room-details">
             <DialogHeader>
               <DialogTitle>{session?.title}</DialogTitle>
-              <DialogDescription>{session?.ownerName} · {phase === 'connecting' ? 'Đang kết nối camera và máy chủ…' : phase === 'waiting' ? 'Đang chờ luồng hình…' : phase === 'broadcasting' ? 'Đang phát trực tiếp' : phase === 'watching' ? 'Đang xem trực tiếp' : session?.status === 3 ? session.endReason : 'Bản phát lại'}</DialogDescription>
+              <DialogDescription>{session?.ownerName} · {phase === "connecting" ? "Đang kết nối camera và máy chủ…" : phase === "waiting" ? "Đang chờ luồng hình…" : phase === "broadcasting" ? "Đang phát trực tiếp" : phase === "watching" ? "Đang xem trực tiếp" : session?.status === 3 ? session.endReason : "Bản phát lại"}</DialogDescription>
             </DialogHeader>
             {isOwner && session?.status === 1 && (
               <div className="live-room-controls">
                 <Select value={String(session.privacy)} onValueChange={changePrivacy}>
                   <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
-                  <SelectContent>{PRIVACY_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
+                  <SelectContent>{PRIVACY_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{translateCatalogKey(option.labelKey)}</SelectItem>)}</SelectContent>
                 </Select>
-                <Button variant="destructive" onClick={stopBroadcast}><VideoOff /> Kết thúc live</Button>
+                <Button variant="destructive" onClick={stopBroadcast}><VideoOff /> {translateCatalogKey('ui.components.live.liveroom.ket-thuc-live.9f2c3f0f')}</Button>
               </div>
             )}
             {isOwner && session?.status === 2 && session.recordingUrl && !session.convertedPostId && (
               <div className="live-replay-actions">
-                <p><Clock3 size={16} /> Bản phát lại tự xóa lúc {new Date(session.recordingExpiresAt).toLocaleTimeString('vi-VN')}.</p>
-                <Button onClick={openConversion} disabled={conversionBusy}><Save /> Đăng bản live thành video post</Button>
+                <p><Clock3 size={16} /> {translateCatalogKey('ui.components.live.liveroom.ban-phat-lai-tu-xoa-luc.a8124f9b')} {new Date(session.recordingExpiresAt).toLocaleTimeString('vi-VN')}.</p>
+                <Button onClick={openConversion} disabled={conversionBusy}><Save /> {translateCatalogKey('ui.components.live.liveroom.ang-ban-live-thanh-video-post.f0e2fcdf')}</Button>
               </div>
             )}
             {isOwner && session?.status === 2 && !session.recordingUrl && pendingRecordingRef.current && (
-              <Button variant="outline" onClick={retryRecordingUpload} disabled={uploadProgress !== null}><UploadCloud /> Tải lại bản ghi</Button>
+              <Button variant="outline" onClick={retryRecordingUpload} disabled={uploadProgress !== null}><UploadCloud /> {translateCatalogKey('ui.components.live.liveroom.tai-lai-ban-ghi.9c262c1c')}</Button>
             )}
-            {moderationMode && <div className="live-moderation-note"><ShieldAlert size={16} /> Kiểm duyệt viên đang xem với quyền bỏ qua chế độ riêng tư.</div>}
+            {moderationMode && <div className="live-moderation-note"><ShieldAlert size={16} /> {translateCatalogKey('ui.components.live.liveroom.kiem-duyet-vien-ang-xem-voi-quyen-bo.50cffabd')}</div>}
             <DialogFooter>
-              {!isOwner && !moderationMode && <Button variant="ghost" onClick={() => setReportOpen(true)}><Flag /> Báo cáo live</Button>}
-              <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isOwner && session?.status === 1}>Đóng</Button>
+              {!isOwner && !moderationMode && <Button variant="ghost" onClick={() => setReportOpen(true)}><Flag /> {translateCatalogKey('ui.components.live.liveroom.bao-cao-live.6a418503')}</Button>}
+              <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isOwner && session?.status === 1}>{translateCatalogKey('common.close')}</Button>
             </DialogFooter>
           </div>
         </main>
         <aside className="live-comments-panel">
-          <header><div><MessageCircle /><strong>Bình luận trực tiếp</strong></div><span>{comments.length}</span></header>
+          <header><div><MessageCircle /><strong>{translateCatalogKey('ui.components.live.liveroom.binh-luan-truc-tiep.315bb5df')}</strong></div><span>{comments.length}</span></header>
           <div className="live-comments-list">
             {comments.map((comment) => (
               <article className="live-comment" key={comment.id}>
@@ -436,27 +437,27 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
                 <div><div><strong>{comment.author?.fullName}</strong><time>{new Date(comment.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</time></div><p>{comment.content}</p></div>
               </article>
             ))}
-            {!comments.length && <div className="live-comments-empty"><MessageCircle /><p>Chưa có bình luận. Hãy bắt đầu cuộc trò chuyện.</p></div>}
+            {!comments.length && <div className="live-comments-empty"><MessageCircle /><p>{translateCatalogKey('ui.components.live.liveroom.chua-co-binh-luan-hay-bat-au-cuoc-tr.198924cb')}</p></div>}
             <div ref={commentsEndRef} />
           </div>
           {session?.status === 1 ? (
             <form className="live-comment-form" onSubmit={sendComment}>
-              <Input value={commentText} onChange={(event) => setCommentText(event.target.value)} maxLength={LIVE.commentMaxLength} placeholder="Viết bình luận…" aria-label="Bình luận live" />
-              <Button size="icon" type="submit" disabled={!commentText.trim() || commentSending} aria-label="Gửi bình luận">{commentSending ? <Loader2 className="live-spin" /> : <Send />}</Button>
+              <Input value={commentText} onChange={(event) => setCommentText(event.target.value)} maxLength={LIVE.commentMaxLength} placeholder={translateCatalogKey('ui.components.live.liveroom.viet-binh-luan.bdb5efe2')} aria-label={translateCatalogKey('ui.components.live.liveroom.binh-luan-live.deec6931')} />
+              <Button size="icon" type="submit" disabled={!commentText.trim() || commentSending} aria-label={translateCatalogKey('ui.components.live.liveroom.gui-binh-luan.305f446f')}>{commentSending ? <Loader2 className="live-spin" /> : <Send />}</Button>
             </form>
-          ) : <div className="live-comments-closed"><VideoOff /> Live đã đóng, bình luận mới đã được ngắt.</div>}
+          ) : <div className="live-comments-closed"><VideoOff /> {translateCatalogKey('ui.components.live.liveroom.live-a-ong-binh-luan-moi-a-uoc-ngat.1fd05df1')}</div>}
         </aside>
       </DialogContent>
     </Dialog>
     <ReportDialog open={reportOpen} onOpenChange={setReportOpen} targetType={ModerationTargetType.Live} targetId={session?.id} targetLabel="buổi live này" />
     <Dialog open={conversionOpen} onOpenChange={(value) => value ? setConversionOpen(true) : discardReplay()}>
       <DialogContent className="live-conversion-dialog" onInteractOutside={(event) => event.preventDefault()}>
-        <DialogHeader><DialogTitle>Đăng bản live thành video</DialogTitle><DialogDescription>Bản tạm được gia hạn thêm {LIVE.replayLifetimeMinutes} phút trong lúc bạn hoàn thiện bài viết.</DialogDescription></DialogHeader>
-        <div className="live-conversion-preview"><FileVideo2 /><div><strong>{session?.title}</strong><span>Video live đã upload an toàn theo từng chunk.</span></div></div>
-        <label className="live-conversion-field"><span>Nội dung bài viết</span><Input value={postContent} onChange={(event) => setPostContent(event.target.value)} maxLength={500} placeholder="Bạn muốn nói gì về video này?" /></label>
-        <label className="live-conversion-field"><span>Đối tượng xem bài viết</span><Select value={conversionPrivacy} onValueChange={setConversionPrivacy}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>{PRIVACY_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select></label>
+        <DialogHeader><DialogTitle>{translateCatalogKey('ui.components.live.liveroom.ang-ban-live-thanh-video.6052d74c')}</DialogTitle><DialogDescription>{translateCatalogKey('ui.components.live.liveroom.ban-tam-uoc-gia-han-them.89ad5e9c')} {LIVE.replayLifetimeMinutes} {translateCatalogKey('ui.components.live.liveroom.phut-trong-luc-ban-hoan-thien-bai-vi.27e998e4')}</DialogDescription></DialogHeader>
+        <div className="live-conversion-preview"><FileVideo2 /><div><strong>{session?.title}</strong><span>{translateCatalogKey('ui.components.live.liveroom.video-live-a-upload-an-toan-theo-tun.7a3eef0f')}</span></div></div>
+        <label className="live-conversion-field"><span>{translateCatalogKey('ui.components.live.liveroom.noi-dung-bai-viet.ed49ab20')}</span><Input value={postContent} onChange={(event) => setPostContent(event.target.value)} maxLength={500} placeholder={translateCatalogKey('ui.components.live.liveroom.ban-muon-noi-gi-ve-video-nay.67722e78')} /></label>
+        <label className="live-conversion-field"><span>{translateCatalogKey('ui.components.live.liveroom.oi-tuong-xem-bai-viet.63a9c29f')}</span><Select value={conversionPrivacy} onValueChange={setConversionPrivacy}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>{PRIVACY_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{translateCatalogKey(option.labelKey)}</SelectItem>)}</SelectContent></Select></label>
         {uploadProgress !== null && <Progress value={uploadProgress.percent} />}
-        <DialogFooter className="live-conversion-actions"><Button variant="destructive" onClick={discardReplay} disabled={conversionBusy}><Trash2 /> Hủy và xóa video</Button><Button onClick={convertToPost} disabled={conversionBusy}>{conversionBusy ? <Loader2 className="live-spin" /> : <Save />} Đăng bài viết</Button></DialogFooter>
+        <DialogFooter className="live-conversion-actions"><Button variant="destructive" onClick={discardReplay} disabled={conversionBusy}><Trash2 /> {translateCatalogKey('ui.components.live.liveroom.huy-va-xoa-video.c4b87453')}</Button><Button onClick={convertToPost} disabled={conversionBusy}>{conversionBusy ? <Loader2 className="live-spin" /> : <Save />} {translateCatalogKey('ui.components.live.liveroom.ang-bai-viet.3559d657')}</Button></DialogFooter>
       </DialogContent>
     </Dialog>
     </>

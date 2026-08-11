@@ -13,12 +13,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { LIVE } from '../../shared/generated/constants';
 import { useSearchParams } from 'react-router-dom';
 import './DiscoveryPages.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const categories = ['Tất cả', 'Đang live', 'Bán hàng', 'Bản phát lại'];
 const privacyOptions = [
-  { value: '1', label: 'Công khai' },
-  { value: '2', label: 'Bạn bè' },
-  { value: '3', label: 'Chỉ mình tôi' },
+  { value: '1', labelKey: 'privacy.public' },
+  { value: '2', labelKey: 'privacy.friends' },
+  { value: '3', labelKey: 'privacy.onlyMe' },
 ];
 
 const LivePage = () => {
@@ -35,7 +36,7 @@ const LivePage = () => {
 
   const load = useCallback(async () => {
     try { setSessions((await liveService.list(true)).data.data || []); }
-    catch (error) { toast.apiError(error, 'Không thể tải danh sách live.', { context: 'live.list' }); }
+    catch (error) { toast.apiError(error, "Không thể tải danh sách live.", { context: "live.list" }); }
     finally { setLoading(false); }
   }, []);
 
@@ -51,7 +52,7 @@ const LivePage = () => {
     if (!sessionId || selected?.id === sessionId) return;
     liveService.get(sessionId)
       .then((response) => setSelected(response.data.data))
-      .catch((error) => toast.apiError(error, 'Phiên live không còn khả dụng hoặc bạn không có quyền xem.', { context: 'live.deep-link', dedupe: true }));
+      .catch((error) => toast.apiError(error, "Phiên live không còn khả dụng hoặc bạn không có quyền xem.", { context: "live.deep-link", dedupe: true }));
   }, [searchParams, selected?.id]);
 
   const filtered = useMemo(() => sessions.filter((item) => {
@@ -72,7 +73,7 @@ const LivePage = () => {
       setCreatorOpen(false);
       setSelected(session);
     } catch (error) {
-      toast.apiError(error, 'Không thể tạo phiên live. Quyền live của bạn có thể đang bị tạm khóa.', { context: 'live.start' });
+      toast.apiError(error, "Không thể tạo phiên live. Quyền live của bạn có thể đang bị tạm khóa.", { context: "live.start" });
     } finally { setCreating(false); }
   };
 
@@ -96,43 +97,43 @@ const LivePage = () => {
   return (
     <section className="discovery-page discovery-page--wide live-page">
       <div className="discovery-hero live-hero">
-        <div><Badge variant="destructive"><Radio /> Trực tiếp</Badge><h1>Video trực tiếp</h1><p>Phát live cộng đồng, bán hàng hoặc xem lại trong {LIVE.replayLifetimeMinutes} phút.</p></div>
-        <Button onClick={() => setCreatorOpen(true)}><Video /> Phát trực tiếp</Button>
+        <div><Badge variant="destructive"><Radio /> {translateCatalogKey('ui.pages.discovery.livepage.truc-tiep.4394cf43')}</Badge><h1>{translateCatalogKey('post.liveVideo')}</h1><p>{translateCatalogKey('ui.pages.discovery.livepage.phat-live-cong-ong-ban-hang-hoac-xem.32e2f95e')} {LIVE.replayLifetimeMinutes} {translateCatalogKey('ui.pages.discovery.livepage.phut.dd2b6cfc')}</p></div>
+        <Button onClick={() => setCreatorOpen(true)}><Video /> {translateCatalogKey('permissions.modules.lives')}</Button>
       </div>
 
-      <label className="discovery-search"><Search size={17} /><Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Tìm live hoặc người phát" /></label>
+      <label className="discovery-search"><Search size={17} /><Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={translateCatalogKey('ui.pages.discovery.livepage.tim-live-hoac-nguoi-phat.09d85a1e')} /></label>
       <div className="discovery-categories">{categories.map((item) => <Button key={item} size="sm" variant={category === item ? 'default' : 'outline'} onClick={() => setCategory(item)}>{item}</Button>)}</div>
-      <div className="live-results-heading"><div><Radio size={18} /><strong>Phiên live</strong></div><span>{loading ? 'Đang tải…' : `${filtered.length} phiên`}</span></div>
+      <div className="live-results-heading"><div><Radio size={18} /><strong>{translateCatalogKey('ui.pages.discovery.livepage.phien-live.d44855e3')}</strong></div><span>{loading ? "Đang tải…" : translateCatalogKey('ui.pages.discovery.livepage.value0-phien.0234bb95', { value0: filtered.length })}</span></div>
 
       <div className="live-grid">
         {filtered.map((stream) => (
           <Card className="live-card" key={stream.id} onClick={() => { setSelected(stream); setSearchParams({ session: stream.id }); }}>
             <div className="live-thumbnail">
               {stream.recordingUrl ? <video src={getImageUrl(stream.recordingUrl)} muted preload="metadata" /> : <div className="live-thumbnail-placeholder"><Radio /></div>}
-              <Badge variant={stream.status === 1 ? 'destructive' : 'secondary'} className="live-badge">{stream.status === 1 ? 'LIVE' : 'XEM LẠI'}</Badge>
-              <span className="live-viewers">{stream.status === 1 ? <><Eye size={14} /> {stream.viewerCount || 0}</> : stream.convertedPostId ? <><Clock3 size={14} /> Đã đăng</> : <><Clock3 size={14} /> {LIVE.replayLifetimeMinutes} phút</>}</span>
+              <Badge variant={stream.status === 1 ? 'destructive' : 'secondary'} className="live-badge">{stream.status === 1 ? "LIVE" : "XEM LẠI"}</Badge>
+              <span className="live-viewers">{stream.status === 1 ? <><Eye size={14} /> {stream.viewerCount || 0}</> : stream.convertedPostId ? <><Clock3 size={14} /> {translateCatalogKey('ui.pages.discovery.livepage.a-ang.838b811c')}</> : <><Clock3 size={14} /> {LIVE.replayLifetimeMinutes} {translateCatalogKey('ui.pages.discovery.livepage.phut.20b6328e')}</>}</span>
               <span className="live-play"><Play fill="currentColor" /></span>
             </div>
-            <CardContent className="live-card-content"><div className="live-host-avatar">{stream.ownerName?.charAt(0) || '?'}</div><div><h2>{stream.title}</h2><p>{stream.ownerName}</p><span>{stream.isShopping ? <ShoppingBag size={13} /> : <Users size={13} />} {stream.isShopping ? 'Bán hàng' : 'Cộng đồng'}</span></div></CardContent>
+            <CardContent className="live-card-content"><div className="live-host-avatar">{stream.ownerName?.charAt(0) || '?'}</div><div><h2>{stream.title}</h2><p>{stream.ownerName}</p><span>{stream.isShopping ? <ShoppingBag size={13} /> : <Users size={13} />} {stream.isShopping ? "Bán hàng" : "Cộng đồng"}</span></div></CardContent>
           </Card>
         ))}
       </div>
-      {!loading && filtered.length === 0 && <Card className="discovery-empty-card"><CardContent><p>Chưa có phiên live phù hợp.</p></CardContent></Card>}
+      {!loading && filtered.length === 0 && <Card className="discovery-empty-card"><CardContent><p>{translateCatalogKey('ui.pages.discovery.livepage.chua-co-phien-live-phu-hop.6ae43c23')}</p></CardContent></Card>}
 
       <Dialog open={creatorOpen} onOpenChange={setCreatorOpen}>
         <DialogContent className="sm:max-w-md"><form onSubmit={createLive} className="live-create-form">
-          <DialogHeader><DialogTitle>Tạo phiên livestream</DialogTitle><DialogDescription>Bạn có thể đổi quyền riêng tư ngay cả khi đang phát.</DialogDescription></DialogHeader>
+          <DialogHeader><DialogTitle>{translateCatalogKey('ui.pages.discovery.livepage.tao-phien-livestream.1a10231a')}</DialogTitle><DialogDescription>{translateCatalogKey('ui.pages.discovery.livepage.ban-co-the-oi-quyen-rieng-tu-ngay-ca.d824b54a')}</DialogDescription></DialogHeader>
           <div className="live-mode-grid">
-            <Button type="button" variant={!form.isShopping ? 'default' : 'outline'} onClick={() => setForm((current) => ({ ...current, isShopping: false }))}><Users /> Cộng đồng</Button>
-            <Button type="button" variant={form.isShopping ? 'default' : 'outline'} onClick={() => setForm((current) => ({ ...current, isShopping: true }))}><ShoppingBag /> Bán hàng</Button>
+            <Button type="button" variant={!form.isShopping ? 'default' : 'outline'} onClick={() => setForm((current) => ({ ...current, isShopping: false }))}><Users /> {translateCatalogKey('ui.pages.discovery.livepage.cong-ong.549154d6')}</Button>
+            <Button type="button" variant={form.isShopping ? 'default' : 'outline'} onClick={() => setForm((current) => ({ ...current, isShopping: true }))}><ShoppingBag /> {translateCatalogKey('ui.pages.discovery.livepage.ban-hang.7ffa61c5')}</Button>
           </div>
-          <Input placeholder="Tiêu đề livestream" value={form.title} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} required maxLength={180} />
-          <Input placeholder="Mô tả (không bắt buộc)" value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} maxLength={2000} />
+          <Input placeholder={translateCatalogKey('ui.pages.discovery.livepage.tieu-e-livestream.e2fab44d')} value={form.title} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} required maxLength={180} />
+          <Input placeholder={translateCatalogKey('ui.pages.discovery.livepage.mo-ta-khong-bat-buoc.f1a3c0b2')} value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} maxLength={2000} />
           <Select value={form.privacy} onValueChange={(privacy) => setForm((current) => ({ ...current, privacy }))}>
-            <SelectTrigger className="w-full"><SelectValue placeholder="Quyền riêng tư" /></SelectTrigger>
-            <SelectContent>{privacyOptions.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
+            <SelectTrigger className="w-full"><SelectValue placeholder={translateCatalogKey('settings.privacy')} /></SelectTrigger>
+            <SelectContent>{privacyOptions.map((option) => <SelectItem key={option.value} value={option.value}>{translateCatalogKey(option.labelKey)}</SelectItem>)}</SelectContent>
           </Select>
-          <DialogFooter><Button type="button" variant="outline" onClick={() => setCreatorOpen(false)}>Hủy</Button><Button type="submit" disabled={creating}><Video /> {creating ? 'Đang tạo…' : 'Bắt đầu phát'}</Button></DialogFooter>
+          <DialogFooter><Button type="button" variant="outline" onClick={() => setCreatorOpen(false)}>{translateCatalogKey('common.cancel')}</Button><Button type="submit" disabled={creating}><Video /> {creating ? "Đang tạo…" : "Bắt đầu phát"}</Button></DialogFooter>
         </form></DialogContent>
       </Dialog>
 

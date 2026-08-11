@@ -114,9 +114,11 @@ public class RbacSeeder : ISeeder
         ]);
         await GrantAsync(context, roles["user"], []);
 
-        var users = await context.Users.ToListAsync();
+        var users = await context.Users.Include(x => x.UserRoles).ToListAsync();
         foreach (var user in users)
         {
+            if (user.UserRoles.Count > 0) continue;
+
             var roleName = user.Email.Equals("admin@fbclone.com", StringComparison.OrdinalIgnoreCase)
                 ? "super_admin"
                 : user.IsAdmin

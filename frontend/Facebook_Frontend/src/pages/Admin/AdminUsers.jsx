@@ -42,7 +42,7 @@ const AdminUsers = () => {
       setCanCreateUsers(Boolean(creationOptionsResponse?.data?.data?.canCreateUsers));
       setCreationRoles(creationOptionsResponse?.data?.data?.roles || []);
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.pages.admin.adminusers.khong-the-tai-danh-sach-nguoi-dung.e5a7c59d'), { context: 'admin.users.load' });
+      toast.apiError(error, translateCatalogKey('ui.pages.admin.adminusers.khong-the-tai-danh-sach-nguoi-dung.e5a7c59d'), { context: "admin.users.load" });
     } finally {
       setLoading(false);
     }
@@ -64,7 +64,7 @@ const AdminUsers = () => {
       setBanReason('');
       load();
     } catch (e) {
-      toast.apiError(e, translateCatalogKey('ui.pages.admin.adminusers.loi-ban-user.516a1edb'), { context: 'admin.users.ban' });
+      toast.apiError(e, translateCatalogKey('ui.pages.admin.adminusers.loi-ban-user.516a1edb'), { context: "admin.users.ban" });
     }
   };
 
@@ -74,7 +74,7 @@ const AdminUsers = () => {
       toast.success(translateCatalogKey('ui.pages.admin.adminusers.a-unban-value0.cf6ea679', { value0: u.firstName }));
       load();
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('ui.pages.admin.adminusers.loi-unban-user.fbe5c264'), { context: 'admin.users.unban' });
+      toast.apiError(error, translateCatalogKey('ui.pages.admin.adminusers.loi-unban-user.fbe5c264'), { context: "admin.users.unban" });
     }
   };
 
@@ -91,7 +91,7 @@ const AdminUsers = () => {
       toast.success(translateCatalogKey('ui.pages.admin.adminusers.a-xoa-nguoi-dung.e72142e0'));
       load();
     } catch (e) {
-      toast.apiError(e, translateCatalogKey('ui.pages.admin.adminusers.loi-xoa-user.6292a721'), { context: 'admin.users.delete' });
+      toast.apiError(e, translateCatalogKey('ui.pages.admin.adminusers.loi-xoa-user.6292a721'), { context: "admin.users.delete" });
     }
   };
 
@@ -101,7 +101,7 @@ const AdminUsers = () => {
       toast.success(translateCatalogKey('admin.roles.assignmentUpdated'));
       load();
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('admin.roles.assignmentFailed'), { context: 'admin.users.roles.update' });
+      toast.apiError(error, translateCatalogKey('admin.roles.assignmentFailed'), { context: "admin.users.roles.update" });
     }
   };
 
@@ -148,7 +148,7 @@ const AdminUsers = () => {
       toast.success(translateCatalogKey('admin.users.createSuccess'));
       await load();
     } catch (error) {
-      toast.apiError(error, translateCatalogKey('admin.users.createFailed'), { context: 'admin.users.create' });
+      toast.apiError(error, translateCatalogKey('admin.users.createFailed'), { context: "admin.users.create" });
     } finally {
       setCreateSubmitting(false);
     }

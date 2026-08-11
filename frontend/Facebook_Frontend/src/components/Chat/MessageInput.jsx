@@ -5,6 +5,7 @@ import chatService from '../../services/chatService';
 import { useLocalization } from '../../contexts/useLocalization';
 import { LIMITS, TIMERS } from '../../shared/generated/constants';
 import './MessageInput.css';
+import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const MessageInput = ({ conversationId, receiverId, onMessageSent }) => {
   const { t } = useLocalization();
@@ -38,7 +39,7 @@ const MessageInput = ({ conversationId, receiverId, onMessageSent }) => {
       setContent('');
       onMessageSent?.(message);
     } catch (error) {
-      toast.apiError(error, t('chat.sendFailed'), { context: 'chat.message.send' });
+      toast.apiError(error, t('chat.sendFailed'), { context: "chat.message.send" });
     } finally {
       setSending(false);
     }
