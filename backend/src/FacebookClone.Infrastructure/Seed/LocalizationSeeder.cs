@@ -56,10 +56,13 @@ public class LocalizationSeeder : ISeeder
             if (existingEntries.TryGetValue(lookupKey, out var existing))
             {
                 // Keep the admin-managed translation, but refresh catalog metadata.
+                var previousSourceText = existing.SourceText;
                 existing.SourceLocale = LocalizationCatalog.SourceLocale;
                 existing.SourceText = item.SourceText;
                 existing.Context = item.Context;
-                var isCatalogFallback = string.Equals(existing.Value, existing.SourceText, StringComparison.Ordinal);
+                var isCatalogFallback =
+                    string.Equals(existing.Value, previousSourceText, StringComparison.Ordinal) ||
+                    string.Equals(existing.Value, item.SourceText, StringComparison.Ordinal);
                 if ((string.IsNullOrWhiteSpace(existing.Value) || isCatalogFallback) && !string.IsNullOrWhiteSpace(item.Value))
                 {
                     existing.Value = item.Value;

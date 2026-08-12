@@ -40,7 +40,11 @@ public class ChatService : IChatService
         return friendship != null && friendship.Status == FriendshipStatus.Accepted;
     }
 
-    public async Task<MessageResponseDto> SendMessageAsync(Guid senderId, SendMessageRequest request, string? correlationId = null)
+    public async Task<MessageResponseDto> SendMessageAsync(
+        Guid senderId,
+        SendMessageRequest request,
+        string? correlationId = null,
+        bool allowNonFriendConversation = false)
     {
         if (string.IsNullOrWhiteSpace(request.Content))
             throw new ArgumentException("Tin nhắn không được để trống.");
@@ -70,8 +74,9 @@ public class ChatService : IChatService
             if (senderId == receiverId)
                 throw new ArgumentException("Không thể tự chat với chính mình.");
 
-            // Kiểm tra friendship bắt buộc
-            if (!await AreFriendsAsync(senderId, receiverId))
+            // Chat thường vẫn yêu cầu kết bạn. Các luồng đã được API xác thực riêng
+            // (ví dụ liên hệ người bán Marketplace) có thể tạo cuộc trò chuyện trực tiếp.
+            if (!allowNonFriendConversation && !await AreFriendsAsync(senderId, receiverId))
                 throw new UnauthorizedAccessException("Bạn chỉ có thể nhắn tin với bạn bè.");
 
             conversation = await _chatRepo.GetPrivateConversationAsync(senderId, receiverId);

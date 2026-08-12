@@ -70,6 +70,7 @@ public class InternalTranslationService(AppDbContext db) : IInternalTranslationS
         {
             var chunk = chunks[i];
             var value = await FindStoredTranslationAsync(sourceLocale, targetLocale, chunk, cancellationToken)
+                ?? InternalTranslationCatalog.Find(sourceLocale, targetLocale, chunk)
                 ?? FindBuiltInTranslation(sourceLocale, targetLocale, chunk);
 
             if (string.IsNullOrWhiteSpace(value))

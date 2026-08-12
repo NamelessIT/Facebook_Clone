@@ -183,6 +183,16 @@ body[data-theme="dark"],
   color: #1877f2 !important;
 }
 
+.feed-container:has(.chat-page) {
+  max-width: none;
+  margin-inline: 0;
+  padding-inline: 12px;
+}
+
+.body-container:has(.chat-page) > .sidebar:last-child {
+  display: none;
+}
+
 [data-theme="dark"] .menu-item {
   color: #e4e6eb;
 }

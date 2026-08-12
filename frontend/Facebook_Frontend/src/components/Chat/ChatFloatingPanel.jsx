@@ -7,6 +7,7 @@ import { useLocalization } from '../../contexts/useLocalization';
 import Avatar from '../common/Avatar';
 import ChatWindow from './ChatWindow';
 import './ChatFloatingPanel.css';
+import { conversationMapFrom, mergeChatContacts } from '../../utils/chatContacts';
 
 const ChatFloatingPanel = ({ initialFriend = null, onClose }) => {
   const navigate = useNavigate();
@@ -22,8 +23,15 @@ const ChatFloatingPanel = ({ initialFriend = null, onClose }) => {
     let cancelled = false;
     const loadFriends = async () => {
       try {
-        const res = await friendshipService.getFriends(1, 100);
-        if (!cancelled) setFriends(res.data?.data || []);
+        const [friendResponse, conversationResponse] = await Promise.all([
+          friendshipService.getFriends(1, 100),
+          chatService.getConversations(),
+        ]);
+        if (!cancelled) {
+          const conversations = conversationResponse.data?.data || [];
+          setFriends(mergeChatContacts(friendResponse.data?.data || [], conversations));
+          setConversationMap(conversationMapFrom(conversations));
+        }
       } catch {
         // silent
       } finally {
@@ -38,7 +46,7 @@ const ChatFloatingPanel = ({ initialFriend = null, onClose }) => {
   // Update selected friend when prop changes (e.g., clicking contact in sidebar)
   useEffect(() => {
     if (initialFriend) setSelectedFriend(initialFriend);
-  }, [initialFriend?.userId, initialFriend?.id]);
+  }, [initialFriend]);
 
   const filteredFriends = useMemo(() => {
     if (!searchQuery.trim()) return friends;
@@ -114,7 +122,7 @@ const ChatFloatingPanel = ({ initialFriend = null, onClose }) => {
             ) : (
               filteredFriends.map((friend) => (
                 <button
-                  key={friend.friendshipId}
+                  key={friend.friendshipId || friend.userId || friend.id}
                   className="cfp-contact"
                   onClick={() => handleSelectFriend(friend)}
                 >

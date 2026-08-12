@@ -876,7 +876,9 @@ public class AdminController(
         if (!await CurrentUserHasPermission("localization.view")) return Forbid();
 
         page = Math.Max(1, page);
-        pageSize = Math.Clamp(pageSize, 1, 1000);
+        // Bulk translation needs the complete target-locale set. The generated
+        // catalog currently contains more than 1,000 entries.
+        pageSize = Math.Clamp(pageSize, 1, 5000);
 
         var languages = await db.LocaleLanguages
             .AsNoTracking()

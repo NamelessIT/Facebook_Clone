@@ -179,6 +179,46 @@
 .marketplace-fee-box > svg { flex: 0 0 auto; color: var(--primary); }
 .marketplace-fee-box div { display: grid; gap: 4px; }
 .marketplace-fee-box span { color: var(--muted-foreground); font-size: 12px; line-height: 1.5; }
+.marketplace-edit-policy { display: grid; gap: 12px; padding: 15px; border: 1px solid color-mix(in oklch, var(--primary) 32%, var(--border)); border-radius: calc(var(--radius) + 2px); background: color-mix(in oklch, var(--primary) 5%, var(--card)); }
+.marketplace-edit-policy__heading { display: flex; align-items: flex-start; gap: 10px; }
+.marketplace-edit-policy__heading > svg { width: 18px; height: 18px; flex: 0 0 auto; color: var(--primary); }
+.marketplace-edit-policy__heading h3 { margin: 0 0 3px; font-size: 14px; }
+.marketplace-edit-policy__heading p { margin: 0; color: var(--muted-foreground); font-size: 12px; line-height: 1.5; }
+.marketplace-edit-policy__rules { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.marketplace-edit-policy__rules > div { display: grid; align-content: start; gap: 7px; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
+.marketplace-edit-policy__rules [data-slot="badge"] { width: fit-content; }
+.marketplace-edit-policy__rules span { color: var(--muted-foreground); font-size: 11px; line-height: 1.5; }
+.marketplace-payment-box { display: grid; gap: 14px; padding: 16px; border: 1px solid var(--border); border-radius: calc(var(--radius) + 2px); background: var(--card); }
+.marketplace-payment-heading { display: flex; align-items: center; gap: 11px; }
+.marketplace-payment-heading > span { display: inline-flex; width: 38px; height: 38px; align-items: center; justify-content: center; border-radius: 11px; background: color-mix(in oklch, var(--primary) 12%, var(--card)); color: var(--primary); }
+.marketplace-payment-heading h3 { margin: 0 0 3px; font-size: 15px; }
+.marketplace-payment-heading p { margin: 0; color: var(--muted-foreground); font-size: 12px; }
+.marketplace-payment-start { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px; border-radius: var(--radius); background: var(--muted); }
+.marketplace-payment-start > div { display: grid; gap: 2px; }
+.marketplace-payment-start span, .marketplace-payment-details span { color: var(--muted-foreground); font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.marketplace-payment-start strong { color: var(--primary); font-size: 20px; }
+.marketplace-payment-start small { color: var(--muted-foreground); }
+.marketplace-payment-transaction { display: grid; gap: 13px; }
+.marketplace-payment-state { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--muted-foreground); font-size: 10px; }
+.marketplace-payment-qr-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 16px; }
+.marketplace-payment-qr { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: white; }
+.marketplace-payment-qr img { display: block; width: 100%; aspect-ratio: 1; object-fit: contain; }
+.marketplace-payment-details { display: grid; align-content: start; gap: 10px; }
+.marketplace-payment-details > div { display: grid; gap: 3px; }
+.marketplace-payment-details strong { font-size: 18px; }
+.marketplace-payment-details button:not([data-slot="button"]) { display: flex; width: fit-content; align-items: center; gap: 7px; border: 0; padding: 0; background: transparent; color: var(--primary); cursor: pointer; font-weight: 750; }
+.marketplace-payment-details button svg { width: 14px; }
+.marketplace-payment-details p { margin: 0; color: var(--muted-foreground); font-size: 11px; }
+.marketplace-payment-message { display: flex; align-items: flex-start; gap: 11px; padding: 13px; border: 1px solid color-mix(in oklch, var(--primary) 30%, var(--border)); border-radius: var(--radius); background: color-mix(in oklch, var(--primary) 7%, var(--card)); }
+.marketplace-payment-message > svg { flex: 0 0 auto; color: var(--primary); }
+.marketplace-payment-message > div { display: grid; justify-items: start; gap: 5px; }
+.marketplace-payment-message span, .marketplace-payment-message a { color: var(--muted-foreground); font-size: 12px; line-height: 1.5; }
+.marketplace-payment-message a { color: var(--primary); }
+.marketplace-payment-message--success { border-color: color-mix(in oklch, #22c55e 50%, var(--border)); background: color-mix(in oklch, #22c55e 9%, var(--card)); }
+.marketplace-payment-message--success > svg { color: #16a34a; }
+.marketplace-payment-message--warning, .marketplace-payment-message--error { border-color: color-mix(in oklch, var(--destructive) 45%, var(--border)); background: color-mix(in oklch, var(--destructive) 8%, var(--card)); }
+.marketplace-payment-message--warning > svg, .marketplace-payment-message--error > svg { color: var(--destructive); }
+@media (max-width: 680px) { .marketplace-payment-qr-layout, .marketplace-edit-policy__rules { grid-template-columns: 1fr; } .marketplace-payment-qr { width: min(100%, 260px); margin-inline: auto; } .marketplace-payment-start { align-items: stretch; flex-direction: column; } }
 .marketplace-terms-check { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.5; }
 .marketplace-terms-check button { border: 0; padding: 0; background: none; color: var(--primary); text-decoration: underline; cursor: pointer; }
 .marketplace-terms-dialog { max-height: 88vh; overflow-y: auto; }

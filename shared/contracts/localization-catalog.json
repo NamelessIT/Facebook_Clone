@@ -3171,18 +3171,18 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.da-cap-nhat-ban-dich.e93e608b",
-      "sourceText": "Da cap nhat ban dich",
+      "sourceText": "Đã cập nhật bản dịch",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Da cap nhat ban dich"
+        "en": "Translation updated"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.da-luu-ban-dich-moi.2316af4f",
-      "sourceText": "Da luu ban dich moi",
+      "sourceText": "Đã lưu bản dịch mới",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Da luu ban dich moi"
+        "en": "New translation saved"
       }
     },
     {
@@ -3211,18 +3211,18 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.da-xoa-ban-dich.2f085b93",
-      "sourceText": "Da xoa ban dich",
+      "sourceText": "Đã xóa bản dịch",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Da xoa ban dich"
+        "en": "Translation deleted"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.da-dich-bang-thu-vien-noi-bo.70079355",
-      "sourceText": "Da dich bang thu vien noi bo",
+      "sourceText": "Đã dịch bằng thư viện nội bộ",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Da dich bang thu vien noi bo"
+        "en": "Translated with the internal library"
       }
     },
     {
@@ -3235,10 +3235,10 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.da-them-ngon-ngu.2c4d249d",
-      "sourceText": "Da them ngon ngu",
+      "sourceText": "Đã thêm ngôn ngữ",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Da them ngon ngu"
+        "en": "Language added"
       }
     },
     {
@@ -3259,55 +3259,55 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.them-sua-ban-dich.dccbb4dc",
-      "sourceText": "Them / sua ban dich",
+      "sourceText": "Thêm / sửa bản dịch",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Them / sua ban dich"
+        "en": "Add / edit translation"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.chon-noi-dung-can-dich.6beb4d30",
-      "sourceText": "Chon noi dung can dich...",
+      "sourceText": "Chọn nội dung cần dịch...",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Chon noi dung can dich..."
+        "en": "Select content to translate..."
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.noi-dung-goc.b92afb18",
-      "sourceText": "Noi dung goc",
+      "sourceText": "Nội dung gốc",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Noi dung goc"
+        "en": "Source text"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.an-loi.4ee324ab",
-      "sourceText": "An loi",
+      "sourceText": "Ẩn lỗi",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "An loi"
+        "en": "Hide error"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.ban-dich.659d704e",
-      "sourceText": "Ban dich",
+      "sourceText": "Bản dịch",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Ban dich"
+        "en": "Translation"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.context-ghi-chu.4228791c",
-      "sourceText": "Context / ghi chu",
+      "sourceText": "Ngữ cảnh / ghi chú",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Context / ghi chu"
+        "en": "Context / notes"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.reset.c1464a9f",
-      "sourceText": "Reset",
+      "sourceText": "Đặt lại",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
         "en": "Reset"
@@ -3315,15 +3315,15 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.ngon-ngu.46cc93fe",
-      "sourceText": "Ngon ngu",
+      "sourceText": "Ngôn ngữ",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Ngon ngu"
+        "en": "Languages"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.default.18882724",
-      "sourceText": "Default",
+      "sourceText": "Mặc định",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
         "en": "Default"
@@ -3339,7 +3339,7 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.display-name.f265139c",
-      "sourceText": "Display name",
+      "sourceText": "Tên hiển thị",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
         "en": "Display name"
@@ -3347,7 +3347,7 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.native-name.e1057a30",
-      "sourceText": "Native name",
+      "sourceText": "Tên bản địa",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
         "en": "Native name"
@@ -3355,7 +3355,7 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.enabled.c86e27c0",
-      "sourceText": "Enabled",
+      "sourceText": "Đang bật",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
         "en": "Enabled"
@@ -3363,34 +3363,34 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.them-ngon-ngu.7d41b1bb",
-      "sourceText": "Them ngon ngu",
+      "sourceText": "Thêm ngôn ngữ",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Them ngon ngu"
+        "en": "Add language"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.danh-sach-ban-dich.90136d93",
-      "sourceText": "Danh sach ban dich",
+      "sourceText": "Danh sách bản dịch",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Danh sach ban dich"
+        "en": "Translation list"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.tim-key-noi-dung.b151c937",
-      "sourceText": "Tim key/noi dung...",
+      "sourceText": "Tìm key/nội dung...",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Tim key/noi dung..."
+        "en": "Search key/content..."
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.chua-co-key-nao-trong-catalog.1a6584a2",
-      "sourceText": "Chua co key nao trong catalog.",
+      "sourceText": "Chưa có key nào trong catalog.",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Chua co key nao trong catalog."
+        "en": "No keys are available in the catalog."
       }
     },
     {
@@ -3411,7 +3411,7 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.auto.05922e37",
-      "sourceText": "Auto",
+      "sourceText": "Tự động",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
         "en": "Auto"
@@ -3419,7 +3419,7 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.manual.ba20e122",
-      "sourceText": "Manual",
+      "sourceText": "Thủ công",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
         "en": "Manual"
@@ -3427,23 +3427,23 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.chua-dich.9924ea64",
-      "sourceText": "Chua dich",
+      "sourceText": "Chưa dịch",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Chua dich"
+        "en": "Not translated"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.prev.af7045fd",
-      "sourceText": "Prev",
+      "sourceText": "Trước",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Prev"
+        "en": "Previous"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.next.8f615961",
-      "sourceText": "Next",
+      "sourceText": "Sau",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
         "en": "Next"
@@ -4691,63 +4691,63 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.da-dich.07b94543",
-      "sourceText": "[Da dich]",
+      "sourceText": "[Đã dịch]",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "[Da dich]"
+        "en": "[Translated]"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.chua-dich.c45f4f56",
-      "sourceText": "[Chua dich]",
+      "sourceText": "[Chưa dịch]",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "[Chua dich]"
+        "en": "[Not translated]"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.da-dich.a452d5c1",
-      "sourceText": "Da dich",
+      "sourceText": "Đã dịch",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Da dich"
+        "en": "Translated"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.dang-dich.5acd79a2",
-      "sourceText": "Dang dich...",
+      "sourceText": "Đang dịch...",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Dang dich..."
+        "en": "Translating..."
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.dich-noi-bo.4e5cd749",
-      "sourceText": "Dich noi bo",
+      "sourceText": "Dịch nội bộ",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Dich noi bo"
+        "en": "Internal translation"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.cap-nhat.989fe1af",
-      "sourceText": "Cap nhat",
+      "sourceText": "Cập nhật",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Cap nhat"
+        "en": "Update"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.luu-ban-dich.7da386a2",
-      "sourceText": "Luu ban dich",
+      "sourceText": "Lưu bản dịch",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Luu ban dich"
+        "en": "Save translation"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.disabled.03287529",
-      "sourceText": "Disabled",
+      "sourceText": "Đã tắt",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
         "en": "Disabled"
@@ -4755,18 +4755,18 @@
     },
     {
       "key": "ui.pages.admin.adminlocalization.sua.8b503ea2",
-      "sourceText": "Sua",
+      "sourceText": "Sửa",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Sua"
+        "en": "Edit"
       }
     },
     {
       "key": "ui.pages.admin.adminlocalization.dich.2f84f603",
-      "sourceText": "Dich",
+      "sourceText": "Dịch",
       "context": "Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Admin/AdminLocalization.jsx",
       "translations": {
-        "en": "Dich"
+        "en": "Translate"
       }
     },
     {
@@ -6387,7 +6387,7 @@
     {"key":"ui.pages.discovery.marketplacepage.chon-tinh-trang.d0d3dc4a","sourceText":"Chọn tình trạng","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
     {"key":"ui.pages.discovery.marketplacepage.mo-ta-chi-tiet.1ac03d2d","sourceText":"Mô tả chi tiết","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
     {"key":"ui.pages.discovery.marketplacepage.phi-trung-bay.13282c06","sourceText":"Phí trưng bày:","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
-    {"key":"ui.pages.discovery.marketplacepage.facebook-clone-khong-thu-hoa-hong-gi.b4417b85","sourceText":"Facebook Clone không thu hoa hồng giao dịch. Bản demo chỉ ghi nhận phí, chưa thực hiện thanh toán.","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
+    {"key":"ui.pages.discovery.marketplacepage.facebook-clone-khong-thu-hoa-hong-gi.b4417b85","sourceText":"Facebook Clone không thu hoa hồng giao dịch. Phí trưng bày phải được xác nhận trước khi gửi kiểm duyệt.","context":"Marketplace display fee policy","translations":{"en":"Facebook Clone does not charge a transaction commission. The display fee must be verified before review submission."}},
     {"key":"ui.pages.discovery.marketplacepage.toi-a-oc-va-ong-y.842c3e12","sourceText":"Tôi đã đọc và đồng ý","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
     {"key":"ui.pages.discovery.marketplacepage.ieu-khoan-trung-bay-phien-ban.5845f5cf","sourceText":"Điều khoản trưng bày phiên bản","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
     {"key":"ui.pages.discovery.marketplacepage.gui-kiem-duyet.d0512043","sourceText":"Gửi kiểm duyệt","context":"Auto-discovered UI text in frontend/Facebook_Frontend/src/pages/Discovery/MarketplacePage.jsx","translations":{}},
@@ -6412,6 +6412,108 @@
     {"key":"ui.pages.discovery.livepage.value0-phien.0234bb95","sourceText":"{{value0}} phiên","context":"Live session count","translations":{"en":"{{value0}} sessions"}},
     {"key":"ui.pages.discovery.memoriespage.value0-ky-niem-ang-cho-ban-xem-lai.d65a1ea3","sourceText":"{{value0}} kỷ niệm đang chờ bạn xem lại.","context":"Memories count","translations":{"en":"{{value0}} memories are waiting for you."}},
     {"key":"ui.pages.discovery.memoriespage.value0-nam-truoc.1c73b883","sourceText":"{{value0}} năm trước","context":"Memory age","translations":{"en":"{{value0}} years ago"}},
-    {"key":"ui.pages.admin.admincontent.nguoi-dung-chua-xac-inh.66db7244","sourceText":"Người dùng chưa xác định","context":"Fallback author name in admin content","translations":{"en":"Unknown user"}}
+    {"key":"ui.pages.admin.admincontent.nguoi-dung-chua-xac-inh.66db7244","sourceText":"Người dùng chưa xác định","context":"Fallback author name in admin content","translations":{"en":"Unknown user"}},
+    {"key":"admin.settings.paymentInvalid","sourceText":"Thông tin tài khoản nhận thanh toán chưa hợp lệ.","context":"Marketplace payment settings validation","translations":{"en":"The payment receiving account information is invalid."}},
+    {"key":"admin.settings.paymentTitle","sourceText":"Tài khoản nhận phí Marketplace","context":"Marketplace payment settings title","translations":{"en":"Marketplace fee receiving account"}},
+    {"key":"admin.settings.paymentSubtitle","sourceText":"Cấu hình tài khoản ngân hàng, QR chuyển khoản và email hỗ trợ thanh toán.","context":"Marketplace payment settings subtitle","translations":{"en":"Configure the bank account, transfer QR and payment support email."}},
+    {"key":"admin.settings.bankBin","sourceText":"Mã BIN ngân hàng","context":"Bank BIN field","translations":{"en":"Bank BIN"}},
+    {"key":"admin.settings.bankBinHint","sourceText":"Mã BIN gồm 6 chữ số, dùng để tạo VietQR đúng ngân hàng.","context":"Bank BIN hint","translations":{"en":"The 6-digit BIN is used to generate a VietQR for the correct bank."}},
+    {"key":"admin.settings.bankName","sourceText":"Tên ngân hàng","context":"Bank name field","translations":{"en":"Bank name"}},
+    {"key":"admin.settings.accountNumber","sourceText":"Số tài khoản","context":"Bank account number field","translations":{"en":"Account number"}},
+    {"key":"admin.settings.accountName","sourceText":"Tên chủ tài khoản","context":"Bank account holder field","translations":{"en":"Account holder"}},
+    {"key":"admin.settings.paymentSupportEmail","sourceText":"Email hỗ trợ thanh toán","context":"Payment support email field","translations":{"en":"Payment support email"}},
+    {"key":"admin.settings.paymentSupportEmailHint","sourceText":"Người dùng sẽ thấy email này khi giao dịch thất bại hoặc cần đối soát.","context":"Payment support email hint","translations":{"en":"Users will see this email when a transaction fails or needs reconciliation."}},
+    {"key":"admin.settings.qrPreview","sourceText":"Xem trước QR thanh toán","context":"Payment QR preview title","translations":{"en":"Payment QR preview"}},
+    {"key":"admin.settings.qrPreviewAlt","sourceText":"Mã QR thanh toán mẫu","context":"Payment QR preview alt text","translations":{"en":"Sample payment QR code"}},
+    {"key":"admin.settings.qrIncomplete","sourceText":"Nhập mã BIN và số tài khoản để tạo QR xem trước.","context":"Payment QR empty state","translations":{"en":"Enter the BIN and account number to generate a QR preview."}},
+    {"key":"admin.settings.transferContent","sourceText":"Nội dung chuyển khoản","context":"Transfer reference label","translations":{"en":"Transfer content"}},
+    {"key":"marketplace.payment.feePolicy","sourceText":"Facebook Clone không thu hoa hồng giao dịch. Phí trưng bày phải được thanh toán và xác minh trước khi gửi kiểm duyệt.","context":"Marketplace display fee payment policy","translations":{"en":"Facebook Clone charges no sales commission. The display fee must be paid and verified before review submission."}},
+    {"key":"marketplace.payment.title","sourceText":"Thanh toán phí trưng bày","context":"Marketplace payment title","translations":{"en":"Pay the display fee"}},
+    {"key":"marketplace.payment.subtitle","sourceText":"Mỗi giao dịch có mã riêng và chỉ dùng được cho một mặt hàng.","context":"Marketplace payment subtitle","translations":{"en":"Each transaction has a unique code and can only be used for one listing."}},
+    {"key":"marketplace.payment.notConfigured","sourceText":"Chưa thể nhận thanh toán","context":"Payment not configured title","translations":{"en":"Payments are not configured"}},
+    {"key":"marketplace.payment.contactAdmin","sourceText":"Liên hệ quản trị viên:","context":"Contact admin payment support","translations":{"en":"Contact the administrator:"}},
+    {"key":"marketplace.payment.amount","sourceText":"Số tiền","context":"Payment amount label","translations":{"en":"Amount"}},
+    {"key":"marketplace.payment.createQr","sourceText":"Tạo giao dịch và mã QR","context":"Create payment transaction button","translations":{"en":"Create transaction and QR"}},
+    {"key":"marketplace.payment.transactionId","sourceText":"Mã giao dịch hệ thống","context":"Payment transaction id label","translations":{"en":"System transaction ID"}},
+    {"key":"marketplace.payment.pending","sourceText":"Chờ chuyển khoản","context":"Payment pending status","translations":{"en":"Awaiting transfer"}},
+    {"key":"marketplace.payment.awaiting","sourceText":"Chờ quản trị viên xác minh","context":"Payment awaiting verification status","translations":{"en":"Awaiting administrator verification"}},
+    {"key":"marketplace.payment.succeeded","sourceText":"Thanh toán thành công","context":"Payment succeeded status","translations":{"en":"Payment succeeded"}},
+    {"key":"marketplace.payment.failed","sourceText":"Thanh toán thất bại","context":"Payment failed status","translations":{"en":"Payment failed"}},
+    {"key":"marketplace.payment.qrAlt","sourceText":"Mã VietQR thanh toán phí trưng bày","context":"Marketplace payment QR alt text","translations":{"en":"VietQR for the display fee"}},
+    {"key":"marketplace.payment.bankAccount","sourceText":"Tài khoản nhận","context":"Payment receiving account label","translations":{"en":"Receiving account"}},
+    {"key":"marketplace.payment.transferContent","sourceText":"Nội dung chuyển khoản bắt buộc","context":"Required transfer content label","translations":{"en":"Required transfer content"}},
+    {"key":"marketplace.payment.expiresAt","sourceText":"Mã thanh toán hết hạn lúc","context":"Payment expiry label","translations":{"en":"Payment code expires at"}},
+    {"key":"marketplace.payment.transferred","sourceText":"Tôi đã chuyển khoản","context":"Mark payment submitted button","translations":{"en":"I have transferred"}},
+    {"key":"marketplace.payment.awaitingTitle","sourceText":"Đang chờ đối soát","context":"Payment awaiting verification title","translations":{"en":"Awaiting reconciliation"}},
+    {"key":"marketplace.payment.awaitingDescription","sourceText":"Trạng thái được kiểm tra tự động. Không cần chuyển khoản thêm lần nữa.","context":"Payment awaiting verification description","translations":{"en":"The status is checked automatically. Do not transfer again."}},
+    {"key":"marketplace.payment.checkStatus","sourceText":"Kiểm tra ngay","context":"Refresh payment status button","translations":{"en":"Check now"}},
+    {"key":"marketplace.payment.successTitle","sourceText":"Đã xác nhận tiền vào tài khoản","context":"Payment success title","translations":{"en":"Funds received and verified"}},
+    {"key":"marketplace.payment.successDescription","sourceText":"Bạn có thể gửi mặt hàng sang bước kiểm duyệt. Giao dịch sẽ được khóa sau khi sử dụng.","context":"Payment success description","translations":{"en":"You can submit the listing for review. The transaction will be locked after use."}},
+    {"key":"marketplace.payment.failureTitle","sourceText":"Không thể xác nhận thanh toán","context":"Payment failure title","translations":{"en":"Payment could not be verified"}},
+    {"key":"marketplace.payment.failureDescription","sourceText":"Vui lòng kiểm tra lý do hoặc liên hệ quản trị viên để đối soát.","context":"Payment failure description","translations":{"en":"Check the reason or contact the administrator for reconciliation."}},
+    {"key":"marketplace.payment.tryAgain","sourceText":"Tạo giao dịch mới","context":"Retry payment button","translations":{"en":"Create a new transaction"}},
+    {"key":"marketplace.payment.payBeforeSubmit","sourceText":"Thanh toán trước khi gửi","context":"Disabled listing submit button text","translations":{"en":"Pay before submitting"}},
+    {"key":"marketplace.payment.required","sourceText":"Bạn cần hoàn tất và được xác nhận thanh toán trước khi gửi kiểm duyệt.","context":"Payment required validation","translations":{"en":"Payment must be completed and verified before review submission."}},
+    {"key":"marketplace.payment.createFailed","sourceText":"Không thể tạo giao dịch thanh toán.","context":"Create payment failure","translations":{"en":"Could not create a payment transaction."}},
+    {"key":"marketplace.payment.submitted","sourceText":"Đã gửi yêu cầu xác minh thanh toán.","context":"Payment submitted notification","translations":{"en":"Payment verification request submitted."}},
+    {"key":"marketplace.payment.submitFailed","sourceText":"Không thể gửi yêu cầu xác minh thanh toán.","context":"Payment submit failure","translations":{"en":"Could not submit the payment verification request."}},
+    {"key":"marketplace.payment.refreshFailed","sourceText":"Không thể cập nhật trạng thái thanh toán.","context":"Refresh payment failure","translations":{"en":"Could not refresh the payment status."}},
+    {"key":"marketplace.payment.copied","sourceText":"Đã sao chép thông tin thanh toán.","context":"Payment value copied notification","translations":{"en":"Payment information copied."}},
+    {"key":"marketplace.payment.adminTitle","sourceText":"Giao dịch phí trưng bày","context":"Admin payment transactions title","translations":{"en":"Display fee transactions"}},
+    {"key":"marketplace.payment.adminSubtitle","sourceText":"Đối soát theo đúng số tiền và mã chuyển khoản trước khi xác nhận.","context":"Admin payment transactions subtitle","translations":{"en":"Match the exact amount and transfer code before confirming."}},
+    {"key":"marketplace.payment.awaitingCount","sourceText":"chờ xác minh","context":"Awaiting payment count label","translations":{"en":"awaiting verification"}},
+    {"key":"marketplace.payment.noTransactions","sourceText":"Chưa có giao dịch thanh toán nào.","context":"No payment transactions empty state","translations":{"en":"There are no payment transactions yet."}},
+    {"key":"marketplace.payment.reference","sourceText":"Mã chuyển khoản","context":"Payment reference label","translations":{"en":"Transfer reference"}},
+    {"key":"marketplace.payment.status","sourceText":"Trạng thái","context":"Payment status label","translations":{"en":"Status"}},
+    {"key":"marketplace.payment.verify","sourceText":"Đối soát","context":"Verify payment button","translations":{"en":"Reconcile"}},
+    {"key":"marketplace.payment.reviewTitle","sourceText":"Xác minh giao dịch","context":"Payment review dialog title","translations":{"en":"Verify transaction"}},
+    {"key":"marketplace.payment.reviewWarning","sourceText":"Chỉ xác nhận thành công sau khi số tiền và mã chuyển khoản khớp với giao dịch ngân hàng.","context":"Payment review warning","translations":{"en":"Only confirm success after the amount and reference match the bank transaction."}},
+    {"key":"marketplace.payment.reviewNote","sourceText":"Ghi chú đối soát","context":"Payment review note label","translations":{"en":"Reconciliation note"}},
+    {"key":"marketplace.payment.failureReasonPlaceholder","sourceText":"Bắt buộc khi đánh dấu thất bại, ví dụ: sai số tiền hoặc không tìm thấy giao dịch.","context":"Payment failure reason placeholder","translations":{"en":"Required when marking failed, e.g. wrong amount or transfer not found."}},
+    {"key":"marketplace.payment.markFailed","sourceText":"Đánh dấu thất bại","context":"Mark payment failed button","translations":{"en":"Mark failed"}},
+    {"key":"marketplace.payment.markSucceeded","sourceText":"Xác nhận thành công","context":"Confirm payment success button","translations":{"en":"Confirm success"}},
+    {"key":"marketplace.payment.failureReasonRequired","sourceText":"Cần nhập lý do thanh toán thất bại.","context":"Payment failure reason validation","translations":{"en":"A payment failure reason is required."}},
+    {"key":"marketplace.payment.confirmed","sourceText":"Đã xác nhận giao dịch thành công.","context":"Payment confirmed notification","translations":{"en":"Transaction confirmed successfully."}},
+    {"key":"marketplace.payment.rejected","sourceText":"Đã đánh dấu giao dịch thất bại.","context":"Payment rejected notification","translations":{"en":"Transaction marked as failed."}},
+    {"key":"marketplace.payment.reviewFailed","sourceText":"Không thể cập nhật giao dịch thanh toán.","context":"Payment review failure","translations":{"en":"Could not update the payment transaction."}},
+    {"key":"admin.settings.appearanceTitle","sourceText":"Giao diện quản trị","context":"Admin appearance settings title","translations":{"en":"Admin appearance"}},
+    {"key":"admin.settings.appearanceSubtitle","sourceText":"Áp dụng theme và ngôn ngữ cho toàn bộ Admin Panel, đồng thời lưu vào tài khoản.","context":"Admin appearance settings subtitle","translations":{"en":"Apply the theme and language across the Admin Panel and save them to your account."}},
+    {"key":"admin.settings.interfaceLanguage","sourceText":"Ngôn ngữ giao diện","context":"Admin interface language label","translations":{"en":"Interface language"}},
+    {"key":"admin.settings.interfaceLanguageHint","sourceText":"Thay đổi có hiệu lực ngay sau khi lưu.","context":"Admin interface language hint","translations":{"en":"Changes take effect immediately after saving."}},
+    {"key":"admin.settings.colorTheme","sourceText":"Chủ đề màu","context":"Admin color theme label","translations":{"en":"Color theme"}},
+    {"key":"marketplace.draft.paymentConfirmed","sourceText":"Thanh toán đã được xác nhận. Mặt hàng đã tự động chuyển sang chờ kiểm duyệt.","context":"Marketplace automatic submission after payment","translations":{"en":"Payment was confirmed. The listing was automatically submitted for review."}},
+    {"key":"marketplace.draft.withdrawn","sourceText":"Đã thu hồi mặt hàng.","context":"Marketplace listing withdrawn notification","translations":{"en":"The listing was withdrawn."}},
+    {"key":"marketplace.draft.workflowDescription","sourceText":"Thông tin mặt hàng được lưu bền vững trước khi tạo giao dịch. Thanh toán thành công sẽ tự động gửi mặt hàng sang kiểm duyệt.","context":"Marketplace draft-first payment workflow description","translations":{"en":"The listing is saved durably before a transaction is created. Successful payment automatically submits it for review."}},
+    {"key":"marketplace.draft.saveFirstTitle","sourceText":"Hãy lưu đầy đủ thông tin mặt hàng trước","context":"Marketplace draft-first payment title","translations":{"en":"Save the complete listing information first"}},
+    {"key":"marketplace.draft.saveFirstDescription","sourceText":"Mã thanh toán chỉ được tạo sau khi backend đã lưu bản nháp và ảnh sản phẩm.","context":"Marketplace draft-first payment description","translations":{"en":"A payment code is created only after the backend has saved the draft and product image."}},
+    {"key":"marketplace.draft.autoSubmitted","sourceText":"Mặt hàng đã tự động được gửi sang hàng chờ kiểm duyệt.","context":"Marketplace listing auto submitted message","translations":{"en":"The listing was automatically submitted to the moderation queue."}},
+    {"key":"marketplace.listing.withdraw","sourceText":"Thu hồi","context":"Withdraw marketplace listing action","translations":{"en":"Withdraw"}},
+    {"key":"marketplace.listing.edit","sourceText":"Chỉnh sửa","context":"Edit marketplace listing action","translations":{"en":"Edit"}},
+    {"key":"marketplace.listing.continuePayment","sourceText":"Tiếp tục thanh toán","context":"Continue marketplace listing payment action","translations":{"en":"Continue payment"}},
+    {"key":"marketplace.listing.saveChanges","sourceText":"Lưu thay đổi mặt hàng","context":"Save marketplace listing changes action","translations":{"en":"Save listing changes"}},
+    {"key":"marketplace.listing.saveDraft","sourceText":"Lưu bản nháp và chuyển sang thanh toán","context":"Save marketplace draft action","translations":{"en":"Save draft and continue to payment"}},
+    {"key":"marketplace.listing.markSoldTitle","sourceText":"Xác nhận mặt hàng đã bán?","context":"Mark sold confirmation title","translations":{"en":"Confirm this listing is sold?"}},
+    {"key":"marketplace.listing.markSoldMessage","sourceText":"Mặt hàng sẽ được đóng và biến mất khỏi Marketplace ngay sau khi xác nhận.","context":"Mark sold confirmation message","translations":{"en":"The listing will close and disappear from Marketplace immediately after confirmation."}},
+    {"key":"marketplace.listing.markSoldDetail","sourceText":"Bạn không thể mở lại miễn phí. Nếu bấm nhầm, bạn phải dùng Đăng bán lại, đóng phí trưng bày mới và chờ kiểm duyệt lại.","context":"Mark sold confirmation consequence","translations":{"en":"You cannot reopen it for free. If this was a mistake, use Relist, pay a new display fee, and wait for another review."}},
+    {"key":"marketplace.listing.markSoldConfirm","sourceText":"Xác nhận đã bán","context":"Mark sold confirmation action","translations":{"en":"Confirm sold"}},
+    {"key":"marketplace.listing.soldSuccess","sourceText":"Đã đánh dấu mặt hàng là đã bán.","context":"Marketplace sold success notification","translations":{"en":"The listing was marked as sold."}},
+    {"key":"marketplace.listing.soldFailed","sourceText":"Không thể đánh dấu mặt hàng đã bán.","context":"Marketplace sold failure notification","translations":{"en":"Could not mark the listing as sold."}},
+    {"key":"marketplace.listing.relist","sourceText":"Đăng bán lại","context":"Relist marketplace listing action","translations":{"en":"Relist"}},
+    {"key":"marketplace.listing.relistTitle","sourceText":"Bắt đầu lượt đăng bán mới?","context":"Relist confirmation title","translations":{"en":"Start a new listing cycle?"}},
+    {"key":"marketplace.listing.relistMessage","sourceText":"Thông tin mặt hàng cũ sẽ được giữ lại để bạn kiểm tra và chỉnh sửa trước khi thanh toán.","context":"Relist confirmation message","translations":{"en":"The old listing information will be retained so you can review and edit it before payment."}},
+    {"key":"marketplace.listing.relistDetail","sourceText":"Lượt đăng bán mới cần thanh toán lại phí trưng bày hiện hành:","context":"Relist fee consequence","translations":{"en":"The new listing cycle requires the current display fee:"}},
+    {"key":"marketplace.listing.relistConfirm","sourceText":"Tiếp tục đăng bán lại","context":"Relist confirmation action","translations":{"en":"Continue to relist"}},
+    {"key":"marketplace.listing.relistStarted","sourceText":"Đã mở lượt đăng bán mới. Hãy cập nhật thông tin và thanh toán.","context":"Relist workflow started notification","translations":{"en":"A new listing cycle was opened. Update the information and complete payment."}},
+    {"key":"marketplace.listing.relistFailed","sourceText":"Không thể đăng bán lại mặt hàng.","context":"Relist failure notification","translations":{"en":"Could not relist the item."}},
+    {"key":"marketplace.listing.editPolicyTitle","sourceText":"Quyền chỉnh sửa mặt hàng","context":"Marketplace edit policy title","translations":{"en":"Listing editing permissions"}},
+    {"key":"marketplace.listing.editPolicyBeforePayment","sourceText":"Mặt hàng đang chờ thanh toán: bạn được sửa toàn bộ thông tin sản phẩm trước khi tạo giao dịch.","context":"Marketplace edit policy before payment","translations":{"en":"This listing is awaiting payment: you may edit all product information before creating a transaction."}},
+    {"key":"marketplace.listing.editPolicyAfterPayment","sourceText":"Phí đã thanh toán được giữ nguyên. Thay đổi nội dung sẽ đưa mặt hàng về chờ kiểm duyệt, không thu thêm phí.","context":"Marketplace edit policy after payment","translations":{"en":"The paid fee remains valid. Content changes return the listing to review without an additional fee."}},
+    {"key":"marketplace.listing.editableFieldsLabel","sourceText":"Được phép sửa","context":"Marketplace editable fields label","translations":{"en":"Editable"}},
+    {"key":"marketplace.listing.editableFields","sourceText":"Ảnh, tên, giá, danh mục, tình trạng sản phẩm, khu vực và mô tả.","context":"Marketplace editable fields list","translations":{"en":"Image, title, price, category, product condition, location, and description."}},
+    {"key":"marketplace.listing.lockedFieldsLabel","sourceText":"Hệ thống khóa","context":"Marketplace locked fields label","translations":{"en":"System locked"}},
+    {"key":"marketplace.listing.lockedFields","sourceText":"Người bán, phí và mã giao dịch đã thanh toán, phiên bản điều khoản và trạng thái kiểm duyệt.","context":"Marketplace locked fields list","translations":{"en":"Seller, paid fee and transaction code, terms version, and moderation status."}},
+    {"key":"marketplace.listing.paidEditTitle","sourceText":"Không cần thanh toán lại cho lần chỉnh sửa này","context":"Marketplace paid editing title","translations":{"en":"No additional payment is required for this edit"}},
+    {"key":"marketplace.listing.paidEditDescription","sourceText":"Phí cũ vẫn hợp lệ. Sau khi lưu, mặt hàng sẽ được kiểm duyệt lại nếu nội dung đã thay đổi.","context":"Marketplace paid editing description","translations":{"en":"The previous fee remains valid. After saving, the listing will be reviewed again if its content changed."}},
+    {"key":"marketplace.listing.productCondition","sourceText":"Tình trạng sản phẩm","context":"Marketplace product condition label, distinct from listing workflow status","translations":{"en":"Product condition"}}
   ]
 }

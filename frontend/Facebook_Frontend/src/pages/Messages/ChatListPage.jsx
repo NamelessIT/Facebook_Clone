@@ -8,7 +8,7 @@ import Avatar from '../../components/common/Avatar';
 import ChatWindow from '../../components/Chat/ChatWindow';
 import { useLocalization } from '../../contexts/useLocalization';
 import './ChatListPage.css';
-import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { conversationMapFrom, mergeChatContacts } from '../../utils/chatContacts';
 
 const ChatListPage = () => {
   const { friendId } = useParams();
@@ -20,16 +20,20 @@ const ChatListPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [conversationMap, setConversationMap] = useState({});
-  const [sidebarWidth, setSidebarWidth] = useState(40);
+  const [sidebarWidth, setSidebarWidth] = useState(28);
 
   // Load friends list
   useEffect(() => {
     const loadFriends = async () => {
       setLoading(true);
       try {
-        const res = await friendshipService.getFriends(1, 100);
-        const data = res.data?.data || [];
-        setFriends(data);
+        const [friendResponse, conversationResponse] = await Promise.all([
+          friendshipService.getFriends(1, 100),
+          chatService.getConversations(),
+        ]);
+        const conversations = conversationResponse.data?.data || [];
+        setFriends(mergeChatContacts(friendResponse.data?.data || [], conversations));
+        setConversationMap(conversationMapFrom(conversations));
       } catch (error) {
         toast.apiError(error, t('chat.loadFriendsFailed'), { context: "chat.friends.load" });
       } finally {
@@ -50,7 +54,7 @@ const ChatListPage = () => {
   // Select friend from URL param
   useEffect(() => {
     if (friendId && friends.length > 0) {
-      const found = friends.find((f) => f.id === friendId);
+      const found = friends.find((f) => (f.userId || f.id) === friendId);
       if (found) {
         setSelectedFriend(found);
       }
@@ -68,7 +72,7 @@ const ChatListPage = () => {
 
   const handleSelectFriend = (friend) => {
     setSelectedFriend(friend);
-    navigate(`/messages/${friend.id}`, { replace: true });
+    navigate(`/messages/${friend.userId || friend.id}`, { replace: true });
   };
 
   const handleConversationCreated = (convId) => {
@@ -88,7 +92,7 @@ const ChatListPage = () => {
     const handleMouseMove = (moveEvent) => {
       const diff = moveEvent.clientX - startX;
       const diffPercent = (diff / pageWidth) * 100;
-      const newWidth = Math.max(20, Math.min(80, startWidth + diffPercent));
+      const newWidth = Math.max(20, Math.min(45, startWidth + diffPercent));
       setSidebarWidth(newWidth);
     };
 
@@ -139,9 +143,9 @@ const ChatListPage = () => {
           ) : (
             filteredFriends.map((friend) => (
               <button
-                key={friend.friendshipId}
+                key={friend.friendshipId || friend.userId || friend.id}
                 className={`chat-contact-item ${
-                  selectedFriend?.userId === friend.userId
+                  (selectedFriend?.userId || selectedFriend?.id) === (friend.userId || friend.id)
                     ? 'chat-contact-item--active'
                     : ''
                 }`}
@@ -154,7 +158,7 @@ const ChatListPage = () => {
                 </div>
                 <div className="chat-contact-info">
                   <p className="chat-contact-name">{friend.profile?.fullName || friend.fullName}</p>
-                  <p className="chat-contact-preview">{t('chat.startConversation')}</p>
+                  <p className="chat-contact-preview">{friend.lastMessageContent || t('chat.startConversation')}</p>
                 </div>
               </button>
             ))

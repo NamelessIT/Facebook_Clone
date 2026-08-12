@@ -99,7 +99,7 @@ const AdminLocalization = () => {
     try {
       const response = await adminService.getLocalization({
         page,
-        pageSize: 1000,
+        pageSize: 5000,
         locale: entryForm.targetLocale || undefined,
         search: search || undefined,
       });

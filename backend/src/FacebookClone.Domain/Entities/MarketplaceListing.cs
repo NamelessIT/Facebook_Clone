@@ -17,6 +17,8 @@ public class MarketplaceListing
     public string ImageUrl { get; set; } = string.Empty;
     public MarketplaceListingStatus Status { get; set; } = MarketplaceListingStatus.PendingReview;
     public decimal DisplayFee { get; set; }
+    public Guid? PaymentTransactionId { get; set; }
+    public MarketplacePaymentTransaction? PaymentTransaction { get; set; }
     public string TermsVersion { get; set; } = string.Empty;
     public DateTime TermsAcceptedAt { get; set; }
     public int ViewCount { get; set; }

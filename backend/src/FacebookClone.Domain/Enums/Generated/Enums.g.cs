@@ -97,7 +97,18 @@ public enum MarketplaceListingStatus
     Approved = 2,
     Rejected = 3,
     Sold = 4,
-    Removed = 5
+    Removed = 5,
+    AwaitingPayment = 6
+}
+
+public enum MarketplacePaymentStatus
+{
+    Pending = 1,
+    AwaitingVerification = 2,
+    Succeeded = 3,
+    Failed = 4,
+    Cancelled = 5,
+    Consumed = 6
 }
 
 public enum ModerationTargetType

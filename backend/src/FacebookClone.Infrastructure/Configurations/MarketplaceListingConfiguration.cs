@@ -16,6 +16,7 @@ public class MarketplaceListingConfiguration : IEntityTypeConfiguration<Marketpl
         builder.Property(x => x.Description).IsRequired().HasMaxLength(3000);
         builder.Property(x => x.Price).HasPrecision(18, 2);
         builder.Property(x => x.DisplayFee).HasPrecision(18, 2);
+        builder.HasIndex(x => x.PaymentTransactionId).IsUnique();
         builder.Property(x => x.Currency).IsRequired().HasMaxLength(8);
         builder.Property(x => x.Category).IsRequired().HasMaxLength(80);
         builder.Property(x => x.Condition).IsRequired().HasMaxLength(80);

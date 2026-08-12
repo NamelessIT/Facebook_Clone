@@ -38,6 +38,7 @@ public class AppDbContext : DbContext
     public DbSet<LiveComment> LiveComments { get; set; }
     public DbSet<MarketplaceListing> MarketplaceListings { get; set; }
     public DbSet<MarketplaceFavorite> MarketplaceFavorites { get; set; }
+    public DbSet<MarketplacePaymentTransaction> MarketplacePaymentTransactions { get; set; }
     public DbSet<ModerationReport> ModerationReports { get; set; }
     public DbSet<SystemSetting> SystemSettings { get; set; }
 

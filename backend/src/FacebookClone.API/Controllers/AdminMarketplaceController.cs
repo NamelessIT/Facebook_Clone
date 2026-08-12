@@ -28,11 +28,80 @@ public class AdminMarketplaceController(AppDbContext db, LiveAccessService acces
             x.Id, x.SellerId, SellerName = x.Seller.FirstName + " " + x.Seller.LastName, x.Seller.Email,
             x.Seller.IsMarketplaceSuspended, x.Seller.MarketplaceSuspensionReason, x.Title, x.Description, x.Price,
             x.Currency, x.Category, x.Condition, x.Location, x.ImageUrl, Status = (int)x.Status, x.DisplayFee,
+            x.PaymentTransactionId,
+            PaymentStatus = x.PaymentTransactionId == null ? (int?)null : (int?)x.PaymentTransaction!.Status,
+            PaymentReference = x.PaymentTransactionId == null ? null : x.PaymentTransaction!.ReferenceCode,
             x.TermsVersion, x.TermsAcceptedAt, x.ViewCount, FavoriteCount = x.Favorites.Count,
             ReportCount = db.ModerationReports.Count(r => r.TargetType == ModerationTargetType.MarketplaceListing && r.TargetId == x.Id),
             x.CreatedAt, x.ReviewedAt, x.ModerationNote, x.IsDeleted
         }).ToListAsync();
         return Ok(new { success = true, data = items });
+    }
+
+    [HttpGet("payments")]
+    public async Task<IActionResult> Payments([FromQuery] MarketplacePaymentStatus? status = null)
+    {
+        if (!await HasPermission("marketplace.view")) return Forbid();
+        var query = db.MarketplacePaymentTransactions.AsNoTracking().Include(x => x.User).AsQueryable();
+        if (status.HasValue) query = query.Where(x => x.Status == status.Value);
+        var payments = await query.OrderByDescending(x => x.CreatedAt).Take(200).Select(x => new
+        {
+            x.Id,
+            x.UserId,
+            UserName = x.User.FirstName + " " + x.User.LastName,
+            x.User.Email,
+            x.Amount,
+            x.Currency,
+            x.ReferenceCode,
+            Status = (int)x.Status,
+            x.CreatedAt,
+            x.ExpiresAt,
+            x.SubmittedAt,
+            x.VerifiedAt,
+            x.VerifiedById,
+            x.FailureReason,
+            ListingId = x.Listing == null ? (Guid?)null : x.Listing.Id
+        }).ToListAsync();
+        return Ok(new { success = true, data = payments });
+    }
+
+    [HttpPut("payments/{id:guid}/review")]
+    public async Task<IActionResult> ReviewPayment(Guid id, [FromBody] ReviewMarketplacePaymentRequest request)
+    {
+        if (!await HasPermission("marketplace.manage")) return Forbid();
+        if (!request.Successful && string.IsNullOrWhiteSpace(request.Note))
+            return BadRequest(new { success = false, message = "Cần nhập lý do khi xác nhận thanh toán thất bại." });
+
+        var payment = await db.MarketplacePaymentTransactions
+            .Include(x => x.Listing)
+            .FirstOrDefaultAsync(x => x.Id == id);
+        if (payment == null) return NotFound(new { success = false, message = "Không tìm thấy giao dịch." });
+        if (payment.Status != MarketplacePaymentStatus.AwaitingVerification)
+            return Conflict(new { success = false, message = "Chỉ giao dịch đang chờ xác minh mới có thể được xử lý." });
+
+        await using var transaction = await db.Database.BeginTransactionAsync(HttpContext.RequestAborted);
+        payment.Status = request.Successful ? MarketplacePaymentStatus.Consumed : MarketplacePaymentStatus.Failed;
+        payment.FailureReason = request.Successful ? null : request.Note!.Trim();
+        payment.VerifiedAt = DateTime.UtcNow;
+        payment.VerifiedById = UserContext.GetUserId(User);
+        payment.UpdatedAt = DateTime.UtcNow;
+        if (request.Successful && payment.Listing != null)
+        {
+            if (payment.Listing.Status != MarketplaceListingStatus.AwaitingPayment)
+                return Conflict(new { success = false, message = "Bản nháp mặt hàng không còn ở trạng thái chờ thanh toán." });
+            payment.Listing.Status = MarketplaceListingStatus.PendingReview;
+            payment.Listing.ModerationNote = null;
+            payment.Listing.UpdatedAt = DateTime.UtcNow;
+        }
+        await db.SaveChangesAsync();
+        await transaction.CommitAsync(HttpContext.RequestAborted);
+        return Ok(new
+        {
+            success = true,
+            message = request.Successful
+                ? "Đã xác nhận thanh toán thành công. Mặt hàng đã tự động được gửi kiểm duyệt."
+                : "Đã đánh dấu giao dịch thất bại và gửi lý do cho người bán."
+        });
     }
 
     [HttpGet("merchants/{sellerId:guid}/stats")]
@@ -53,7 +122,9 @@ public class AdminMarketplaceController(AppDbContext db, LiveAccessService acces
             views = await query.SumAsync(x => (int?)x.ViewCount) ?? 0,
             favorites = await db.MarketplaceFavorites.CountAsync(x => ids.Contains(x.ListingId)),
             reports = await db.ModerationReports.CountAsync(x => x.TargetType == ModerationTargetType.MarketplaceListing && ids.Contains(x.TargetId)),
-            displayFees = await query.SumAsync(x => (decimal?)x.DisplayFee) ?? 0
+            displayFees = await query
+                .Where(x => x.Status != MarketplaceListingStatus.AwaitingPayment)
+                .SumAsync(x => (decimal?)x.DisplayFee) ?? 0
         }});
     }
 
@@ -65,6 +136,8 @@ public class AdminMarketplaceController(AppDbContext db, LiveAccessService acces
             return BadRequest(new { success = false, message = "Trạng thái kiểm duyệt không hợp lệ." });
         var item = await db.MarketplaceListings.FirstOrDefaultAsync(x => x.Id == id);
         if (item == null) return NotFound();
+        if (request.Status == MarketplaceListingStatus.Approved && item.Status != MarketplaceListingStatus.PendingReview)
+            return Conflict(new { success = false, message = "Chỉ mặt hàng đã thanh toán và đang chờ duyệt mới có thể được phê duyệt." });
         item.Status = request.Status; item.ModerationNote = request.Note?.Trim(); item.ReviewedAt = DateTime.UtcNow;
         item.ReviewedById = UserContext.GetUserId(User); item.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
@@ -101,3 +174,4 @@ public sealed class ReviewMarketplaceListingRequest
     [StringLength(1000)] public string? Note { get; init; }
 }
 public sealed record MarketplaceSellerSuspensionRequest(bool Suspended, string? Reason);
+public sealed record ReviewMarketplacePaymentRequest(bool Successful, string? Note);

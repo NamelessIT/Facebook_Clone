@@ -1,6 +1,7 @@
 using FacebookClone.API.Common;
 using FacebookClone.API.Services;
 using FacebookClone.Domain.Policies;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +24,7 @@ public class AdminSettingsController(
             data = new
             {
                 displayFee = await marketplaceSettings.GetDisplayFeeAsync(HttpContext.RequestAborted),
+                payment = await marketplaceSettings.GetPaymentSettingsAsync(HttpContext.RequestAborted),
                 currency = "VND",
                 minDisplayFee = MarketplacePolicy.MinDisplayFeeVnd,
                 maxDisplayFee = MarketplacePolicy.MaxDisplayFeeVnd
@@ -45,10 +47,26 @@ public class AdminSettingsController(
             });
         }
 
-        var fee = await marketplaceSettings.UpdateDisplayFeeAsync(
-            request.DisplayFee, userId, HttpContext.RequestAborted);
-        return Ok(new { success = true, data = new { displayFee = fee, currency = "VND" } });
+        var payment = new MarketplacePaymentSettings(
+            request.BankBin,
+            request.BankName,
+            request.AccountNumber,
+            request.AccountName,
+            request.SupportEmail);
+        var updated = await marketplaceSettings.UpdateAsync(
+            request.DisplayFee, payment, userId, HttpContext.RequestAborted);
+        return Ok(new
+        {
+            success = true,
+            data = new { displayFee = request.DisplayFee, currency = "VND", payment = updated }
+        });
     }
 }
 
-public sealed record UpdateMarketplaceSettingsRequest(decimal DisplayFee);
+public sealed record UpdateMarketplaceSettingsRequest(
+    decimal DisplayFee,
+    [Required, RegularExpression("^[0-9]{6}$")] string BankBin,
+    [Required, StringLength(120)] string BankName,
+    [Required, RegularExpression("^[0-9]{6,24}$")] string AccountNumber,
+    [Required, StringLength(160)] string AccountName,
+    [Required, EmailAddress, StringLength(254)] string SupportEmail);

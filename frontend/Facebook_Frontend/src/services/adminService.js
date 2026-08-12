@@ -45,6 +45,9 @@ const adminService = {
     axiosClient.put(`/admin/marketplace/listings/${id}/review`, { status, note }),
   setMarketplaceSellerSuspension: (userId, suspended, reason = '') =>
     axiosClient.put(`/admin/marketplace/merchants/${userId}/suspension`, { suspended, reason }),
+  getMarketplacePayments: (params = {}) => axiosClient.get('/admin/marketplace/payments', { params }),
+  reviewMarketplacePayment: (id, successful, note = '') =>
+    axiosClient.put(`/admin/marketplace/payments/${id}/review`, { successful, note }),
 
   // Cross-module reports
   getReports: (params = {}) => axiosClient.get('/admin/reports', { params }),

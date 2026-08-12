@@ -16,7 +16,7 @@ Facebook Clone chỉ cung cấp không gian trưng bày và công cụ liên h�
 
 ## 3. Phí trưng bày
 
-Phí trưng bày được ghi nhận khi mặt hàng được gửi kiểm duyệt. Đây không phải hoa hồng giao dịch và không phụ thuộc vào việc sản phẩm có bán được hay không. Bản demo hiện chỉ ghi nhận nghĩa vụ phí; tích hợp thanh toán sẽ được triển khai riêng.
+Phí trưng bày phải được thanh toán và xác minh trước khi mặt hàng được gửi kiểm duyệt. Đây không phải hoa hồng giao dịch và không phụ thuộc vào việc sản phẩm có bán được hay không. Mỗi giao dịch có mã chuyển khoản riêng và chỉ được sử dụng cho một mặt hàng.
 
 ## 4. Kiểm duyệt và xử lý vi phạm
 

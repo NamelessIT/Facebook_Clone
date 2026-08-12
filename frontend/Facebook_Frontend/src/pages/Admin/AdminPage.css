@@ -1017,5 +1017,52 @@ table.admin-table tr:hover td { background: #1e2130; }
 .admin-settings-preview > span { color: var(--muted-foreground); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
 .admin-settings-preview > strong { color: var(--primary); font-size: 25px; }
 .admin-settings-actions { display: flex; justify-content: flex-end; }
+.admin-payment-settings { display: grid; gap: 18px; padding-top: 4px; border-top: 1px solid var(--border); }
+.admin-settings-card-heading--nested { padding: 18px 0 0; border-bottom: 0; }
+.admin-payment-settings-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
+.admin-payment-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.admin-settings-field--wide { grid-column: 1 / -1; }
+.admin-payment-qr-preview { display: grid; gap: 12px; padding: 15px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--muted); }
+.admin-payment-qr-preview > div:first-child { display: flex; align-items: center; gap: 8px; color: var(--primary); font-weight: 700; }
+.admin-payment-qr-preview img { width: min(100%, 260px); margin-inline: auto; border-radius: 10px; background: white; }
+.admin-payment-qr-empty { display: grid !important; min-height: 220px; place-items: center; align-content: center; color: var(--muted-foreground) !important; text-align: center; }
+.admin-payment-qr-empty svg { width: 42px; height: 42px; }
+.admin-payment-qr-preview dl, .admin-payment-review-summary dl { display: grid; gap: 7px; margin: 0; }
+.admin-payment-qr-preview dl > div, .admin-payment-review-summary dl > div { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 8px; font-size: 11px; }
+.admin-payment-qr-preview dt, .admin-payment-review-summary dt { color: var(--muted-foreground); }
+.admin-payment-qr-preview dd, .admin-payment-review-summary dd { margin: 0; overflow-wrap: anywhere; font-weight: 700; }
+.admin-payment-panel { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--border); border-radius: calc(var(--radius) + 3px); background: var(--card); }
+.admin-payment-panel-heading { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 11px; }
+.admin-payment-panel-heading > span { display: inline-flex; width: 110px; height: 38px; align-items: center; justify-content: center; border-radius: 11px; background: var(--accent); color: var(--primary); }
+.admin-payment-panel-heading h2 { margin: 0 0 3px; font-size: 17px; }
+.admin-payment-panel-heading p { margin: 0; color: var(--muted-foreground); font-size: 12px; }
+.admin-payment-list { display: grid; gap: 7px; max-height: 430px; overflow-y: auto; }
+.admin-payment-row { display: grid; grid-template-columns: auto minmax(170px, 1.2fr) minmax(130px, .8fr) minmax(140px, .8fr) auto; align-items: center; gap: 12px; padding: 11px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--background); }
+.admin-payment-row--2 { border-color: color-mix(in oklch, var(--primary) 48%, var(--border)); }
+.admin-payment-status-icon { color: var(--muted-foreground); }
+.admin-payment-row--2 .admin-payment-status-icon { color: var(--primary); }
+.admin-payment-row--3 .admin-payment-status-icon, .admin-payment-row--6 .admin-payment-status-icon { color: #22c55e; }
+.admin-payment-row--4 .admin-payment-status-icon, .admin-payment-row--5 .admin-payment-status-icon { color: var(--destructive); }
+.admin-payment-row > div:not(.admin-payment-status-icon):not(.admin-payment-row-actions) { display: grid; gap: 3px; min-width: 0; }
+.admin-payment-row span { color: var(--muted-foreground); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.admin-payment-row strong, .admin-payment-row small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-payment-row small { color: var(--muted-foreground); font-size: 10px; }
+.admin-payment-empty { display: flex; min-height: 90px; align-items: center; justify-content: center; gap: 8px; color: var(--muted-foreground); }
+.admin-payment-review-summary { padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--muted); }
+.admin-payment-review-summary p { margin: 0 0 10px; color: var(--muted-foreground); font-size: 12px; line-height: 1.5; }
+@media (max-width: 900px) { .admin-payment-settings-layout, .admin-payment-fields { grid-template-columns: 1fr; } .admin-settings-field--wide { grid-column: auto; } .admin-payment-row { grid-template-columns: auto 1fr; } .admin-payment-row-actions { grid-column: 1 / -1; } }
 .admin-permission-check > span { display: grid; gap: 2px; }
 .admin-permission-check small { color: var(--muted-foreground); font-size: 10px; font-weight: 400; line-height: 1.35; }
+.admin-appearance-settings { display: grid; gap: 18px; }
+.admin-appearance-grid { display: grid; grid-template-columns: minmax(240px, .8fr) minmax(360px, 1.2fr); gap: 18px; }
+.admin-appearance-grid .admin-settings-field > label { display: flex; align-items: center; gap: 8px; }
+.admin-appearance-grid .admin-settings-field > label svg { width: 16px; height: 16px; color: var(--primary); }
+.admin-appearance-select { width: 100%; min-width: 0; }
+.admin-appearance-actions { display: flex; justify-content: flex-end; padding-top: 2px; }
+.admin-theme-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.admin-theme-options button { min-height: 76px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); color: var(--foreground); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; cursor: pointer; transition: .18s ease; }
+.admin-theme-options button:hover { border-color: color-mix(in srgb, var(--primary) 60%, var(--border)); background: var(--accent); }
+.admin-theme-options button.is-active { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 18%, transparent); }
+.admin-theme-options svg { width: 20px; height: 20px; }
+.admin-settings-divider { height: 1px; background: var(--border); margin: 6px 0; }
+@media (max-width: 900px) { .admin-appearance-grid { grid-template-columns: 1fr; } }

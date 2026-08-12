@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
-import { BadgeDollarSign, Loader2, Save, Settings2, Store } from 'lucide-react';
+import { BadgeDollarSign, Building2, CreditCard, Languages, Loader2, Mail, Monitor, Moon, QrCode, Save, Settings2, Store, Sun, UserRound } from 'lucide-react';
 import adminService from '../../services/adminService';
+import userService from '../../services/userService';
 import toast from '../../shared/appToast';
 import { useLocalization } from '../../contexts/useLocalization';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formatMoney = (value, locale) => new Intl.NumberFormat(locale === 'vi' ? 'vi-VN' : 'en-US', {
   style: 'currency',
@@ -15,11 +18,20 @@ const formatMoney = (value, locale) => new Intl.NumberFormat(locale === 'vi' ? '
 }).format(Number(value) || 0);
 
 const AdminSettings = () => {
-  const { locale, t } = useLocalization();
+  const { user } = useAuth();
+  const { locale, languages, setLocale, t } = useLocalization();
+  const { theme, toggleTheme } = useTheme();
   const [settings, setSettings] = useState(null);
   const [displayFee, setDisplayFee] = useState('');
+  const [payment, setPayment] = useState({ bankBin: '', bankName: '', accountNumber: '', accountName: '', supportEmail: '' });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [appearanceSaving, setAppearanceSaving] = useState(false);
+  const [adminLocale, setAdminLocale] = useState(locale);
+  const [adminTheme, setAdminTheme] = useState(theme);
+
+  useEffect(() => { setAdminLocale(locale); }, [locale]);
+  useEffect(() => { setAdminTheme(theme); }, [theme]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -27,6 +39,7 @@ const AdminSettings = () => {
       const response = await adminService.getMarketplaceSettings();
       setSettings(response.data.data);
       setDisplayFee(String(response.data.data.displayFee));
+      setPayment(response.data.data.payment || { bankBin: '', bankName: '', accountNumber: '', accountName: '', supportEmail: '' });
     } catch (error) {
       toast.apiError(error, t('admin.settings.loadFailed'), { context: "admin.settings.marketplace.load" });
     } finally {
@@ -35,6 +48,33 @@ const AdminSettings = () => {
   }, [t]);
 
   useEffect(() => { load(); }, [load]);
+
+  const changeLocale = (nextLocale) => {
+    setAdminLocale(nextLocale);
+    setLocale(nextLocale);
+  };
+
+  const changeTheme = (nextTheme) => {
+    setAdminTheme(nextTheme);
+    toggleTheme(nextTheme);
+  };
+
+  const saveAppearance = async () => {
+    setAppearanceSaving(true);
+    try {
+      await userService.updatePreferences({
+        emailNotifications: user?.emailNotifications ?? true,
+        showOnlineStatus: user?.showOnlineStatus ?? true,
+        language: adminLocale,
+        theme: adminTheme === 'auto' ? 'system' : adminTheme,
+      });
+      toast.success(t('admin.settings.saved'));
+    } catch (error) {
+      toast.apiError(error, t('admin.settings.saveFailed'), { context: 'admin.settings.appearance.save' });
+    } finally {
+      setAppearanceSaving(false);
+    }
+  };
 
   const save = async (event) => {
     event.preventDefault();
@@ -46,10 +86,15 @@ const AdminSettings = () => {
       }));
       return;
     }
+    if (!/^\d{6}$/.test(payment.bankBin) || !/^\d{6,24}$/.test(payment.accountNumber) ||
+        !payment.bankName.trim() || !payment.accountName.trim() || !/^\S+@\S+\.\S+$/.test(payment.supportEmail)) {
+      toast.error(t('admin.settings.paymentInvalid'));
+      return;
+    }
 
     setSaving(true);
     try {
-      const response = await adminService.updateMarketplaceSettings({ displayFee: value });
+      const response = await adminService.updateMarketplaceSettings({ displayFee: value, ...payment });
       setDisplayFee(String(response.data.data.displayFee));
       toast.success(t('admin.settings.saved'));
       await load();
@@ -59,6 +104,12 @@ const AdminSettings = () => {
       setSaving(false);
     }
   };
+
+  const updatePayment = (key, value) => setPayment((current) => ({ ...current, [key]: value }));
+  const previewReference = 'MKT-DEMO-001';
+  const qrPreviewUrl = /^\d{6}$/.test(payment.bankBin) && /^\d{6,24}$/.test(payment.accountNumber)
+    ? `https://img.vietqr.io/image/${payment.bankBin}-${payment.accountNumber}-compact2.png?amount=${Number(displayFee) || 0}&addInfo=${encodeURIComponent(previewReference)}&accountName=${encodeURIComponent(payment.accountName)}`
+    : '';
 
   return (
     <section className="admin-feature-page admin-system-settings">
@@ -76,6 +127,38 @@ const AdminSettings = () => {
         <div className="admin-empty-state"><Loader2 className="animate-spin" /> {t('common.loading')}</div>
       ) : (
         <form className="admin-settings-card" onSubmit={save}>
+          <section className="admin-appearance-settings" aria-labelledby="admin-appearance-title">
+            <div className="admin-settings-card-heading admin-settings-card-heading--nested">
+              <span><Monitor /></span>
+              <div><h2 id="admin-appearance-title">{t('admin.settings.appearanceTitle')}</h2><p>{t('admin.settings.appearanceSubtitle')}</p></div>
+            </div>
+            <div className="admin-appearance-grid">
+              <div className="admin-settings-field">
+                <Label><Languages /> {t('admin.settings.interfaceLanguage')}</Label>
+                <Select value={adminLocale} onValueChange={changeLocale}>
+                  <SelectTrigger className="admin-appearance-select"><SelectValue placeholder={t('admin.settings.interfaceLanguage')} /></SelectTrigger>
+                  <SelectContent>{languages.filter((item) => item.isEnabled !== false).map((item) => <SelectItem key={item.code} value={item.code}>{item.nativeName} ({item.displayName})</SelectItem>)}</SelectContent>
+                </Select>
+                <p>{t('admin.settings.interfaceLanguageHint')}</p>
+              </div>
+              <div className="admin-settings-field">
+                <Label><Monitor /> {t('admin.settings.colorTheme')}</Label>
+                <div className="admin-theme-options">
+                  {[['light', Sun, t('settings.themeLight')], ['dark', Moon, t('settings.themeDark')], ['auto', Monitor, t('settings.themeAuto')]].map(([value, Icon, label]) => (
+                    <button type="button" key={value} className={adminTheme === value ? 'is-active' : ''} onClick={() => changeTheme(value)}><Icon /><span>{label}</span></button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="admin-appearance-actions">
+              <Button type="button" onClick={saveAppearance} disabled={appearanceSaving}>
+                {appearanceSaving ? <Loader2 className="animate-spin" /> : <Save />}
+                {appearanceSaving ? t('common.loading') : t('common.saveChanges')}
+              </Button>
+            </div>
+          </section>
+
+          <div className="admin-settings-divider" />
           <div className="admin-settings-card-heading">
             <span><Store /></span>
             <div>
@@ -111,6 +194,54 @@ const AdminSettings = () => {
             <strong>{formatMoney(displayFee, locale)}</strong>
             <p>{t('admin.settings.marketplaceFeePolicy')}</p>
           </div>
+
+          <section className="admin-payment-settings" aria-labelledby="marketplace-payment-title">
+            <div className="admin-settings-card-heading admin-settings-card-heading--nested">
+              <span><CreditCard /></span>
+              <div>
+                <h2 id="marketplace-payment-title">{t('admin.settings.paymentTitle')}</h2>
+                <p>{t('admin.settings.paymentSubtitle')}</p>
+              </div>
+            </div>
+
+            <div className="admin-payment-settings-layout">
+              <div className="admin-payment-fields">
+                <div className="admin-settings-field">
+                  <Label htmlFor="marketplace-bank-bin">{t('admin.settings.bankBin')}</Label>
+                  <div className="admin-settings-input-wrap"><Building2 /><Input id="marketplace-bank-bin" inputMode="numeric" maxLength={6} value={payment.bankBin} onChange={(event) => updatePayment('bankBin', event.target.value.replace(/\D/g, ''))} required /></div>
+                  <p>{t('admin.settings.bankBinHint')}</p>
+                </div>
+                <div className="admin-settings-field">
+                  <Label htmlFor="marketplace-bank-name">{t('admin.settings.bankName')}</Label>
+                  <div className="admin-settings-input-wrap"><Building2 /><Input id="marketplace-bank-name" maxLength={120} value={payment.bankName} onChange={(event) => updatePayment('bankName', event.target.value)} required /></div>
+                </div>
+                <div className="admin-settings-field">
+                  <Label htmlFor="marketplace-account-number">{t('admin.settings.accountNumber')}</Label>
+                  <div className="admin-settings-input-wrap"><CreditCard /><Input id="marketplace-account-number" inputMode="numeric" maxLength={24} value={payment.accountNumber} onChange={(event) => updatePayment('accountNumber', event.target.value.replace(/\D/g, ''))} required /></div>
+                </div>
+                <div className="admin-settings-field">
+                  <Label htmlFor="marketplace-account-name">{t('admin.settings.accountName')}</Label>
+                  <div className="admin-settings-input-wrap"><UserRound /><Input id="marketplace-account-name" maxLength={160} value={payment.accountName} onChange={(event) => updatePayment('accountName', event.target.value.toUpperCase())} required /></div>
+                </div>
+                <div className="admin-settings-field admin-settings-field--wide">
+                  <Label htmlFor="marketplace-support-email">{t('admin.settings.paymentSupportEmail')}</Label>
+                  <div className="admin-settings-input-wrap"><Mail /><Input id="marketplace-support-email" type="email" maxLength={254} value={payment.supportEmail} onChange={(event) => updatePayment('supportEmail', event.target.value)} required /></div>
+                  <p>{t('admin.settings.paymentSupportEmailHint')}</p>
+                </div>
+              </div>
+
+              <aside className="admin-payment-qr-preview">
+                <div><QrCode /><span>{t('admin.settings.qrPreview')}</span></div>
+                {qrPreviewUrl ? <img src={qrPreviewUrl} alt={t('admin.settings.qrPreviewAlt')} /> : <div className="admin-payment-qr-empty"><QrCode /><span>{t('admin.settings.qrIncomplete')}</span></div>}
+                <dl>
+                  <div><dt>{t('admin.settings.bankName')}</dt><dd>{payment.bankName || '—'}</dd></div>
+                  <div><dt>{t('admin.settings.accountNumber')}</dt><dd>{payment.accountNumber || '—'}</dd></div>
+                  <div><dt>{t('admin.settings.accountName')}</dt><dd>{payment.accountName || '—'}</dd></div>
+                  <div><dt>{t('admin.settings.transferContent')}</dt><dd>{previewReference}</dd></div>
+                </dl>
+              </aside>
+            </div>
+          </section>
 
           <div className="admin-settings-actions">
             <Button type="submit" disabled={saving}>
