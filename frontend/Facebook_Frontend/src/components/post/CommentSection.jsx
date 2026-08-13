@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Send } from "lucide-react";
+import { Flag, Send } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
 import Avatar from "../common/Avatar";
@@ -9,6 +9,8 @@ import toast from '../../shared/appToast';
 import { useLocalization } from "../../contexts/useLocalization";
 import "./CommentSection.css";
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { ModerationTargetType } from '../../shared/generated/enums';
+import ReportDialog from '../moderation/ReportDialog';
 
 const formatTimeAgo = (dateStr, locale) => {
   try {
@@ -18,7 +20,7 @@ const formatTimeAgo = (dateStr, locale) => {
   }
 };
 
-const CommentItem = ({ comment, onReply }) => {
+const CommentItem = ({ comment, onReply, onReport }) => {
   const { locale, t } = useLocalization();
   return (
     <div className="comment-item">
@@ -32,6 +34,7 @@ const CommentItem = ({ comment, onReply }) => {
           <button className="comment-meta-btn" onClick={() => onReply(comment)}>
             {t('comment.reply')}
           </button>
+          <button className="comment-meta-btn" onClick={() => onReport(comment)} title="Báo cáo bình luận"><Flag size={12} /> Báo cáo</button>
           <span className="comment-meta-time">{formatTimeAgo(comment.createdAt, locale)}</span>
         </div>
       </div>
@@ -39,7 +42,7 @@ const CommentItem = ({ comment, onReply }) => {
   );
 };
 
-const ReplyItem = ({ reply }) => {
+const ReplyItem = ({ reply, onReport }) => {
   const { locale } = useLocalization();
   return (
     <div className="comment-item comment-item--reply">
@@ -50,6 +53,7 @@ const ReplyItem = ({ reply }) => {
           <p className="comment-text">{reply.content}</p>
         </div>
         <div className="comment-meta">
+          <button className="comment-meta-btn" onClick={() => onReport(reply)} title="Báo cáo bình luận"><Flag size={12} /> Báo cáo</button>
           <span className="comment-meta-time">{formatTimeAgo(reply.createdAt, locale)}</span>
         </div>
       </div>
@@ -73,6 +77,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
   const [replyPosting, setReplyPosting] = useState(false);
 
   const [expandedReplies, setExpandedReplies] = useState(new Set());
+  const [reportedComment, setReportedComment] = useState(null);
 
   const fetchComments = useCallback(async (pageNum = 1, append = false) => {
     setLoading(true);
@@ -190,7 +195,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
 
             return (
               <div key={comment.id}>
-                <CommentItem comment={comment} onReply={handleReply} />
+                <CommentItem comment={comment} onReply={handleReply} onReport={setReportedComment} />
 
                 {/* Nút xem replies */}
                 {replies.length > 0 && !isExpanded && (
@@ -201,7 +206,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
 
                 {/* Danh sách reply */}
                 {isExpanded &&
-                  replies.map((reply) => <ReplyItem key={reply.id} reply={reply} />)}
+                  replies.map((reply) => <ReplyItem key={reply.id} reply={reply} onReport={setReportedComment} />)}
 
                 {isExpanded && replies.length > 0 && (
                   <button className="view-replies-btn" onClick={() => toggleReplies(comment.id)}>
@@ -248,6 +253,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
           </button>
         </div>
       )}
+      <ReportDialog open={Boolean(reportedComment)} onOpenChange={(value) => !value && setReportedComment(null)} targetType={ModerationTargetType.PostComment} targetId={reportedComment?.id} targetLabel="bình luận này" />
     </div>
   );
 };

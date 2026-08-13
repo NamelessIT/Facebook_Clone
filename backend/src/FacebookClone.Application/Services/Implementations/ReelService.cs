@@ -14,14 +14,16 @@ public class ReelService : IReelService
     private readonly INotificationService _notiService;
     private readonly IMapper _mapper;
     private readonly IFileService _fileService;
+    private readonly IUserBlockRepository _userBlockRepository;
 
     public ReelService(IReelRepository reelRepo, INotificationService notiService,
-        IMapper mapper, IFileService fileService)
+        IMapper mapper, IFileService fileService, IUserBlockRepository userBlockRepository)
     {
         _reelRepo = reelRepo;
         _notiService = notiService;
         _mapper = mapper;
         _fileService = fileService;
+        _userBlockRepository = userBlockRepository;
     }
 
     private ReelResponseDto MapToDto(Reel r, Guid currentUserId) => new()
@@ -73,13 +75,17 @@ public class ReelService : IReelService
         Guid currentUserId, int pageNumber, int pageSize)
     {
         var reels = await _reelRepo.GetReelsFeedAsync(pageNumber, pageSize);
-        var list = reels.ToList();
+        var list = new List<Reel>();
+        foreach (var reel in reels)
+            if (reel.UserId == currentUserId || !await _userBlockRepository.IsFullyBlockedBetweenAsync(currentUserId, reel.UserId)) list.Add(reel);
         return (list.Select(r => MapToDto(r, currentUserId)), list.Count);
     }
 
     public async Task<(IEnumerable<ReelResponseDto> Items, int Total)> GetUserReelsAsync(
         Guid currentUserId, Guid targetUserId, int pageNumber, int pageSize)
     {
+        if (currentUserId != targetUserId && await _userBlockRepository.IsFullyBlockedBetweenAsync(currentUserId, targetUserId))
+            return (Array.Empty<ReelResponseDto>(), 0);
         var (reels, total) = await _reelRepo.GetUserReelsAsync(targetUserId, pageNumber, pageSize);
         var filtered = currentUserId == targetUserId
             ? reels
@@ -91,6 +97,8 @@ public class ReelService : IReelService
     {
         var reel = await _reelRepo.GetByIdAsync(reelId);
         if (reel == null) throw new Exception("Reel khong ton tai hoac da bi xoa.");
+        if (reel.UserId != currentUserId && await _userBlockRepository.IsFullyBlockedBetweenAsync(currentUserId, reel.UserId))
+            throw new UnauthorizedAccessException("Nội dung không khả dụng do thiết lập chặn.");
         if (reel.Privacy == PostPrivacy.Private && reel.UserId != currentUserId)
             throw new UnauthorizedAccessException("Ban khong co quyen xem Reel nay.");
         return MapToDto(reel, currentUserId);

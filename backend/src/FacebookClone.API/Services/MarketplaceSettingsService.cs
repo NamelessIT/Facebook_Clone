@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using FacebookClone.Domain.Entities;
 using FacebookClone.Domain.Policies;
 using FacebookClone.Infrastructure;
@@ -8,6 +9,7 @@ namespace FacebookClone.API.Services;
 
 public class MarketplaceSettingsService(AppDbContext db)
 {
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private static readonly string[] PaymentSettingKeys =
     [
         MarketplacePolicy.PaymentBankBinSettingKey,
@@ -29,6 +31,40 @@ public class MarketplaceSettingsService(AppDbContext db)
             && fee <= MarketplacePolicy.MaxDisplayFeeVnd
                 ? fee
                 : MarketplacePolicy.DefaultDisplayFeeVnd;
+    }
+
+    public async Task<IReadOnlyList<MarketplaceCategoryFee>> GetCategoryFeesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var value = await db.SystemSettings.AsNoTracking()
+            .Where(x => x.Key == MarketplacePolicy.CategoryFeesSettingKey)
+            .Select(x => x.Value)
+            .SingleOrDefaultAsync(cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            try
+            {
+                var stored = JsonSerializer.Deserialize<List<MarketplaceCategoryFee>>(value, JsonOptions);
+                if (stored is { Count: > 0 }) return NormalizeCategories(stored);
+            }
+            catch (JsonException)
+            {
+                // Fall back to the canonical defaults when an old/manual setting is malformed.
+            }
+        }
+
+        var fallback = await GetDisplayFeeAsync(cancellationToken);
+        return MarketplacePolicy.Categories.Select(name => new MarketplaceCategoryFee(name, fallback)).ToArray();
+    }
+
+    public async Task<decimal?> GetDisplayFeeAsync(
+        string category,
+        CancellationToken cancellationToken = default)
+    {
+        var match = (await GetCategoryFeesAsync(cancellationToken))
+            .FirstOrDefault(x => string.Equals(x.Name, category.Trim(), StringComparison.OrdinalIgnoreCase));
+        return match?.DisplayFee;
     }
 
     public async Task<decimal> UpdateDisplayFeeAsync(
@@ -80,13 +116,19 @@ public class MarketplaceSettingsService(AppDbContext db)
     public async Task<MarketplacePaymentSettings> UpdateAsync(
         decimal displayFee,
         MarketplacePaymentSettings payment,
+        IReadOnlyCollection<MarketplaceCategoryFee> categories,
         Guid actorId,
         CancellationToken cancellationToken = default)
     {
+        var normalizedCategories = NormalizeCategories(categories);
+        if (normalizedCategories.Count == 0)
+            throw new ArgumentException("Marketplace must contain at least one category.", nameof(categories));
+
         var now = DateTime.UtcNow;
         var values = new Dictionary<string, string>
         {
             [MarketplacePolicy.DisplayFeeSettingKey] = displayFee.ToString(CultureInfo.InvariantCulture),
+            [MarketplacePolicy.CategoryFeesSettingKey] = JsonSerializer.Serialize(normalizedCategories, JsonOptions),
             [MarketplacePolicy.PaymentBankBinSettingKey] = payment.BankBin.Trim(),
             [MarketplacePolicy.PaymentBankNameSettingKey] = payment.BankName.Trim(),
             [MarketplacePolicy.PaymentAccountNumberSettingKey] = payment.AccountNumber.Trim(),
@@ -121,7 +163,20 @@ public class MarketplaceSettingsService(AppDbContext db)
         await db.SaveChangesAsync(cancellationToken);
         return payment with { AccountName = payment.AccountName.Trim().ToUpperInvariant() };
     }
+
+    private static IReadOnlyList<MarketplaceCategoryFee> NormalizeCategories(
+        IEnumerable<MarketplaceCategoryFee> categories) => categories
+        .Select(x => new MarketplaceCategoryFee(x.Name.Trim(), x.DisplayFee))
+        .Where(x => !string.IsNullOrWhiteSpace(x.Name) && x.Name.Length <= 80 &&
+            x.DisplayFee >= MarketplacePolicy.MinDisplayFeeVnd &&
+            x.DisplayFee <= MarketplacePolicy.MaxDisplayFeeVnd)
+        .GroupBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+        .Select(x => x.First())
+        .Take(50)
+        .ToArray();
 }
+
+public sealed record MarketplaceCategoryFee(string Name, decimal DisplayFee);
 
 public sealed record MarketplacePaymentSettings(
     string BankBin,

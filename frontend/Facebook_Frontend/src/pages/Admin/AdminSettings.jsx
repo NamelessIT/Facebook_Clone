@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { BadgeDollarSign, Building2, CreditCard, Languages, Loader2, Mail, Monitor, Moon, QrCode, Save, Settings2, Store, Sun, UserRound } from 'lucide-react';
+import { BadgeDollarSign, Building2, CreditCard, Languages, Loader2, Mail, Monitor, Moon, Plus, QrCode, Save, Settings2, Store, Sun, Trash2, UserRound } from 'lucide-react';
 import adminService from '../../services/adminService';
 import userService from '../../services/userService';
 import toast from '../../shared/appToast';
@@ -23,6 +23,7 @@ const AdminSettings = () => {
   const { theme, toggleTheme } = useTheme();
   const [settings, setSettings] = useState(null);
   const [displayFee, setDisplayFee] = useState('');
+  const [categories, setCategories] = useState([]);
   const [payment, setPayment] = useState({ bankBin: '', bankName: '', accountNumber: '', accountName: '', supportEmail: '' });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -39,6 +40,7 @@ const AdminSettings = () => {
       const response = await adminService.getMarketplaceSettings();
       setSettings(response.data.data);
       setDisplayFee(String(response.data.data.displayFee));
+      setCategories((response.data.data.categories || []).map((item) => ({ name: item.name, displayFee: String(item.displayFee) })));
       setPayment(response.data.data.payment || { bankBin: '', bankName: '', accountNumber: '', accountName: '', supportEmail: '' });
     } catch (error) {
       toast.apiError(error, t('admin.settings.loadFailed'), { context: "admin.settings.marketplace.load" });
@@ -94,7 +96,12 @@ const AdminSettings = () => {
 
     setSaving(true);
     try {
-      const response = await adminService.updateMarketplaceSettings({ displayFee: value, ...payment });
+      const normalizedCategories = categories.map((item) => ({ name: item.name.trim(), displayFee: Number(item.displayFee) }));
+      if (!normalizedCategories.length || normalizedCategories.some((item) => !item.name || !Number.isFinite(item.displayFee) || item.displayFee < settings.minDisplayFee || item.displayFee > settings.maxDisplayFee) || new Set(normalizedCategories.map((item) => item.name.toLocaleLowerCase(locale))).size !== normalizedCategories.length) {
+        toast.error('Danh mục phải có tên duy nhất và mức phí hợp lệ.');
+        return;
+      }
+      const response = await adminService.updateMarketplaceSettings({ displayFee: value, categories: normalizedCategories, ...payment });
       setDisplayFee(String(response.data.data.displayFee));
       toast.success(t('admin.settings.saved'));
       await load();
@@ -106,6 +113,7 @@ const AdminSettings = () => {
   };
 
   const updatePayment = (key, value) => setPayment((current) => ({ ...current, [key]: value }));
+  const updateCategory = (index, key, value) => setCategories((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, [key]: value } : item));
   const previewReference = 'MKT-DEMO-001';
   const qrPreviewUrl = /^\d{6}$/.test(payment.bankBin) && /^\d{6,24}$/.test(payment.accountNumber)
     ? `https://img.vietqr.io/image/${payment.bankBin}-${payment.accountNumber}-compact2.png?amount=${Number(displayFee) || 0}&addInfo=${encodeURIComponent(previewReference)}&accountName=${encodeURIComponent(payment.accountName)}`
@@ -194,6 +202,21 @@ const AdminSettings = () => {
             <strong>{formatMoney(displayFee, locale)}</strong>
             <p>{t('admin.settings.marketplaceFeePolicy')}</p>
           </div>
+
+          <section className="admin-category-settings" aria-labelledby="marketplace-category-title">
+            <div className="admin-settings-card-heading admin-settings-card-heading--nested">
+              <span><Store /></span>
+              <div><h2 id="marketplace-category-title">Danh mục và phí trưng bày</h2><p>Mỗi danh mục có mức phí riêng. Xóa danh mục chỉ ngăn mặt hàng mới; dữ liệu mặt hàng cũ vẫn được giữ.</p></div>
+              <Button type="button" variant="outline" onClick={() => setCategories((current) => [...current, { name: '', displayFee }])}><Plus /> Thêm danh mục</Button>
+            </div>
+            <div className="admin-category-list">
+              {categories.map((item, index) => <div className="admin-category-row" key={`${index}-${item.name}`}>
+                <div className="admin-settings-field"><Label htmlFor={`marketplace-category-${index}`}>Tên danh mục</Label><Input id={`marketplace-category-${index}`} maxLength={80} value={item.name} onChange={(event) => updateCategory(index, 'name', event.target.value)} /></div>
+                <div className="admin-settings-field"><Label htmlFor={`marketplace-category-fee-${index}`}>Phí trưng bày (VND)</Label><Input id={`marketplace-category-fee-${index}`} type="number" min={settings.minDisplayFee} max={settings.maxDisplayFee} step="1000" value={item.displayFee} onChange={(event) => updateCategory(index, 'displayFee', event.target.value)} /></div>
+                <Button type="button" size="icon" variant="destructive" aria-label="Xóa danh mục" disabled={categories.length === 1} onClick={() => setCategories((current) => current.filter((_, itemIndex) => itemIndex !== index))}><Trash2 /></Button>
+              </div>)}
+            </div>
+          </section>
 
           <section className="admin-payment-settings" aria-labelledby="marketplace-payment-title">
             <div className="admin-settings-card-heading admin-settings-card-heading--nested">

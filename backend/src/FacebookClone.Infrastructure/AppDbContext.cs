@@ -40,7 +40,9 @@ public class AppDbContext : DbContext
     public DbSet<MarketplaceFavorite> MarketplaceFavorites { get; set; }
     public DbSet<MarketplacePaymentTransaction> MarketplacePaymentTransactions { get; set; }
     public DbSet<ModerationReport> ModerationReports { get; set; }
+    public DbSet<ModerationReportEvidence> ModerationReportEvidence { get; set; }
     public DbSet<SystemSetting> SystemSettings { get; set; }
+    public DbSet<UserBlock> UserBlocks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

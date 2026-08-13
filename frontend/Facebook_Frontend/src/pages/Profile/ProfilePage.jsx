@@ -63,6 +63,7 @@ const ProfilePage = () => {
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [blockLevel, setBlockLevel] = useState(0);
   const [showAvatarDropdown, setShowAvatarDropdown] = useState(false);
   const [showCoverDropdown, setShowCoverDropdown] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
@@ -74,6 +75,22 @@ const ProfilePage = () => {
   const coverDropdownRef = useRef(null);
 
   const isOwnProfile = currentUser?.id === userId;
+
+  useEffect(() => {
+    if (isOwnProfile || !userId) return;
+    userService.getBlock(userId).then((response) => setBlockLevel(response.data?.data?.level || 0)).catch(() => {});
+  }, [isOwnProfile, userId]);
+
+  const changeBlock = async (level) => {
+    const label = level === 2 ? 'chặn hoàn toàn' : level === 1 ? 'chặn tin nhắn' : 'bỏ chặn';
+    const accepted = await confirm({ title: 'Thay đổi mức chặn', message: `Bạn có chắc muốn ${label} người dùng này?`, confirmText: 'Xác nhận' });
+    if (!accepted) return;
+    try {
+      if (level === 0) await userService.removeBlock(userId); else await userService.setBlock(userId, level);
+      setBlockLevel(level);
+      toast.success(level === 0 ? 'Đã bỏ chặn.' : level === 2 ? 'Đã chặn hoàn toàn.' : 'Đã chặn tin nhắn.');
+    } catch (error) { toast.apiError(error, 'Không thể thay đổi mức chặn.', { context: 'profile.block' }); }
+  };
 
   // Đóng dropdown khi click ngoài
   useEffect(() => {
@@ -466,6 +483,11 @@ const ProfilePage = () => {
                   <button className="pp-btn pp-btn--secondary" onClick={() => setReportOpen(true)} title={translateCatalogKey('ui.pages.profile.profilepage.bao-cao-nguoi-dung.9f2fbb5c')}>
                     <Flag size={16} /> {translateCatalogKey('common.report')}
                   </button>
+                  <select className="pp-block-select" value={String(blockLevel)} onChange={(event) => changeBlock(Number(event.target.value))} aria-label="Mức chặn người dùng">
+                    <option value="0">Không chặn</option>
+                    <option value="1">Chặn tin nhắn</option>
+                    <option value="2">Chặn hoàn toàn</option>
+                  </select>
                 </>
               )}
             </div>

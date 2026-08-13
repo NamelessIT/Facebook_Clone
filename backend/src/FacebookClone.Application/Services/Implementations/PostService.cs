@@ -15,6 +15,7 @@ public class PostService : IPostService
     private readonly IFileService _fileService;
     private readonly IFriendshipRepository _friendshipRepository;
     private readonly IPostInteractionRepository _postInteractionRepository;
+    private readonly IUserBlockRepository _userBlockRepository;
 
     public PostService(
         IPostRepository postRepository,
@@ -22,7 +23,8 @@ public class PostService : IPostService
         IUserRepository userRepository,
         IFileService fileService,
         IFriendshipRepository friendshipRepository,
-        IPostInteractionRepository postInteractionRepository)
+        IPostInteractionRepository postInteractionRepository,
+        IUserBlockRepository userBlockRepository)
     {
         _postRepository = postRepository;
         _mapper = mapper;
@@ -30,6 +32,7 @@ public class PostService : IPostService
         _fileService = fileService;
         _friendshipRepository = friendshipRepository;
         _postInteractionRepository = postInteractionRepository;
+        _userBlockRepository = userBlockRepository;
     }
 
     public async Task<PostResponseDto> CreatePostAsync(Guid userId, CreatePostRequest request)
@@ -107,7 +110,9 @@ public class PostService : IPostService
             .Select(f => f.RequesterId == currentUserId ? f.ReceiverId : f.RequesterId)
             .Distinct();
 
-        var posts = await _postRepository.GetNewsFeedAsync(currentUserId, friendIds, pageNumber, pageSize);
+        var posts = new List<Post>();
+        foreach (var post in await _postRepository.GetNewsFeedAsync(currentUserId, friendIds, pageNumber, pageSize))
+            if (post.UserId == currentUserId || !await _userBlockRepository.IsFullyBlockedBetweenAsync(currentUserId, post.UserId)) posts.Add(post);
         var postDtos = _mapper.Map<IEnumerable<PostResponseDto>>(posts).ToList();
 
         foreach (var dto in postDtos)
@@ -259,6 +264,8 @@ public class PostService : IPostService
         var post = await _postRepository.GetByIdAsync(postId);
         if (post == null)
             throw new Exception("Bai viet khong ton tai hoac da bi xoa.");
+        if (post.UserId != currentUserId && await _userBlockRepository.IsFullyBlockedBetweenAsync(currentUserId, post.UserId))
+            throw new UnauthorizedAccessException("Nội dung không khả dụng do thiết lập chặn.");
 
         if (post.UserId != currentUserId && post.Privacy != PostPrivacy.Public)
         {
@@ -293,6 +300,8 @@ public class PostService : IPostService
     public async Task<(IEnumerable<PostResponseDto> Items, int Total)> GetUserPostsAsync(
         Guid currentUserId, Guid targetUserId, int pageNumber, int pageSize)
     {
+        if (currentUserId != targetUserId && await _userBlockRepository.IsFullyBlockedBetweenAsync(currentUserId, targetUserId))
+            return (Array.Empty<PostResponseDto>(), 0);
         IEnumerable<PostPrivacy> allowedPrivacies;
 
         if (currentUserId == targetUserId)

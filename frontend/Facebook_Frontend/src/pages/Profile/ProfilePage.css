@@ -300,7 +300,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 56px;
-  z-index: 100;
+  z-index: 20;
   padding: 0 32px;
 }
 
@@ -757,3 +757,4 @@
   }
 }
 
+.pp-block-select { min-height:38px; border:1px solid var(--border); border-radius:9px; padding:0 30px 0 12px; background:var(--card); color:var(--foreground); font-weight:600; }

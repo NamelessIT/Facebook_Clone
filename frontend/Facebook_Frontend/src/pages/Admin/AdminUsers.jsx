@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Search, Ban, CheckCircle, Trash2, ShieldCheck, UserPlus, Eye, EyeOff, Copy, X } from 'lucide-react';
+import { Search, Ban, CheckCircle, Trash2, ShieldCheck, UserPlus, Eye, EyeOff, Copy, X, ClipboardList, FileText, Film, Radio, MessageCircle, Flag } from 'lucide-react';
 import adminService from '../../services/adminService';
 import toast from '../../shared/appToast';
 import { LIMITS, TIMERS } from '../../shared/generated/constants';
@@ -25,19 +25,20 @@ const AdminUsers = () => {
   const [createdCredentials, setCreatedCredentials] = useState(null);
   const [banModal, setBanModal] = useState(null);
   const [banReason, setBanReason] = useState('');
+  const [investigation, setInvestigation] = useState(null);
+  const [investigationLoading, setInvestigationLoading] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const [usersResponse, creationOptionsResponse] = await Promise.all([
-        adminService.getUsers({ page, pageSize: 20, search: search || undefined, filter: filter || undefined }),
+        adminService.getUsers({ page, pageSize: 20, search: search || undefined, filter: filter || undefined, targetId: searchParams.get('targetId') || undefined }),
         adminService.getUserCreationOptions().catch((error) => {
           if (error.response?.status === 403) return null;
           throw error;
         }),
       ]);
-      const targetId = searchParams.get('targetId');
-      setUsers(targetId ? usersResponse.data.data.filter((item) => item.id === targetId) : usersResponse.data.data);
+      setUsers(usersResponse.data.data);
       setPagination(usersResponse.data.pagination);
       setCanCreateUsers(Boolean(creationOptionsResponse?.data?.data?.canCreateUsers));
       setCreationRoles(creationOptionsResponse?.data?.data?.roles || []);
@@ -49,6 +50,28 @@ const AdminUsers = () => {
   }, [page, search, filter, searchParams]);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    const targetId = searchParams.get('targetId');
+    if (!targetId) return;
+    setInvestigationLoading(true);
+    adminService.getUserInvestigation(targetId)
+      .then((response) => setInvestigation(response.data.data))
+      .catch((error) => toast.apiError(error, 'Không thể tải hồ sơ điều tra người dùng.', { context: 'admin.users.investigation' }))
+      .finally(() => setInvestigationLoading(false));
+  }, [searchParams]);
+
+  const openInvestigation = async (userId) => {
+    setInvestigationLoading(true);
+    try {
+      const response = await adminService.getUserInvestigation(userId);
+      setInvestigation(response.data.data);
+    } catch (error) {
+      toast.apiError(error, 'Không thể tải hồ sơ điều tra người dùng.', { context: 'admin.users.investigation' });
+    } finally {
+      setInvestigationLoading(false);
+    }
+  };
 
   useEffect(() => {
     const timerId = window.setInterval(load, TIMERS.adminUsersRefreshMs);
@@ -248,6 +271,9 @@ const AdminUsers = () => {
                   </td>
                   <td>
                     <div className="admin-actions">
+                      <button className="admin-btn admin-btn--reset" onClick={() => openInvestigation(u.id)}>
+                        <ClipboardList size={12} /> Điều tra
+                      </button>
                       {u.isBanned
                         ? <button className="admin-btn admin-btn--unban" onClick={() => handleUnban(u)}>
                             <CheckCircle size={12} /> {translateCatalogKey('ui.pages.admin.adminusers.unban.1cd691f5')}
@@ -403,6 +429,52 @@ const AdminUsers = () => {
               <button className="admin-btn admin-btn--ban" disabled={!banReason.trim()} onClick={handleBan}>{translateCatalogKey('ui.pages.admin.adminusers.xac-nhan-ban.98982c75')}</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {(investigation || investigationLoading) && (
+        <div className="admin-modal-backdrop admin-investigation-backdrop" role="presentation" onMouseDown={() => !investigationLoading && setInvestigation(null)}>
+          <section className="admin-investigation-modal" role="dialog" aria-modal="true" onMouseDown={(event) => event.stopPropagation()}>
+            <header className="admin-investigation-header">
+              <div>
+                <span className="admin-investigation-kicker"><ClipboardList size={15} /> Hồ sơ điều tra</span>
+                <h2>{investigation ? `${investigation.user.firstName} ${investigation.user.lastName}` : 'Đang tải...'}</h2>
+                <p>Hiển thị cả nội dung riêng tư hoặc đã xóa để phục vụ kiểm duyệt.</p>
+              </div>
+              <button type="button" className="admin-icon-btn" onClick={() => setInvestigation(null)} disabled={investigationLoading} aria-label="Đóng"><X size={18} /></button>
+            </header>
+            {investigation && <div className="admin-investigation-body">
+              <div className="admin-investigation-summary">
+                <div><FileText /><span>Bài viết</span><strong>{investigation.summary.posts}</strong><small>{investigation.summary.deletedPosts} đã xóa</small></div>
+                <div><Film /><span>Reels</span><strong>{investigation.summary.reels}</strong><small>{investigation.summary.deletedReels} đã xóa</small></div>
+                <div><Radio /><span>Live</span><strong>{investigation.summary.lives}</strong></div>
+                <div><MessageCircle /><span>Bình luận</span><strong>{investigation.summary.comments}</strong></div>
+                <div><Flag /><span>Báo cáo</span><strong>{investigation.summary.reports}</strong></div>
+              </div>
+              <div className="admin-investigation-columns">
+                <section>
+                  <h3>Lịch sử hoạt động gần đây</h3>
+                  <div className="admin-investigation-list">
+                    {investigation.activity.map((item) => <article key={`${item.kind}-${item.id}`}>
+                      <div><strong>{item.kind}</strong>{item.deleted && <span className="badge badge--banned">Đã xóa</span>}{item.privacy === 3 && <span className="badge">Chỉ mình tôi</span>}</div>
+                      <p>{item.title || 'Không có nội dung mô tả'}</p>
+                      <time>{new Date(item.at).toLocaleString('vi-VN')}</time>
+                    </article>)}
+                  </div>
+                </section>
+                <section>
+                  <h3>Lịch sử báo cáo và hình phạt</h3>
+                  <div className="admin-investigation-list">
+                    {investigation.reports.length === 0 ? <p>Chưa có báo cáo.</p> : investigation.reports.map((report) => <article key={report.id}>
+                      <div><strong>{report.reason}</strong><span className="badge">#{report.status}</span></div>
+                      <p>{report.details || report.resolutionNote || 'Không có ghi chú'}</p>
+                      <time>{new Date(report.createdAt).toLocaleString('vi-VN')}</time>
+                    </article>)}
+                  </div>
+                </section>
+              </div>
+            </div>}
+          </section>
         </div>
       )}
     </div>

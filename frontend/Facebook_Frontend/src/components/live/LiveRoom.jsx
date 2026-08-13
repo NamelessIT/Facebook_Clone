@@ -36,6 +36,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
   const [conversionPrivacy, setConversionPrivacy] = useState(String(initialSession?.privacy || 1));
   const [conversionBusy, setConversionBusy] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [reportedComment, setReportedComment] = useState(null);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const connectionRef = useRef(null);
@@ -434,7 +435,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
             {comments.map((comment) => (
               <article className="live-comment" key={comment.id}>
                 <div className="live-comment-avatar">{comment.author?.avatarUrl ? <img src={getImageUrl(comment.author.avatarUrl)} alt="" /> : comment.author?.fullName?.charAt(0)}</div>
-                <div><div><strong>{comment.author?.fullName}</strong><time>{new Date(comment.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</time></div><p>{comment.content}</p></div>
+                <div><div><strong>{comment.author?.fullName}</strong><time>{new Date(comment.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</time>{!moderationMode && <button type="button" className="live-comment-report" onClick={() => setReportedComment(comment)} title="Báo cáo bình luận"><Flag size={13} /></button>}</div><p>{comment.content}</p></div>
               </article>
             ))}
             {!comments.length && <div className="live-comments-empty"><MessageCircle /><p>{translateCatalogKey('ui.components.live.liveroom.chua-co-binh-luan-hay-bat-au-cuoc-tr.198924cb')}</p></div>}
@@ -450,6 +451,7 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
       </DialogContent>
     </Dialog>
     <ReportDialog open={reportOpen} onOpenChange={setReportOpen} targetType={ModerationTargetType.Live} targetId={session?.id} targetLabel="buổi live này" />
+    <ReportDialog open={Boolean(reportedComment)} onOpenChange={(value) => !value && setReportedComment(null)} targetType={ModerationTargetType.LiveComment} targetId={reportedComment?.id} targetLabel="bình luận live này" />
     <Dialog open={conversionOpen} onOpenChange={(value) => value ? setConversionOpen(true) : discardReplay()}>
       <DialogContent className="live-conversion-dialog" onInteractOutside={(event) => event.preventDefault()}>
         <DialogHeader><DialogTitle>{translateCatalogKey('ui.components.live.liveroom.ang-ban-live-thanh-video.6052d74c')}</DialogTitle><DialogDescription>{translateCatalogKey('ui.components.live.liveroom.ban-tam-uoc-gia-han-them.89ad5e9c')} {LIVE.replayLifetimeMinutes} {translateCatalogKey('ui.components.live.liveroom.phut-trong-luc-ban-hoan-thien-bai-vi.27e998e4')}</DialogDescription></DialogHeader>

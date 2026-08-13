@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Ban, RotateCcw, Search, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Ban, Eye, Loader2, MessageCircle, RotateCcw, Search, Trash2 } from 'lucide-react';
 import toast from '../../shared/appToast';
 import adminService from '../../services/adminService';
 import { useConfirm, usePrompt } from '../../contexts/useConfirm';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 import { useSearchParams } from 'react-router-dom';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { getImageUrl } from '../../utils/formatUrl';
 
 const CONFIG = {
   posts: {
@@ -32,7 +34,8 @@ const CONFIG = {
 };
 
 const AdminContent = ({ type }) => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const handledTargetIdRef = useRef(null);
   const confirm = useConfirm();
   const prompt = usePrompt();
   const config = useMemo(() => CONFIG[type], [type]);
@@ -41,6 +44,8 @@ const AdminContent = ({ type }) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({});
+  const [detail, setDetail] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -58,6 +63,34 @@ const AdminContent = ({ type }) => {
   useEffect(() => {
     load();
   }, [load]);
+
+  const openDetail = useCallback(async (item) => {
+    if (type !== 'posts') return;
+    setDetailLoading(true);
+    setDetail({ id: item.id, content: item.content, comments: [] });
+    try { setDetail((await adminService.getPostDetail(item.id)).data.data); }
+    catch (error) { setDetail(null); toast.apiError(error, 'Không thể tải chi tiết bài viết.', { context: 'admin.posts.detail' }); }
+    finally { setDetailLoading(false); }
+  }, [type]);
+
+  useEffect(() => {
+    const targetId = searchParams.get('targetId');
+    if (type !== 'posts' || !targetId || handledTargetIdRef.current === targetId) return;
+    const target = items.find((item) => item.id === targetId);
+    if (target) {
+      handledTargetIdRef.current = targetId;
+      openDetail(target);
+    }
+  }, [items, openDetail, searchParams, type]);
+
+  const closeDetail = useCallback(() => {
+    setDetail(null);
+    if (!searchParams.has('targetId')) return;
+
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete('targetId');
+    setSearchParams(nextSearchParams, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const groupedItems = useMemo(() => {
     const groups = new Map();
@@ -214,6 +247,7 @@ const AdminContent = ({ type }) => {
                             </td>
                             <td>
                               <div className="admin-actions">
+                                {type === 'posts' && <button className="admin-btn" type="button" onClick={() => openDetail(item)}><Eye size={12} /> Xem chi tiết</button>}
                                 {item.isDeleted ? (
                                   <button className="admin-btn admin-btn--unban" type="button" onClick={() => handleRestore(item)}>
                                     <RotateCcw size={12} /> {translateCatalogKey('ui.pages.admin.admincontent.khoi-phuc.fa177086')}
@@ -256,6 +290,15 @@ const AdminContent = ({ type }) => {
           </div>
         )}
       </div>
+      <Dialog open={Boolean(detail)} onOpenChange={(open) => !open && closeDetail()}>
+        <DialogContent className="admin-post-detail-dialog">
+          <DialogHeader><DialogTitle>Chi tiết bài viết</DialogTitle><DialogDescription>{detail?.author?.fullName || 'Đang tải dữ liệu kiểm duyệt'}</DialogDescription></DialogHeader>
+          {detailLoading ? <div className="admin-empty-state"><Loader2 className="animate-spin" /> Đang tải bài viết và bình luận…</div> : detail && <div className="admin-post-detail-layout">
+            <main className="admin-post-evidence"><header>{detail.author?.avatarUrl && <img src={getImageUrl(detail.author.avatarUrl)} alt="" />}<div><strong>{detail.author?.fullName}</strong><span>{detail.author?.email} · {new Date(detail.createdAt).toLocaleString('vi-VN')}</span></div></header><p>{detail.content || 'Bài viết không có nội dung chữ.'}</p><div className="admin-post-media">{(detail.medias || []).map((media) => media.mediaType === 1 ? <video key={media.id} src={getImageUrl(media.url)} controls /> : <img key={media.id} src={getImageUrl(media.url)} alt="Nội dung đính kèm" />)}</div></main>
+            <aside className="admin-post-comments"><header><MessageCircle /><strong>Bình luận</strong><span>{detail.comments?.length || 0}</span></header><div>{(detail.comments || []).map((comment) => <article key={comment.id} className={comment.isDeleted ? 'is-deleted' : ''}>{comment.author?.avatarUrl && <img src={getImageUrl(comment.author.avatarUrl)} alt="" />}<div><strong>{comment.author?.fullName}</strong><time>{new Date(comment.createdAt).toLocaleString('vi-VN')}</time><p>{comment.isDeleted ? '[Bình luận đã bị xóa]' : comment.content}</p>{comment.medias?.map((media) => <img key={media.id} src={getImageUrl(media.url)} alt="Đính kèm bình luận" />)}<small>{comment.reactions} reaction</small></div></article>)}{!detail.comments?.length && <div className="admin-post-comments-empty"><MessageCircle /> Chưa có bình luận.</div>}</div></aside>
+          </div>}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

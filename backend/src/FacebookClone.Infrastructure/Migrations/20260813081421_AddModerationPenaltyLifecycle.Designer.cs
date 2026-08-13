@@ -3,6 +3,7 @@ using System;
 using FacebookClone.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FacebookClone.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260813081421_AddModerationPenaltyLifecycle")]
+    partial class AddModerationPenaltyLifecycle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -203,9 +206,6 @@ namespace FacebookClone.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<Guid>("LiveSessionId")
                         .HasColumnType("uuid");
@@ -733,43 +733,6 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.HasIndex("TargetOwnerId", "ResolutionAction", "PunishmentEndsAt");
 
                     b.ToTable("ModerationReports", (string)null);
-                });
-
-            modelBuilder.Entity("FacebookClone.Domain.Entities.ModerationReportEvidence", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("character varying(120)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FileUrl")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<Guid>("ModerationReportId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("OriginalFileName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<long>("SizeBytes")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ModerationReportId");
-
-                    b.ToTable("ModerationReportEvidence", (string)null);
                 });
 
             modelBuilder.Entity("FacebookClone.Domain.Entities.Notification", b =>
@@ -1380,30 +1343,6 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("FacebookClone.Domain.Entities.UserBlock", b =>
-                {
-                    b.Property<Guid>("BlockerId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("BlockedUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Level")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("BlockerId", "BlockedUserId");
-
-                    b.HasIndex("BlockedUserId", "Level");
-
-                    b.ToTable("UserBlocks", (string)null);
-                });
-
             modelBuilder.Entity("FacebookClone.Domain.Entities.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -1676,17 +1615,6 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.Navigation("Reporter");
                 });
 
-            modelBuilder.Entity("FacebookClone.Domain.Entities.ModerationReportEvidence", b =>
-                {
-                    b.HasOne("FacebookClone.Domain.Entities.ModerationReport", "ModerationReport")
-                        .WithMany("Evidence")
-                        .HasForeignKey("ModerationReportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ModerationReport");
-                });
-
             modelBuilder.Entity("FacebookClone.Domain.Entities.Notification", b =>
                 {
                     b.HasOne("FacebookClone.Domain.Entities.User", "Actor")
@@ -1848,25 +1776,6 @@ namespace FacebookClone.Infrastructure.Migrations
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("FacebookClone.Domain.Entities.UserBlock", b =>
-                {
-                    b.HasOne("FacebookClone.Domain.Entities.User", "BlockedUser")
-                        .WithMany()
-                        .HasForeignKey("BlockedUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("FacebookClone.Domain.Entities.User", "Blocker")
-                        .WithMany()
-                        .HasForeignKey("BlockerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("BlockedUser");
-
-                    b.Navigation("Blocker");
-                });
-
             modelBuilder.Entity("FacebookClone.Domain.Entities.UserRole", b =>
                 {
                     b.HasOne("FacebookClone.Domain.Entities.Role", "Role")
@@ -1925,11 +1834,6 @@ namespace FacebookClone.Infrastructure.Migrations
             modelBuilder.Entity("FacebookClone.Domain.Entities.MarketplacePaymentTransaction", b =>
                 {
                     b.Navigation("Listing");
-                });
-
-            modelBuilder.Entity("FacebookClone.Domain.Entities.ModerationReport", b =>
-                {
-                    b.Navigation("Evidence");
                 });
 
             modelBuilder.Entity("FacebookClone.Domain.Entities.Permission", b =>

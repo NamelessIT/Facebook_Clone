@@ -15,6 +15,7 @@ public class ChatService : IChatService
     private readonly IUserRepository _userRepo;
     private readonly IFriendshipRepository _friendshipRepo;
     private readonly IChatHubService _chatHubService;
+    private readonly IUserBlockRepository _userBlockRepo;
     private readonly IMapper _mapper;
     private readonly ILogger<ChatService> _logger;
 
@@ -23,6 +24,7 @@ public class ChatService : IChatService
         IUserRepository userRepo,
         IFriendshipRepository friendshipRepo,
         IChatHubService chatHubService,
+        IUserBlockRepository userBlockRepo,
         IMapper mapper,
         ILogger<ChatService> logger)
     {
@@ -30,6 +32,7 @@ public class ChatService : IChatService
         _userRepo = userRepo;
         _friendshipRepo = friendshipRepo;
         _chatHubService = chatHubService;
+        _userBlockRepo = userBlockRepo;
         _mapper = mapper;
         _logger = logger;
     }
@@ -101,6 +104,9 @@ public class ChatService : IChatService
         {
             throw new ArgumentException("Phải cung cấp ConversationId hoặc ReceiverId.");
         }
+
+        if (receiverId != Guid.Empty && await _userBlockRepo.IsMessagingBlockedBetweenAsync(senderId, receiverId))
+            throw new UnauthorizedAccessException("Không thể gửi tin nhắn vì một trong hai người dùng đã chặn liên hệ.");
 
         var sentAt = DateTime.UtcNow;
         var message = new Message

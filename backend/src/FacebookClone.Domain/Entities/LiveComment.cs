@@ -10,4 +10,5 @@ public class LiveComment
     public Guid ClientRequestId { get; set; }
     public string Content { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
+    public bool IsDeleted { get; set; }
 }

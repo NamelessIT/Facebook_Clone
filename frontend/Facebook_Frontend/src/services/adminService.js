@@ -7,6 +7,7 @@ const adminService = {
 
   // Users
   getUsers: (params = {}) => axiosClient.get('/admin/users', { params }),
+  getUserInvestigation: (id) => axiosClient.get(`/admin/users/${id}/investigation`),
   getUserCreationOptions: () => axiosClient.get('/admin/users/creation-options'),
   createUser: (data) => axiosClient.post('/admin/users', data),
   banUser: (id, reason) => axiosClient.put(`/admin/users/${id}/ban`, { reason }),
@@ -24,6 +25,7 @@ const adminService = {
 
   // Content
   getPosts: (params = {}) => axiosClient.get('/admin/posts', { params }),
+  getPostDetail: (id) => axiosClient.get(`/admin/posts/${id}/detail`),
   getReels: (params = {}) => axiosClient.get('/admin/reels', { params }),
   deletePost: (id) => axiosClient.put(`/admin/posts/${id}/delete`),
   restorePost: (id) => axiosClient.put(`/admin/posts/${id}/restore`),
@@ -52,8 +54,9 @@ const adminService = {
   // Cross-module reports
   getReports: (params = {}) => axiosClient.get('/admin/reports', { params }),
   reviewReport: (id) => axiosClient.put(`/admin/reports/${id}/review`),
-  resolveReport: (id, action, note, dismiss = false) =>
-    axiosClient.post(`/admin/reports/${id}/resolve`, { action, note, dismiss }),
+  resolveReport: (id, action, note, dismiss = false, durationHours = null, permanent = false) =>
+    axiosClient.post(`/admin/reports/${id}/resolve`, { action, note, dismiss, durationHours, permanent }),
+  restoreReportPenalty: (id) => axiosClient.post(`/admin/reports/${id}/restore`),
 
   // Security
   getSecurityEvents: (count = 200, type) =>

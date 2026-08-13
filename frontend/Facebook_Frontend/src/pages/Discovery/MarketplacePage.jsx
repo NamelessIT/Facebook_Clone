@@ -9,7 +9,7 @@ import toast from '../../shared/appToast';
 import marketplaceService from '../../services/marketplaceService';
 import ReportDialog from '../../components/moderation/ReportDialog';
 import { getImageUrl } from '../../utils/formatUrl';
-import { MarketplaceListingStatus, MarketplacePaymentStatus, ModerationTargetType } from '../../shared/generated/enums';
+import { MarketplaceListingStatus, MarketplaceListingStatusUi, MarketplacePaymentStatus, ModerationTargetType } from '../../shared/generated/enums';
 import termsMarkdown from '../../content/marketplace-terms.md?raw';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,21 +24,17 @@ import './DiscoveryPages.css';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 import { useAuth } from '../../contexts/AuthContext';
 import { useConfirm } from '../../contexts/useConfirm';
+import { useLocalization } from '../../contexts/useLocalization';
 
-const CATEGORIES = ['Tất cả', 'Xe cộ', 'Nhà đất', 'Điện tử', 'Đồ gia dụng', 'Thời trang', 'Giải trí', 'Khác'];
 const CONDITIONS = ['Mới', 'Đã qua sử dụng - như mới', 'Đã qua sử dụng - tốt', 'Đã qua sử dụng', 'Cho thuê theo tháng'];
 const EMPTY_FORM = { title: '', description: '', price: '', category: '', condition: '', location: '', acceptTerms: false };
-const STATUS_LABELS = {
-  [MarketplaceListingStatus.PendingReview]: 'Chờ kiểm duyệt', [MarketplaceListingStatus.Approved]: 'Đang hiển thị',
-  [MarketplaceListingStatus.Rejected]: 'Bị từ chối', [MarketplaceListingStatus.Sold]: 'Đã bán', [MarketplaceListingStatus.Removed]: 'Đã gỡ',
-  [MarketplaceListingStatus.AwaitingPayment]: 'Chờ thanh toán',
-};
 const formatPrice = (value) => `${new Intl.NumberFormat('vi-VN').format(value || 0)} ₫`;
 
 const MarketplacePage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const confirmAction = useConfirm();
+  const { locale } = useLocalization();
   const [searchParams, setSearchParams] = useSearchParams();
   const [items, setItems] = useState([]);
   const [query, setQuery] = useState('');
@@ -124,6 +120,17 @@ const MarketplacePage = () => {
     return items.filter((item) => (category === 'Tất cả' || item.category === category) &&
       (!text || `${item.title} ${item.location} ${item.sellerName}`.toLocaleLowerCase('vi').includes(text)));
   }, [category, items, query]);
+  const categories = useMemo(() => {
+    const values = ['Tất cả', ...(terms.categories || []).map((item) => item.name)];
+    if (editingListing?.category && !values.includes(editingListing.category)) values.push(editingListing.category);
+    return values;
+  }, [editingListing?.category, terms.categories]);
+  const CATEGORIES = categories;
+  const selectedCategoryFee = useMemo(() => (terms.categories || []).find((item) => item.name === form.category)?.displayFee
+    ?? (editingListing?.category === form.category ? editingListing.displayFee : terms.displayFee),
+  [editingListing?.category, editingListing?.displayFee, form.category, terms.categories, terms.displayFee]);
+  const statusLabel = (value) => MarketplaceListingStatusUi[value]?.labels?.[locale] || MarketplaceListingStatusUi[value]?.labels?.vi || String(value);
+  const STATUS_LABELS = Object.fromEntries(Object.keys(MarketplaceListingStatusUi).map((value) => [value, statusLabel(value)]));
 
   const chooseImage = (file) => {
     if (preview) URL.revokeObjectURL(preview);
@@ -231,7 +238,7 @@ const MarketplacePage = () => {
     const accepted = await confirmAction({
       title: translateCatalogKey('marketplace.listing.relistTitle'),
       message: translateCatalogKey('marketplace.listing.relistMessage'),
-      detail: `${translateCatalogKey('marketplace.listing.relistDetail')} ${formatPrice(terms.displayFee)}.`,
+      detail: `${translateCatalogKey('marketplace.listing.relistDetail')} ${formatPrice((terms.categories || []).find((entry) => entry.name === item.category)?.displayFee ?? terms.displayFee)}.`,
       confirmText: translateCatalogKey('marketplace.listing.relistConfirm'),
       cancelText: translateCatalogKey('common.cancel'),
     });
@@ -305,7 +312,7 @@ const MarketplacePage = () => {
         <div className="marketplace-section-title"><span><SlidersHorizontal /></span><div><h2 id="marketplace-search-title">{translateCatalogKey('ui.pages.discovery.marketplacepage.tim-mat-hang.53dee24a')}</h2><p>{translateCatalogKey('ui.pages.discovery.marketplacepage.tim-theo-ten-san-pham-nguoi-ban-hoac.eae31587')}</p></div></div>
         <label className="discovery-search marketplace-search"><Search size={18} /><Input aria-label={translateCatalogKey('ui.pages.discovery.marketplacepage.tim-kiem-marketplace.2b139963')} placeholder={translateCatalogKey('ui.pages.discovery.marketplacepage.vi-du-macbook-quan-1.213ed6f2')} value={query} onChange={(event) => setQuery(event.target.value)} /></label>
         <div className="marketplace-filter-label">{translateCatalogKey('ui.pages.discovery.marketplacepage.danh-muc-san-pham.4c246ef8')}</div>
-        <div className="discovery-categories marketplace-categories">{CATEGORIES.map((item) => <Button size="sm" key={item} variant={category === item ? 'default' : 'outline'} onClick={() => setCategory(item)}>{item}</Button>)}</div>
+        <div className="discovery-categories marketplace-categories">{categories.map((item) => <Button size="sm" key={item} variant={category === item ? 'default' : 'outline'} onClick={() => setCategory(item)}>{item}</Button>)}</div>
       </section>
 
       <div className="marketplace-results-heading"><div><span className="marketplace-heading-icon"><Sparkles /></span><div><h2>{translateCatalogKey('ui.pages.discovery.marketplacepage.san-pham-danh-cho-ban.f0f15b53')}</h2><p>{translateCatalogKey('ui.pages.discovery.marketplacepage.chi-hien-thi-mat-hang-a-qua-kiem-duy.43a68ee4')}</p></div></div><Badge variant="outline">{filteredItems.length} {translateCatalogKey('ui.pages.discovery.marketplacepage.san-pham.ffbd4a98')}</Badge></div>
@@ -342,7 +349,7 @@ const MarketplacePage = () => {
           <div className="marketplace-edit-policy__heading"><Pencil /><div><h3 id="marketplace-edit-policy-title">{translateCatalogKey('marketplace.listing.editPolicyTitle')}</h3><p>{editingListing.status === MarketplaceListingStatus.AwaitingPayment ? translateCatalogKey('marketplace.listing.editPolicyBeforePayment') : translateCatalogKey('marketplace.listing.editPolicyAfterPayment')}</p></div></div>
           <div className="marketplace-edit-policy__rules"><div><Badge variant="outline">{translateCatalogKey('marketplace.listing.editableFieldsLabel')}</Badge><span>{translateCatalogKey('marketplace.listing.editableFields')}</span></div><div><Badge variant="secondary">{translateCatalogKey('marketplace.listing.lockedFieldsLabel')}</Badge><span>{translateCatalogKey('marketplace.listing.lockedFields')}</span></div></div>
         </section>}
-        <div className="marketplace-fee-box"><WalletCards /><div><strong>{translateCatalogKey('ui.pages.discovery.marketplacepage.phi-trung-bay.13282c06')} {formatPrice(editingListing?.displayFee || terms.displayFee)}</strong><span>{translateCatalogKey('marketplace.payment.feePolicy')}</span></div></div>
+        <div className="marketplace-fee-box"><WalletCards /><div><strong>{translateCatalogKey('ui.pages.discovery.marketplacepage.phi-trung-bay.13282c06')} {formatPrice(editingListing?.displayFee ?? selectedCategoryFee)}</strong><span>{form.category ? `Mức phí áp dụng cho danh mục ${form.category}. ` : ''}{translateCatalogKey('marketplace.payment.feePolicy')}</span></div></div>
         <section className="marketplace-payment-box" aria-labelledby="marketplace-payment-title">
           <div className="marketplace-payment-heading"><span><Banknote /></span><div><h3 id="marketplace-payment-title">{translateCatalogKey('marketplace.payment.title')}</h3><p>{translateCatalogKey('marketplace.payment.subtitle')}</p></div></div>
           {!terms.payment?.isConfigured ? <div className="marketplace-payment-message marketplace-payment-message--warning"><CircleAlert /><div><strong>{translateCatalogKey('marketplace.payment.notConfigured')}</strong><span>{translateCatalogKey('marketplace.payment.contactAdmin')} {terms.payment?.supportEmail || ''}</span></div></div> : !editingListing ? <div className="marketplace-payment-message"><CircleAlert /><div><strong>{translateCatalogKey('marketplace.draft.saveFirstTitle')}</strong><span>{translateCatalogKey('marketplace.draft.saveFirstDescription')}</span></div></div> : editingListing.status !== MarketplaceListingStatus.AwaitingPayment ? <div className="marketplace-payment-message marketplace-payment-message--success"><CircleCheck /><div><strong>{translateCatalogKey('marketplace.listing.paidEditTitle')}</strong><span>{translateCatalogKey('marketplace.listing.paidEditDescription')}</span></div></div> : !paymentTransaction ? <div className="marketplace-payment-start"><div><span>{translateCatalogKey('marketplace.payment.amount')}</span><strong>{formatPrice(editingListing.displayFee || terms.displayFee)}</strong><small>{terms.payment.bankName} · {terms.payment.accountNumber}</small></div><Button type="button" onClick={() => createPayment(editingListing.id)} disabled={paymentBusy}>{paymentBusy ? <Loader2 className="animate-spin" /> : <Banknote />} {translateCatalogKey('marketplace.payment.createQr')}</Button></div> : <div className="marketplace-payment-transaction">

@@ -57,6 +57,42 @@ public class UsersController : ControllerBase
         return Ok(new { success = true, data = new { isOnline = true, lastActiveAt = now } });
     }
 
+    [HttpGet("{id:guid}/block")]
+    public async Task<IActionResult> GetBlock(Guid id)
+    {
+        var userId = GetCurrentUserId();
+        var row = await _db.UserBlocks.AsNoTracking().FirstOrDefaultAsync(x => x.BlockerId == userId && x.BlockedUserId == id);
+        return Ok(new { success = true, data = new { level = row?.Level ?? 0 } });
+    }
+
+    [HttpPut("{id:guid}/block")]
+    public async Task<IActionResult> SetBlock(Guid id, [FromBody] SetUserBlockRequest request)
+    {
+        var userId = GetCurrentUserId();
+        if (id == userId) return BadRequest(new { success = false, message = "Không thể tự chặn chính mình." });
+        if (request.Level is < 1 or > 2) return BadRequest(new { success = false, message = "Cấp độ chặn không hợp lệ." });
+        if (!await _db.Users.AnyAsync(x => x.Id == id && !x.IsDeleted)) return NotFound();
+        var now = DateTime.UtcNow;
+        var row = await _db.UserBlocks.FirstOrDefaultAsync(x => x.BlockerId == userId && x.BlockedUserId == id);
+        if (row == null)
+        {
+            row = new FacebookClone.Domain.Entities.UserBlock { BlockerId = userId, BlockedUserId = id, Level = request.Level, CreatedAt = now, UpdatedAt = now };
+            _db.UserBlocks.Add(row);
+        }
+        else { row.Level = request.Level; row.UpdatedAt = now; }
+        await _db.SaveChangesAsync();
+        return Ok(new { success = true, data = new { row.Level }, message = request.Level == 2 ? "Đã chặn hoàn toàn người dùng." : "Đã chặn tin nhắn từ người dùng." });
+    }
+
+    [HttpDelete("{id:guid}/block")]
+    public async Task<IActionResult> RemoveBlock(Guid id)
+    {
+        var userId = GetCurrentUserId();
+        var row = await _db.UserBlocks.FirstOrDefaultAsync(x => x.BlockerId == userId && x.BlockedUserId == id);
+        if (row != null) { _db.UserBlocks.Remove(row); await _db.SaveChangesAsync(); }
+        return Ok(new { success = true, message = "Đã bỏ chặn người dùng." });
+    }
+
     [HttpPut("me")]
     public async Task<IActionResult> UpdateMyProfile([FromBody] UpdateProfileDto request)
     {
@@ -259,3 +295,4 @@ public class UsersController : ControllerBase
 }
 
 public record ChangePasswordRequest(string CurrentPassword, string NewPassword);
+public record SetUserBlockRequest(int Level);

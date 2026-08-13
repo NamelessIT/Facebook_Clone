@@ -48,6 +48,9 @@ const userService = {
   changePassword: async (currentPassword, newPassword) => {
     return await axiosClient.put('/users/me/password', { currentPassword, newPassword });
   },
+  getBlock: (id) => axiosClient.get(`/users/${id}/block`),
+  setBlock: (id, level) => axiosClient.put(`/users/${id}/block`, { level }),
+  removeBlock: (id) => axiosClient.delete(`/users/${id}/block`),
 };
 
 export default userService;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Archive, CalendarClock, Eye, Mail, Radio, RefreshCw, Search, ShieldAlert, ShoppingBag, Unlock, UserRound, Users } from 'lucide-react';
 import adminService from '../../services/adminService';
 import LiveRoom from '../../components/live/LiveRoom';
@@ -16,7 +16,8 @@ const statusLabel = { 1: 'Đang live', 2: 'Đã kết thúc', 3: 'Bị kiểm du
 const privacyLabel = { 1: 'Công khai', 2: 'Bạn bè', 3: 'Riêng tư' };
 
 const AdminLives = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const handledTargetIdRef = useRef(null);
   const prompt = usePrompt();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +38,24 @@ const AdminLives = () => {
     const matchesSearch = `${item.title} ${item.ownerName} ${item.email}`.toLowerCase().includes(search.toLowerCase());
     return (!targetId || item.id === targetId) && matchesSearch && (statusFilter === 'all' || item.status === Number(statusFilter));
   }), [search, searchParams, sessions, statusFilter]);
+  useEffect(() => {
+    const targetId = searchParams.get('targetId');
+    if (!targetId || handledTargetIdRef.current === targetId) return;
+    const target = sessions.find((item) => item.id === targetId);
+    if (target && (target.status === 1 || target.recordingUrl)) {
+      handledTargetIdRef.current = targetId;
+      setWatching({ ...target, viewerCount: 0, isOwner: false });
+    }
+  }, [searchParams, sessions]);
+
+  const closeWatching = useCallback(() => {
+    setWatching(null);
+    if (!searchParams.has('targetId')) return;
+
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete('targetId');
+    setSearchParams(nextSearchParams, { replace: true });
+  }, [searchParams, setSearchParams]);
   const counts = useMemo(() => ({
     all: sessions.length,
     live: sessions.filter((item) => item.status === 1).length,
@@ -118,7 +137,7 @@ const AdminLives = () => {
           {!filtered.length && <div className="admin-empty">{translateCatalogKey('ui.pages.admin.adminlives.khong-co-phien-live-phu-hop.084af130')}</div>}
         </div>
       )}
-      {watching && <LiveRoom key={watching.id} initialSession={watching} open={Boolean(watching)} onOpenChange={(value) => !value && setWatching(null)} moderationMode />}
+      {watching && <LiveRoom key={watching.id} initialSession={watching} open={Boolean(watching)} onOpenChange={(value) => !value && closeWatching()} moderationMode />}
     </div>
   );
 };

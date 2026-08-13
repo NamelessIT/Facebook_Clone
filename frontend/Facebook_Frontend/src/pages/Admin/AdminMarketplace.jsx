@@ -4,7 +4,7 @@ import { Ban, Banknote, BarChart3, Check, CircleCheck, CircleX, Clock3, Loader2,
 import adminService from '../../services/adminService';
 import toast from '../../shared/appToast';
 import { getImageUrl } from '../../utils/formatUrl';
-import { MarketplaceListingStatus } from '../../shared/generated/enums';
+import { MarketplaceListingStatus, MarketplaceListingStatusUi, MarketplacePaymentStatusUi } from '../../shared/generated/enums';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -13,12 +13,14 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import { useLocalization } from '../../contexts/useLocalization';
 
-const STATUS = { 1: 'Chờ duyệt', 2: 'Đang hiển thị', 3: 'Từ chối', 4: 'Đã bán', 5: 'Đã gỡ', 6: 'Chờ thanh toán' };
-const PAYMENT_STATUS = { 1: 'Chờ chuyển khoản', 2: 'Chờ xác minh', 3: 'Đã thanh toán', 4: 'Thất bại', 5: 'Đã hủy', 6: 'Đã sử dụng' };
 const formatMoney = (value) => `${new Intl.NumberFormat('vi-VN').format(value || 0)} ₫`;
+const enumLabel = (metadata, value, locale) => metadata[value]?.labels?.[locale] || metadata[value]?.labels?.vi || String(value);
+const listingStatusLabel = (value, locale) => enumLabel(MarketplaceListingStatusUi, value, locale);
 
 const AdminMarketplace = () => {
+  const { locale } = useLocalization();
   const [searchParams] = useSearchParams();
   const [items, setItems] = useState([]);
   const [search, setSearch] = useState('');
@@ -32,6 +34,7 @@ const AdminMarketplace = () => {
   const [payments, setPayments] = useState([]);
   const [paymentReview, setPaymentReview] = useState(null);
   const [paymentNote, setPaymentNote] = useState('');
+  const STATUS = useMemo(() => Object.fromEntries(Object.keys(MarketplaceListingStatusUi).map((value) => [value, listingStatusLabel(value, locale)])), [locale]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -86,14 +89,14 @@ const AdminMarketplace = () => {
 
   return <section className="admin-feature-page admin-marketplace-page">
     <header className="admin-feature-header"><div><span className="admin-feature-icon"><Store /></span><div><h1>{translateCatalogKey('ui.pages.admin.adminmarketplace.quan-ly-marketplace.98e5a955')}</h1><p>{translateCatalogKey('ui.pages.admin.adminmarketplace.duyet-mat-hang-xem-hieu-qua-trung-ba.c9b00eb1')}</p></div></div><Button variant="outline" onClick={load}><RefreshCw /> {translateCatalogKey('common.refresh')}</Button></header>
-    <div className="admin-feature-toolbar"><label><PackageSearch /><Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={translateCatalogKey('ui.pages.admin.adminmarketplace.tim-mat-hang-thuong-nhan-hoac-email.6e6111be')} /></label><Select value={status} onValueChange={setStatus}><SelectTrigger className="w-48"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">{translateCatalogKey('ui.pages.admin.adminlives.tat-ca-trang-thai.f6908bd5')}</SelectItem>{Object.entries(STATUS).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select></div>
+    <div className="admin-feature-toolbar"><label><PackageSearch /><Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={translateCatalogKey('ui.pages.admin.adminmarketplace.tim-mat-hang-thuong-nhan-hoac-email.6e6111be')} /></label><Select value={status} onValueChange={setStatus}><SelectTrigger className="w-48"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">{translateCatalogKey('ui.pages.admin.adminlives.tat-ca-trang-thai.f6908bd5')}</SelectItem>{Object.entries(MarketplaceListingStatusUi).map(([value]) => <SelectItem key={value} value={value}>{enumLabel(MarketplaceListingStatusUi, value, locale)}</SelectItem>)}</SelectContent></Select></div>
     <section className="admin-payment-panel" aria-labelledby="marketplace-transactions-title">
       <div className="admin-payment-panel-heading"><span><Banknote /></span><div><h2 id="marketplace-transactions-title">{translateCatalogKey('marketplace.payment.adminTitle')}</h2><p>{translateCatalogKey('marketplace.payment.adminSubtitle')}</p></div><Badge variant="outline">{payments.filter((item) => item.status === 2).length} {translateCatalogKey('marketplace.payment.awaitingCount')}</Badge></div>
       <div className="admin-payment-list">{payments.length === 0 ? <div className="admin-payment-empty"><Banknote /> {translateCatalogKey('marketplace.payment.noTransactions')}</div> : payments.slice(0, 12).map((payment) => <article key={payment.id} className={`admin-payment-row admin-payment-row--${payment.status}`}>
         <div className="admin-payment-status-icon">{payment.status === 2 ? <Clock3 /> : payment.status === 3 || payment.status === 6 ? <CircleCheck /> : payment.status === 4 || payment.status === 5 ? <CircleX /> : <Banknote />}</div>
         <div><span>{translateCatalogKey('marketplace.payment.reference')}</span><strong>{payment.referenceCode}</strong><small>{payment.userName} · {payment.email}</small></div>
         <div><span>{translateCatalogKey('marketplace.payment.amount')}</span><strong>{formatMoney(payment.amount)}</strong><small>{new Date(payment.createdAt).toLocaleString('vi-VN')}</small></div>
-        <div><span>{translateCatalogKey('marketplace.payment.status')}</span><Badge variant={payment.status === 2 ? 'default' : 'outline'}>{PAYMENT_STATUS[payment.status]}</Badge>{payment.failureReason && <small>{payment.failureReason}</small>}</div>
+        <div><span>{translateCatalogKey('marketplace.payment.status')}</span><Badge variant={MarketplacePaymentStatusUi[payment.status]?.badgeVariant || 'outline'} className={`enum-tone-${MarketplacePaymentStatusUi[payment.status]?.tone || 'neutral'}`}>{enumLabel(MarketplacePaymentStatusUi, payment.status, locale)}</Badge>{payment.failureReason && <small>{payment.failureReason}</small>}</div>
         <div className="admin-payment-row-actions">{payment.status === 2 && <Button size="sm" onClick={() => { setPaymentReview(payment); setPaymentNote(''); }}><Check /> {translateCatalogKey('marketplace.payment.verify')}</Button>}</div>
       </article>)}</div>
     </section>

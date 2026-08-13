@@ -4,6 +4,7 @@ public static class MarketplacePolicy
 {
     public const string CurrentTermsVersion = "2026-08-11";
     public const string DisplayFeeSettingKey = "marketplace.display_fee_vnd";
+    public const string CategoryFeesSettingKey = "marketplace.category_fees_v1";
     public const string PaymentBankBinSettingKey = "marketplace.payment.bank_bin";
     public const string PaymentBankNameSettingKey = "marketplace.payment.bank_name";
     public const string PaymentAccountNumberSettingKey = "marketplace.payment.account_number";

@@ -148,7 +148,7 @@ public class LivesController(
 
         limit = Math.Clamp(limit, 1, SharedConstants.Live.CommentsPageSize);
         var newest = await db.LiveComments.AsNoTracking()
-            .Where(x => x.LiveSessionId == id)
+            .Where(x => x.LiveSessionId == id && !x.IsDeleted)
             .Include(x => x.User)
             .OrderByDescending(x => x.CreatedAt)
             .Take(limit)

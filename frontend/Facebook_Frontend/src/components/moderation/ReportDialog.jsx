@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle, Flag, Loader2 } from 'lucide-react';
+import { AlertTriangle, Flag, Loader2, Paperclip, X } from 'lucide-react';
 import reportService from '../../services/reportService';
 import toast from '../../shared/appToast';
 import { Button } from '@/components/ui/button';
@@ -15,21 +15,22 @@ const ReportDialog = ({ open, onOpenChange, targetType, targetId, targetLabel = 
   const [reason, setReason] = useState('');
   const [details, setDetails] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [evidence, setEvidence] = useState([]);
 
   const submit = async () => {
     if (!reason) return;
     setSubmitting(true);
     try {
-      await reportService.create(targetType, targetId, reason, details);
+      await reportService.create(targetType, targetId, reason, details, evidence);
       toast.success(translateCatalogKey('ui.components.moderation.reportdialog.bao-cao-a-uoc-gui-toi-oi-ngu-kiem-du.e0cdf97e'));
-      setReason(''); setDetails(''); onOpenChange(false);
+      setReason(''); setDetails(''); setEvidence([]); onOpenChange(false);
     } catch (error) { toast.apiError(error, "Không thể gửi báo cáo.", { context: "moderation.report" }); }
     finally { setSubmitting(false); }
   };
 
   return (
     <Dialog open={open} onOpenChange={(value) => !submitting && onOpenChange(value)}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="moderation-report-dialog sm:max-w-lg">
         <DialogHeader>
           <div className="moderation-dialog-icon"><Flag /></div>
           <DialogTitle>{translateCatalogKey('common.report')} {targetLabel}</DialogTitle>
@@ -39,6 +40,12 @@ const ReportDialog = ({ open, onOpenChange, targetType, targetId, targetLabel = 
           {REASONS.map((item) => <Label key={item} className="flex cursor-pointer items-center gap-3 rounded-lg border p-3"><RadioGroupItem value={item} />{item}</Label>)}
         </RadioGroup>
         <div className="grid gap-2"><Label htmlFor="report-details">{translateCatalogKey('ui.components.moderation.reportdialog.thong-tin-bo-sung.ccdf241a')}</Label><Textarea id="report-details" value={details} onChange={(event) => setDetails(event.target.value)} maxLength={2000} placeholder={translateCatalogKey('ui.components.moderation.reportdialog.mo-ta-thoi-iem-hoac-dau-hieu-vi-pham.05d8383f')} /></div>
+        <div className="grid gap-2">
+          <Label htmlFor="report-evidence">Bằng chứng (không bắt buộc)</Label>
+          <label htmlFor="report-evidence" className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed p-3 text-sm hover:bg-muted"><Paperclip className="size-4" /> Đính kèm ảnh, video, PDF hoặc tệp văn bản</label>
+          <input id="report-evidence" className="sr-only" type="file" accept="image/*,video/*,.pdf,.txt" multiple onChange={(event) => setEvidence(Array.from(event.target.files || []).slice(0, 5))} />
+          {evidence.length > 0 && <div className="grid gap-1">{evidence.map((file, index) => <div key={`${file.name}-${index}`} className="flex items-center justify-between rounded-md bg-muted px-3 py-2 text-xs"><span className="truncate">{file.name} · {(file.size / 1024 / 1024).toFixed(1)} MB</span><button type="button" onClick={() => setEvidence((current) => current.filter((_, i) => i !== index))} aria-label="Bỏ tệp"><X className="size-4" /></button></div>)}</div>}
+        </div>
         <div className="flex gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm"><AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-500" /><span>{translateCatalogKey('ui.components.moderation.reportdialog.khong-gui-bao-cao-sai-su-that-hoac-l.966a134a')}</span></div>
         <DialogFooter><Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>{translateCatalogKey('common.cancel')}</Button><Button variant="destructive" onClick={submit} disabled={!reason || submitting}>{submitting ? <Loader2 className="animate-spin" /> : <Flag />} {translateCatalogKey('post.sendReport')}</Button></DialogFooter>
       </DialogContent>

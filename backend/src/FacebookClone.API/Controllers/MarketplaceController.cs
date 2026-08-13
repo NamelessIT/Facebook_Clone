@@ -56,10 +56,12 @@ public class MarketplaceController(
     public async Task<IActionResult> Terms()
     {
         var payment = await marketplaceSettings.GetPaymentSettingsAsync(HttpContext.RequestAborted);
+        var categories = await marketplaceSettings.GetCategoryFeesAsync(HttpContext.RequestAborted);
         return Ok(new { success = true, data = new
         {
             version = MarketplacePolicy.CurrentTermsVersion,
             displayFee = await marketplaceSettings.GetDisplayFeeAsync(HttpContext.RequestAborted),
+            categories,
             currency = "VND",
             path = "/marketplace-terms.md",
             payment = PublicPaymentSettings(payment)
@@ -180,7 +182,8 @@ public class MarketplaceController(
             return BadRequest(new { success = false, message = "Bạn phải đọc và đồng ý đúng phiên bản điều khoản Marketplace hiện hành." });
         if (request.Image == null || request.Image.Length == 0 || request.Image.Length > MarketplacePolicy.MaxImageBytes)
             return BadRequest(new { success = false, message = "Ảnh sản phẩm là bắt buộc và không được vượt quá 10 MB." });
-        if (!MarketplacePolicy.Categories.Contains(request.Category))
+        var categoryFee = await marketplaceSettings.GetDisplayFeeAsync(request.Category, HttpContext.RequestAborted);
+        if (categoryFee == null)
             return BadRequest(new { success = false, message = "Danh mục sản phẩm không hợp lệ." });
 
         // Check the receiver account before uploading the image. This keeps a
@@ -196,7 +199,7 @@ public class MarketplaceController(
             Id = Guid.NewGuid(), SellerId = userId, Title = request.Title.Trim(), Description = request.Description.Trim(),
             Price = request.Price, Category = request.Category, Condition = request.Condition.Trim(), Location = request.Location.Trim(),
             ImageUrl = await files.UploadImageAsync(request.Image, "marketplace"), Status = MarketplaceListingStatus.AwaitingPayment,
-            DisplayFee = await marketplaceSettings.GetDisplayFeeAsync(HttpContext.RequestAborted), TermsVersion = MarketplacePolicy.CurrentTermsVersion,
+            DisplayFee = categoryFee.Value, TermsVersion = MarketplacePolicy.CurrentTermsVersion,
             TermsAcceptedAt = now, CreatedAt = now, UpdatedAt = now
         };
         db.MarketplaceListings.Add(listing);
@@ -226,13 +229,20 @@ public class MarketplaceController(
     public async Task<IActionResult> Update(Guid id, [FromForm] UpdateMarketplaceListingRequest request)
     {
         var userId = UserContext.GetUserId(User);
-        var item = await db.MarketplaceListings.Include(x => x.Seller).Include(x => x.Favorites)
+        var item = await db.MarketplaceListings.Include(x => x.Seller).Include(x => x.Favorites).Include(x => x.PaymentTransaction)
             .FirstOrDefaultAsync(x => x.Id == id && x.SellerId == userId && !x.IsDeleted);
         if (item == null) return NotFound(new { success = false, message = "Không tìm thấy mặt hàng." });
         if (item.Status is MarketplaceListingStatus.Sold or MarketplaceListingStatus.Removed)
             return Conflict(new { success = false, message = "Mặt hàng đã đóng nên không thể chỉnh sửa." });
-        if (!MarketplacePolicy.Categories.Contains(request.Category))
+        var isSameCategory = string.Equals(item.Category, request.Category, StringComparison.OrdinalIgnoreCase);
+        var configuredCategoryFee = await marketplaceSettings.GetDisplayFeeAsync(request.Category, HttpContext.RequestAborted);
+        if (configuredCategoryFee == null && !isSameCategory)
             return BadRequest(new { success = false, message = "Danh mục sản phẩm không hợp lệ." });
+        if (item.Status != MarketplaceListingStatus.AwaitingPayment &&
+            !isSameCategory)
+            return Conflict(new { success = false, message = "Danh mục được chốt theo giao dịch đã thanh toán. Hãy đăng một mặt hàng mới nếu cần đổi danh mục." });
+        if (item.PaymentTransaction?.Status == MarketplacePaymentStatus.AwaitingVerification)
+            return Conflict(new { success = false, message = "Giao dịch đang được xác minh nên chưa thể sửa mặt hàng." });
         if (request.Image is { Length: > MarketplacePolicy.MaxImageBytes })
             return BadRequest(new { success = false, message = "Ảnh sản phẩm không được vượt quá 10 MB." });
 
@@ -243,6 +253,15 @@ public class MarketplaceController(
         item.Condition = request.Condition.Trim();
         item.Location = request.Location.Trim();
         if (request.Image is { Length: > 0 }) item.ImageUrl = await files.UploadImageAsync(request.Image, "marketplace");
+        if (item.Status == MarketplaceListingStatus.AwaitingPayment)
+        {
+            item.DisplayFee = configuredCategoryFee ?? item.DisplayFee;
+            if (item.PaymentTransaction is { Status: MarketplacePaymentStatus.Pending } pendingPayment)
+            {
+                pendingPayment.Amount = item.DisplayFee;
+                pendingPayment.UpdatedAt = DateTime.UtcNow;
+            }
+        }
         if (item.Status is MarketplaceListingStatus.Approved or MarketplaceListingStatus.Rejected)
         {
             item.Status = MarketplaceListingStatus.PendingReview;
@@ -409,7 +428,8 @@ public class MarketplaceController(
 
         var now = DateTime.UtcNow;
         item.Status = MarketplaceListingStatus.AwaitingPayment;
-        item.DisplayFee = await marketplaceSettings.GetDisplayFeeAsync(HttpContext.RequestAborted);
+        item.DisplayFee = await marketplaceSettings.GetDisplayFeeAsync(item.Category, HttpContext.RequestAborted)
+            ?? await marketplaceSettings.GetDisplayFeeAsync(HttpContext.RequestAborted);
         item.PaymentTransactionId = null;
         item.TermsVersion = MarketplacePolicy.CurrentTermsVersion;
         item.TermsAcceptedAt = now;

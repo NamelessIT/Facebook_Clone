@@ -117,7 +117,10 @@ public enum ModerationTargetType
     Reel = 2,
     Live = 3,
     MarketplaceListing = 4,
-    User = 5
+    User = 5,
+    PostComment = 6,
+    LiveComment = 7,
+    ReelComment = 8
 }
 
 public enum ModerationReportStatus

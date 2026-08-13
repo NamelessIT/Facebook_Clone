@@ -11,7 +11,9 @@ public class ModerationReportConfiguration : IEntityTypeConfiguration<Moderation
         builder.ToTable("ModerationReports");
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => new { x.Status, x.CreatedAt });
+        builder.HasIndex(x => new { x.Status, x.PunishmentEndsAt, x.RestoredAt });
         builder.HasIndex(x => new { x.TargetType, x.TargetId });
+        builder.HasIndex(x => new { x.TargetOwnerId, x.ResolutionAction, x.PunishmentEndsAt });
         builder.HasIndex(x => new { x.ReporterId, x.TargetType, x.TargetId }).IsUnique();
         builder.Property(x => x.Reason).IsRequired().HasMaxLength(160);
         builder.Property(x => x.Details).HasMaxLength(2000);

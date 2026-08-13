@@ -1,11 +1,12 @@
 using FacebookClone.Domain.Entities;
 using FacebookClone.Domain.Enums;
+using FacebookClone.Domain.Interfaces;
 using FacebookClone.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace FacebookClone.API.Services;
 
-public class LiveAccessService(AppDbContext db)
+public class LiveAccessService(AppDbContext db, IUserBlockRepository userBlocks)
 {
     public async Task<bool> IsModeratorAsync(Guid userId) => await db.Users.AsNoTracking().AnyAsync(u =>
         u.Id == userId && !u.IsDeleted && u.UserRoles.Any(ur => ur.Role.Level >= 50 &&
@@ -19,6 +20,7 @@ public class LiveAccessService(AppDbContext db)
     {
         if (session.OwnerId == userId) return true;
         if (moderatorBypass && await IsModeratorAsync(userId)) return true;
+        if (await userBlocks.IsFullyBlockedBetweenAsync(session.OwnerId, userId)) return false;
         if (session.Privacy == PostPrivacy.Public) return true;
         if (session.Privacy == PostPrivacy.Private) return false;
         return await db.Friendships.AsNoTracking().AnyAsync(f => f.Status == FriendshipStatus.Accepted &&

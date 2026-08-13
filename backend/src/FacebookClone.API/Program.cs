@@ -154,6 +154,7 @@ try
     builder.Services.AddScoped<ISavedCollectionRepository, SavedCollectionRepository>();
     builder.Services.AddScoped<ISavedCollectionService, SavedCollectionService>();
     builder.Services.AddScoped<ISecurityBlockRepository, SecurityBlockRepository>();
+    builder.Services.AddScoped<IUserBlockRepository, UserBlockRepository>();
     builder.Services.AddScoped<ISecurityBlockService, SecurityBlockService>();
     builder.Services.AddScoped<IInternalTranslationService, InternalTranslationService>();
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -161,6 +162,7 @@ try
     builder.Services.AddScoped<MarketplaceSettingsService>();
     builder.Services.AddScoped<LiveRecordingStorageService>();
     builder.Services.AddHostedService<ExpiredLiveRecordingCleanupService>();
+    builder.Services.AddHostedService<ExpiredModerationPenaltyService>();
 
     // ---------------------------------------------------------
     // 5. SWAGGER (Swashbuckle) & CORS

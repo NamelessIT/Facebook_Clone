@@ -17,9 +17,27 @@
     "BlockListKind": { "Blacklist": 1, "Whitelist": 2 },
     "MarketplaceListingStatus": { "PendingReview": 1, "Approved": 2, "Rejected": 3, "Sold": 4, "Removed": 5, "AwaitingPayment": 6 },
     "MarketplacePaymentStatus": { "Pending": 1, "AwaitingVerification": 2, "Succeeded": 3, "Failed": 4, "Cancelled": 5, "Consumed": 6 },
-    "ModerationTargetType": { "Post": 1, "Reel": 2, "Live": 3, "MarketplaceListing": 4, "User": 5 },
+    "ModerationTargetType": { "Post": 1, "Reel": 2, "Live": 3, "MarketplaceListing": 4, "User": 5, "PostComment": 6, "LiveComment": 7, "ReelComment": 8 },
     "ModerationReportStatus": { "Pending": 1, "Reviewing": 2, "Resolved": 3, "Dismissed": 4 },
     "ModerationAction": { "None": 0, "ContentRemoved": 1, "PostSuspended": 2, "ReelSuspended": 3, "LiveSuspended": 4, "MarketplaceSuspended": 5, "AccountBanned": 6 }
+  },
+  "uiMetadata": {
+    "MarketplaceListingStatus": {
+      "PendingReview": { "labels": { "vi": "Chờ duyệt", "en": "Pending review" }, "tone": "warning", "badgeVariant": "secondary" },
+      "Approved": { "labels": { "vi": "Đang hiển thị", "en": "Visible" }, "tone": "success", "badgeVariant": "default" },
+      "Rejected": { "labels": { "vi": "Từ chối", "en": "Rejected" }, "tone": "danger", "badgeVariant": "destructive" },
+      "Sold": { "labels": { "vi": "Đã bán", "en": "Sold" }, "tone": "neutral", "badgeVariant": "outline" },
+      "Removed": { "labels": { "vi": "Đã gỡ", "en": "Removed" }, "tone": "danger", "badgeVariant": "destructive" },
+      "AwaitingPayment": { "labels": { "vi": "Chờ thanh toán", "en": "Awaiting payment" }, "tone": "info", "badgeVariant": "secondary" }
+    },
+    "MarketplacePaymentStatus": {
+      "Pending": { "labels": { "vi": "Chờ chuyển khoản", "en": "Pending transfer" }, "tone": "warning", "badgeVariant": "secondary" },
+      "AwaitingVerification": { "labels": { "vi": "Chờ xác minh", "en": "Awaiting verification" }, "tone": "info", "badgeVariant": "default" },
+      "Succeeded": { "labels": { "vi": "Đã thanh toán", "en": "Paid" }, "tone": "success", "badgeVariant": "default" },
+      "Failed": { "labels": { "vi": "Thất bại", "en": "Failed" }, "tone": "danger", "badgeVariant": "destructive" },
+      "Cancelled": { "labels": { "vi": "Đã hủy", "en": "Cancelled" }, "tone": "neutral", "badgeVariant": "outline" },
+      "Consumed": { "labels": { "vi": "Đã sử dụng", "en": "Consumed" }, "tone": "success", "badgeVariant": "outline" }
+    }
   },
   "stringConstants": {
     "PostInteractionType": {

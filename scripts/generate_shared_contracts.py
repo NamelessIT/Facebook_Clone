@@ -51,7 +51,7 @@ def gen_csharp_string_consts(groups: dict, ns: str) -> str:
     return "\n".join(out) + "\n"
 
 
-def gen_js_enums(enums: dict, string_consts: dict) -> str:
+def gen_js_enums(enums: dict, string_consts: dict, ui_metadata: dict) -> str:
     out = [AUTOGEN.replace("//", "//"), ""]
     for enum_name, members in enums.items():
         pairs = ", ".join(f"{k}: {v}" for k, v in members.items())
@@ -60,6 +60,15 @@ def gen_js_enums(enums: dict, string_consts: dict) -> str:
     for cls, members in string_consts.items():
         pairs = ", ".join(f'{k}: "{v}"' for k, v in members.items())
         out.append(f"export const {cls} = Object.freeze({{ {pairs} }});")
+    out.append("")
+    for enum_name, members in ui_metadata.items():
+        enum_members = enums.get(enum_name, {})
+        rows = []
+        for member_name, metadata in members.items():
+            if member_name not in enum_members:
+                raise ValueError(f"uiMetadata.{enum_name}.{member_name} does not exist in enums")
+            rows.append(f"  {enum_members[member_name]}: Object.freeze({json.dumps(metadata, ensure_ascii=False)})")
+        out.append(f"export const {enum_name}Ui = Object.freeze({{\n" + ",\n".join(rows) + "\n});")
     out.append("")
     return "\n".join(out) + "\n"
 
@@ -232,6 +241,7 @@ def main() -> int:
     ns = enums_doc.get("csharpNamespace", "FacebookClone.Domain.Enums")
     enums = enums_doc["enums"]
     string_consts = enums_doc.get("stringConstants", {})
+    ui_metadata = enums_doc.get("uiMetadata", {})
 
     stale: list[str] = []
     print("Generating shared contracts..." if not check else "Checking shared contracts...")
@@ -240,7 +250,7 @@ def main() -> int:
     write_or_check(CS_ENUMS_DIR / "StringConstants.g.cs", gen_csharp_string_consts(string_consts, ns), check, stale)
     write_or_check(CS_CONSTANTS_DIR / "Constants.g.cs", gen_csharp_constants(constants_doc), check, stale)
     write_or_check(CS_CONSTANTS_DIR / "LocalizationCatalog.g.cs", gen_csharp_localization_catalog(localization_catalog), check, stale)
-    write_or_check(JS_DIR / "enums.js", gen_js_enums(enums, string_consts), check, stale)
+    write_or_check(JS_DIR / "enums.js", gen_js_enums(enums, string_consts, ui_metadata), check, stale)
     write_or_check(JS_DIR / "constants.js", gen_js_constants(constants_doc), check, stale)
     write_or_check(JS_DIR / "localizationCatalog.js", gen_js_localization_catalog(localization_catalog), check, stale)
 

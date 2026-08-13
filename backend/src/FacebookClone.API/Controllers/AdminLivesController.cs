@@ -97,6 +97,19 @@ public class AdminLivesController(AppDbContext db, LiveAccessService access, IHu
         user.LiveSuspensionReason = null;
         user.LiveSuspendedAt = null;
         user.UpdatedAt = DateTime.UtcNow;
+        var restoredAt = DateTime.UtcNow;
+        var livePenalties = await db.ModerationReports
+            .Where(x => x.TargetOwnerId == userId &&
+                        x.ResolutionAction == ModerationAction.LiveSuspended &&
+                        x.Status == ModerationReportStatus.Resolved &&
+                        x.RestoredAt == null)
+            .ToListAsync();
+        foreach (var penalty in livePenalties)
+        {
+            penalty.RestoredAt = restoredAt;
+            penalty.RestoredById = reviewerId;
+            penalty.UpdatedAt = restoredAt;
+        }
         var heldSessions = await db.LiveSessions
             .Where(x => x.OwnerId == userId && x.IsEvidenceOnHold)
             .ToListAsync();

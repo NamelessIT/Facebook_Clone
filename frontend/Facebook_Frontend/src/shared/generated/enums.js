@@ -14,9 +14,26 @@ export const BlockTargetType = Object.freeze({ Ip: 1, User: 2, Email: 3 });
 export const BlockListKind = Object.freeze({ Blacklist: 1, Whitelist: 2 });
 export const MarketplaceListingStatus = Object.freeze({ PendingReview: 1, Approved: 2, Rejected: 3, Sold: 4, Removed: 5, AwaitingPayment: 6 });
 export const MarketplacePaymentStatus = Object.freeze({ Pending: 1, AwaitingVerification: 2, Succeeded: 3, Failed: 4, Cancelled: 5, Consumed: 6 });
-export const ModerationTargetType = Object.freeze({ Post: 1, Reel: 2, Live: 3, MarketplaceListing: 4, User: 5 });
+export const ModerationTargetType = Object.freeze({ Post: 1, Reel: 2, Live: 3, MarketplaceListing: 4, User: 5, PostComment: 6, LiveComment: 7, ReelComment: 8 });
 export const ModerationReportStatus = Object.freeze({ Pending: 1, Reviewing: 2, Resolved: 3, Dismissed: 4 });
 export const ModerationAction = Object.freeze({ None: 0, ContentRemoved: 1, PostSuspended: 2, ReelSuspended: 3, LiveSuspended: 4, MarketplaceSuspended: 5, AccountBanned: 6 });
 
 export const PostInteractionType = Object.freeze({ INTERESTED: "INTERESTED", NOT_INTERESTED: "NOT_INTERESTED", SAVED: "SAVED", REPORTED: "REPORTED" });
+
+export const MarketplaceListingStatusUi = Object.freeze({
+  1: Object.freeze({"labels": {"vi": "Chờ duyệt", "en": "Pending review"}, "tone": "warning", "badgeVariant": "secondary"}),
+  2: Object.freeze({"labels": {"vi": "Đang hiển thị", "en": "Visible"}, "tone": "success", "badgeVariant": "default"}),
+  3: Object.freeze({"labels": {"vi": "Từ chối", "en": "Rejected"}, "tone": "danger", "badgeVariant": "destructive"}),
+  4: Object.freeze({"labels": {"vi": "Đã bán", "en": "Sold"}, "tone": "neutral", "badgeVariant": "outline"}),
+  5: Object.freeze({"labels": {"vi": "Đã gỡ", "en": "Removed"}, "tone": "danger", "badgeVariant": "destructive"}),
+  6: Object.freeze({"labels": {"vi": "Chờ thanh toán", "en": "Awaiting payment"}, "tone": "info", "badgeVariant": "secondary"})
+});
+export const MarketplacePaymentStatusUi = Object.freeze({
+  1: Object.freeze({"labels": {"vi": "Chờ chuyển khoản", "en": "Pending transfer"}, "tone": "warning", "badgeVariant": "secondary"}),
+  2: Object.freeze({"labels": {"vi": "Chờ xác minh", "en": "Awaiting verification"}, "tone": "info", "badgeVariant": "default"}),
+  3: Object.freeze({"labels": {"vi": "Đã thanh toán", "en": "Paid"}, "tone": "success", "badgeVariant": "default"}),
+  4: Object.freeze({"labels": {"vi": "Thất bại", "en": "Failed"}, "tone": "danger", "badgeVariant": "destructive"}),
+  5: Object.freeze({"labels": {"vi": "Đã hủy", "en": "Cancelled"}, "tone": "neutral", "badgeVariant": "outline"}),
+  6: Object.freeze({"labels": {"vi": "Đã sử dụng", "en": "Consumed"}, "tone": "success", "badgeVariant": "outline"})
+});
 

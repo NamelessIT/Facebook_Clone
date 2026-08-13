@@ -161,7 +161,8 @@ public class AdminController(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         [FromQuery] string? search = null,
-        [FromQuery] string? filter = null)
+        [FromQuery] string? filter = null,
+        [FromQuery] Guid? targetId = null)
     {
         if (RequireAdmin() is { } err) return err;
 
@@ -169,6 +170,11 @@ public class AdminController(
         pageSize = Math.Clamp(pageSize, 1, 100);
 
         var query = db.Users.AsNoTracking().Where(u => !u.IsDeleted);
+
+        // Deep links from a report must filter before paging. Filtering the
+        // already paged response made targets on page 2+ look missing.
+        if (targetId.HasValue)
+            query = query.Where(u => u.Id == targetId.Value);
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -213,6 +219,94 @@ public class AdminController(
             success = true,
             data = items,
             pagination = new { page, pageSize, total, totalPages = (int)Math.Ceiling((double)total / pageSize) }
+        });
+    }
+
+    [HttpGet("users/{id:guid}/investigation")]
+    public async Task<IActionResult> GetUserInvestigation(Guid id)
+    {
+        if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("users.view")) return Forbid();
+
+        var subject = await db.Users.IgnoreQueryFilters().AsNoTracking()
+            .Where(u => u.Id == id)
+            .Select(u => new
+            {
+                u.Id, u.FirstName, u.LastName, u.Email, u.AvatarUrl, u.CreatedAt,
+                u.IsDeleted, u.IsBanned, u.BanReason, u.BannedAt,
+                u.IsPostSuspended, u.PostSuspensionReason, u.PostSuspendedAt,
+                u.IsReelSuspended, u.ReelSuspensionReason, u.ReelSuspendedAt,
+                u.IsLiveSuspended, u.LiveSuspensionReason, u.LiveSuspendedAt,
+                u.IsMarketplaceSuspended, u.MarketplaceSuspensionReason, u.MarketplaceSuspendedAt
+            })
+            .FirstOrDefaultAsync();
+        if (subject == null) return NotFound(new { success = false, message = "Không tìm thấy người dùng." });
+
+        var posts = await db.Posts.IgnoreQueryFilters().AsNoTracking()
+            .Where(p => p.UserId == id)
+            .OrderByDescending(p => p.CreatedAt).Take(100)
+            .Select(p => new
+            {
+                p.Id, p.Content, Privacy = (int)p.Privacy, p.IsDeleted, p.CreatedAt, p.UpdatedAt,
+                CommentCount = p.Comments.Count(c => !c.IsDeleted), MediaCount = p.Medias.Count
+            }).ToListAsync();
+        var reels = await db.Reels.IgnoreQueryFilters().AsNoTracking()
+            .Where(r => r.UserId == id)
+            .OrderByDescending(r => r.CreatedAt).Take(100)
+            .Select(r => new { r.Id, r.Title, r.Caption, Privacy = (int)r.Privacy, r.IsDeleted, r.CreatedAt, r.UpdatedAt, r.ViewsCount })
+            .ToListAsync();
+        var lives = await db.LiveSessions.AsNoTracking()
+            .Where(l => l.OwnerId == id)
+            .OrderByDescending(l => l.StartedAt).Take(100)
+            .Select(l => new
+            {
+                l.Id, l.Title, Status = (int)l.Status, Privacy = (int)l.Privacy,
+                l.StartedAt, l.EndedAt, l.EndReason, l.IsEvidenceOnHold,
+                CommentCount = l.Comments.Count
+            }).ToListAsync();
+        var postComments = await db.Comments.IgnoreQueryFilters().AsNoTracking()
+            .Where(c => c.UserId == id)
+            .OrderByDescending(c => c.CreatedAt).Take(150)
+            .Select(c => new { c.Id, c.PostId, c.Content, c.IsDeleted, c.CreatedAt })
+            .ToListAsync();
+        var liveComments = await db.LiveComments.AsNoTracking()
+            .Where(c => c.UserId == id)
+            .OrderByDescending(c => c.CreatedAt).Take(150)
+            .Select(c => new { c.Id, c.LiveSessionId, c.Content, c.IsDeleted, c.CreatedAt })
+            .ToListAsync();
+        var reports = await db.ModerationReports.AsNoTracking()
+            .Where(r => r.TargetOwnerId == id || (r.TargetType == ModerationTargetType.User && r.TargetId == id))
+            .OrderByDescending(r => r.CreatedAt).Take(100)
+            .Select(r => new
+            {
+                r.Id, TargetType = (int)r.TargetType, r.TargetId, r.Reason, r.Details,
+                Status = (int)r.Status, ResolutionAction = (int)r.ResolutionAction,
+                r.ResolutionNote, r.CreatedAt, r.ResolvedAt, r.PunishmentEndsAt, r.RestoredAt
+            }).ToListAsync();
+
+        var activity = new List<object>();
+        activity.AddRange(posts.Select(x => new { kind = "post", id = x.Id, at = x.CreatedAt, title = x.Content, deleted = x.IsDeleted, privacy = x.Privacy }));
+        activity.AddRange(reels.Select(x => new { kind = "reel", id = x.Id, at = x.CreatedAt, title = x.Title ?? x.Caption ?? "Reel", deleted = x.IsDeleted, privacy = x.Privacy }));
+        activity.AddRange(lives.Select(x => new { kind = "live", id = x.Id, at = x.StartedAt, title = x.Title, deleted = false, privacy = x.Privacy }));
+        activity.AddRange(postComments.Select(x => new { kind = "postComment", id = x.Id, at = x.CreatedAt, title = x.Content, deleted = x.IsDeleted, privacy = 0 }));
+        activity.AddRange(liveComments.Select(x => new { kind = "liveComment", id = x.Id, at = x.CreatedAt, title = x.Content, deleted = x.IsDeleted, privacy = 0 }));
+
+        return Ok(new
+        {
+            success = true,
+            data = new
+            {
+                user = subject,
+                summary = new
+                {
+                    posts = posts.Count, deletedPosts = posts.Count(x => x.IsDeleted),
+                    reels = reels.Count, deletedReels = reels.Count(x => x.IsDeleted),
+                    lives = lives.Count, comments = postComments.Count + liveComments.Count,
+                    reports = reports.Count
+                },
+                posts, reels, lives, postComments, liveComments, reports,
+                activity = activity.OrderByDescending(x => (DateTime)x.GetType().GetProperty("at")!.GetValue(x)!).Take(250)
+            }
         });
     }
 
@@ -689,6 +783,33 @@ public class AdminController(
             .ToListAsync();
 
         return Ok(new { success = true, data = items, pagination = new { page, pageSize, total, totalPages = (int)Math.Ceiling((double)total / pageSize) } });
+    }
+
+    [HttpGet("posts/{id:guid}/detail")]
+    public async Task<IActionResult> GetPostDetail(Guid id)
+    {
+        if (RequireAdmin() is { } err) return err;
+        if (!await CurrentUserHasPermission("posts.view")) return Forbid();
+        var post = await db.Posts.IgnoreQueryFilters().AsNoTracking()
+            .Include(x => x.User).Include(x => x.Medias)
+            .Include(x => x.Comments).ThenInclude(x => x.User)
+            .Include(x => x.Comments).ThenInclude(x => x.Medias)
+            .Include(x => x.Comments).ThenInclude(x => x.Reactions)
+            .FirstOrDefaultAsync(x => x.Id == id);
+        if (post == null) return NotFound(new { success = false, message = "Không tìm thấy bài viết." });
+        return Ok(new { success = true, data = new
+        {
+            post.Id, post.Content, Privacy = (int)post.Privacy, PostType = (int)post.PostType, post.IsDeleted, post.CreatedAt,
+            Author = new { post.UserId, post.User.FullName, post.User.Email, post.User.AvatarUrl },
+            Medias = post.Medias.OrderBy(x => x.CreatedAt).Select(x => new { x.Id, x.Url, MediaType = (int)x.MediaType }),
+            Comments = post.Comments.OrderBy(x => x.CreatedAt).Select(x => new
+            {
+                x.Id, x.Content, x.ParentCommentId, x.IsDeleted, x.CreatedAt,
+                Author = new { x.UserId, x.User.FullName, x.User.Email, x.User.AvatarUrl },
+                Medias = x.Medias.Select(m => new { m.Id, m.Url, MediaType = (int)m.MediaType }),
+                Reactions = x.Reactions.Count
+            })
+        }});
     }
 
     [HttpPut("posts/{id}/delete")]

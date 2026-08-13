@@ -14,15 +14,18 @@ public class NotificationService : INotificationService
     private readonly INotificationRepository _notificationRepo;
     private readonly IMapper _mapper;
     private readonly INotificationHubService _hubService;
+    private readonly IUserBlockRepository _userBlocks;
     private readonly ILogger<NotificationService> _logger;
 
     public NotificationService(
         INotificationRepository notificationRepo,
+        IUserBlockRepository userBlocks,
         IMapper mapper,
         INotificationHubService hubService,
         ILogger<NotificationService> logger)
     {
         _notificationRepo = notificationRepo;
+        _userBlocks = userBlocks;
         _mapper = mapper;
         _hubService = hubService;
         _logger = logger;
@@ -33,6 +36,7 @@ public class NotificationService : INotificationService
     {
         // Khong tu gui thong bao cho chinh minh
         if (userId == actorId) return;
+        if (await _userBlocks.IsFullyBlockedBetweenAsync(userId, actorId)) return;
 
         var notification = new Notification
         {
