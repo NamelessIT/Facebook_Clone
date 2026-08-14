@@ -118,6 +118,7 @@ public class ReportsController(AppDbContext db, IWebHostEnvironment environment)
         ModerationTargetType.User => await db.Users.Where(x => x.Id == id && !x.IsDeleted).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(),
         ModerationTargetType.PostComment => await db.Comments.Where(x => x.Id == id && !x.IsDeleted).Select(x => (Guid?)x.UserId).FirstOrDefaultAsync(),
         ModerationTargetType.LiveComment => await db.LiveComments.Where(x => x.Id == id && !x.IsDeleted).Select(x => (Guid?)x.UserId).FirstOrDefaultAsync(),
+        ModerationTargetType.ReelComment => await db.ReelComments.Where(x => x.Id == id && !x.IsDeleted).Select(x => (Guid?)x.UserId).FirstOrDefaultAsync(),
         _ => null
     };
 }

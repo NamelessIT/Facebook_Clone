@@ -22,6 +22,7 @@ public class AppDbContext : DbContext
     public DbSet<MessageHiddenForUser> MessageHiddenForUsers { get; set; }
     public DbSet<Reel> Reels { get; set; }
     public DbSet<ReelLike> ReelLikes { get; set; } 
+    public DbSet<ReelComment> ReelComments { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<GroupMember> GroupMembers { get; set; }
     public DbSet<MediaAttachment> MediaAttachments { get; set; }

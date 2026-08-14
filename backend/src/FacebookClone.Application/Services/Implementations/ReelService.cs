@@ -1,5 +1,6 @@
 using AutoMapper;
 using FacebookClone.Application.DTOs.Reel;
+using FacebookClone.Application.DTOs.Interaction;
 using FacebookClone.Application.DTOs.User;
 using FacebookClone.Application.Services.Interfaces;
 using FacebookClone.Domain.Entities;
@@ -38,6 +39,7 @@ public class ReelService : IReelService
         Duration = r.Duration,
         ViewsCount = r.ViewsCount,
         LikesCount = r.Likes?.Count ?? 0,
+        CommentsCount = r.Comments?.Count(comment => !comment.IsDeleted) ?? 0,
         IsLikedByMe = r.Likes?.Any(l => l.UserId == currentUserId) ?? false,
         CreatedAt = r.CreatedAt,
         Author = _mapper.Map<UserProfileDto>(r.User)
@@ -164,4 +166,50 @@ public class ReelService : IReelService
         int likesCount = await _reelRepo.CountLikesAsync(reelId);
         return new ToggleLikeResultDto(isLiked, likesCount, message);
     }
+
+    public async Task<(IEnumerable<CommentResponseDto> Items, int Total)> GetCommentsAsync(
+        Guid currentUserId, Guid reelId, int pageNumber, int pageSize)
+    {
+        await GetReelAsync(currentUserId, reelId);
+        var comments = await _reelRepo.GetCommentsAsync(reelId, pageNumber, pageSize);
+        var total = await _reelRepo.CountCommentsAsync(reelId);
+        return (comments.Select(MapCommentToDto), total);
+    }
+
+    public async Task<CommentResponseDto> AddCommentAsync(Guid userId, Guid reelId, CreateCommentRequest request)
+    {
+        var reel = await _reelRepo.GetByIdAsync(reelId);
+        if (reel == null) throw new Exception("Reel không tồn tại hoặc đã bị xóa.");
+        if (reel.UserId != userId && await _userBlockRepository.IsFullyBlockedBetweenAsync(userId, reel.UserId))
+            throw new UnauthorizedAccessException("Không thể bình luận do thiết lập chặn.");
+
+        var content = request.Content?.Trim();
+        if (string.IsNullOrWhiteSpace(content)) throw new Exception("Bình luận không được để trống.");
+        if (content.Length > 1000) throw new Exception("Bình luận không được vượt quá 1000 ký tự.");
+
+        var comment = new ReelComment
+        {
+            Id = Guid.NewGuid(),
+            ReelId = reelId,
+            UserId = userId,
+            Content = content,
+            CreatedAt = DateTime.UtcNow,
+            IsDeleted = false
+        };
+        await _reelRepo.AddCommentAsync(comment);
+
+        var saved = await _reelRepo.GetCommentAsync(reelId, comment.Id)
+            ?? throw new Exception("Không thể tải bình luận Reel vừa tạo.");
+        if (reel.UserId != userId)
+            await _notiService.CreateNotificationAsync(reel.UserId, userId, NotificationType.Comment, reelId);
+        return MapCommentToDto(saved);
+    }
+
+    private CommentResponseDto MapCommentToDto(ReelComment comment) => new()
+    {
+        Id = comment.Id,
+        Content = comment.Content,
+        CreatedAt = comment.CreatedAt,
+        Author = _mapper.Map<UserProfileDto>(comment.User)
+    };
 }

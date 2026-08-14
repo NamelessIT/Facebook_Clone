@@ -1,12 +1,16 @@
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom"; // 👈 1. IMPORT CÁI NÀY
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { getImageUrl } from "../../utils/formatUrl";
+import CommentSection from "./CommentSection";
+import VideoPlaybackControls from "../media/VideoPlaybackControls";
 import "./MediaViewerModal.css";
 import { translateCatalogKey } from '../../shared/localizationRuntime';
 
-const MediaViewerModal = ({ isOpen, onClose, medias, initialIndex }) => {
+const MediaViewerModal = ({ isOpen, onClose, medias, initialIndex, postId, commentsCount = 0, onCommentAdded }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex || 0);
+  const videoRef = useRef(null);
+  const videoFrameRef = useRef(null);
 
   // Cập nhật index khi props thay đổi
   useEffect(() => {
@@ -29,42 +33,55 @@ const MediaViewerModal = ({ isOpen, onClose, medias, initialIndex }) => {
     if (currentIndex < medias.length - 1) setCurrentIndex(currentIndex + 1);
   };
 
-  // 👇 2. DÙNG CREATE PORTAL ĐỂ RENDER RA THẲNG DOCUMENT BODY
   return createPortal(
     <div className="media-viewer-overlay" onClick={onClose}>
-      <button onClick={onClose} className="close-viewer-btn">
+      <button type="button" onClick={onClose} className="close-viewer-btn" aria-label={translateCatalogKey('common.close')}>
         <X size={24} />
       </button>
 
       <div className="media-viewer-left" onClick={(e) => e.stopPropagation()}>
         {currentIndex > 0 && (
-          <button onClick={handlePrev} className="nav-btn left">
+          <button type="button" onClick={handlePrev} className="nav-btn left">
             <ChevronLeft size={32} />
           </button>
         )}
 
-        <div className="w-full h-full flex items-center justify-center p-4">
+        <div className="media-viewer-stage">
           {isVideo ? (
-            <video src={getImageUrl(currentMedia.url, 'videos')} controls autoPlay className="media-content-full" />
+            <div className="media-viewer-video-frame" ref={videoFrameRef}>
+              <video ref={videoRef} src={getImageUrl(currentMedia.url, 'videos')} playsInline className="media-content-full" />
+              <VideoPlaybackControls
+                videoRef={videoRef}
+                containerRef={videoFrameRef}
+                sourceKey={currentMedia.url}
+                label="video bài viết"
+              />
+            </div>
           ) : (
             <img src={getImageUrl(currentMedia.url, 'posts')} alt={translateCatalogKey('ui.components.post.editpostmodal.media.8b5254ae')} className="media-content-full" />
           )}
         </div>
 
         {currentIndex < medias.length - 1 && (
-          <button onClick={handleNext} className="nav-btn right">
+          <button type="button" onClick={handleNext} className="nav-btn right">
             <ChevronRight size={32} />
           </button>
         )}
       </div>
 
       <div className="media-viewer-right" onClick={(e) => e.stopPropagation()}>
-        <div className="p-4 border-b text-center font-semibold text-gray-500">
-          {translateCatalogKey('ui.components.post.mediaviewermodal.khu-vuc-hien-thi-binh-luan-sap-ra-ma.5c0ead92')}
+        <div className="media-viewer-comments-header">
+          <div>
+            <strong>{translateCatalogKey('post.comment')}</strong>
+            <span>{commentsCount} {translateCatalogKey('post.comment').toLocaleLowerCase('vi-VN')}</span>
+          </div>
+        </div>
+        <div className="media-viewer-comments-body">
+          {postId && <CommentSection postId={postId} onCommentAdded={onCommentAdded} />}
         </div>
       </div>
     </div>,
-    document.body // 👈 Gắn thẳng vào Body, đè lên mọi thứ!
+    document.body
   );
 };
 

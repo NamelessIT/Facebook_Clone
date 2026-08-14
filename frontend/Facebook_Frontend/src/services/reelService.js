@@ -23,6 +23,12 @@ const reelService = {
   deleteReel: (id) => axiosClient.delete(`/reels/${id}`),
 
   toggleLike: (id) => axiosClient.post(`/reels/${id}/like`),
+
+  getComments: (id, pageNumber = 1, pageSize = 30) =>
+    axiosClient.get(`/reels/${id}/comments`, { params: { pageNumber, pageSize } }),
+
+  createComment: (id, content) =>
+    axiosClient.post(`/reels/${id}/comments`, { content }),
 };
 
 export default reelService;

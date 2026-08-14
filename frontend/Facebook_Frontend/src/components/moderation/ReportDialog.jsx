@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import './ReportDialog.css';
 
 const REASONS = ['Lừa đảo hoặc spam', 'Hàng hóa/nội dung bị cấm', 'Bạo lực hoặc hành vi nguy hiểm', 'Quấy rối hoặc bắt nạt', 'Thông tin sai lệch', 'Khác'];
 
@@ -30,7 +31,7 @@ const ReportDialog = ({ open, onOpenChange, targetType, targetId, targetLabel = 
 
   return (
     <Dialog open={open} onOpenChange={(value) => !submitting && onOpenChange(value)}>
-      <DialogContent className="moderation-report-dialog sm:max-w-lg">
+      <DialogContent className="moderation-report-dialog sm:max-w-lg" onClick={(event) => event.stopPropagation()}>
         <DialogHeader>
           <div className="moderation-dialog-icon"><Flag /></div>
           <DialogTitle>{translateCatalogKey('common.report')} {targetLabel}</DialogTitle>

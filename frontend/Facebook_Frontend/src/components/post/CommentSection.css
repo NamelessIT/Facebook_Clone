@@ -242,6 +242,17 @@
   color: var(--text-primary);
 }
 
+[data-theme="dark"] .comment-meta-btn,
+[data-theme="dark"] .comment-meta-time,
+[data-theme="dark"] .comment-loading,
+[data-theme="dark"] .comment-empty {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .comment-text {
+  color: var(--text-primary);
+}
+
 [data-theme="dark"] .comment-loading,
 [data-theme="dark"] .comment-empty {
   color: var(--text-secondary);

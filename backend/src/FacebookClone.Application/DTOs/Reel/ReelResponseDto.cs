@@ -15,6 +15,7 @@ public class ReelResponseDto
     public int Duration { get; set; }
     public int ViewsCount { get; set; }
     public int LikesCount { get; set; }
+    public int CommentsCount { get; set; }
     public bool IsLikedByMe { get; set; }
     public DateTime CreatedAt { get; set; }
     public UserProfileDto Author { get; set; } = null!;

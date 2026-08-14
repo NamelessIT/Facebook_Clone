@@ -25,4 +25,5 @@ public class Reel
 
     /* Navigation */
     public ICollection<ReelLike> Likes { get; set; } = new List<ReelLike>();
+    public ICollection<ReelComment> Comments { get; set; } = new List<ReelComment>();
 }

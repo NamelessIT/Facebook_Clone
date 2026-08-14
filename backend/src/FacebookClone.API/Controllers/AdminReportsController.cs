@@ -191,6 +191,11 @@ public class AdminReportsController(AppDbContext db, LiveAccessService access, I
                 var comment = await db.LiveComments.FirstAsync(x => x.Id == report.TargetId);
                 comment.IsDeleted = true;
             }
+            else if (report.TargetType == ModerationTargetType.ReelComment)
+            {
+                var comment = await db.ReelComments.FirstAsync(x => x.Id == report.TargetId);
+                comment.IsDeleted = true;
+            }
             else throw new InvalidOperationException("Không thể gỡ trực tiếp một tài khoản; hãy chọn khóa tài khoản.");
             return;
         }
@@ -245,6 +250,7 @@ public class AdminReportsController(AppDbContext db, LiveAccessService access, I
         ModerationTargetType.User => await db.Users.IgnoreQueryFilters().Where(x => x.Id == id).Select(x => (Guid?)x.Id).FirstOrDefaultAsync(),
         ModerationTargetType.PostComment => await db.Comments.IgnoreQueryFilters().Where(x => x.Id == id).Select(x => (Guid?)x.UserId).FirstOrDefaultAsync(),
         ModerationTargetType.LiveComment => await db.LiveComments.Where(x => x.Id == id).Select(x => (Guid?)x.UserId).FirstOrDefaultAsync(),
+        ModerationTargetType.ReelComment => await db.ReelComments.IgnoreQueryFilters().Where(x => x.Id == id).Select(x => (Guid?)x.UserId).FirstOrDefaultAsync(),
         _ => null
     };
 
@@ -280,6 +286,11 @@ public class AdminReportsController(AppDbContext db, LiveAccessService access, I
             var x = await db.LiveComments.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == id);
             return x == null ? TargetDescription.Missing(type, id) : new(x.Content, x.UserId, x.User.FullName, true, $"/admin/lives?targetId={x.LiveSessionId}", $"/live?session={x.LiveSessionId}");
         }
+        if (type == ModerationTargetType.ReelComment)
+        {
+            var x = await db.ReelComments.IgnoreQueryFilters().Include(c => c.User).FirstOrDefaultAsync(c => c.Id == id);
+            return x == null ? TargetDescription.Missing(type, id) : new(x.Content, x.UserId, x.User.FullName, true, $"/admin/reels?targetId={x.ReelId}", $"/reels?targetId={x.ReelId}");
+        }
         var user = await db.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id);
         return user == null ? TargetDescription.Missing(type, id) : new(user.FullName, user.Id, user.FullName, true, $"/admin/users?targetId={id}", $"/profile/{id}");
     }
@@ -294,6 +305,7 @@ public class AdminReportsController(AppDbContext db, LiveAccessService access, I
         ModerationTargetType.User => action is ModerationAction.PostSuspended or ModerationAction.ReelSuspended or ModerationAction.LiveSuspended or ModerationAction.MarketplaceSuspended or ModerationAction.AccountBanned,
         ModerationTargetType.PostComment => action is ModerationAction.ContentRemoved or ModerationAction.PostSuspended or ModerationAction.AccountBanned,
         ModerationTargetType.LiveComment => action is ModerationAction.ContentRemoved or ModerationAction.LiveSuspended or ModerationAction.AccountBanned,
+        ModerationTargetType.ReelComment => action is ModerationAction.ContentRemoved or ModerationAction.ReelSuspended or ModerationAction.AccountBanned,
         _ => false
     };
     private sealed record TargetDescription(string Title, Guid OwnerId, string OwnerName, bool Exists, string AdminPath, string PublicPath)

@@ -632,7 +632,15 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
         </button>
       </div>
 
-      <MediaViewerModal isOpen={viewerData.isOpen} onClose={() => setViewerData({ isOpen: false, index: 0 })} medias={post.medias} initialIndex={viewerData.index}/>
+      <MediaViewerModal
+        isOpen={viewerData.isOpen}
+        onClose={() => setViewerData({ isOpen: false, index: 0 })}
+        medias={post.medias}
+        initialIndex={viewerData.index}
+        postId={post.id}
+        commentsCount={localCommentsCount}
+        onCommentAdded={() => setLocalCommentsCount((count) => count + 1)}
+      />
 
       {/* COMMENT SECTION */}
       {showComments && (

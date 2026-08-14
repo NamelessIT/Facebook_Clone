@@ -70,6 +70,7 @@ public class User
     /* Navigation Properties */
     public ICollection<Post> Posts { get; set; } = new List<Post>();
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    public ICollection<ReelComment> ReelComments { get; set; } = new List<ReelComment>();
     public ICollection<Message> Messages { get; set; } = new List<Message>();
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     public ICollection<LiveSession> LiveSessions { get; set; } = new List<LiveSession>();

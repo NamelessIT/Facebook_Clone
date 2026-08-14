@@ -1,4 +1,5 @@
 using FacebookClone.Application.DTOs.Reel;
+using FacebookClone.Application.DTOs.Interaction;
 using FacebookClone.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -121,6 +122,38 @@ public class ReelsController : ControllerBase
             var result = await _reelService.ToggleLikeAsync(GetCurrentUserId(), id);
             return Ok(new { success = true, isLiked = result.IsLiked, likesCount = result.LikesCount, message = result.Message });
         }
+        catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
+    }
+
+    [HttpGet("{id:guid}/comments")]
+    public async Task<IActionResult> GetComments(Guid id, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+    {
+        pageNumber = Math.Max(1, pageNumber);
+        pageSize = Math.Clamp(pageSize, 1, 50);
+        try
+        {
+            var (items, total) = await _reelService.GetCommentsAsync(GetCurrentUserId(), id, pageNumber, pageSize);
+            return Ok(new
+            {
+                success = true,
+                data = items,
+                pagination = new { pageNumber, pageSize, total, totalPages = (int)Math.Ceiling((double)total / pageSize) }
+            });
+        }
+        catch (UnauthorizedAccessException) { return Forbid(); }
+        catch (Exception ex) { return NotFound(new { success = false, message = ex.Message }); }
+    }
+
+    [HttpPost("{id:guid}/comments")]
+    public async Task<IActionResult> AddComment(Guid id, [FromBody] CreateCommentRequest request)
+    {
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
+        try
+        {
+            var comment = await _reelService.AddCommentAsync(GetCurrentUserId(), id, request);
+            return Ok(new { success = true, data = comment });
+        }
+        catch (UnauthorizedAccessException) { return Forbid(); }
         catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
     }
 }

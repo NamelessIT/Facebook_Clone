@@ -24,6 +24,7 @@ public class ReelRepository : IReelRepository
         return await _context.Reels
             .Include(r => r.User)
             .Include(r => r.Likes)
+            .Include(r => r.Comments.Where(c => !c.IsDeleted))
             .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
     }
 
@@ -32,6 +33,7 @@ public class ReelRepository : IReelRepository
         return await _context.Reels
             .Include(r => r.User)
             .Include(r => r.Likes)
+            .Include(r => r.Comments.Where(c => !c.IsDeleted))
             .Where(r => !r.IsDeleted && r.Privacy == FacebookClone.Domain.Enums.PostPrivacy.Public)
             .OrderByDescending(r => r.CreatedAt)
             .Skip((pageNumber - 1) * pageSize)
@@ -52,6 +54,7 @@ public class ReelRepository : IReelRepository
         var baseQuery = _context.Reels
             .Include(r => r.User)
             .Include(r => r.Likes)
+            .Include(r => r.Comments.Where(c => !c.IsDeleted))
             .Where(r => !r.IsDeleted && r.UserId == userId);
 
         var total = await baseQuery.CountAsync();
@@ -86,5 +89,32 @@ public class ReelRepository : IReelRepository
     public async Task<int> CountLikesAsync(Guid reelId)
     {
         return await _context.Set<ReelLike>().CountAsync(l => l.ReelId == reelId);
+    }
+
+    public async Task<IEnumerable<ReelComment>> GetCommentsAsync(Guid reelId, int pageNumber, int pageSize)
+    {
+        return await _context.ReelComments
+            .Include(comment => comment.User)
+            .Where(comment => comment.ReelId == reelId && !comment.IsDeleted)
+            .OrderByDescending(comment => comment.CreatedAt)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public Task<int> CountCommentsAsync(Guid reelId) =>
+        _context.ReelComments.CountAsync(comment => comment.ReelId == reelId && !comment.IsDeleted);
+
+    public Task<ReelComment?> GetCommentAsync(Guid reelId, Guid commentId) =>
+        _context.ReelComments
+            .Include(comment => comment.User)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(comment => comment.ReelId == reelId && comment.Id == commentId && !comment.IsDeleted);
+
+    public async Task AddCommentAsync(ReelComment comment)
+    {
+        _context.ReelComments.Add(comment);
+        await _context.SaveChangesAsync();
     }
 }

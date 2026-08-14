@@ -13,4 +13,8 @@ public interface IReelRepository
     Task AddLikeAsync(ReelLike like);
     Task RemoveLikeAsync(ReelLike like);
     Task<int> CountLikesAsync(Guid reelId);
+    Task<IEnumerable<ReelComment>> GetCommentsAsync(Guid reelId, int pageNumber, int pageSize);
+    Task<ReelComment?> GetCommentAsync(Guid reelId, Guid commentId);
+    Task<int> CountCommentsAsync(Guid reelId);
+    Task AddCommentAsync(ReelComment comment);
 }

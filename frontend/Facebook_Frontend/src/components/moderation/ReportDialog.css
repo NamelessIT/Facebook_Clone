@@ -1,0 +1,10 @@
+/* Report dialogs can be opened from legacy full-screen modals whose stacking
+   contexts are higher than the shared shadcn dialog default (z-50). Keep this
+   override scoped to the overlay immediately paired with a report dialog. */
+[data-slot="dialog-overlay"]:has(+ .moderation-report-dialog) {
+  z-index: 4000;
+}
+
+.moderation-report-dialog {
+  z-index: 4001;
+}
