@@ -13,4 +13,9 @@ public interface IChatService
     Task<IEnumerable<ConversationListItemDto>> GetConversationListAsync(Guid userId);
     Task MarkConversationAsReadAsync(Guid conversationId, Guid currentUserId);
     Task<bool> AreFriendsAsync(Guid userId1, Guid userId2);
+    Task<MessageMutationResponseDto> EditMessageAsync(Guid currentUserId, Guid messageId, EditMessageRequest request);
+    Task<MessageMutationResponseDto> RecallMessageAsync(Guid currentUserId, Guid messageId);
+    Task<MessageMutationResponseDto> SetMessagePinnedAsync(Guid currentUserId, Guid messageId, bool isPinned);
+    Task HideMessageAsync(Guid currentUserId, Guid messageId);
+    Task<MessageResponseDto> ForwardMessageAsync(Guid currentUserId, Guid messageId, ForwardMessageRequest request);
 }

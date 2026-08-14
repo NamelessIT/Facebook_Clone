@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Eye, Radio, ShoppingBag } from 'lucide-react';
 import liveService from '../../services/liveService';
 import LiveRoom from './LiveRoom';
@@ -6,6 +6,7 @@ import Avatar from '../common/Avatar';
 import { LIVE } from '../../shared/generated/constants';
 import './ActiveLiveBanner.css';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import useNonOverlappingPolling from '../../hooks/useNonOverlappingPolling';
 
 const ActiveLiveBanner = ({ ownerId, limit = 3 }) => {
   const [sessions, setSessions] = useState([]);
@@ -20,11 +21,7 @@ const ActiveLiveBanner = ({ ownerId, limit = 3 }) => {
     }
   }, []);
 
-  useEffect(() => {
-    const initial = window.setTimeout(load, 0);
-    const timer = window.setInterval(load, LIVE.discoveryPollIntervalMs);
-    return () => { window.clearTimeout(initial); window.clearInterval(timer); };
-  }, [load]);
+  useNonOverlappingPolling(load, LIVE.discoveryPollIntervalMs);
 
   const visible = useMemo(() => sessions
     .filter((item) => !ownerId || item.ownerId === ownerId)

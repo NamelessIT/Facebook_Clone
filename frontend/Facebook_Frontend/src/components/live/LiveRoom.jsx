@@ -14,6 +14,7 @@ import { ModerationTargetType } from '../../shared/generated/enums';
 import ReportDialog from '../moderation/ReportDialog';
 import './LiveRoom.css';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import useNonOverlappingPolling from '../../hooks/useNonOverlappingPolling';
 
 const PRIVACY_OPTIONS = [
   { value: '1', labelKey: 'privacy.public' },
@@ -91,10 +92,11 @@ const LiveRoom = ({ initialSession, open, onOpenChange, onUpdated, onDeleted, mo
   useEffect(() => {
     setComments([]);
     loadComments();
-    if (session?.status !== 1) return undefined;
-    const timer = window.setInterval(loadComments, LIVE.commentsPollIntervalMs);
-    return () => window.clearInterval(timer);
   }, [loadComments, session?.id, session?.status]);
+  useNonOverlappingPolling(loadComments, LIVE.commentsPollIntervalMs, {
+    enabled: Boolean(open && session?.id && session?.status === 1),
+    immediate: false,
+  });
 
   useEffect(() => { commentsEndRef.current?.scrollIntoView({ block: 'nearest' }); }, [comments]);
 

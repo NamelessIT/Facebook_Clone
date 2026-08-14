@@ -7,7 +7,6 @@ import { LIMITS } from "../../shared/generated/constants";
 import "./SearchBar.css";
 import { useLocalization } from "../../contexts/useLocalization";
 import toast from '../../shared/appToast';
-import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const SearchBar = ({ onNavigate }) => {
   const [query, setQuery] = useState("");

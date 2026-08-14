@@ -1,5 +1,5 @@
 import { useAuth } from "../../contexts/AuthContext";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ThumbsUp, MessageSquare, Share2, MoreHorizontal, Edit3, Trash2, X, Globe, Users, Lock, Bookmark, BookmarkCheck } from "lucide-react";
 import Avatar from "../common/Avatar";
@@ -115,17 +115,7 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
   };
 
   // Timer: countdown rồi tự xóa khi hết 10s
-  useEffect(() => {
-    if (!isDeletionPending) return;
-    if (deletionTimeRemaining <= 0) {
-      executeDelete();
-      return;
-    }
-    const tid = setTimeout(() => setDeletionTimeRemaining((t) => t - 1), 1000);
-    return () => clearTimeout(tid);
-  }, [isDeletionPending, deletionTimeRemaining]);
-
-  const executeDelete = async () => {
+  const executeDelete = useCallback(async () => {
     setDeleteLoading(true);
     try {
       await postService.deletePost(post.id);
@@ -138,7 +128,17 @@ const PostItem = ({ post, onPostUpdated, onPostHide }) => {
     } finally {
       setDeleteLoading(false);
     }
-  };
+  }, [onPostUpdated, post.id, t]);
+
+  useEffect(() => {
+    if (!isDeletionPending) return;
+    if (deletionTimeRemaining <= 0) {
+      executeDelete();
+      return;
+    }
+    const tid = setTimeout(() => setDeletionTimeRemaining((time) => time - 1), 1000);
+    return () => clearTimeout(tid);
+  }, [executeDelete, isDeletionPending, deletionTimeRemaining]);
 
   const handleUndoDelete = () => {
     setIsDeletionPending(false);

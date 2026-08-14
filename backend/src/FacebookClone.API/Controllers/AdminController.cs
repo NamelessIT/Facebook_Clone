@@ -247,8 +247,19 @@ public class AdminController(
             .OrderByDescending(p => p.CreatedAt).Take(100)
             .Select(p => new
             {
-                p.Id, p.Content, Privacy = (int)p.Privacy, p.IsDeleted, p.CreatedAt, p.UpdatedAt,
-                CommentCount = p.Comments.Count(c => !c.IsDeleted), MediaCount = p.Medias.Count
+                p.Id, p.Content, Privacy = (int)p.Privacy, PostType = (int)p.PostType,
+                p.IsDeleted, p.CreatedAt, p.UpdatedAt,
+                CommentCount = p.Comments.Count(c => !c.IsDeleted), MediaCount = p.Medias.Count,
+                Medias = p.Medias.OrderBy(m => m.CreatedAt)
+                    .Select(m => new { m.Id, m.Url, MediaType = (int)m.MediaType }).ToList(),
+                Comments = p.Comments.OrderBy(c => c.CreatedAt)
+                    .Select(c => new
+                    {
+                        c.Id, c.Content, c.IsDeleted, c.CreatedAt, c.ParentCommentId,
+                        AuthorId = c.UserId,
+                        AuthorName = c.User.FirstName + " " + c.User.LastName,
+                        AuthorAvatarUrl = c.User.AvatarUrl
+                    }).ToList()
             }).ToListAsync();
         var reels = await db.Reels.IgnoreQueryFilters().AsNoTracking()
             .Where(r => r.UserId == id)
@@ -260,20 +271,74 @@ public class AdminController(
             .OrderByDescending(l => l.StartedAt).Take(100)
             .Select(l => new
             {
-                l.Id, l.Title, Status = (int)l.Status, Privacy = (int)l.Privacy,
+                l.Id, l.Title, l.Description, l.RecordingUrl, l.EvidenceExpiresAt,
+                Status = (int)l.Status, Privacy = (int)l.Privacy,
                 l.StartedAt, l.EndedAt, l.EndReason, l.IsEvidenceOnHold,
                 CommentCount = l.Comments.Count
             }).ToListAsync();
         var postComments = await db.Comments.IgnoreQueryFilters().AsNoTracking()
             .Where(c => c.UserId == id)
             .OrderByDescending(c => c.CreatedAt).Take(150)
-            .Select(c => new { c.Id, c.PostId, c.Content, c.IsDeleted, c.CreatedAt })
+            .Select(c => new
+            {
+                c.Id, c.PostId, c.Content, c.IsDeleted, c.CreatedAt, c.ParentCommentId,
+                PostContent = c.Post.Content,
+                PostDeleted = c.Post.IsDeleted,
+                PostPrivacy = (int)c.Post.Privacy,
+                PostOwnerId = c.Post.UserId,
+                PostOwnerName = c.Post.User.FirstName + " " + c.Post.User.LastName
+            })
             .ToListAsync();
         var liveComments = await db.LiveComments.AsNoTracking()
             .Where(c => c.UserId == id)
             .OrderByDescending(c => c.CreatedAt).Take(150)
-            .Select(c => new { c.Id, c.LiveSessionId, c.Content, c.IsDeleted, c.CreatedAt })
+            .Select(c => new
+            {
+                c.Id, c.LiveSessionId, c.Content, c.IsDeleted, c.CreatedAt,
+                LiveTitle = c.LiveSession.Title,
+                LiveStatus = (int)c.LiveSession.Status,
+                c.LiveSession.RecordingUrl,
+                c.LiveSession.EvidenceExpiresAt,
+                c.LiveSession.IsEvidenceOnHold
+            })
             .ToListAsync();
+        var conversations = await db.Conversations.AsNoTracking()
+            .Where(c => c.Members.Any(member => member.UserId == id))
+            .OrderByDescending(c => c.LastMessageAt ?? c.CreatedAt)
+            .Take(50)
+            .Select(c => new
+            {
+                c.Id,
+                Type = (int)c.Type,
+                c.CreatedAt,
+                c.LastMessageAt,
+                Members = c.Members.OrderBy(member => member.JoinedAt).Select(member => new
+                {
+                    member.UserId,
+                    Name = member.User.FirstName + " " + member.User.LastName,
+                    member.User.Email,
+                    member.User.AvatarUrl
+                }).ToList(),
+                Messages = c.Messages.OrderByDescending(message => message.CreatedAt)
+                    .ThenByDescending(message => message.EditedAt)
+                    .Take(100)
+                    .Select(message => new
+                    {
+                        message.Id,
+                        message.SenderId,
+                        SenderName = message.Sender.FirstName + " " + message.Sender.LastName,
+                        message.Content,
+                        MessageType = (int)message.MessageType,
+                        message.CreatedAt,
+                        message.EditedAt,
+                        message.IsDeleted,
+                        message.IsRecalled,
+                        message.IsPinned,
+                        message.ReplyToMessageId,
+                        message.ForwardedFromMessageId,
+                        HiddenForUserCount = message.HiddenForUsers.Count
+                    }).ToList()
+            }).ToListAsync();
         var reports = await db.ModerationReports.AsNoTracking()
             .Where(r => r.TargetOwnerId == id || (r.TargetType == ModerationTargetType.User && r.TargetId == id))
             .OrderByDescending(r => r.CreatedAt).Take(100)
@@ -302,9 +367,11 @@ public class AdminController(
                     posts = posts.Count, deletedPosts = posts.Count(x => x.IsDeleted),
                     reels = reels.Count, deletedReels = reels.Count(x => x.IsDeleted),
                     lives = lives.Count, comments = postComments.Count + liveComments.Count,
+                    conversations = conversations.Count,
+                    messages = conversations.Sum(conversation => conversation.Messages.Count),
                     reports = reports.Count
                 },
-                posts, reels, lives, postComments, liveComments, reports,
+                posts, reels, lives, postComments, liveComments, conversations, reports,
                 activity = activity.OrderByDescending(x => (DateTime)x.GetType().GetProperty("at")!.GetValue(x)!).Take(250)
             }
         });

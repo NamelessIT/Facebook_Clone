@@ -1108,9 +1108,34 @@ table.admin-table tr:hover td { background: #1e2130; }
 .admin-investigation-kicker { display:inline-flex; align-items:center; gap:7px; color:#4c9aff; font-weight:700; text-transform:uppercase; letter-spacing:.06em; font-size:12px; }
 .admin-investigation-body { max-height:calc(100vh - 170px); overflow:auto; padding:20px 24px 26px; }
 .admin-investigation-summary { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
+.admin-investigation-summary--six { grid-template-columns:repeat(6,minmax(0,1fr)); }
 .admin-investigation-summary>div { display:grid; grid-template-columns:auto 1fr; gap:5px 8px; align-items:center; padding:14px; border:1px solid #303542; border-radius:14px; background:#1d2330; }
 .admin-investigation-summary svg { width:18px; color:#4c9aff; }.admin-investigation-summary strong { grid-column:2; font-size:22px; }.admin-investigation-summary small { grid-column:2; color:#aeb4c0; }
 .admin-investigation-columns { display:grid; grid-template-columns:1.35fr 1fr; gap:16px; }.admin-investigation-columns>section { min-width:0; }.admin-investigation-columns h3 { margin:0 0 10px; }
 .admin-investigation-list { display:grid; gap:9px; max-height:52vh; overflow:auto; padding-right:4px; }.admin-investigation-list article { padding:12px 14px; border:1px solid #303542; border-radius:12px; background:#1d2330; }.admin-investigation-list article>div { display:flex; align-items:center; gap:8px; }.admin-investigation-list p { margin:7px 0; white-space:pre-wrap; overflow-wrap:anywhere; }.admin-investigation-list time { color:#aeb4c0; font-size:12px; }
+.admin-investigation-tabs { display:flex; gap:8px; overflow-x:auto; padding:0 0 16px; margin-bottom:18px; border-bottom:1px solid #303542; }
+.admin-investigation-tabs button { flex:0 0 auto; display:inline-flex; align-items:center; gap:7px; padding:9px 12px; border:1px solid #303542; border-radius:10px; background:#1d2330; color:#c7ccd5; cursor:pointer; }
+.admin-investigation-tabs button:hover,.admin-investigation-tabs button.active { color:#fff; border-color:#4c9aff; background:#173255; }
+.admin-investigation-panel>header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:12px; }
+.admin-investigation-panel h3,.admin-investigation-panel h4 { margin:0; }.admin-investigation-panel>header p { margin:5px 0 0; color:#aeb4c0; }
+.admin-investigation-content-list,.admin-investigation-conversations { display:grid; gap:12px; }
+.admin-investigation-content-list>article,.admin-investigation-conversations>details { padding:14px; border:1px solid #303542; border-radius:14px; background:#1d2330; }
+.admin-investigation-item-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }.admin-investigation-item-head>div { display:flex; flex-wrap:wrap; align-items:center; gap:7px; }
+.admin-investigation-item-head button,.admin-investigation-conversations summary { display:inline-flex; align-items:center; gap:6px; border:0; color:#66a8ff; background:transparent; cursor:pointer; }
+.admin-investigation-post-content { margin:12px 0; font-size:15px; white-space:pre-wrap; overflow-wrap:anywhere; }
+.admin-investigation-media { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:8px; margin:10px 0; }.admin-investigation-media img,.admin-investigation-media video { width:100%; max-height:300px; border-radius:10px; background:#090b0f; object-fit:contain; }
+.admin-investigation-meta { display:flex; flex-wrap:wrap; gap:8px 16px; color:#aeb4c0; font-size:12px; }
+.admin-investigation-comments { margin-top:14px; padding-top:12px; border-top:1px solid #303542; }.admin-investigation-comments h4 { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+.admin-investigation-comment { padding:9px 10px; border-radius:9px; background:#151923; }.admin-investigation-comment+.admin-investigation-comment { margin-top:7px; }.admin-investigation-comment p { margin:5px 0; }
+.admin-investigation-comment-card blockquote { margin:12px 0; padding:10px 12px; border-left:3px solid #4c9aff; border-radius:0 9px 9px 0; background:#151923; }
+.admin-investigation-unavailable { color:#aeb4c0; font-size:12px; }
+.admin-investigation-live-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.admin-investigation-conversations details { overflow:hidden; }.admin-investigation-conversations summary { width:100%; justify-content:space-between; list-style:none; font-weight:700; }.admin-investigation-conversations summary span { display:flex; align-items:center; gap:7px; }.admin-investigation-conversations summary small { color:#aeb4c0; }
+.admin-investigation-message-list { display:grid; gap:8px; max-height:380px; overflow:auto; padding-top:12px; }.admin-investigation-message { padding:10px; border-radius:10px; background:#151923; }.admin-investigation-message>div { display:flex; align-items:center; flex-wrap:wrap; gap:7px; }.admin-investigation-message p { margin:6px 0; white-space:pre-wrap; }.admin-investigation-message time,.admin-investigation-content-list time { color:#aeb4c0; font-size:12px; }
 html:not([data-theme="dark"]) .admin-investigation-modal { background:#fff; color:#111827; border-color:#d7deea; } html:not([data-theme="dark"]) .admin-investigation-header { border-color:#d7deea; } html:not([data-theme="dark"]) .admin-investigation-summary>div,html:not([data-theme="dark"]) .admin-investigation-list article { background:#f5f8fc; border-color:#d7deea; }
-@media(max-width:900px){.admin-investigation-summary{grid-template-columns:repeat(2,1fr)}.admin-investigation-columns{grid-template-columns:1fr}}
+html:not([data-theme="dark"]) .admin-investigation-tabs,html:not([data-theme="dark"]) .admin-investigation-comments { border-color:#d7deea; }
+html:not([data-theme="dark"]) .admin-investigation-tabs button,html:not([data-theme="dark"]) .admin-investigation-content-list>article,html:not([data-theme="dark"]) .admin-investigation-conversations>details { background:#f5f8fc; color:#334155; border-color:#d7deea; }
+html:not([data-theme="dark"]) .admin-investigation-tabs button.active { color:#0759bd; border-color:#2684ff; background:#e7f1ff; }
+html:not([data-theme="dark"]) .admin-investigation-comment,html:not([data-theme="dark"]) .admin-investigation-comment-card blockquote,html:not([data-theme="dark"]) .admin-investigation-message { background:#fff; }
+@media(max-width:1100px){.admin-investigation-summary--six{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.admin-investigation-summary,.admin-investigation-summary--six{grid-template-columns:repeat(2,1fr)}.admin-investigation-columns,.admin-investigation-live-grid{grid-template-columns:1fr}.admin-investigation-modal{width:calc(100vw - 20px);max-height:calc(100vh - 20px)}}

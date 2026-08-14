@@ -8,7 +8,6 @@ import savedItemsService from '../../services/savedItemsService';
 import { LIMITS } from '../../shared/generated/constants';
 import { useLocalization } from '../../contexts/useLocalization';
 import './SavedItemsPage.css';
-import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const PAGE_SIZE = LIMITS.savedItemsPageSize;
 

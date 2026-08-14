@@ -18,4 +18,18 @@ export default defineConfig({
   test: {
     exclude: ['node_modules/**', 'dist/**', 'tests/e2e/**', '**/*.e2e.*'],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-ui': ['radix-ui', 'cmdk', 'lucide-react'],
+          'vendor-data': ['axios', '@microsoft/signalr', 'date-fns'],
+          'vendor-media': ['html2canvas'],
+          'vendor-feedback': ['react-hot-toast', 'sonner'],
+          'vendor-utils': ['class-variance-authority', 'clsx', 'next-themes', 'tailwind-merge'],
+        },
+      },
+    },
+  },
 })

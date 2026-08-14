@@ -8,7 +8,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import toast from '../../shared/appToast';
 import { useLocalization } from "../../contexts/useLocalization";
 import "./CommentSection.css";
-import { translateCatalogKey } from '../../shared/localizationRuntime';
 import { ModerationTargetType } from '../../shared/generated/enums';
 import ReportDialog from '../moderation/ReportDialog';
 

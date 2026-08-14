@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<Conversation> Conversations { get; set; }
     public DbSet<ConversationMember> ConversationMembers { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<MessageHiddenForUser> MessageHiddenForUsers { get; set; }
     public DbSet<Reel> Reels { get; set; }
     public DbSet<ReelLike> ReelLikes { get; set; } 
     public DbSet<Group> Groups { get; set; }

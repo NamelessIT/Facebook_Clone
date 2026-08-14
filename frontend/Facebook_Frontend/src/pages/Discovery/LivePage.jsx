@@ -14,6 +14,7 @@ import { LIVE } from '../../shared/generated/constants';
 import { useSearchParams } from 'react-router-dom';
 import './DiscoveryPages.css';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import useNonOverlappingPolling from '../../hooks/useNonOverlappingPolling';
 
 const categories = ['Tất cả', 'Đang live', 'Bán hàng', 'Bản phát lại'];
 const privacyOptions = [
@@ -40,7 +41,7 @@ const LivePage = () => {
     finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { load(); const timer = window.setInterval(load, 15000); return () => window.clearInterval(timer); }, [load]);
+  useNonOverlappingPolling(load, 15000);
 
   useEffect(() => {
     const sessionId = searchParams.get('session');

@@ -7,6 +7,7 @@ import { translateCatalogKey } from '../../shared/localizationRuntime';
 import { useSearchParams } from 'react-router-dom';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getImageUrl } from '../../utils/formatUrl';
+import useDebouncedValue from '../../hooks/useDebouncedValue';
 
 const CONFIG = {
   posts: {
@@ -42,6 +43,7 @@ const AdminContent = ({ type }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search.trim(), 350);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({});
   const [detail, setDetail] = useState(null);
@@ -50,7 +52,7 @@ const AdminContent = ({ type }) => {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await config.load({ page, pageSize: 100, search: search || undefined });
+      const response = await config.load({ page, pageSize: 100, search: debouncedSearch || undefined });
       setItems(response.data.data);
       setPagination(response.data.pagination);
     } catch (error) {
@@ -58,7 +60,7 @@ const AdminContent = ({ type }) => {
     } finally {
       setLoading(false);
     }
-  }, [config, page, search, type]);
+  }, [config, page, debouncedSearch, type]);
 
   useEffect(() => {
     load();

@@ -228,6 +228,40 @@
   padding: 12px 0 4px;
 }
 
+.chat-pinned-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid #e4e6eb;
+  background: #f7f9fc;
+  color: #536174;
+  font-size: 12px;
+}
+.chat-pinned-strip strong { color: #1877f2; white-space: nowrap; }
+.chat-pinned-strip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.message-reply-preview { display: grid; gap: 1px; margin: -2px -5px 6px; padding: 6px 8px; border-left: 3px solid currentColor; border-radius: 7px; background: rgb(255 255 255 / .16); font-size: 12px; opacity: .9; }
+.message-reply-preview span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 260px; }
+.message-forwarded-label { display: flex; align-items: center; gap: 4px; margin-bottom: 3px; opacity: .75; }
+.message-bubble--recalled { background: transparent !important; color: #65676b !important; border: 1px dashed #bec3c9; }
+.message-time span { display: inline-flex; align-items: center; }
+.message-context-menu { position: fixed; z-index: 2100; width: 220px; display: grid; gap: 2px; padding: 7px; border: 1px solid #d7dce4; border-radius: 12px; background: #fff; box-shadow: 0 14px 38px rgb(0 0 0 / .22); }
+.message-context-menu button { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 10px; border: 0; border-radius: 8px; background: transparent; color: #111827; font-size: 13px; text-align: left; cursor: pointer; }
+.message-context-menu button:hover { background: #f0f2f5; }
+.message-context-menu button svg { width: 16px; height: 16px; }
+.message-context-menu button.danger { color: #dc2626; }
+.message-forward-backdrop { position: fixed; z-index: 2050; inset: 0; display: grid; place-items: center; padding: 20px; background: rgb(0 0 0 / .48); }
+.message-forward-dialog { width: min(440px, 100%); max-height: min(620px, calc(100vh - 40px)); overflow: hidden; border: 1px solid #d7dce4; border-radius: 16px; background: #fff; box-shadow: 0 24px 70px rgb(0 0 0 / .3); }
+.message-forward-dialog header { display: flex; justify-content: space-between; gap: 12px; padding: 16px; border-bottom: 1px solid #e4e6eb; }
+.message-forward-dialog header p { margin: 4px 0 0; color: #65676b; font-size: 12px; }
+.message-forward-dialog header button { width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 50%; background: #f0f2f5; cursor: pointer; }
+.message-forward-dialog header svg { width: 17px; }
+.message-forward-source { margin: 14px; padding: 10px 12px; border-radius: 10px; background: #f0f2f5; color: #4b5563; font-size: 13px; overflow-wrap: anywhere; }
+.message-forward-targets { display: grid; gap: 6px; max-height: 390px; overflow: auto; padding: 0 14px 14px; }
+.message-forward-targets button { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 12px; border: 1px solid #e4e6eb; border-radius: 10px; background: #fff; cursor: pointer; }
+.message-forward-targets button:hover { border-color: #1877f2; background: #f0f7ff; }
+.message-forward-targets small { color: #65676b; }
+
 /* Dark mode */
 [data-theme="dark"] .chat-window { background: #242526; }
 [data-theme="dark"] .chat-window-header { background: #242526; border-bottom-color: #3e4042; }
@@ -244,3 +278,11 @@
 [data-theme="dark"] .chat-window-empty { background: #242526; color: #b0b3b9; }
 [data-theme="dark"] .chat-window-empty h3 { color: #e4e6eb; }
 [data-theme="dark"] .message-date-separator { color: #b0b3b9; }
+[data-theme="dark"] .chat-pinned-strip { background: #1f2937; border-color: #3e4042; color: #b0b3b9; }
+[data-theme="dark"] .message-context-menu,[data-theme="dark"] .message-forward-dialog { background: #242526; border-color: #3e4042; color: #e4e6eb; }
+[data-theme="dark"] .message-context-menu button { color: #e4e6eb; }
+[data-theme="dark"] .message-context-menu button:hover,[data-theme="dark"] .message-forward-dialog header button,[data-theme="dark"] .message-forward-source { background: #3a3b3c; }
+[data-theme="dark"] .message-context-menu button.danger { color: #ff6b7a; }
+[data-theme="dark"] .message-forward-dialog header,[data-theme="dark"] .message-forward-targets button { border-color: #3e4042; }
+[data-theme="dark"] .message-forward-targets button { background: #242526; color: #e4e6eb; }
+[data-theme="dark"] .message-forward-targets button:hover { background: #263a5e; }

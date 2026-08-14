@@ -19,4 +19,12 @@ public class ChatHubService : IChatHubService
         // Gửi sự kiện "ReceiveMessage" kèm theo dữ liệu tin nhắn tới đúng người nhận
         await _hubContext.Clients.User(receiverId.ToString()).SendAsync("ReceiveMessage", message);
     }
+
+    public Task SendEventToUsersAsync(IEnumerable<Guid> userIds, string eventName, object payload)
+    {
+        var recipients = userIds.Distinct().Select(id => id.ToString()).ToList();
+        return recipients.Count == 0
+            ? Task.CompletedTask
+            : _hubContext.Clients.Users(recipients).SendAsync(eventName, payload);
+    }
 }

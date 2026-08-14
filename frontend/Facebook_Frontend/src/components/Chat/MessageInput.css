@@ -10,8 +10,29 @@
   z-index: 10;
 }
 
+.message-composer-context {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-left: 3px solid #1877f2;
+  border-radius: 8px;
+  background: #f0f2f5;
+  color: #4b5563;
+}
+.message-composer-context__body { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.message-composer-context__body strong { color: #1877f2; font-size: 12px; }
+.message-composer-context__body span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.message-composer-context button { display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
+[data-theme="dark"] .message-composer-context { background: #3a3b3c; color: #b0b3b9; }
+[data-theme="dark"] .message-composer-context button { color: #e4e6eb; }
+
 .message-input-wrapper {
   flex: 1;
+  min-width: 0;
   position: relative;
 }
 

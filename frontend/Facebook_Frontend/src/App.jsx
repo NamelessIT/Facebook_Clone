@@ -1,25 +1,33 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { LocalizationProvider } from "./contexts/LocalizationContext";
-import LoginPage from "./pages/Login";
 import MainLayout from "./components/Layout/MainLayout";
-import HomePage from "./pages/Home";
-import ProfilePage from "./pages/Profile/ProfilePage";
-import FriendsPage from "./pages/Friends";
-import SearchResultsPage from "./pages/Search/SearchResultsPage";
-import SettingsPage from "./pages/Settings/SettingsPage";
-import ChatListPage from "./pages/Messages/ChatListPage";
-import ReelsPage from "./pages/Reels/ReelsPage";
-import SavedItemsPage from "./pages/SavedItems/SavedItemsPage";
-import PostDetailPage from "./pages/PostDetail/PostDetailPage";
-import AdminPage from "./pages/Admin/AdminPage";
-import MarketplacePage from "./pages/Discovery/MarketplacePage";
-import MemoriesPage from "./pages/Discovery/MemoriesPage";
-import LivePage from "./pages/Discovery/LivePage";
 import ConfirmProvider from "./contexts/ConfirmProvider";
 import { OfflineSyncProvider } from "./contexts/OfflineSyncContext";
 import NotificationCenter from "./components/feedback/NotificationCenter";
+
+const LoginPage = lazy(() => import("./pages/Login"));
+const HomePage = lazy(() => import("./pages/Home"));
+const ProfilePage = lazy(() => import("./pages/Profile/ProfilePage"));
+const FriendsPage = lazy(() => import("./pages/Friends"));
+const SearchResultsPage = lazy(() => import("./pages/Search/SearchResultsPage"));
+const SettingsPage = lazy(() => import("./pages/Settings/SettingsPage"));
+const ChatListPage = lazy(() => import("./pages/Messages/ChatListPage"));
+const ReelsPage = lazy(() => import("./pages/Reels/ReelsPage"));
+const SavedItemsPage = lazy(() => import("./pages/SavedItems/SavedItemsPage"));
+const PostDetailPage = lazy(() => import("./pages/PostDetail/PostDetailPage"));
+const AdminPage = lazy(() => import("./pages/Admin/AdminPage"));
+const MarketplacePage = lazy(() => import("./pages/Discovery/MarketplacePage"));
+const MemoriesPage = lazy(() => import("./pages/Discovery/MemoriesPage"));
+const LivePage = lazy(() => import("./pages/Discovery/LivePage"));
+
+const RouteFallback = () => (
+  <div className="route-loading" role="status" aria-live="polite">
+    <span className="route-loading__spinner" aria-hidden="true" />
+    <span>Đang tải...</span>
+  </div>
+);
 
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
@@ -49,6 +57,7 @@ function App() {
         <LocalizationProvider>
         <OfflineSyncProvider>
         <ConfirmProvider>
+        <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/admin/login" element={<LoginPage mode="admin" />} />
@@ -90,6 +99,7 @@ function App() {
             }
           />
         </Routes>
+        </Suspense>
         <NotificationCenter />
         </ConfirmProvider>
         </OfflineSyncProvider>

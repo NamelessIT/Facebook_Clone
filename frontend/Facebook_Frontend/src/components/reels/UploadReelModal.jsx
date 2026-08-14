@@ -13,7 +13,6 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const ACCEPTED_TYPES = ['video/mp4', 'video/quicktime', 'video/x-m4v'];
 const MAX_SIZE_MB = LIMITS.maxVideoUploadMb;

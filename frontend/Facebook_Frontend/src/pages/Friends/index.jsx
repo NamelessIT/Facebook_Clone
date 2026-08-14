@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { UserCheck, UserX } from "lucide-react";
 import Avatar from "../../components/common/Avatar";
@@ -32,7 +32,7 @@ const FriendsPage = () => {
   const [discoverPage, setDiscoverPage] = useState(1);
   const [discoverTotalPages, setDiscoverTotalPages] = useState(1);
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     setLoading(true);
     try {
       const res = await friendshipService.getFriendRequests();
@@ -42,16 +42,16 @@ const FriendsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     if (activeTab === TABS.REQUESTS) {
       fetchRequests();
     }
-  }, [activeTab]);
+  }, [activeTab, fetchRequests]);
 
   // Fetch discover users
-  const fetchDiscoverUsers = async (page = 1) => {
+  const fetchDiscoverUsers = useCallback(async (page = 1) => {
     setDiscoverLoading(true);
     try {
       const res = await userService.searchUsers("", page, 20);
@@ -66,13 +66,13 @@ const FriendsPage = () => {
     } finally {
       setDiscoverLoading(false);
     }
-  };
+  }, [t, user?.id]);
 
   useEffect(() => {
     if (activeTab === TABS.DISCOVER) {
       fetchDiscoverUsers(discoverPage);
     }
-  }, [activeTab, discoverPage]);
+  }, [activeTab, discoverPage, fetchDiscoverUsers]);
 
   const handleAccept = async (request) => {
     setProcessingId(request.userId);

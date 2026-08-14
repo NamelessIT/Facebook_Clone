@@ -20,6 +20,29 @@
   --hover-bg: oklch(0.945 0.022 255);
 }
 
+.route-loading {
+  min-height: 40vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: var(--muted-foreground);
+  background: var(--background);
+}
+
+.route-loading__spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 999px;
+  animation: route-loading-spin 0.75s linear infinite;
+}
+
+@keyframes route-loading-spin {
+  to { transform: rotate(360deg); }
+}
+
 :root[data-theme="dark"] {
   --bg-primary: oklch(0.16 0.018 255);
   --bg-secondary: oklch(0.13 0.015 255);

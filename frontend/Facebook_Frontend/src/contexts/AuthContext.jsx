@@ -3,6 +3,7 @@ import userService from "../services/userService";
 import axiosClient, { clearAuthClientState } from "../services/axiosClient";
 import { STORAGE_KEYS, TIMERS } from "../shared/generated/constants";
 import { reportApiError } from '../shared/apiError';
+import useNonOverlappingPolling from '../hooks/useNonOverlappingPolling';
 
 const AuthContext = createContext();
 
@@ -58,19 +59,9 @@ export const AuthProvider = ({ children }) => {
     }
   }, [fetchProfile]);
 
-  useEffect(() => {
-    if (!user?.id) return;
-
-    const sendHeartbeat = () => {
-      userService.heartbeat().catch((error) => {
-        reportApiError(error, 'Could not update online presence.', 'presence.heartbeat');
-      });
-    };
-
-    sendHeartbeat();
-    const timerId = window.setInterval(sendHeartbeat, TIMERS.presenceHeartbeatMs);
-    return () => window.clearInterval(timerId);
-  }, [user?.id]);
+  useNonOverlappingPolling(() => userService.heartbeat().catch((error) => {
+    reportApiError(error, 'Could not update online presence.', 'presence.heartbeat');
+  }), TIMERS.presenceHeartbeatMs, { enabled: Boolean(user?.id) });
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: !!user }}>

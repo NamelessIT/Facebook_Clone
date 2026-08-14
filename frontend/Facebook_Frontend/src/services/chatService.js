@@ -86,6 +86,13 @@ const chatService = {
     connection?.off('TypingIndicator', callback);
   },
 
+  onMessageEdited: (callback) => connection?.on('MessageEdited', callback),
+  offMessageEdited: (callback) => connection?.off('MessageEdited', callback),
+  onMessageRecalled: (callback) => connection?.on('MessageRecalled', callback),
+  offMessageRecalled: (callback) => connection?.off('MessageRecalled', callback),
+  onMessagePinned: (callback) => connection?.on('MessagePinned', callback),
+  offMessagePinned: (callback) => connection?.off('MessagePinned', callback),
+
   // ========== SignalR Invoke ==========
 
   sendTypingNotification: async (receiverId) => {
@@ -96,14 +103,21 @@ const chatService = {
 
   // ========== REST API ==========
 
-  sendMessage: async ({ conversationId, receiverId, content, messageType = 1 }) => {
+  sendMessage: async ({ conversationId, receiverId, content, messageType = 1, replyToMessageId }) => {
     return await axiosClient.post('/chat/messages', {
       conversationId,
       receiverId,
       content,
       messageType,
+      replyToMessageId,
     });
   },
+
+  editMessage: (messageId, content) => axiosClient.put(`/chat/messages/${messageId}`, { content }),
+  hideMessage: (messageId) => axiosClient.delete(`/chat/messages/${messageId}`),
+  recallMessage: (messageId) => axiosClient.post(`/chat/messages/${messageId}/recall`),
+  setMessagePinned: (messageId, isPinned) => axiosClient.put(`/chat/messages/${messageId}/pin`, { isPinned }),
+  forwardMessage: (messageId, { conversationId, receiverId }) => axiosClient.post(`/chat/messages/${messageId}/forward`, { conversationId, receiverId }),
 
   getMessages: async (conversationId, pageNumber = 1, pageSize = 20) => {
     return await axiosClient.get(`/chat/conversations/${conversationId}/messages`, {

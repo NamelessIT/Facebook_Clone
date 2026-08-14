@@ -1,6 +1,8 @@
 ﻿using FacebookClone.Application.DTOs.Chat;
 using FacebookClone.Application.Services.Interfaces;
+using FacebookClone.API.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -83,6 +85,7 @@ public class ChatController : ControllerBase
     // POST /api/v1/chat/messages
     // Gửi tin nhắn qua REST API (thay thế hoặc fallback khi SignalR không khả dụng)
     [HttpPost("messages")]
+    [EnableRateLimiting(RateLimitingExtensions.WritePolicy)]
     public async Task<IActionResult> SendMessage([FromBody] SendMessageRequest request)
     {
         try
@@ -104,6 +107,40 @@ public class ChatController : ControllerBase
             return BadRequest(new { success = false, message = ex.Message });
         }
     }
+
+    [HttpPut("messages/{messageId:guid}")]
+    [EnableRateLimiting(RateLimitingExtensions.WritePolicy)]
+    public async Task<IActionResult> EditMessage(Guid messageId, [FromBody] EditMessageRequest request)
+        => await ExecuteMessageAction(() => _chatService.EditMessageAsync(GetCurrentUserId(), messageId, request), "Đã chỉnh sửa tin nhắn.");
+
+    [HttpDelete("messages/{messageId:guid}")]
+    [EnableRateLimiting(RateLimitingExtensions.WritePolicy)]
+    public async Task<IActionResult> HideMessage(Guid messageId)
+    {
+        try
+        {
+            await _chatService.HideMessageAsync(GetCurrentUserId(), messageId);
+            return Ok(new { success = true, message = "Đã xóa tin nhắn khỏi phía bạn." });
+        }
+        catch (UnauthorizedAccessException ex) { return StatusCode(403, new { success = false, message = ex.Message }); }
+        catch (KeyNotFoundException ex) { return NotFound(new { success = false, message = ex.Message }); }
+        catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
+    }
+
+    [HttpPost("messages/{messageId:guid}/recall")]
+    [EnableRateLimiting(RateLimitingExtensions.WritePolicy)]
+    public async Task<IActionResult> RecallMessage(Guid messageId)
+        => await ExecuteMessageAction(() => _chatService.RecallMessageAsync(GetCurrentUserId(), messageId), "Đã thu hồi tin nhắn.");
+
+    [HttpPut("messages/{messageId:guid}/pin")]
+    [EnableRateLimiting(RateLimitingExtensions.WritePolicy)]
+    public async Task<IActionResult> PinMessage(Guid messageId, [FromBody] PinMessageRequest request)
+        => await ExecuteMessageAction(() => _chatService.SetMessagePinnedAsync(GetCurrentUserId(), messageId, request.IsPinned), request.IsPinned ? "Đã ghim tin nhắn." : "Đã bỏ ghim tin nhắn.");
+
+    [HttpPost("messages/{messageId:guid}/forward")]
+    [EnableRateLimiting(RateLimitingExtensions.WritePolicy)]
+    public async Task<IActionResult> ForwardMessage(Guid messageId, [FromBody] ForwardMessageRequest request)
+        => await ExecuteMessageAction(() => _chatService.ForwardMessageAsync(GetCurrentUserId(), messageId, request), "Đã chuyển tiếp tin nhắn.");
 
     // POST /api/v1/chat/conversations/{conversationId}/read
     // Đánh dấu tất cả messages trong conversation là đã đọc
@@ -128,5 +165,19 @@ public class ChatController : ControllerBase
         {
             return BadRequest(new { success = false, message = ex.Message });
         }
+    }
+
+    private async Task<IActionResult> ExecuteMessageAction<T>(Func<Task<T>> action, string successMessage)
+    {
+        try
+        {
+            var result = await action();
+            return Ok(new { success = true, data = result, message = successMessage });
+        }
+        catch (UnauthorizedAccessException ex) { return StatusCode(403, new { success = false, message = ex.Message }); }
+        catch (KeyNotFoundException ex) { return NotFound(new { success = false, message = ex.Message }); }
+        catch (ArgumentException ex) { return BadRequest(new { success = false, message = ex.Message }); }
+        catch (InvalidOperationException ex) { return Conflict(new { success = false, message = ex.Message }); }
+        catch (Exception ex) { return BadRequest(new { success = false, message = ex.Message }); }
     }
 }

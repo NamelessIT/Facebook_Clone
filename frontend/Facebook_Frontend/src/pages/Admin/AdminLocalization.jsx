@@ -6,6 +6,7 @@ import { LOCALIZATION } from '../../shared/generated/constants';
 import { LOCALIZATION_CATALOG } from '../../shared/generated/localizationCatalog';
 import { useConfirm } from '../../contexts/useConfirm';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import useDebouncedValue from '../../hooks/useDebouncedValue';
 
 const emptyEntry = {
   key: '',
@@ -43,6 +44,7 @@ const AdminLocalization = () => {
   const [pagination, setPagination] = useState({});
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search, 350);
   const [loading, setLoading] = useState(true);
   const [entryForm, setEntryForm] = useState(emptyEntry);
   const [editingEntryId, setEditingEntryId] = useState(null);
@@ -101,7 +103,7 @@ const AdminLocalization = () => {
         page,
         pageSize: 5000,
         locale: entryForm.targetLocale || undefined,
-        search: search || undefined,
+        search: debouncedSearch || undefined,
       });
       setLanguages(response.data.data.languages);
       setEntries(response.data.data.entries);
@@ -111,7 +113,7 @@ const AdminLocalization = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, search, entryForm.targetLocale]);
+  }, [page, debouncedSearch, entryForm.targetLocale]);
 
   useEffect(() => {
     load();

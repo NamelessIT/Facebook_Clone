@@ -18,7 +18,26 @@ public class Message
 
     public DateTime CreatedAt { get; set; }
 
+    public DateTime? EditedAt { get; set; }
+
+    public Guid? ReplyToMessageId { get; set; }
+    public Message? ReplyToMessage { get; set; }
+
+    public Guid? ForwardedFromMessageId { get; set; }
+    public Message? ForwardedFromMessage { get; set; }
+
+    public Guid? ReplacesMessageId { get; set; }
+    public Message? ReplacesMessage { get; set; }
+
     public bool IsRead { get; set; } = false;
 
     public bool IsDeleted { get; set; }
+
+    public bool IsRecalled { get; set; }
+
+    public bool IsPinned { get; set; }
+    public Guid? PinnedById { get; set; }
+    public DateTime? PinnedAt { get; set; }
+
+    public ICollection<MessageHiddenForUser> HiddenForUsers { get; set; } = new List<MessageHiddenForUser>();
 }

@@ -5,6 +5,7 @@ import adminService from '../../services/adminService';
 import { useConfirm } from '../../contexts/useConfirm';
 import { useLocalization } from '../../contexts/useLocalization';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import useDebouncedValue from '../../hooks/useDebouncedValue';
 
 const emptyRoleForm = { name: '', displayName: '', level: 10, permissionIds: [] };
 
@@ -15,6 +16,7 @@ const AdminRoles = () => {
   const [permissions, setPermissions] = useState([]);
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search, 350);
   const [loading, setLoading] = useState(true);
   const [roleForm, setRoleForm] = useState(emptyRoleForm);
   const [editingRoleId, setEditingRoleId] = useState(null);
@@ -25,7 +27,7 @@ const AdminRoles = () => {
     try {
       const [rolesResponse, usersResponse] = await Promise.all([
         adminService.getRoles(),
-        adminService.getUsers({ page: 1, pageSize: 50, search: search || undefined }),
+        adminService.getUsers({ page: 1, pageSize: 50, search: debouncedSearch || undefined }),
       ]);
       setRoles(rolesResponse.data.data.roles);
       setPermissions(rolesResponse.data.data.permissions);
@@ -35,7 +37,7 @@ const AdminRoles = () => {
     } finally {
       setLoading(false);
     }
-  }, [search, t]);
+  }, [debouncedSearch, t]);
 
   useEffect(() => {
     load();

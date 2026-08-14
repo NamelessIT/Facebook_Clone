@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import './DiscoveryPages.css';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import useNonOverlappingPolling from '../../hooks/useNonOverlappingPolling';
 import { useAuth } from '../../contexts/AuthContext';
 import { useConfirm } from '../../contexts/useConfirm';
 import { useLocalization } from '../../contexts/useLocalization';
@@ -94,14 +95,13 @@ const MarketplacePage = () => {
       });
   }, [searchParams, selectedItem?.id, setSearchParams]);
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
-  useEffect(() => {
-    if (paymentTransaction?.status !== MarketplacePaymentStatus.AwaitingVerification) return undefined;
-    const timer = window.setInterval(async () => {
-      try { setPaymentTransaction((await marketplaceService.getPayment(paymentTransaction.id)).data.data); }
-      catch { /* keep the last durable state and retry */ }
-    }, 5000);
-    return () => window.clearInterval(timer);
-  }, [paymentTransaction?.id, paymentTransaction?.status]);
+  useNonOverlappingPolling(async () => {
+    try { setPaymentTransaction((await marketplaceService.getPayment(paymentTransaction.id)).data.data); }
+    catch { /* keep the last durable state and retry */ }
+  }, 5000, {
+    enabled: paymentTransaction?.status === MarketplacePaymentStatus.AwaitingVerification,
+    immediate: false,
+  });
 
   useEffect(() => {
     if (paymentTransaction?.status !== MarketplacePaymentStatus.Consumed) return;

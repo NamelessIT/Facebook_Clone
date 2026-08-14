@@ -150,6 +150,20 @@ body[data-theme="dark"],
   margin: 0 auto;
 }
 
+/* Home and Profile intentionally use wider canvases. Keep the default cap for
+   search/detail pages so a layout improvement here does not widen every route. */
+.feed-container:has(.feed-wrapper) {
+  max-width: 920px;
+  padding-inline: 20px;
+  box-sizing: border-box;
+}
+
+.feed-container:has(.pp-page) {
+  max-width: 1240px;
+  padding-inline: 20px;
+  box-sizing: border-box;
+}
+
 .search-container { 
   position: relative;
   display: flex; 
@@ -401,6 +415,10 @@ body[data-theme="dark"],
     padding-bottom: 64px; /* clear the fixed bottom nav */
   }
   .feed-container { padding: 0 8px; }
+  .feed-container:has(.feed-wrapper),
+  .feed-container:has(.pp-page) {
+    padding-inline: 0;
+  }
 
   /* Bottom navigation (replaces the hidden center tabs) */
   .mobile-nav {

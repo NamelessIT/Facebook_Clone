@@ -37,7 +37,7 @@ const ReportDialog = ({ open, onOpenChange, targetType, targetId, targetLabel = 
           <DialogDescription>{translateCatalogKey('ui.components.moderation.reportdialog.bao-cao-khong-tu-ong-ket-luan-vi-pha.ab284bce')}</DialogDescription>
         </DialogHeader>
         <RadioGroup value={reason} onValueChange={setReason} className="grid gap-2 py-2">
-          {REASONS.map((item) => <Label key={item} className="flex cursor-pointer items-center gap-3 rounded-lg border p-3"><RadioGroupItem value={item} />{item}</Label>)}
+          {REASONS.map((item) => <Label key={item} className="flex cursor-pointer items-center gap-3 rounded-lg border p-3 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5"><RadioGroupItem value={item} id={`report-reason-${REASONS.indexOf(item)}`} />{item}</Label>)}
         </RadioGroup>
         <div className="grid gap-2"><Label htmlFor="report-details">{translateCatalogKey('ui.components.moderation.reportdialog.thong-tin-bo-sung.ccdf241a')}</Label><Textarea id="report-details" value={details} onChange={(event) => setDetails(event.target.value)} maxLength={2000} placeholder={translateCatalogKey('ui.components.moderation.reportdialog.mo-ta-thoi-iem-hoac-dau-hieu-vi-pham.05d8383f')} /></div>
         <div className="grid gap-2">

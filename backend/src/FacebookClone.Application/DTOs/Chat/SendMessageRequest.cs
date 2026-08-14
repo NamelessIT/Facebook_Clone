@@ -16,6 +16,8 @@ public class SendMessageRequest : IValidatableObject
 
     public MessageType MessageType { get; set; } = MessageType.Text;
 
+    public Guid? ReplyToMessageId { get; set; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (!ConversationId.HasValue && !ReceiverId.HasValue)

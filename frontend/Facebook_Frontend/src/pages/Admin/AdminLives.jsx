@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useSearchParams } from 'react-router-dom';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
+import useNonOverlappingPolling from '../../hooks/useNonOverlappingPolling';
 
 const statusLabel = { 1: 'Đang live', 2: 'Đã kết thúc', 3: 'Bị kiểm duyệt' };
 const privacyLabel = { 1: 'Công khai', 2: 'Bạn bè', 3: 'Riêng tư' };
@@ -31,7 +32,7 @@ const AdminLives = () => {
     finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { load(); const timer = window.setInterval(load, 10000); return () => window.clearInterval(timer); }, [load]);
+  useNonOverlappingPolling(load, 10000);
 
   const filtered = useMemo(() => sessions.filter((item) => {
     const targetId = searchParams.get('targetId');

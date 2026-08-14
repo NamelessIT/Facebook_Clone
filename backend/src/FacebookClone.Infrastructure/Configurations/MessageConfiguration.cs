@@ -22,11 +22,29 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
 
         builder.Property(x => x.MessageType).IsRequired();
         builder.Property(x => x.IsDeleted).HasDefaultValue(false);
+        builder.Property(x => x.IsRecalled).HasDefaultValue(false);
+        builder.Property(x => x.IsPinned).HasDefaultValue(false);
         builder.Property(x => x.IsRead).HasDefaultValue(false);
+
+        builder.HasOne(x => x.ReplyToMessage)
+               .WithMany()
+               .HasForeignKey(x => x.ReplyToMessageId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.ForwardedFromMessage)
+               .WithMany()
+               .HasForeignKey(x => x.ForwardedFromMessageId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.ReplacesMessage)
+               .WithMany()
+               .HasForeignKey(x => x.ReplacesMessageId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         // Index để tăng tốc query lịch sử chat theo conversation
         builder.HasIndex(x => new { x.ConversationId, x.CreatedAt });
         // Index để query unread messages nhanh
         builder.HasIndex(x => new { x.ConversationId, x.IsRead, x.SenderId });
+        builder.HasIndex(x => new { x.ConversationId, x.IsPinned });
     }
 }

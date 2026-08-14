@@ -165,7 +165,7 @@ async function shutdown(exitCode = 0) {
   process.stdout.write("\n[DEV] Stopping backend and frontend...\n");
 
   if (process.platform === "win32") {
-    // Ctrl+C is delivered to console children too. Give dotnet watch and Vite
+    // Ctrl+C is delivered to console children too. Give .NET and Vite
     // a moment to shut down cleanly before using taskkill as a fallback.
     await wait(1500);
   }
@@ -213,7 +213,9 @@ if (usingDockerBackend) {
 } else {
   runStep(`Building backend once (${backendConfiguration})`, "dotnet", ["build", apiProject, "-c", backendConfiguration]);
   unblockBackendOutputs();
-  spawnProcess("BE", "dotnet", ["watch", "--project", apiProject, "run", "--no-build", "-c", backendConfiguration]);
+  // Hot Reload can crash when uploads write media files below a watched
+  // workspace. Keep the API stable and let Vite provide frontend HMR.
+  spawnProcess("BE", "dotnet", ["run", "--project", apiProject, "--no-build", "-c", backendConfiguration, "--no-launch-profile"]);
 }
 
 spawnProcess("FE", process.execPath, [viteBin], {

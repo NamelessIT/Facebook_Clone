@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Users, FileText } from "lucide-react";
 import Avatar from "../../components/common/Avatar";
@@ -10,7 +10,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useLocalization } from "../../contexts/useLocalization";
 import "./SearchResultsPage.css";
 import toast from '../../shared/appToast';
-import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const TABS = {
   USERS: "users",
@@ -39,7 +38,7 @@ const SearchResultsPage = () => {
 
   const limit = 10;
 
-  const fetchUsers = async (page = 1) => {
+  const fetchUsers = useCallback(async (page = 1) => {
     if (!query.trim()) return;
     setUsersLoading(true);
     try {
@@ -54,9 +53,9 @@ const SearchResultsPage = () => {
     } finally {
       setUsersLoading(false);
     }
-  };
+  }, [query, t]);
 
-  const fetchPosts = async (page = 1) => {
+  const fetchPosts = useCallback(async (page = 1) => {
     if (!query.trim()) return;
     setPostsLoading(true);
     try {
@@ -71,19 +70,17 @@ const SearchResultsPage = () => {
     } finally {
       setPostsLoading(false);
     }
-  };
+  }, [query, t]);
 
   useEffect(() => {
     setUsersPage(1);
     setPostsPage(1);
-    if (activeTab === TABS.USERS) fetchUsers(1);
-    else fetchPosts(1);
   }, [query]);
 
   useEffect(() => {
     if (activeTab === TABS.USERS) fetchUsers(usersPage);
     else fetchPosts(postsPage);
-  }, [activeTab, usersPage, postsPage]);
+  }, [activeTab, fetchPosts, fetchUsers, postsPage, usersPage]);
 
   const renderPagination = (page, totalPages, setPage) => {
     if (totalPages <= 1) return null;

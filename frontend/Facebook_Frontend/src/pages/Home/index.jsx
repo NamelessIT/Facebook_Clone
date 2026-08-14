@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 import { useLocalization } from "../../contexts/useLocalization";
 import "./HomePage.css";
 import toast from '../../shared/appToast';
-import { translateCatalogKey } from '../../shared/localizationRuntime';
 
 const HomePage = () => {
   const { user } = useAuth();

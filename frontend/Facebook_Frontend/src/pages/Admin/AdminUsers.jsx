@@ -1,18 +1,35 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Search, Ban, CheckCircle, Trash2, ShieldCheck, UserPlus, Eye, EyeOff, Copy, X, ClipboardList, FileText, Film, Radio, MessageCircle, Flag } from 'lucide-react';
+import { Search, Ban, CheckCircle, Trash2, ShieldCheck, UserPlus, Eye, EyeOff, Copy, X, ClipboardList, FileText, Film, Radio, MessageCircle, Flag, MessagesSquare, ExternalLink, LockKeyhole, Image as ImageIcon, Users } from 'lucide-react';
 import adminService from '../../services/adminService';
 import toast from '../../shared/appToast';
 import { LIMITS, TIMERS } from '../../shared/generated/constants';
 import { useConfirm } from '../../contexts/useConfirm';
 import { translateCatalogKey } from '../../shared/localizationRuntime';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { getImageUrl } from '../../utils/formatUrl';
+import useDebouncedValue from '../../hooks/useDebouncedValue';
+import useNonOverlappingPolling from '../../hooks/useNonOverlappingPolling';
+
+const normalizeInvestigation = (value) => ({
+  ...value,
+  summary: { conversations: 0, messages: 0, ...(value?.summary || {}) },
+  posts: value?.posts || [],
+  reels: value?.reels || [],
+  lives: value?.lives || [],
+  postComments: value?.postComments || [],
+  liveComments: value?.liveComments || [],
+  conversations: value?.conversations || [],
+  reports: value?.reports || [],
+});
 
 const AdminUsers = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const confirm = useConfirm();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search.trim(), 350);
   const [filter, setFilter] = useState('');
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({});
@@ -27,12 +44,13 @@ const AdminUsers = () => {
   const [banReason, setBanReason] = useState('');
   const [investigation, setInvestigation] = useState(null);
   const [investigationLoading, setInvestigationLoading] = useState(false);
+  const [investigationTab, setInvestigationTab] = useState('posts');
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const [usersResponse, creationOptionsResponse] = await Promise.all([
-        adminService.getUsers({ page, pageSize: 20, search: search || undefined, filter: filter || undefined, targetId: searchParams.get('targetId') || undefined }),
+        adminService.getUsers({ page, pageSize: 20, search: debouncedSearch || undefined, filter: filter || undefined, targetId: searchParams.get('targetId') || undefined }),
         adminService.getUserCreationOptions().catch((error) => {
           if (error.response?.status === 403) return null;
           throw error;
@@ -47,7 +65,7 @@ const AdminUsers = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, search, filter, searchParams]);
+  }, [page, debouncedSearch, filter, searchParams]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -56,7 +74,7 @@ const AdminUsers = () => {
     if (!targetId) return;
     setInvestigationLoading(true);
     adminService.getUserInvestigation(targetId)
-      .then((response) => setInvestigation(response.data.data))
+      .then((response) => { setInvestigation(normalizeInvestigation(response.data.data)); setInvestigationTab('posts'); })
       .catch((error) => toast.apiError(error, 'Không thể tải hồ sơ điều tra người dùng.', { context: 'admin.users.investigation' }))
       .finally(() => setInvestigationLoading(false));
   }, [searchParams]);
@@ -65,7 +83,8 @@ const AdminUsers = () => {
     setInvestigationLoading(true);
     try {
       const response = await adminService.getUserInvestigation(userId);
-      setInvestigation(response.data.data);
+      setInvestigation(normalizeInvestigation(response.data.data));
+      setInvestigationTab('posts');
     } catch (error) {
       toast.apiError(error, 'Không thể tải hồ sơ điều tra người dùng.', { context: 'admin.users.investigation' });
     } finally {
@@ -73,10 +92,7 @@ const AdminUsers = () => {
     }
   };
 
-  useEffect(() => {
-    const timerId = window.setInterval(load, TIMERS.adminUsersRefreshMs);
-    return () => window.clearInterval(timerId);
-  }, [load]);
+  useNonOverlappingPolling(load, TIMERS.adminUsersRefreshMs, { immediate: false });
 
   const handleBan = async () => {
     if (!banModal || !banReason.trim()) return;
@@ -444,35 +460,107 @@ const AdminUsers = () => {
               <button type="button" className="admin-icon-btn" onClick={() => setInvestigation(null)} disabled={investigationLoading} aria-label="Đóng"><X size={18} /></button>
             </header>
             {investigation && <div className="admin-investigation-body">
-              <div className="admin-investigation-summary">
+              <div className="admin-investigation-summary admin-investigation-summary--six">
                 <div><FileText /><span>Bài viết</span><strong>{investigation.summary.posts}</strong><small>{investigation.summary.deletedPosts} đã xóa</small></div>
                 <div><Film /><span>Reels</span><strong>{investigation.summary.reels}</strong><small>{investigation.summary.deletedReels} đã xóa</small></div>
                 <div><Radio /><span>Live</span><strong>{investigation.summary.lives}</strong></div>
                 <div><MessageCircle /><span>Bình luận</span><strong>{investigation.summary.comments}</strong></div>
+                <div><MessagesSquare /><span>Messenger</span><strong>{investigation.summary.messages}</strong><small>{investigation.summary.conversations} cuộc trò chuyện</small></div>
                 <div><Flag /><span>Báo cáo</span><strong>{investigation.summary.reports}</strong></div>
               </div>
-              <div className="admin-investigation-columns">
-                <section>
-                  <h3>Lịch sử hoạt động gần đây</h3>
-                  <div className="admin-investigation-list">
-                    {investigation.activity.map((item) => <article key={`${item.kind}-${item.id}`}>
-                      <div><strong>{item.kind}</strong>{item.deleted && <span className="badge badge--banned">Đã xóa</span>}{item.privacy === 3 && <span className="badge">Chỉ mình tôi</span>}</div>
-                      <p>{item.title || 'Không có nội dung mô tả'}</p>
-                      <time>{new Date(item.at).toLocaleString('vi-VN')}</time>
+
+              <nav className="admin-investigation-tabs" aria-label="Nội dung hồ sơ điều tra">
+                {[
+                  ['posts', 'Bài viết và bình luận', FileText],
+                  ['comments', 'Bình luận của người dùng', MessageCircle],
+                  ['lives', 'Livestream', Radio],
+                  ['messages', 'Messenger', MessagesSquare],
+                  ['reports', 'Báo cáo & hình phạt', Flag],
+                ].map(([value, label, Icon]) => <button key={value} type="button" className={investigationTab === value ? 'active' : ''} onClick={() => setInvestigationTab(value)}><Icon size={15} />{label}</button>)}
+              </nav>
+
+              {investigationTab === 'posts' && <section className="admin-investigation-panel">
+                <header><div><h3>Toàn bộ bài viết</h3><p>Bao gồm nội dung riêng tư, đã xóa, media và mọi bình luận trong bài.</p></div></header>
+                <div className="admin-investigation-content-list">
+                  {investigation.posts.length === 0 ? <p className="admin-empty">Người dùng chưa có bài viết.</p> : investigation.posts.map((post) => <article className="admin-investigation-post" key={post.id}>
+                    <div className="admin-investigation-item-head">
+                      <div><strong>Bài viết #{post.id.slice(0, 8)}</strong>{post.isDeleted && <span className="badge badge--banned">Đã xóa</span>}{post.privacy === 3 && <span className="badge"><LockKeyhole size={11} /> Chỉ mình tôi</span>}</div>
+                      <button type="button" onClick={() => navigate(`/admin/posts?targetId=${post.id}`)}><ExternalLink size={14} /> Mở chi tiết</button>
+                    </div>
+                    <p className="admin-investigation-post-content">{post.content || 'Bài viết không có nội dung chữ.'}</p>
+                    {post.medias?.length > 0 && <div className="admin-investigation-media">{post.medias.map((media) => media.mediaType === 1
+                      ? <video key={media.id} controls preload="metadata" src={getImageUrl(media.url, 'videos')} />
+                      : <img key={media.id} loading="lazy" src={getImageUrl(media.url, 'posts')} alt="Bằng chứng trong bài viết" />)}</div>}
+                    <div className="admin-investigation-meta"><span>{post.commentCount} bình luận</span><span>{post.mediaCount} media</span><time>{new Date(post.createdAt).toLocaleString('vi-VN')}</time></div>
+                    <div className="admin-investigation-comments">
+                      <h4><MessageCircle size={14} /> Bình luận trong bài</h4>
+                      {post.comments?.length === 0 ? <p>Chưa có bình luận.</p> : post.comments.map((comment) => <div key={comment.id} className="admin-investigation-comment">
+                        <strong>{comment.authorName}</strong>{comment.isDeleted && <span className="badge badge--banned">Đã xóa</span>}
+                        <p>{comment.content}</p><time>{new Date(comment.createdAt).toLocaleString('vi-VN')}</time>
+                      </div>)}
+                    </div>
+                  </article>)}
+                </div>
+              </section>}
+
+              {investigationTab === 'comments' && <section className="admin-investigation-panel">
+                <header><div><h3>Bình luận do người dùng gửi</h3><p>Đối chiếu bình luận với bài viết hoặc livestream gốc.</p></div></header>
+                <div className="admin-investigation-content-list">
+                  {[...investigation.postComments.map((comment) => ({ ...comment, source: 'post' })), ...investigation.liveComments.map((comment) => ({ ...comment, source: 'live' }))]
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .map((comment) => <article key={`${comment.source}-${comment.id}`} className="admin-investigation-comment-card">
+                      <div className="admin-investigation-item-head"><div><strong>{comment.source === 'post' ? 'Bình luận bài viết' : 'Bình luận livestream'}</strong>{comment.isDeleted && <span className="badge badge--banned">Đã xóa</span>}</div>
+                        {comment.source === 'post'
+                          ? <button type="button" onClick={() => navigate(`/admin/posts?targetId=${comment.postId}`)}><ExternalLink size={14} /> Mở bài viết</button>
+                          : (comment.liveStatus === 1 || comment.recordingUrl)
+                            ? <button type="button" onClick={() => navigate(`/admin/lives?targetId=${comment.liveSessionId}`)}><ExternalLink size={14} /> {comment.liveStatus === 1 ? 'Xem trực tiếp' : 'Xem bản ghi'}</button>
+                            : <span className="admin-investigation-unavailable">Đã hết – không còn bản ghi</span>}
+                      </div>
+                      <blockquote>{comment.content}</blockquote>
+                      <p>{comment.source === 'post' ? `Trong bài của ${comment.postOwnerName}: ${comment.postContent || 'không có nội dung chữ'}` : `Trong live: ${comment.liveTitle || 'Không có tiêu đề'}`}</p>
+                      <time>{new Date(comment.createdAt).toLocaleString('vi-VN')}</time>
                     </article>)}
-                  </div>
-                </section>
-                <section>
-                  <h3>Lịch sử báo cáo và hình phạt</h3>
-                  <div className="admin-investigation-list">
-                    {investigation.reports.length === 0 ? <p>Chưa có báo cáo.</p> : investigation.reports.map((report) => <article key={report.id}>
-                      <div><strong>{report.reason}</strong><span className="badge">#{report.status}</span></div>
-                      <p>{report.details || report.resolutionNote || 'Không có ghi chú'}</p>
-                      <time>{new Date(report.createdAt).toLocaleString('vi-VN')}</time>
-                    </article>)}
-                  </div>
-                </section>
-              </div>
+                </div>
+              </section>}
+
+              {investigationTab === 'lives' && <section className="admin-investigation-panel">
+                <header><div><h3>Lịch sử livestream</h3><p>Live đã hết hạn bằng chứng vẫn được ghi nhận trong lịch sử, nhưng không thể phát lại.</p></div></header>
+                <div className="admin-investigation-content-list admin-investigation-live-grid">
+                  {investigation.lives.map((live) => <article key={live.id}>
+                    <div className="admin-investigation-item-head"><div><strong>{live.title || 'Livestream không có tiêu đề'}</strong><span className="badge">#{live.status}</span></div>
+                      {(live.status === 1 || live.recordingUrl) ? <button type="button" onClick={() => navigate(`/admin/lives?targetId=${live.id}`)}><ExternalLink size={14} /> {live.status === 1 ? 'Xem trực tiếp' : 'Xem lại'}</button> : null}
+                    </div>
+                    <p>{live.description || 'Không có mô tả.'}</p>
+                    <div className="admin-investigation-meta"><span>{live.commentCount} bình luận</span><span>{live.isEvidenceOnHold ? 'Đang giữ bằng chứng' : live.recordingUrl ? 'Còn bản ghi' : 'Đã hết – không còn bản ghi'}</span></div>
+                    <time>{new Date(live.startedAt).toLocaleString('vi-VN')}</time>
+                  </article>)}
+                </div>
+              </section>}
+
+              {investigationTab === 'messages' && <section className="admin-investigation-panel">
+                <header><div><h3>Lịch sử Messenger phục vụ kiểm duyệt</h3><p>Hiển thị cả tin đã chỉnh sửa, thu hồi hoặc bị ẩn phía người dùng. Quyền này chỉ dành cho kiểm duyệt viên có quyền xem người dùng.</p></div></header>
+                <div className="admin-investigation-conversations">
+                  {investigation.conversations.length === 0 ? <p className="admin-empty">Chưa có cuộc trò chuyện.</p> : investigation.conversations.map((conversation) => <details key={conversation.id}>
+                    <summary><span><Users size={15} />{conversation.members.map((member) => member.name).join(', ')}</span><small>{conversation.messages.length} tin gần nhất</small></summary>
+                    <div className="admin-investigation-message-list">{conversation.messages.map((message) => <div key={message.id} className="admin-investigation-message">
+                      <div><strong>{message.senderName}</strong>{message.isDeleted && <span className="badge badge--banned">Bản cũ đã ẩn</span>}{message.isRecalled && <span className="badge">Đã thu hồi</span>}{message.isPinned && <span className="badge">Đã ghim</span>}</div>
+                      <p>{message.content || 'Không có nội dung chữ'}</p>
+                      <time>{new Date(message.createdAt).toLocaleString('vi-VN')}{message.editedAt ? ` · sửa ${new Date(message.editedAt).toLocaleString('vi-VN')}` : ''}</time>
+                    </div>)}</div>
+                  </details>)}
+                </div>
+              </section>}
+
+              {investigationTab === 'reports' && <section className="admin-investigation-panel">
+                <header><div><h3>Lịch sử báo cáo và hình phạt</h3><p>Căn cứ, quyết định, thời hạn và trạng thái khôi phục.</p></div></header>
+                <div className="admin-investigation-content-list">
+                  {investigation.reports.length === 0 ? <p className="admin-empty">Chưa có báo cáo.</p> : investigation.reports.map((report) => <article key={report.id}>
+                    <div><strong>{report.reason}</strong><span className="badge">Trạng thái #{report.status}</span><span className="badge">Xử lý #{report.resolutionAction}</span></div>
+                    <p>{report.details || report.resolutionNote || 'Không có ghi chú'}</p>
+                    <time>{new Date(report.createdAt).toLocaleString('vi-VN')}{report.punishmentEndsAt ? ` · hết hạn ${new Date(report.punishmentEndsAt).toLocaleString('vi-VN')}` : ''}</time>
+                  </article>)}
+                </div>
+              </section>}
             </div>}
           </section>
         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { UserPlus, UserCheck, UserX, Clock } from "lucide-react";
 import friendshipService from "../../services/friendshipService";
 import toast from '../../shared/appToast';
@@ -18,13 +18,7 @@ const AddFriendButton = ({ targetUserId, initialStatus }) => {
   const [loading, setLoading] = useState(false);
   const { t } = useLocalization();
 
-  useEffect(() => {
-    if (!initialStatus) {
-      fetchStatus();
-    }
-  }, [targetUserId]);
-
-  const fetchStatus = async () => {
+  const fetchStatus = useCallback(async () => {
     try {
       const res = await friendshipService.getFriendshipStatus(targetUserId);
       const data = res.data?.data;
@@ -34,7 +28,15 @@ const AddFriendButton = ({ targetUserId, initialStatus }) => {
     } catch {
       setStatus(FRIENDSHIP_STATUS.NONE);
     }
-  };
+  }, [targetUserId]);
+
+  useEffect(() => {
+    if (initialStatus) {
+      setStatus(initialStatus);
+      return;
+    }
+    fetchStatus();
+  }, [fetchStatus, initialStatus]);
 
   const handleAction = async () => {
     setLoading(true);
