@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { MessageCircle, Copy, Forward, Pencil, Pin, PinOff, Reply, Trash2, Undo2, X } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { ChevronDown, MessageCircle, Copy, Forward, Pencil, Pin, PinOff, Reply, Trash2, Undo2, X } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
 import toast from '../../shared/appToast';
 import { useAuth } from '../../contexts/AuthContext';
@@ -46,7 +46,12 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
   const [forwardMessage, setForwardMessage] = useState(null);
   const [forwardTargets, setForwardTargets] = useState([]);
   const [forwardLoading, setForwardLoading] = useState(false);
+  const [isPinnedMenuOpen, setIsPinnedMenuOpen] = useState(false);
+  const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const messagesEndRef = useRef(null);
+  const messageRefs = useRef(new Map());
+  const pinnedMenuRef = useRef(null);
+  const highlightTimeoutRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const longPressTimeoutRef = useRef(null);
   const isInitialLoad = useRef(true);
@@ -90,6 +95,8 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
     setReplyTo(null);
     setEditingMessage(null);
     setForwardMessage(null);
+    setIsPinnedMenuOpen(false);
+    setHighlightedMessageId(null);
   }, [activeConvId]);
 
   // Update activeConvId when prop changes
@@ -263,7 +270,26 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
 
   useEffect(() => () => {
     if (longPressTimeoutRef.current) clearTimeout(longPressTimeoutRef.current);
+    if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
   }, []);
+
+  useEffect(() => {
+    if (!isPinnedMenuOpen) return undefined;
+
+    const closeWhenOutside = (event) => {
+      if (!pinnedMenuRef.current?.contains(event.target)) setIsPinnedMenuOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setIsPinnedMenuOpen(false);
+    };
+
+    document.addEventListener('pointerdown', closeWhenOutside);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeWhenOutside);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [isPinnedMenuOpen]);
 
   // ========== Handle message sent ==========
   const handleMessageSent = (message) => {
@@ -350,7 +376,36 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
     longPressTimeoutRef.current = null;
   };
 
-  const pinnedMessages = messages.filter((message) => message.isPinned && !message.isRecalled);
+  const pinnedMessages = useMemo(() => messages
+    .filter((message) => message.isPinned && !message.isRecalled)
+    .sort((first, second) => new Date(second.pinnedAt || second.createdAt) - new Date(first.pinnedAt || first.createdAt)), [messages]);
+
+  const focusPinnedMessage = useCallback((messageId) => {
+    const messageElement = messageRefs.current.get(messageId);
+    setIsPinnedMenuOpen(false);
+    if (!messageElement) return;
+
+    const scrollContainer = messageElement.closest('.chat-messages');
+    const messageRect = messageElement.getBoundingClientRect();
+    const containerRect = scrollContainer?.getBoundingClientRect();
+    const isVisible = containerRect
+      ? messageRect.top >= containerRect.top && messageRect.bottom <= containerRect.bottom
+      : messageRect.top >= 0 && messageRect.bottom <= window.innerHeight;
+
+    if (!isVisible) messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    if (highlightTimeoutRef.current) clearTimeout(highlightTimeoutRef.current);
+    setHighlightedMessageId(messageId);
+    highlightTimeoutRef.current = setTimeout(() => setHighlightedMessageId(null), 2200);
+  }, []);
+
+  const handlePinnedTrigger = () => {
+    if (pinnedMessages.length === 1) {
+      focusPinnedMessage(pinnedMessages[0].id);
+      return;
+    }
+    setIsPinnedMenuOpen((current) => !current);
+  };
 
   // No friend selected
   if (!friend) {
@@ -380,7 +435,53 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
       </div>
 
       {pinnedMessages.length > 0 && (
-        <div className="chat-pinned-strip"><Pin size={14} /><strong>{pinnedMessages.length} tin nhắn đã ghim</strong><span>{pinnedMessages.at(-1)?.content?.slice(0, 80)}</span></div>
+        <div className={`chat-pinned ${isPinnedMenuOpen ? 'chat-pinned--open' : ''}`} ref={pinnedMenuRef}>
+          <button
+            type="button"
+            className="chat-pinned-trigger"
+            onClick={handlePinnedTrigger}
+            aria-expanded={pinnedMessages.length > 1 ? isPinnedMenuOpen : undefined}
+            aria-haspopup={pinnedMessages.length > 1 ? 'menu' : undefined}
+            title={pinnedMessages.length === 1 ? 'Đi tới tin nhắn đã ghim' : 'Xem các tin nhắn đã ghim'}
+          >
+            <span className="chat-pinned-icon"><Pin size={14} /></span>
+            <span className="chat-pinned-summary">
+              <strong>{pinnedMessages.length} tin nhắn đã ghim</strong>
+              <span>{pinnedMessages[0]?.content?.slice(0, 80)}</span>
+            </span>
+            {pinnedMessages.length > 1 && <ChevronDown className="chat-pinned-chevron" size={16} />}
+          </button>
+
+          {isPinnedMenuOpen && pinnedMessages.length > 1 && (
+            <div className="chat-pinned-menu" role="menu" aria-label="Tin nhắn đã ghim">
+              <div className="chat-pinned-menu-header">
+                <strong>Tin nhắn đã ghim</strong>
+                <span>{pinnedMessages.length} tin nhắn</span>
+              </div>
+              <div className="chat-pinned-menu-list">
+                {pinnedMessages.map((message) => {
+                  const isOwn = (message.sender?.id || message.senderId) === user?.id;
+                  return (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="chat-pinned-menu-item"
+                      key={message.id}
+                      onClick={() => focusPinnedMessage(message.id)}
+                    >
+                      <span className="chat-pinned-menu-marker"><Pin size={13} /></span>
+                      <span className="chat-pinned-menu-copy">
+                        <strong>{isOwn ? 'Bạn' : (message.sender?.fullName || friend.profile?.fullName || friend.fullName)}</strong>
+                        <span>{message.content || 'Tin nhắn'}</span>
+                      </span>
+                      <time>{formatMessageTime(message.createdAt)}</time>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Messages */}
@@ -405,7 +506,15 @@ const ChatWindow = ({ friend, conversationId, onConversationCreated }) => {
             const showDate = shouldShowDateSeparator(msg, prevMsg);
 
             return (
-              <div key={msg.id}>
+              <div
+                key={msg.id}
+                ref={(node) => {
+                  if (node) messageRefs.current.set(msg.id, node);
+                  else messageRefs.current.delete(msg.id);
+                }}
+                className={`message-entry ${highlightedMessageId === msg.id ? 'message-entry--highlighted' : ''}`}
+                data-message-id={msg.id}
+              >
                 {showDate && (
                   <div className="message-date-separator">
                     {formatDateLabel(msg.createdAt, t)}
